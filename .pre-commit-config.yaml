@@ -1,27 +1,33 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.8b0
     hooks:
       - id: black
         args:
           - --quiet
   - repo: https://github.com/PyCQA/isort
-    rev: 5.8.0
+    rev: 5.9.3
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/flake8
-    rev: 3.9.1
+    rev: 3.9.2
     hooks:
       - id: flake8
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.0.0
+    rev: v2.1.0
     hooks:
       - id: codespell
+        args:
+          - -L HASS,hass,Hass
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.812
+    rev: v0.910
     hooks:
       - id: mypy
-        files: "sunsynk/.*.py"
+        files: "./sunsynk/.*.py"
+        additional_dependencies: ["types-attrs", "attrs>21"]
+      - id: mypy
+        files: "./hass_addon_sunsynk/.*.py"
+        additional_dependencies: ["types-attrs", "attrs>21"]
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.1.1
     hooks:
