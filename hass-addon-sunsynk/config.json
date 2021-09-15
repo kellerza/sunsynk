@@ -2,7 +2,7 @@
   "name": "Sunsynk Inverter",
   "slug": "hass-addon-sunsynk",
   "description": "Add-on for the Sunsynk Inverter",
-  "version": "2021.9.3",
+  "version": "2021.9.4",
   "startup": "services",
   "boot": "auto",
   "url": "https://github.com/kellerza/sunsynk",
