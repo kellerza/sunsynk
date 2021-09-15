@@ -14,8 +14,8 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # local test - install sunsynk
-COPY sunsynk /usr/src/app/sunsynk
-RUN pip3 install -e sunsynk
+# COPY sunsynk /usr/src/app/sunsynk
+# RUN pip3 install -e sunsynk
 
 COPY *.py ./
 
