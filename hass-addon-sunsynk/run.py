@@ -13,6 +13,7 @@ from mqtt import MQTTClient
 
 import sunsynk.definitions as ssdefs
 from sunsynk import Sensor, Sunsynk
+from sunsynk.sensor import slug
 
 _LOGGER = logging.getLogger(__name__)
 _MQTT = MQTTClient()
@@ -85,6 +86,9 @@ async def hass_discover_sensors():
     _MQTT._client.subscribe(
         f"homeassistant/sensor/{OPTIONS.sunsynk_id}/+/config", qos=1
     )
+    _MQTT._client.subscribe(
+        f"homeassistant/sensor/{OPTIONS.sunsynk_id}/+/config", qos=0
+    )
     for sensor in SENSORS:
         topic = f"homeassistant/sensor/{OPTIONS.sunsynk_id}/{sensor.id}/config"
         dev_class = hass_device_class(unit=sensor.unit)
@@ -111,6 +115,7 @@ def update_options(json: Dict) -> None:
     """Update global options."""
     for k, v in json.items():
         setattr(OPTIONS, k.lower(), v)
+    OPTIONS.sunsynk_id = slug(OPTIONS.sunsynk_id)
 
 
 def startup():

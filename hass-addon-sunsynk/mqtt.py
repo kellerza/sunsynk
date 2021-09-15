@@ -3,6 +3,7 @@ import asyncio
 import logging
 from typing import Any
 
+from icecream import ic
 from paho.mqtt.client import Client
 
 _LOGGER = logging.getLogger(__name__)
@@ -10,10 +11,8 @@ _LOGGER = logging.getLogger(__name__)
 
 def on_message(client, userdata, message):
     """Print message."""
-    print("message received ", str(message.payload.decode("utf-8")))
-    print("message topic=", message.topic)
-    print("message qos=", message.qos)
-    print("message retain flag=", message.retain)
+    msg = str(message.payload.decode("utf-8"))
+    ic(msg, message, message.topic, message.qos, message.retain)
 
 
 class MQTTClient:
