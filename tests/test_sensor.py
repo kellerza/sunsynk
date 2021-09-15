@@ -45,7 +45,12 @@ async def test_all_groups() -> None:
     for i in range(2, 6):
         _LOGGER.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
 
-    assert len(group_sensors(s)) == 12
+    grp = group_sensors(s)
+
+    grplen = [len(i) for i in grp]
+
+    assert grplen[:3] == [5, 19, 5]
+    assert grplen[-1:] == [1]
 
 
 def waste(groups) -> Sequence[int]:

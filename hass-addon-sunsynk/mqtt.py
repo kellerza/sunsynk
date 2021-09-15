@@ -8,6 +8,14 @@ from paho.mqtt.client import Client
 _LOGGER = logging.getLogger(__name__)
 
 
+def on_message(client, userdata, message):
+    """Print message."""
+    print("message received ", str(message.payload.decode("utf-8")))
+    print("message topic=", message.topic)
+    print("message qos=", message.qos)
+    print("message retain flag=", message.retain)
+
+
 class MQTTClient:
     """Basic MQTT Client."""
 
@@ -29,6 +37,7 @@ class MQTTClient:
             _LOGGER.info("MQTT: Connection %s", msg)
 
         self._client.on_connect = on_connect
+        self._client.on_message = on_message
 
     async def connect(self, host: str, port: int, username: str, password: str) -> None:
         """Connect."""
@@ -57,6 +66,8 @@ class MQTTClient:
         # async with self._paho_lock:
         if not isinstance(qos, int):
             qos = 0
+        if retain:
+            qos = 1
         await asyncio.get_running_loop().run_in_executor(
             None, self._client.publish, topic, payload, qos, retain is True
         )

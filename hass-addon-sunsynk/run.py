@@ -82,6 +82,9 @@ async def hass_discover_sensor(*, ss_id: str, sensor: Sensor) -> None:
 
 async def hass_discover_sensors():
     """Discover all sensors."""
+    _MQTT._client.subscribe(
+        f"homeassistant/sensor/{OPTIONS.sunsynk_id}/+/config", qos=1
+    )
     for sensor in SENSORS:
         topic = f"homeassistant/sensor/{OPTIONS.sunsynk_id}/{sensor.id}/config"
         dev_class = hass_device_class(unit=sensor.unit)
