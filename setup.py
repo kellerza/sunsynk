@@ -4,7 +4,7 @@ from pathlib import Path
 
 from setuptools import setup
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 URL = "https://github.com/kellerza/sunsynk"
 
 setup(
@@ -19,6 +19,7 @@ setup(
     author_email="kellerza@gmail.com",
     license="MIT",
     packages=["sunsynk"],
-    install_requires=["aiohttp>3.3,<4", "attrs>21", "pymodbus"],
+    # "aiohttp>3.3,<4",
+    install_requires=["attrs>21", "pymodbus"],
     zip_safe=True,
 )

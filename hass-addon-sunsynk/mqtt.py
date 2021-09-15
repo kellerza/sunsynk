@@ -15,7 +15,9 @@ class MQTTClient:
         """Init MQTT Client."""
         self._client = Client()
 
-        def on_connect(*, rc: int, **_kwargs) -> None:
+        def on_connect(
+            _client: Any, _userdata: Any, _flags: Any, rc: int, _properties=None
+        ):
             msg = {
                 0: "successful",
                 1: "refused - incorrect protocol version",

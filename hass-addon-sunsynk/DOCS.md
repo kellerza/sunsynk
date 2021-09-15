@@ -8,17 +8,20 @@
   The default configuration assumes the Mosquitto broker add-on and you simply have to
   fill in your password.
 
-- `FIELDS`
+- `SENSORS`
 
-  These can be any value supported by the SMA-EM library. A list of options can be found
-  [below](*available-sensors)
+  A list of sensors to poll. You can use any sensor defined in the sunsynk Python library - [here](https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions.py)
 
 - `DEBUG`
 
   The values received will continuously be printed to the add-on's log. This will confirm
-  that you receive values for sensor `FIELDS` you configured.
+  that you receive values.
 
-  Recommended value: 0
+  The serial device
+
+- SUNSYNK ID
+
+  A unique Identifier for all values from this Sunsynk Inverter
 
 <!--
 ## Sensor modifiers - Min/Max/Average/Smart
@@ -26,7 +29,6 @@
 Sensors fields can be modified by adding a modifier to the end of the field name.
 Without any modifier, the sensor will have a smart interval.
 The average will be reported every 60 seconds.
-If there are a big change (more than `THRESHOLD` or less than 2\*`THRESHOLD`) the value
 will be reported immediately.
 These type of fields can be used in automations that will respond within the measurement
 interval of the SMA Energy meter (1 second)

@@ -21,6 +21,8 @@ For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to 
 
 ## Sunsynk Python Library
 
+[![codecov](https://codecov.io/gh/kellerza/sunsynk/branch/main/graph/badge.svg?token=ILKRC5UTXI)](https://codecov.io/gh/kellerza/sunsynk)
+
 The Python library is available through pip:
 
 ```bash

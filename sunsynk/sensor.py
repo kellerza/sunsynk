@@ -1,24 +1,32 @@
 """Sensor classes represent modbus registers for an inverter."""
 from __future__ import annotations
 
-from typing import List, Sequence, Union
+import logging
+from math import modf
+from typing import Any, List, Sequence, Tuple, Union
 
 import attr
+
+_LOGGER = logging.getLogger(__name__)
+
+
+def tup(val: Any) -> Tuple[int]:
+    """Return a tuple."""
+    if isinstance(val, tuple):
+        return val
+    if isinstance(val, int):
+        return (val,)
+    return tuple(val)
 
 
 @attr.define(slots=True)
 class Sensor:
     """Sunsynk sensor."""
 
-    # pylint: disable=too-many-instance-attributes
-    # pylint: disable=too-few-public-methods
-    register: int = attr.field()
+    register: Tuple[int] = attr.field(converter=tup)
     name: str = attr.field()
     unit: str = attr.field(default="")
     factor: float = attr.field(default=1)
-    high_register: Union[int, None] = attr.field(
-        default=None
-    )  # The high register for 32-bit values
     value: Union[float, None] = None
 
     def append_to(self, arr: List[Sensor]) -> Sensor:
@@ -26,16 +34,25 @@ class Sensor:
         arr.append(self)
         return self
 
+    @property
+    def id(self):
+        """Get the sensor ID."""
+        return slug(self.name)
+
+
+class HSensor(Sensor):
+    """Hybrid sensor."""
+
 
 def group_sensors(
     sensors: Sequence[Sensor], allow_gap: int = 3
 ) -> Sequence[Sequence[int]]:
     """Group sensor registers into blocks for reading."""
+    if not sensors:
+        return []
     regs = set()
     for sen in sensors:
-        regs.add(sen.register)
-        if sen.high_register is not None:
-            regs.add(sen.high_register)
+        regs |= set(sen.register)
     adr = sorted(regs)
     cgroup = [adr[0]]
     groups = [cgroup]
@@ -54,22 +71,27 @@ def update_sensors(
     """Update sensors."""
     hreg = register + len(values)
     for sen in sensors:
-        if sen.register >= register and sen.register < hreg:
+        if sen.register[0] >= register and sen.register[0] < hreg:
             hval = 0
-            if (
-                sen.high_register is not None
-                and sen.high_register >= register
-                and sen.high_register < hreg
-            ):
-                hval = values[sen.high_register - register]
-            lval = values[sen.register - register]
+            try:
+                hval = values[sen.register[1] - register]
+            except IndexError:
+                pass
+            lval = values[sen.register[0] - register]
 
-            sen.value = (lval + hval << 16) * sen.factor
+            sen.value = round((lval + (hval << 16)) * sen.factor, 2)
+            if modf(sen.value)[0] == 0:
+                sen.value = int(sen.value)
+            _LOGGER.debug(
+                "%s low=%d high=%d value=%d%s",
+                sen.name,
+                lval,
+                hval,
+                sen.value,
+                sen.unit,
+            )
 
 
-# a = (msg.payload.data / 10)
-# if (a > 32767) {
-# msg.payload = (a - 65535) / 10;
-# } else {
-#     msg.payload = (a) / 1;
-# }
+def slug(name: str) -> str:
+    """Create a slug."""
+    return name.lower().replace(" ", "_")

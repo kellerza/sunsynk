@@ -1,14 +1,12 @@
 """Sunsync Modbus interface."""
-import logging
 from typing import Sequence
 
 import attr
 from pymodbus.client.asynchronous import schedulers
 from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient
+from serial.serialutil import STOPBITS_ONE
 
 from .sensor import Sensor, group_sensors, update_sensors
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @attr.s(slots=True)
@@ -17,15 +15,26 @@ class Sunsynk:
 
     port: str = attr.ib(default="/dev/tty0")
     baudrate: int = attr.ib(default=9600)
-    address: int = attr.ib(default=0)
-    client: AsyncModbusSerialClient = None
+    address: int = attr.ib(default=1)
+    client: AsyncModbusSerialClient = attr.ib(default=None)
 
-    def connect(self) -> None:
-        """Connect client."""
-        _loop, client = AsyncModbusSerialClient(
-            schedulers.ASYNC_IO, port=self.port, baudrate=self.baudrate, method="rtu"
+    def connect(self):
+        """Connect.
+
+        https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
+
+        """
+        loop, client = AsyncModbusSerialClient(
+            schedulers.ASYNC_IO,
+            port=self.port,
+            baudrate=self.baudrate,
+            method="rtu",
+            stopbits=STOPBITS_ONE,
+            bytesize=8,
         )
-        # self.client.protocol
+
+        self.client = client.protocol
+        return loop
 
     async def write(self, sensor: Sensor) -> None:
         """Read a list of sensors."""
