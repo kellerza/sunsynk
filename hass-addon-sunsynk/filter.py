@@ -29,6 +29,13 @@ class Filter:
 
     def update(self, value: Union[float, int]) -> Optional[Union[float, int]]:
         """Add value."""
+        if value is None:
+            _LOGGER.warning(
+                "%s: should not be None (%s)",
+                getattr(self.sensor, "name", ""),
+                self._filter.__name__,
+            )
+            return None
         self.values.append(value)
         if len(self.values) < self.samples:
             return None

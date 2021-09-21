@@ -55,5 +55,5 @@ class Sunsynk:
                 grp[0], len(grp), unit=self.address
             )
             if r_r.function_code >= 0x80:  # test that we are not an error
-                raise Exception("failed to write")
+                raise Exception("failed to read")
             update_sensors(sensors, grp[0], r_r.registers)
