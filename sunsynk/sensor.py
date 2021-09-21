@@ -12,6 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 def tup(val: Any) -> Tuple[int]:
     """Return a tuple."""
+    # type: ignore
     if isinstance(val, tuple):
         return val
     if isinstance(val, int):

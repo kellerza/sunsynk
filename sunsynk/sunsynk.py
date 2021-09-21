@@ -5,7 +5,7 @@ from typing import Sequence
 import attr
 from pymodbus.client.asynchronous import schedulers  # type: ignore
 from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient  # type: ignore
-from serial.serialutil import STOPBITS_ONE
+from serial.serialutil import STOPBITS_ONE  # type: ignore
 
 from .sensor import Sensor, group_sensors, update_sensors
 
@@ -25,10 +25,7 @@ class Sunsynk:
         https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
 
         """
-        (
-            loop,
-            client,
-        ) = AsyncModbusSerialClient(  # pylint: disable=unpacking-non-sequence
+        msc = AsyncModbusSerialClient(
             schedulers.ASYNC_IO,
             port=self.port,
             baudrate=self.baudrate,
@@ -36,6 +33,7 @@ class Sunsynk:
             stopbits=STOPBITS_ONE,
             bytesize=8,
         )
+        loop, client = msc  # pylint: disable=unpacking-non-sequence
 
         self.client = client.protocol
         return loop

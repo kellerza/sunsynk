@@ -88,7 +88,9 @@ async def hass_discover_sensors():
 
 def startup() -> None:
     """Read the hassos configuration."""
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)-8s %(message)s", level=logging.DEBUG
+    )
 
     hassosf = Path("/data/options.json")
     if hassosf.exists():
@@ -107,7 +109,11 @@ def startup() -> None:
     SUNSYNK.port = OPTIONS.port
 
     if OPTIONS.debug == 0:
-        logging.basicConfig(level=logging.INFO, force=True)
+        logging.basicConfig(
+            format="%(asctime)s %(levelname)-8s %(message)s",
+            level=logging.INFO,
+            force=True,
+        )
 
     sens = {}
 

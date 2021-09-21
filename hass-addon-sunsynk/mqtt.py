@@ -62,7 +62,7 @@ class MQTTClient:
             qos = 0
         if retain:
             qos = 1
-        _LOGGER.debug("PUBLISH %s%s %s, %s", qos, "R" if retain else "", topic, payload)
+        _LOGGER.info("PUBLISH %s%s %s, %s", qos, "R" if retain else "", topic, payload)
         await asyncio.get_running_loop().run_in_executor(
             None, self._client.publish, topic, payload, qos, retain is True
         )

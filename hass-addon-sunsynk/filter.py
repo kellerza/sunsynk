@@ -41,7 +41,7 @@ class Filter:
             return None
         res = self._filter(self.values)
         self.values.clear()
-        _LOGGER.debug(
+        _LOGGER.info(
             "%s: %s over %d samples = %s",
             getattr(self.sensor, "name", ""),
             self._filter.__name__,
@@ -64,7 +64,7 @@ class SCFilter(Filter):
                 value > self.values[0] + self.threshold
                 or value < self.values[0] - self.threshold
             ):
-                _LOGGER.debug(
+                _LOGGER.info(
                     "%s: significant change %s -> %s (%d samples in buffer)",
                     getattr(self.sensor, "name", ""),
                     self.values[0],

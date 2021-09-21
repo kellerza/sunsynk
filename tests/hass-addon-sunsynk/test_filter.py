@@ -42,7 +42,7 @@ def run_filter_seq(
     """Run the filter through a sequence."""
     tick_cnt, upd_cnt, res = 0, 0, None
     for oi in range(len(updates)):
-        assert res == None
+        assert res is None
         if first1 and oi == 0:
             pass  # filters always have a quick start...
         else:
