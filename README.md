@@ -1,4 +1,4 @@
-# Sunsynk Inverters \*_beta_\*
+# Sunsynk Inverters
 
 This repo enables access to Sunsynk Hybrid Inverter through a Python 3 library. It also provides an Add-On that can be installed in the Home Assistant OS.
 
