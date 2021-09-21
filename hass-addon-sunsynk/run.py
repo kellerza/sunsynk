@@ -29,6 +29,7 @@ SUNSYNK = Sunsynk()
 class Options:
     """HASS Addon Options."""
 
+    # pylint: disable=too-few-public-methods
     mqtt_host: str = ""
     mqtt_port: int = 0
     mqtt_username: str = ""
@@ -40,8 +41,8 @@ class Options:
 
     def update(self, json: Dict) -> None:
         """Update options."""
-        for k, v in json.items():
-            setattr(self, k.lower(), v)
+        for key, val in json.items():
+            setattr(self, key.lower(), val)
         self.sunsynk_id = slug(self.sunsynk_id)
 
 
@@ -136,25 +137,27 @@ async def main(loop) -> None:
     """Main async loop."""
     loop.set_debug(OPTIONS.debug > 0)
     await hass_discover_sensors()
-    while True:
-        fsensors = []
 
+    async def poll_sensors():
+        """Poll sensors."""
+        fsensors = []
         # 1. collect sensors to read
         for fil in SENSORS:
             if fil.should_update():
                 fsensors.append(fil)
-
         if fsensors:
             # 2. read
             await SUNSYNK.read([f.sensor for f in fsensors])
             # 3. decode & publish
             await publish_sensors(fsensors)
 
+    while True:
+        asyncio.ensure_future(poll_sensors())
         await asyncio.sleep(1)
 
 
 if __name__ == "__main__":
     startup()
-    loop = SUNSYNK.connect()
-    loop.run_until_complete(main(loop))
-    loop.close()
+    LOOP = SUNSYNK.connect()
+    LOOP.run_until_complete(main(LOOP))
+    LOOP.close()

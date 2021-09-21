@@ -19,7 +19,6 @@ setup(
     author_email="kellerza@gmail.com",
     license="MIT",
     packages=["sunsynk"],
-    # "aiohttp>3.3,<4",
     install_requires=["attrs>21", "pymodbus"],
     zip_safe=True,
 )

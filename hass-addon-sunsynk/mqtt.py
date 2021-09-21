@@ -16,7 +16,9 @@ class MQTTClient:
         """Init MQTT Client."""
         self._client = Client()
 
-        def on_connect(_client: Any, _userdata: Any, _flags: Any, rc: int, _prop=None):
+        def on_connect(
+            _client: Any, _userdata: Any, _flags: Any, _rc: int, _prop=None
+        ) -> None:
             msg = {
                 0: "successful",
                 1: "refused - incorrect protocol version",
@@ -24,7 +26,7 @@ class MQTTClient:
                 3: "refused - server unavailable",
                 4: "refused - bad username or password",
                 5: "refused - not authorised",
-            }.get(rc, f"refused - {rc}")
+            }.get(_rc, f"refused - {_rc}")
             _LOGGER.info("MQTT: Connection %s", msg)
 
         self._client.on_connect = on_connect
@@ -62,7 +64,7 @@ class MQTTClient:
             qos = 0
         if retain:
             qos = 1
-        _LOGGER.info("PUBLISH %s%s %s, %s", qos, "R" if retain else "", topic, payload)
+        _LOGGER.debug("PUBLISH %s%s %s, %s", qos, "R" if retain else "", topic, payload)
         await asyncio.get_running_loop().run_in_executor(
             None, self._client.publish, topic, payload, qos, retain is True
         )
@@ -84,7 +86,7 @@ class MQTTClient:
         # Read all current retained messages
         extras = []
 
-        def on_message(client, userdata, message: MQTTMessage):
+        def on_message(_client, _userdata, message: MQTTMessage) -> None:
             """Receive messages & detect extras."""
             if message.retain:
                 top = str(message.topic).split("/")

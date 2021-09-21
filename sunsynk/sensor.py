@@ -12,12 +12,11 @@ _LOGGER = logging.getLogger(__name__)
 
 def tup(val: Any) -> Tuple[int]:
     """Return a tuple."""
-    # type: ignore
     if isinstance(val, tuple):
-        return val
+        return val  # type: ignore
     if isinstance(val, int):
         return (val,)
-    return tuple(val)
+    return tuple(val)  # type: ignore
 
 
 @attr.define(slots=True)

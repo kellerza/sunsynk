@@ -14,6 +14,7 @@ grid_export_day = HSensor(77, "Grid Export Day", "kWh", 0.1)
 total_grid_import = HSensor((78, 80), "Total Grid Import", "kWh", 0.1)
 grid_frequency = HSensor(79, "Grid frequency", "Hz", 0.01)
 total_grid_export = HSensor((81, 82), "Total Grid Export", "kWh", 0.1)
+# Sunsynk 5.5kW: total load power always 0
 total_load_power = HSensor((85, 86), "Total Load Power", "kWh", 0.1)
 year_load_power = HSensor((87, 88), "Year Load Power", "kWh", 0.1)
 temp_dc_transformer = HSensor(90, "Temp DC transformer", "C", 0.1)

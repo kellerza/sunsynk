@@ -2,7 +2,7 @@
   "name": "Sunsynk Inverter",
   "slug": "hass-addon-sunsynk",
   "description": "Add-on for the Sunsynk Inverter",
-  "version": "2021.9.12",
+  "version": "2021.9.13",
   "startup": "services",
   "boot": "auto",
   "url": "https://github.com/kellerza/sunsynk",
@@ -25,8 +25,8 @@
     "MQTT_USERNAME": "hass",
     "MQTT_PASSWORD": "my_very_secure_password",
     "PORT": "/dev/ttyS0",
-    "SENSORS": ["total_pv_power","total_battery_charge", "total_battery_discharge", "total_grid_export", "total_grid_import"],
-    "SUNSYNK_ID": "MY_SS_1",
+    "SENSORS": ["total_pv_power:last","total_battery_charge:last", "total_battery_discharge:last", "total_grid_export:last", "total_grid_import:last"],
+    "SUNSYNK_ID": "my_ss_1",
     "DEBUG": 0
   },
   "schema": {
