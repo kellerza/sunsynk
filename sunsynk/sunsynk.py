@@ -49,8 +49,9 @@ class Sunsynk:
     async def read(self, sensors: Sequence[Sensor]) -> None:
         """Read a list of sensors."""
         for grp in group_sensors(sensors):
+            glen = grp[-1] - grp[0] + 1
             r_r = await self.client.read_holding_registers(
-                grp[0], len(grp), unit=self.address
+                grp[0], glen, unit=self.address
             )
             if r_r.function_code >= 0x80:  # test that we are not an error
                 raise Exception("failed to read")

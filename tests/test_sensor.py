@@ -48,7 +48,7 @@ async def test_all_groups() -> None:
 
     grplen = [len(i) for i in grp]
 
-    assert grplen[:3] == [5, 19, 5]
+    assert grplen[:1] == [5]
     assert grplen[-1:] == [1]
 
 

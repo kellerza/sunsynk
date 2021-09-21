@@ -1,6 +1,7 @@
 """Sunsynk hybrid inverter sensor definitions."""
-from sunsynk.sensor import HSensor
+from sunsynk.sensor import HSensor, Sensor, offset100, sd_status
 
+serial = Sensor((3, 4, 5, 6, 7), "Serial")
 overall_state = HSensor(59, "Overall state")
 day_active_power = HSensor(60, "Day Active Power", "kWh", 0.1)
 day_reactive_power = HSensor(61, "Day Reactive Power", "kVarh", 0.1)
@@ -14,12 +15,12 @@ grid_export_day = HSensor(77, "Grid Export Day", "kWh", 0.1)
 total_grid_import = HSensor((78, 80), "Total Grid Import", "kWh", 0.1)
 grid_frequency = HSensor(79, "Grid frequency", "Hz", 0.01)
 total_grid_export = HSensor((81, 82), "Total Grid Export", "kWh", 0.1)
-# Sunsynk 5.5kW: total load power always 0
 total_load_power = HSensor((85, 86), "Total Load Power", "kWh", 0.1)
 year_load_power = HSensor((87, 88), "Year Load Power", "kWh", 0.1)
-temp_dc_transformer = HSensor(90, "Temp DC transformer", "C", 0.1)
-temp_radiator = HSensor(91, "Temp Radiator", "C", 0.1)
-temperature_environment = HSensor(95, "Temperature Environment", "C", 0.1)
+temp_dc_transformer = HSensor(90, "Temp DC transformer", "C", 0.1, func=offset100)
+temp_radiator = HSensor(91, "Temp Radiator", "C", 0.1, func=offset100)
+sd_status = Sensor(92, "SD Status", "", func=sd_status)  # type: ignore
+temp_environment = HSensor(95, "Temp Environment", "C", 0.1, func=offset100)
 total_pv_power = HSensor((96, 97), "Total PV Power", "kWh", 0.1)
 grid_export_year = HSensor((98, 99), "Grid Export Year", "kWh", 0.1)
 pv_energy_day = HSensor(108, "PV Energy Day", "kWh", 0.1)
@@ -31,7 +32,7 @@ inverter_voltage = HSensor(154, "Inverter Voltage", "V", 0.1)
 grid_inverter_load = HSensor(167, "Grid Inverter load", "W", 1)
 grid_ct_load = HSensor(172, "Grid CT load", "W", 1)
 total_load = HSensor(178, "Total load", "W", 1)
-temperature_battery = HSensor(182, "Temperature Battery", "C", 0.1)
+temp_battery = HSensor(182, "Temp Battery", "C", 0.1, func=offset100)
 battery_voltage = HSensor(183, "Battery voltage", "V", 0.01)
 battery_soc = HSensor(184, "Battery SOC", "%", 1)
 pv1_power = HSensor(186, "PV1 power", "W", 1)

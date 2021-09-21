@@ -16,7 +16,7 @@ class Filter:
 
     interval: int = attr.field(default=60)
     _i: int = attr.field(default=0)
-    values: List = attr.field(default=attr.Factory(list))
+    values: List[float] = attr.field(default=attr.Factory(list))
     samples: int = attr.field(default=1)
     _filter: Any = attr.field(default=mean)
     sensor: Any = attr.field(default=None)
