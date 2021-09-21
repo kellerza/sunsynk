@@ -7,8 +7,8 @@ FROM ${BUILD_FROM}
 #        gcc libc-dev
 
 #build-base
-# RUN pip3 install --no-cache-dir paho-mqtt~=1.5.0 attrs pymodbus[repl] icecream pyserial-asyncio
-RUN pip3 install --no-cache-dir paho-mqtt~=1.5.0 attrs pymodbus icecream pyserial-asyncio sunsynk
+# RUN pip3 install --no-cache-dir paho-mqtt~=1.5.0 attrs pymodbus[repl] pyserial-asyncio
+RUN pip3 install --no-cache-dir paho-mqtt~=1.5.0 attrs pymodbus pyserial-asyncio sunsynk
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

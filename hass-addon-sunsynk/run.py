@@ -3,22 +3,24 @@
 import asyncio
 import logging
 import sys
-from json import dumps, loads
+from json import loads
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Dict, List
 
 import attr
-from icecream import ic
+from filter import Filter, getfilter
 from mqtt import MQTTClient
 
 import sunsynk.definitions as ssdefs
-from sunsynk import Sensor, Sunsynk
+from sunsynk import Sunsynk
 from sunsynk.sensor import slug
 
 _LOGGER = logging.getLogger(__name__)
-_MQTT = MQTTClient()
+MQTT = MQTTClient()
 
-SENSORS: List[Sensor] = []
+
+SENSORS: List[Filter] = []
+
 
 SUNSYNK = Sunsynk()
 
@@ -37,137 +39,112 @@ class Options:
     interval: int = 60
     port: str = ""
 
+    def update(self, json: Dict) -> None:
+        """Update options."""
+        for k, v in json.items():
+            setattr(self, k.lower(), v)
+        self.sunsynk_id = slug(self.sunsynk_id)
+
 
 OPTIONS = Options()
 
 SS_TOPIC = "SUNSYNK/status"
 
 
-async def publish_sensors(sensors: Sequence[Sensor]):
+async def publish_sensors(sensors: List[Filter]):
     """Publish sensors."""
-    ss_id = OPTIONS.sunsynk_id
-    for sen in sensors:
-        await mqtt_publish(topic=f"{SS_TOPIC}/{ss_id}/{sen.id}", payload=sen.value)
-
-
-async def mqtt_publish(topic: str, payload: Any, retain: bool = False) -> None:
-    """Publish to MQTT."""
-    await _MQTT.connect(
-        username=OPTIONS.mqtt_username,
-        password=OPTIONS.mqtt_password,
-        host=OPTIONS.mqtt_host,
-        port=OPTIONS.mqtt_port,
-    )
-    if not topic:
-        return
-    ic(topic, payload)
-    await _MQTT.publish(topic=topic, payload=payload, retain=retain)
-
-
-def hass_device_class(*, unit: str) -> Optional[str]:
-    """Get the HASS device_class from the unit."""
-    return {
-        "W": "power",
-        "kW": "power",
-        "kVA": "power",
-        "V": "voltage",
-        "Hz": None,
-    }.get(
-        unit, "energy"
-    )  # kwh, kVa,
-
-
-async def hass_discover_sensor(*, ss_id: str, sensor: Sensor) -> None:
-    """Send a retained message for this sensor."""
+    for fsen in sensors:
+        sen = fsen.sensor
+        res = fsen.update(sen.value)
+        if res is None:
+            continue
+        await MQTT.connect(OPTIONS)
+        await MQTT.publish(
+            topic=f"{SS_TOPIC}/{OPTIONS.sunsynk_id}/{sen.id}", payload=res
+        )
 
 
 async def hass_discover_sensors():
     """Discover all sensors."""
-    _MQTT._client.subscribe(
-        f"homeassistant/sensor/{OPTIONS.sunsynk_id}/+/config", qos=1
-    )
-    _MQTT._client.subscribe(
-        f"homeassistant/sensor/{OPTIONS.sunsynk_id}/+/config", qos=0
-    )
-    for sensor in SENSORS:
-        topic = f"homeassistant/sensor/{OPTIONS.sunsynk_id}/{sensor.id}/config"
-        dev_class = hass_device_class(unit=sensor.unit)
-        payload = {
+    sensors = {}
+    for (sensor, _) in SENSORS:
+        sensors[sensor.id] = {
             "name": sensor.name,
-            "dev_cla": dev_class,
             "stat_t": f"{SS_TOPIC}/{OPTIONS.sunsynk_id}/{sensor.id}",
             "unit_of_meas": sensor.unit,
             "uniq_id": f"{OPTIONS.sunsynk_id}_{sensor.id}",
-            "dev": {
-                "ids": [f"sunsynk_{OPTIONS.sunsynk_id}"],
-                "name": "Sunsynk Inverter",
-                "mdl": "Inverter",
-                "mf": "Sunsynk",
-            },
         }
-        if dev_class == "energy":
-            payload["state_class"] = "total_increasing"
 
-        await mqtt_publish(topic, dumps(payload), retain=True)
+    device = {
+        "ids": [f"sunsynk_{OPTIONS.sunsynk_id}"],
+        "name": "Sunsynk Inverter",
+        "mdl": "Inverter",
+        "mf": "Sunsynk",
+    }
+
+    await MQTT.connect(OPTIONS)
+    await MQTT.discover(device_id=OPTIONS.sunsynk_id, device=device, sensors=sensors)
 
 
-def update_options(json: Dict) -> None:
-    """Update global options."""
-    for k, v in json.items():
-        setattr(OPTIONS, k.lower(), v)
-    OPTIONS.sunsynk_id = slug(OPTIONS.sunsynk_id)
-
-
-def startup():
+def startup() -> None:
     """Read the hassos configuration."""
     logging.basicConfig(level=logging.DEBUG)
 
     hassosf = Path("/data/options.json")
     if hassosf.exists():
         _LOGGER.info("Loading HASS OS configuration")
-        update_options(loads(hassosf.read_text()))
+        OPTIONS.update(loads(hassosf.read_text()))
     else:
         _LOGGER.info(
-            "Local test mode - defaults apply. MQTT_PASSWORD taken from 1st argument"
+            "Local test mode - Defaults apply. Pass MQTT host & password as arguments"
         )
         configf = Path("./config.json")
-        update_options(loads(configf.read_text()).get("options", {}))
-        OPTIONS.mqtt_host = "192.168.88.128"
-        OPTIONS.mqtt_password = sys.argv[1]
+        OPTIONS.update(loads(configf.read_text()).get("options", {}))
+        OPTIONS.mqtt_host = sys.argv[1]
+        OPTIONS.mqtt_password = sys.argv[2]
         OPTIONS.debug = 1
-
-    global ic
-    ic(OPTIONS)
 
     SUNSYNK.port = OPTIONS.port
 
     if OPTIONS.debug == 0:
-
-        def blank(*args) -> None:
-            pass
-
-        ic = blank
         logging.basicConfig(level=logging.INFO, force=True)
 
+    sens = {}
+
     for sensor_def in OPTIONS.sensors:
-        name, _, _mod = sensor_def.partition(":")
+        name, _, fstr = sensor_def.partition(":")
+        if name in sens:
+            _LOGGER.warning("Sensor %s only allowed once", name)
+            continue
+        sens[name] = True
 
         sen = getattr(ssdefs, name, None)
         if not sen:
             _LOGGER.error("Unknown sensor in config: %s", sensor_def)
             continue
-        SENSORS.append(sen)
+
+        SENSORS.append(getfilter(fstr, sensor=sen))
 
 
 async def main(loop) -> None:
     """Main async loop."""
     loop.set_debug(OPTIONS.debug > 0)
     await hass_discover_sensors()
-    ic(SENSORS)
     while True:
-        await SUNSYNK.read(SENSORS)
-        await publish_sensors(SENSORS)
-        await asyncio.sleep(OPTIONS.interval)
+        fsensors = []
+
+        # 1. collect sensors to read
+        for fil in SENSORS:
+            if fil.should_update():
+                fsensors.append(fil)
+
+        if fsensors:
+            # 2. read
+            await SUNSYNK.read([f.sensor for f in fsensors])
+            # 3. decode & publish
+            await publish_sensors(fsensors)
+
+        await asyncio.sleep(1)
 
 
 if __name__ == "__main__":
