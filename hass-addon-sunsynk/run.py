@@ -90,13 +90,13 @@ async def hass_discover_sensors():
 def startup() -> None:
     """Read the hassos configuration."""
     logging.basicConfig(
-        format="%(asctime)s %(levelname)-8s %(message)s", level=logging.DEBUG
+        format="%(asctime)s %(levelname)-7s %(message)s", level=logging.DEBUG
     )
 
     hassosf = Path("/data/options.json")
     if hassosf.exists():
         _LOGGER.info("Loading HASS OS configuration")
-        OPTIONS.update(loads(hassosf.read_text()))
+        OPTIONS.update(loads(hassosf.read_text(encoding="utf-8")))
     else:
         _LOGGER.info(
             "Local test mode - Defaults apply. Pass MQTT host & password as arguments"
@@ -111,7 +111,7 @@ def startup() -> None:
 
     if OPTIONS.debug == 0:
         logging.basicConfig(
-            format="%(asctime)s %(levelname)-8s %(message)s",
+            format="%(asctime)s %(levelname)-7s %(message)s",
             level=logging.INFO,
             force=True,
         )

@@ -19,6 +19,6 @@ setup(
     author_email="kellerza@gmail.com",
     license="MIT",
     packages=["sunsynk"],
-    install_requires=["attrs>21", "pymodbus"],
+    install_requires=["attrs>21", "pymodbus", "paho-mqtt~=1.5.0", "pyserial-asyncio"],
     zip_safe=True,
 )

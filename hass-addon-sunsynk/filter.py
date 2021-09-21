@@ -39,7 +39,7 @@ class Filter:
         self.values.append(value)
         if len(self.values) < self.samples:
             return None
-        res = self._filter(self.values)
+        res = self._filter(self.values)  # pylint: disable=not-callable
         self.values.clear()
         _LOGGER.info(
             "%s: %s over %d samples = %s",
@@ -76,9 +76,9 @@ class SCFilter(Filter):
         return super().update(value)
 
 
-def getfilter(filter, sensor: Any) -> Filter:
+def getfilter(filter_def: str, sensor: Any) -> Filter:
     """Get a filter from a filterstring."""
-    fff = filter.split(":")
+    fff = filter_def.split(":")
 
     funcs = {"min": min, "max": max, "mean": mean}
     if fff[0] in funcs:
