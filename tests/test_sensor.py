@@ -2,7 +2,6 @@ import logging
 from typing import Sequence
 
 import pytest
-from pymodbus.client.asynchronous.factory.serial import LOGGER
 
 import sunsynk.definitions as defs
 from sunsynk.sensor import Sensor, group_sensors

@@ -6,4 +6,4 @@ pytestmark = pytest.mark.asyncio
 
 
 def test_ss():
-    ss = Sunsynk()
+    assert Sunsynk()

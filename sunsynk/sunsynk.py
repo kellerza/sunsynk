@@ -1,9 +1,10 @@
 """Sunsync Modbus interface."""
+import asyncio
 from typing import Sequence
 
 import attr
-from pymodbus.client.asynchronous import schedulers
-from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient
+from pymodbus.client.asynchronous import schedulers  # type: ignore
+from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient  # type: ignore
 from serial.serialutil import STOPBITS_ONE
 
 from .sensor import Sensor, group_sensors, update_sensors
@@ -18,13 +19,16 @@ class Sunsynk:
     address: int = attr.ib(default=1)
     client: AsyncModbusSerialClient = attr.ib(default=None)
 
-    def connect(self):
+    def connect(self) -> asyncio.AbstractEventLoop:
         """Connect.
 
         https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
 
         """
-        loop, client = AsyncModbusSerialClient(
+        (
+            loop,
+            client,
+        ) = AsyncModbusSerialClient(  # pylint: disable=unpacking-non-sequence
             schedulers.ASYNC_IO,
             port=self.port,
             baudrate=self.baudrate,
@@ -38,18 +42,18 @@ class Sunsynk:
 
     async def write(self, sensor: Sensor) -> None:
         """Read a list of sensors."""
-        rq = await self.client.write_register(
+        w_r = await self.client.write_register(
             sensor.register, sensor.value, unit=self.address
         )
-        if rq.function_code >= 0x80:  # test that we are not an error
+        if w_r.function_code >= 0x80:  # test that we are not an error
             raise Exception("failed to write")
 
     async def read(self, sensors: Sequence[Sensor]) -> None:
         """Read a list of sensors."""
         for grp in group_sensors(sensors):
-            rr = await self.client.read_holding_registers(
+            r_r = await self.client.read_holding_registers(
                 grp[0], len(grp), unit=self.address
             )
-            if rr.function_code >= 0x80:  # test that we are not an error
+            if r_r.function_code >= 0x80:  # test that we are not an error
                 raise Exception("failed to write")
-            update_sensors(sensors, grp[0], rr.registers)
+            update_sensors(sensors, grp[0], r_r.registers)

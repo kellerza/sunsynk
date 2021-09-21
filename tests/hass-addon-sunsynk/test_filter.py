@@ -22,16 +22,16 @@ def test_last(getfilter):
     """Last filter."""
     fut = getfilter("last", None)
 
-    assert fut.should_update() == True
+    assert fut.should_update() is True
     res = fut.update(55)
     assert res == 55
 
     for i in range(59):
         _LOGGER.error(i)
         if fut.should_update():
-            assert i == False
+            assert i is False
 
-    assert fut.should_update() == True
+    assert fut.should_update() is True
     res = fut.update(44)
     assert res == 44
 
@@ -50,11 +50,11 @@ def run_filter_seq(
                 tick_cnt += 1
                 if fut.should_update():
                     assert (
-                        i == False
+                        i is False
                     ), f"expected no updates, got one at {i}/{interval-1}"
         tick_cnt += 1
         upd_cnt += 1
-        assert fut.should_update() == True
+        assert fut.should_update() is True
         res = fut.update(updates[oi])
 
     assert res is not None, "the filter should have returned a value"

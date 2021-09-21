@@ -1,7 +1,6 @@
 """Test MQTT class."""
 import logging
 from types import ModuleType
-from typing import Callable, List, Tuple, Union
 
 import pytest
 

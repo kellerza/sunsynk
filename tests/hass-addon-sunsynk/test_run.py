@@ -1,7 +1,7 @@
 """Test run."""
 import logging
 from types import ModuleType
-from typing import Callable
+from unittest.mock import patch
 
 import pytest
 
@@ -23,6 +23,10 @@ def test_run(run):
     """Test Run."""
     assert not run.SENSORS
     assert not run.OPTIONS.mqtt_host
-    run.startup()
+
+    testargs = ["run.py", "host1", "passw"]
+    with patch.object(run.sys, "argv", testargs):
+        run.startup()
     assert run.SENSORS
-    assert run.OPTIONS.mqtt_host
+    assert run.OPTIONS.mqtt_host == "host1"
+    assert run.OPTIONS.mqtt_password == "passw"

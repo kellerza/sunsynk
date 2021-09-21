@@ -66,7 +66,8 @@ async def publish_sensors(sensors: List[Filter]):
 async def hass_discover_sensors():
     """Discover all sensors."""
     sensors = {}
-    for (sensor, _) in SENSORS:
+    for filt in SENSORS:
+        sensor = filt.sensor
         sensors[sensor.id] = {
             "name": sensor.name,
             "stat_t": f"{SS_TOPIC}/{OPTIONS.sunsynk_id}/{sensor.id}",

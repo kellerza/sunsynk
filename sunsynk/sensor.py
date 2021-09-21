@@ -35,7 +35,7 @@ class Sensor:
         return self
 
     @property
-    def id(self):
+    def id(self) -> str:  # pylint: disable=invalid-name
         """Get the sensor ID."""
         return slug(self.name)
 
@@ -74,7 +74,7 @@ def update_sensors(
         if sen.register[0] >= register and sen.register[0] < hreg:
             hval = 0
             try:
-                hval = values[sen.register[1] - register]
+                hval = values[sen.register[1] - register]  # type: ignore
             except IndexError:
                 pass
             lval = values[sen.register[0] - register]
