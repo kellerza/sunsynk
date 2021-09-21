@@ -4,7 +4,7 @@ import logging
 from json import dumps
 from typing import Any, Dict, Optional
 
-from paho.mqtt.client import Client, MQTTMessage
+from paho.mqtt.client import Client, MQTTMessage  # type: ignore
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class MQTTClient:
         self._client = Client()
 
         def on_connect(
-            _client: Any, _userdata: Any, _flags: Any, _rc: int, _prop=None
+            _client: Client, _userdata: Any, _flags: Any, _rc: int, _prop=None
         ) -> None:
             msg = {
                 0: "successful",
@@ -56,7 +56,7 @@ class MQTTClient:
         await asyncio.get_running_loop().run_in_executor(None, _stop)
 
     async def publish(
-        self, topic: str, payload: str, qos: int = 0, retain: bool = False
+        self, topic: str, payload: Optional[str], qos: int = 0, retain: bool = False
     ) -> None:
         """Publish a MQTT message."""
         # async with self._paho_lock:
@@ -86,7 +86,7 @@ class MQTTClient:
         # Read all current retained messages
         extras = []
 
-        def on_message(_client, _userdata, message: MQTTMessage) -> None:
+        def on_message(_client: Client, _userdata: Any, message: MQTTMessage) -> None:
             """Receive messages & detect extras."""
             if message.retain:
                 top = str(message.topic).split("/")

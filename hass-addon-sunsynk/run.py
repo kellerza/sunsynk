@@ -51,7 +51,7 @@ OPTIONS = Options()
 SS_TOPIC = "SUNSYNK/status"
 
 
-async def publish_sensors(sensors: List[Filter]):
+async def publish_sensors(sensors: List[Filter]) -> None:
     """Publish sensors."""
     for fsen in sensors:
         sen = fsen.sensor
@@ -64,7 +64,7 @@ async def publish_sensors(sensors: List[Filter]):
         )
 
 
-async def hass_discover_sensors():
+async def hass_discover_sensors() -> None:
     """Discover all sensors."""
     sensors = {}
     for filt in SENSORS:

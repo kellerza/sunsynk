@@ -7,6 +7,8 @@ import attr
 
 _LOGGER = logging.getLogger(__name__)
 
+# disable=no-member https://stackoverflow.com/questions/47972143/using-attr-with-pylint
+
 
 @attr.define
 class Filter:
@@ -33,18 +35,18 @@ class Filter:
             _LOGGER.warning(
                 "%s: should not be None (%s)",
                 getattr(self.sensor, "name", ""),
-                self._filter.__name__,
+                self._filter.__name__,  # pylint: disable=no-member
             )
             return None
-        self.values.append(value)
+        self.values.append(value)  # pylint: disable=no-member
         if len(self.values) < self.samples:
             return None
         res = self._filter(self.values)  # pylint: disable=not-callable
-        self.values.clear()
+        self.values.clear()  # pylint: disable=no-member
         _LOGGER.info(
             "%s: %s over %d samples = %s",
             getattr(self.sensor, "name", ""),
-            self._filter.__name__,
+            self._filter.__name__,  # pylint: disable=no-member
             self.samples,
             res,
         )
@@ -57,7 +59,7 @@ class SCFilter(Filter):
 
     threshold: int = attr.field(default=80)
 
-    def update(self, value: Union[float, int]) -> None:
+    def update(self, value: Union[float, int]) -> Optional[Union[float, int]]:
         """Add value."""
         if self.values:
             if (

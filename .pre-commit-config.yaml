@@ -23,10 +23,10 @@ repos:
     rev: v0.910
     hooks:
       - id: mypy
-        files: "./sunsynk/.*.py"
+        files: "^sunsynk/"
         additional_dependencies: ["types-attrs", "attrs>21"]
       - id: mypy
-        files: "./hass_addon_sunsynk/.*.py"
+        files: "^hass_addon_sunsynk/"
         additional_dependencies: ["types-attrs", "attrs>21"]
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.1.1
