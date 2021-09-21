@@ -36,7 +36,6 @@ class Options:
     sunsynk_id: str = ""
     sensors: List[str] = []
     debug: int = 1
-    interval: int = 60
     port: str = ""
 
     def update(self, json: Dict) -> None:

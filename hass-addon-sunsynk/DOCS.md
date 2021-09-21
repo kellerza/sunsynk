@@ -8,9 +8,17 @@
   The default configuration assumes the Mosquitto broker add-on and you simply have to
   fill in your password.
 
+- `SUNSYNK ID`
+
+  A unique Identifier for all values from this Sunsynk Inverter
+
 - `SENSORS`
 
   A list of sensors to poll. You can use any sensor defined in the sunsynk Python library - [here](https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions.py)
+
+- `PORT`
+
+  The serial port for RS485 communications. List available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_
 
 - `DEBUG`
 
@@ -18,10 +26,6 @@
   that you receive values.
 
   The serial device
-
-- SUNSYNK ID
-
-  A unique Identifier for all values from this Sunsynk Inverter
 
 <!--
 ## Sensor modifiers - Min/Max/Average/Smart
@@ -64,3 +68,20 @@ utility_meter:
     cycle: monthly
 ```
 -->
+
+## Home Assistant Energy Management
+
+An example of a hybrid inverter with a battery
+
+```yaml
+SENSORS:
+  - total_active_power:last
+  - total_grid_export:last
+  - total_grid_import:last
+  - total_pv_power:last
+  - total_load_power:last
+  - total_battery_charge:last
+  - total_battery_discharge:last
+```
+
+![HASS Energy management](./energy.png)
