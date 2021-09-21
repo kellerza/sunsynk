@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import sys
+from asyncio.events import AbstractEventLoop
 from json import loads
 from pathlib import Path
 from typing import Dict, List
@@ -60,7 +61,7 @@ async def publish_sensors(sensors: List[Filter]) -> None:
             continue
         await MQTT.connect(OPTIONS)
         await MQTT.publish(
-            topic=f"{SS_TOPIC}/{OPTIONS.sunsynk_id}/{sen.id}", payload=res
+            topic=f"{SS_TOPIC}/{OPTIONS.sunsynk_id}/{sen.id}", payload=str(res)
         )
 
 
@@ -133,12 +134,12 @@ def startup() -> None:
         SENSORS.append(getfilter(fstr, sensor=sen))
 
 
-async def main(loop) -> None:
+async def main(loop: AbstractEventLoop) -> None:
     """Main async loop."""
     loop.set_debug(OPTIONS.debug > 0)
     await hass_discover_sensors()
 
-    async def poll_sensors():
+    async def poll_sensors() -> None:
         """Poll sensors."""
         fsensors = []
         # 1. collect sensors to read

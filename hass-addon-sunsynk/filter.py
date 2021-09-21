@@ -1,7 +1,7 @@
 """Filters."""
 import logging
 from statistics import mean
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, List, Optional, Sequence, Union
 
 import attr
 
@@ -18,7 +18,7 @@ class Filter:
     _i: int = attr.field(default=0)
     values: List = attr.field(default=attr.Factory(list))
     samples: int = attr.field(default=1)
-    _filter: Callable = attr.field(default=mean)
+    _filter: Any = attr.field(default=mean)
     sensor: Any = attr.field(default=None)
 
     def should_update(self) -> bool:
@@ -89,7 +89,7 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
 
     if fff[0] == "last":
 
-        def last(val):
+        def last(val: Sequence[int]) -> int:
             return val[-1]
 
         res = Filter(interval=60, samples=1, filter=last, sensor=sensor)

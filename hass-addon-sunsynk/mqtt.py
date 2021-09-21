@@ -17,7 +17,7 @@ class MQTTClient:
         self._client = Client()
 
         def on_connect(
-            _client: Client, _userdata: Any, _flags: Any, _rc: int, _prop=None
+            _client: Client, _userdata: Any, _flags: Any, _rc: int, _prop: Any = None
         ) -> None:
             msg = {
                 0: "successful",
