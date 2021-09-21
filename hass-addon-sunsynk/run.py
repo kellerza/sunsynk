@@ -97,7 +97,7 @@ def startup() -> None:
         _LOGGER.info(
             "Local test mode - Defaults apply. Pass MQTT host & password as arguments"
         )
-        configf = Path("./config.json")
+        configf = Path(__file__).parent / "config.json"
         OPTIONS.update(loads(configf.read_text()).get("options", {}))
         OPTIONS.mqtt_host = sys.argv[1]
         OPTIONS.mqtt_password = sys.argv[2]

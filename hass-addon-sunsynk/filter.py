@@ -13,16 +13,16 @@ class Filter:
     """Main filter class."""
 
     interval: int = attr.field(default=60)
-    _i: int = attr.field(default=1)
+    _i: int = attr.field(default=0)
     values: List = attr.field(default=attr.Factory(list))
-    samples: int
-    _filter: Callable
-    sensor: Any
+    samples: int = attr.field(default=1)
+    _filter: Callable = attr.field(default=mean)
+    sensor: Any = attr.field(default=None)
 
     def should_update(self) -> bool:
         """Should we update this sensor."""
         if self._i < 1:
-            self._i = self.interval
+            self._i = self.interval - 1
             return True
         self._i -= 1
         return False
@@ -35,15 +35,20 @@ class Filter:
         res = self._filter(self.values)
         self.values.clear()
         _LOGGER.debug(
-            "%s over %d samples = %s", self._filter.__name__, self.samples, res
+            "%s: %s over %d samples = %s",
+            getattr(self.sensor, "name", ""),
+            self._filter.__name__,
+            self.samples,
+            res,
         )
         return res
 
 
+@attr.define
 class SCFilter(Filter):
     """Significant change filter."""
 
-    threshold: int
+    threshold: int = attr.field(default=80)
 
     def update(self, value: Union[float, int]) -> None:
         """Add value."""
@@ -53,7 +58,8 @@ class SCFilter(Filter):
                 or value < self.values[0] - self.threshold
             ):
                 _LOGGER.debug(
-                    "Significant change %s -> %s (%d samples in buffer)",
+                    "%s: significant change %s -> %s (%d samples in buffer)",
+                    getattr(self.sensor, "name", ""),
                     self.values[0],
                     value,
                     len(self.values),

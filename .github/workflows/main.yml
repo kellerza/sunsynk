@@ -1,0 +1,149 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  DEFAULT_PYTHON: 3.8
+
+jobs:
+  black:
+    name: Check black
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - uses: psf/black@stable
+        with:
+          args: ". --check"
+
+  isort:
+    name: Check isort
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - uses: jamescurtin/isort-action@master
+
+  flake8:
+    name: Check flake8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - uses: TrueBrain/actions-flake8@master
+
+  pylint:
+    name: Check pylint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install Requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint .
+      - name: Run Pylint
+        run: |
+          pylint sunsynk
+          pylint hass-addon-sunsynk
+
+  mypy:
+    name: Check mypy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install Requirements
+        run: |
+          pip install mypy .
+      - name: Run mypy
+        run: |
+          mypy sunsynk/
+          mypy hass-addon-sunsynk/
+
+  pydocstyle:
+    name: Check pydocstyle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install Requirements
+        run: |
+          pip install pydocstyle
+      - name: Run pydocstyle
+        run: |
+          pydocstyle
+
+  pytest:
+    name: Run tests Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8, 3.9]
+    needs:
+      - black
+      - isort
+      - flake8
+      - pylint
+      - mypy
+    env:
+      PYTHON: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run tests and generate coverage report
+        run: |
+          pip install -r requirements_test.txt
+          pytest --cov=./sunsynk --cov-report=xml --addon
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: PYTHON
+          verbose: true
+
+  build-n-publish:
+    name: Build and publish Python 🐍 distributions 📦 to PyPI
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags')
+    needs:
+      - pytest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install pypa/build
+        run: >-
+          python -m
+          pip install
+          build
+          --user
+      - name: Build a binary wheel and a source tarball
+        run: >-
+          python -m
+          build
+          --sdist
+          --wheel
+          --outdir dist/
+          .
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

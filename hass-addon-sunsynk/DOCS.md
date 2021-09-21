@@ -84,4 +84,4 @@ SENSORS:
   - total_battery_discharge:last
 ```
 
-![HASS Energy management](./energy.png)
+![HASS Energy management](energy.png)
