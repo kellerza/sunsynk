@@ -88,7 +88,7 @@ async def hass_discover_sensors(serial: str) -> None:
     device = {
         "ids": [f"sunsynk_{OPT.sunsynk_id}"],
         "name": f"Sunsynk Inverter {serial}",
-        "mdl": "Inverter",
+        "mdl": f"Inverter {serial}",
         "mf": "Sunsynk",
     }
 
@@ -138,7 +138,7 @@ def startup() -> None:
 
         sen = getattr(ssdefs, name, None)
         if not sen:
-            _LOGGER.error("Unknown sensor in config: %s", sensor_def)
+            log_bold(f"Unknown sensor in config: {sensor_def}")
             continue
         if not fstr:
             fstr = suggested_filter(name)
@@ -152,20 +152,22 @@ def startup() -> None:
         _LOGGER.info("Filter %s used for %s", nme, val)
 
 
+def log_bold(msg: str) -> None:
+    """Log a message."""
+    _LOGGER.info("#" * 60)
+    _LOGGER.info(f"{msg:^60}".rstrip())
+    _LOGGER.info("#" * 60)
+
+
 async def main(loop: AbstractEventLoop) -> None:
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
 
     await SUNSYNK.read([ssdefs.serial])
-    _LOGGER.info("#" * 50)
-    _LOGGER.info(f"SMA serial number {ssdefs.serial.value:^50}".rstrip())
-    _LOGGER.info("#" * 50)
+    log_bold(f"SMA serial number {ssdefs.serial.value}")
 
     if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
-        _LOGGER.error(
-            "SUNSYNK_ID should be set to the serial number of your Sunsynk inverter!"
-        )
-        _LOGGER.info("#" * 50)
+        log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
         return
 
     await hass_discover_sensors(str(ssdefs.serial.value))

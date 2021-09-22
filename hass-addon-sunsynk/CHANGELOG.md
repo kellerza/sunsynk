@@ -1,5 +1,9 @@
 # Changelog
 
+## **2021.9.16-0.0.4** - 2021-09-22
+
+- Fix battery_soc
+
 ## **2021.9.15-0.0.4** - 2021-09-22
 
 - Enforce Sunsynk Serial number as SUNSYNK_ID
