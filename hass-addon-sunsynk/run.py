@@ -150,9 +150,7 @@ async def main(loop: AbstractEventLoop) -> None:
 
     _LOGGER.info("#" * 50)
     await SUNSYNK.read([ssdefs.serial])
-    _LOGGER.info(  # pylint: disable=consider-using-f-string
-        "{:^50}".format(f"SMA serial number {ssdefs.serial.value}").rstrip()
-    )
+    _LOGGER.info("  SMA serial number %s", ssdefs.serial.value)
     _LOGGER.info("#" * 50)
 
     if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
