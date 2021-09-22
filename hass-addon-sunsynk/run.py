@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Dict, List
 
 import attr
-from filter import Filter, getfilter
+from filter import Filter, getfilter, suggested_filter
 from mqtt import MQTTClient
 
 import sunsynk.definitions as ssdefs
@@ -47,7 +47,7 @@ class Options:
         self.sunsynk_id = slug(self.sunsynk_id)
 
 
-OPTIONS = Options()
+OPT = Options()
 
 SS_TOPIC = "SUNSYNK/status"
 
@@ -59,33 +59,33 @@ async def publish_sensors(sensors: List[Filter]) -> None:
         res = fsen.update(sen.value)
         if res is None:
             continue
-        await MQTT.connect(OPTIONS)
+        await MQTT.connect(OPT)
         await MQTT.publish(
-            topic=f"{SS_TOPIC}/{OPTIONS.sunsynk_id}/{sen.id}", payload=str(res)
+            topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sen.id}", payload=str(res)
         )
 
 
-async def hass_discover_sensors() -> None:
+async def hass_discover_sensors(serial: str) -> None:
     """Discover all sensors."""
     sensors = {}
     for filt in SENSORS:
         sensor = filt.sensor
         sensors[sensor.id] = {
             "name": sensor.name,
-            "stat_t": f"{SS_TOPIC}/{OPTIONS.sunsynk_id}/{sensor.id}",
+            "stat_t": f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
             "unit_of_meas": sensor.unit,
-            "uniq_id": f"{OPTIONS.sunsynk_id}_{sensor.id}",
+            "uniq_id": f"{OPT.sunsynk_id}_{sensor.id}",
         }
 
     device = {
-        "ids": [f"sunsynk_{OPTIONS.sunsynk_id}"],
+        "ids": [f"sunsynk_{OPT.sunsynk_id}"],
         "name": "Sunsynk Inverter",
-        "mdl": "Inverter",
+        "mdl": f"Inverter - {serial}",
         "mf": "Sunsynk",
     }
 
-    await MQTT.connect(OPTIONS)
-    await MQTT.discover(device_id=OPTIONS.sunsynk_id, device=device, sensors=sensors)
+    await MQTT.connect(OPT)
+    await MQTT.discover(device_id=OPT.sunsynk_id, device=device, sensors=sensors)
 
 
 def startup() -> None:
@@ -97,20 +97,20 @@ def startup() -> None:
     hassosf = Path("/data/options.json")
     if hassosf.exists():
         _LOGGER.info("Loading HASS OS configuration")
-        OPTIONS.update(loads(hassosf.read_text(encoding="utf-8")))
+        OPT.update(loads(hassosf.read_text(encoding="utf-8")))
     else:
         _LOGGER.info(
             "Local test mode - Defaults apply. Pass MQTT host & password as arguments"
         )
         configf = Path(__file__).parent / "config.json"
-        OPTIONS.update(loads(configf.read_text()).get("options", {}))
-        OPTIONS.mqtt_host = sys.argv[1]
-        OPTIONS.mqtt_password = sys.argv[2]
-        OPTIONS.debug = 1
+        OPT.update(loads(configf.read_text()).get("options", {}))
+        OPT.mqtt_host = sys.argv[1]
+        OPT.mqtt_password = sys.argv[2]
+        OPT.debug = 1
 
-    SUNSYNK.port = OPTIONS.port
+    SUNSYNK.port = OPT.port
 
-    if OPTIONS.debug == 0:
+    if OPT.debug == 0:
         logging.basicConfig(
             format="%(asctime)s %(levelname)-7s %(message)s",
             level=logging.INFO,
@@ -119,7 +119,9 @@ def startup() -> None:
 
     sens = {}
 
-    for sensor_def in OPTIONS.sensors:
+    msg: Dict[str, str] = {}
+
+    for sensor_def in OPT.sensors:
         name, _, fstr = sensor_def.partition(":")
         if name in sens:
             _LOGGER.warning("Sensor %s only allowed once", name)
@@ -130,14 +132,35 @@ def startup() -> None:
         if not sen:
             _LOGGER.error("Unknown sensor in config: %s", sensor_def)
             continue
+        if not fstr:
+            fstr = suggested_filter(name)
+            msg.setdefault(f"*{fstr}", []).append(name)  # type: ignore
+        else:
+            msg.setdefault(fstr, []).append(name)  # type: ignore
 
         SENSORS.append(getfilter(fstr, sensor=sen))
+
+    for nme, val in msg.items():
+        _LOGGER.info("Filter %s used for %s", nme, val)
 
 
 async def main(loop: AbstractEventLoop) -> None:
     """Main async loop."""
-    loop.set_debug(OPTIONS.debug > 0)
-    await hass_discover_sensors()
+    loop.set_debug(OPT.debug > 0)
+
+    _LOGGER.info("#" * 50)
+    await SUNSYNK.read([ssdefs.serial])
+    _LOGGER.info("{:^50}".format(f"SMA serial number {ssdefs.serial.value}").rstrip())
+    _LOGGER.info("#" * 50)
+
+    if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
+        _LOGGER.error(
+            "SUNSYNK_ID should be set to the serial number of your Sunsynk inverter!"
+        )
+        _LOGGER.info("#" * 50)
+        return
+
+    await hass_discover_sensors(str(ssdefs.serial.value))
 
     async def poll_sensors() -> None:
         """Poll sensors."""

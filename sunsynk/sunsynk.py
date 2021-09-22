@@ -1,5 +1,6 @@
 """Sunsync Modbus interface."""
 import asyncio
+import logging
 from typing import Sequence
 
 import attr
@@ -8,6 +9,8 @@ from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient  # type:
 from serial.serialutil import STOPBITS_ONE  # type: ignore
 
 from .sensor import Sensor, group_sensors, update_sensors
+
+_LOGGER = logging.getLogger(__name__)
 
 
 @attr.s(slots=True)
@@ -55,4 +58,15 @@ class Sunsynk:
             )
             if r_r.function_code >= 0x80:  # test that we are not an error
                 raise Exception("failed to read")
-            update_sensors(sensors, grp[0], r_r.registers)
+            regs = {grp[0] + i: r for (i, r) in enumerate(r_r.registers)}
+
+            _LOGGER.debug(
+                "Request registers: %s glen=%d. Response %s len=%d. regs=%s",
+                grp,
+                glen,
+                r_r.registers,
+                len(r_r.registers),
+                regs,
+            )
+
+            update_sensors(sensors, regs)

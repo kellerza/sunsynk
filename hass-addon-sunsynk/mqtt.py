@@ -34,7 +34,6 @@ class MQTTClient:
     async def connect(self, options: Any) -> None:
         """Connect to MQTT server specified as attributes of the options."""
         if not self._client.is_connected():
-            _LOGGER.info("Connecting")
             username = getattr(options, "mqtt_username")
             password = getattr(options, "mqtt_password")
             host = getattr(options, "mqtt_host")
@@ -83,16 +82,20 @@ class MQTTClient:
         if not self._client.is_connected():
             raise ConnectionError()
 
-        # Read all current retained messages
-        extras = []
+        loop = asyncio.get_running_loop()
 
         def on_message(_client: Client, _userdata: Any, message: MQTTMessage) -> None:
-            """Receive messages & detect extras."""
-            if message.retain:
-                top = str(message.topic).split("/")
-                if len(top) == 5 and top[4] == "config":
-                    if top[3] not in sensors:
-                        extras.append(top[3])
+            """Receive all retained messages & remove if not part of sensors."""
+            if not message.retain:
+                return
+            topic = str(message.topic)
+            top = topic.split("/")
+            if top[-1] != "config" or top[-2] in sensors:
+                return
+            _LOGGER.info("Removing HASS MQTT discovery info %s", topic)
+            asyncio.ensure_future(
+                self.publish(topic, None, retain=True), loop=loop
+            )  # Remove
 
         self._client.on_message = on_message
         self._client.subscribe(f"homeassistant/sensor/{device_id}/#")
@@ -108,10 +111,10 @@ class MQTTClient:
                 sen["stat_cla"] = "total_increasing"
             await self.publish(topic, payload=dumps(sen), retain=True)
 
-        # Remove all the extra retained topics
-        for s_id in extras:
-            topic = f"homeassistant/sensor/{device_id}/{s_id}/config"
-            await self.publish(topic, None, qos=1, retain=True)
+        await asyncio.sleep(1)  # Wait for all retained messages
+
+        self._client.unsubscribe(f"homeassistant/sensor/{device_id}/#")
+        self._client.on_message = None
 
 
 def hass_device_class(*, unit: str) -> Optional[str]:
@@ -121,8 +124,8 @@ def hass_device_class(*, unit: str) -> Optional[str]:
         "kW": "power",
         "kVA": "power",
         "V": "voltage",
-        "Hz": None,
-        "%": None,
-    }.get(
-        unit, "energy"
-    )  # kwh, kVa and others
+        "kWh": "energy",
+        "kVa": "energy",
+        "A": "current",
+        "°C": "temperature",
+    }.get(unit, "")

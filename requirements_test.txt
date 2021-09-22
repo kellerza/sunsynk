@@ -1,7 +1,3 @@
-pymodbus
-attrs>21
-pyserial-asyncio
-paho-mqtt~=1.5.0
 pytest
 pytest-asyncio
 pytest-cov

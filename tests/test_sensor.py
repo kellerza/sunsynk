@@ -55,3 +55,9 @@ async def test_all_groups() -> None:
 def waste(groups) -> Sequence[int]:
     """Calculate amount of unused registers in this grouping."""
     return [sum(b - a for a, b in zip(g[:-1], g[1:])) for g in groups]
+
+
+def test_ids() -> None:
+    """test sensor ids."""
+    for nme, val in defs.all_sensors().items():
+        assert nme == val.id

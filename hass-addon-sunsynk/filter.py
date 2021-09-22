@@ -43,7 +43,7 @@ class Filter:
             return None
         res = self._filter(self.values)  # pylint: disable=not-callable
         self.values.clear()  # pylint: disable=no-member
-        _LOGGER.info(
+        _LOGGER.debug(
             "%s: %s over %d samples = %s",
             getattr(self.sensor, "name", ""),
             self._filter.__name__,  # pylint: disable=no-member
@@ -82,7 +82,7 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
     """Get a filter from a filterstring."""
     fff = filter_def.split(":")
 
-    funcs = {"min": min, "max": max, "mean": mean}
+    funcs = {"min": min, "max": max, "mean": mean, "avg": mean}
     if fff[0] in funcs:
         res = Filter(interval=10, samples=6, filter=funcs[fff[0]], sensor=sensor)
         return res
@@ -95,7 +95,24 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
         res = Filter(interval=60, samples=1, filter=last, sensor=sensor)
         return res
 
-    if fff:
-        _LOGGER.warning("Unknown filter: %s", filter)
+    if fff and fff != "step":
+        _LOGGER.warning("Unknown filter: %s", fff)
 
     return SCFilter(interval=1, samples=60, filter=mean, sensor=sensor)
+
+
+def suggested_filter(sensor: str) -> str:
+    """Suggested sensors."""
+    filt = {
+        "serial": "last",
+        "overall_state": "last",
+        "batter_soc": "last",
+        "total_load": "step",
+    }.get(sensor)
+    if filt:
+        return filt
+    if sensor.startswith("total_"):
+        return "last"
+    if sensor.startswith("temp_"):
+        return "avg"
+    return "step"

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from math import modf
-from typing import Any, Callable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import attr
 
@@ -23,7 +23,7 @@ def tup(val: Any) -> Tuple[int]:
 class Sensor:
     """Sunsynk sensor."""
 
-    register: Tuple[int] = attr.field(converter=tup)
+    register: Tuple[int, ...] = attr.field(converter=tup)
     name: str = attr.field()
     unit: str = attr.field(default="")
     factor: float = attr.field(default=1)
@@ -66,19 +66,16 @@ def group_sensors(
     return groups
 
 
-def update_sensors(
-    sensors: Sequence[Sensor], register: int, values: Sequence[int]
-) -> None:
+def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None:
     """Update sensors."""
-    hreg = register + len(values)
     for sen in sensors:
-        if sen.register[0] <= register or sen.register[0] >= hreg:
+        if not sen.register[0] in registers:
             continue
 
         if len(sen.register) > 2:  # serial?
             res = ""
             for regv in sen.register:
-                b16 = values[regv - register]
+                b16 = registers[regv]
                 res += chr(b16 >> 8)
                 res += chr(b16 & 0xFF)
             sen.value = res
@@ -86,15 +83,16 @@ def update_sensors(
 
         hval = 0
         try:
-            hval = values[sen.register[1] - register]  # type: ignore
+            hval = registers[sen.register[1]]
         except IndexError:
             pass
-        lval = values[sen.register[0] - register]
+        lval = registers[sen.register[0]]
 
-        sen.value = round((lval + (hval << 16)) * sen.factor, 2)
+        sen.value = (lval + (hval << 16)) * sen.factor
         if sen.func:
             sen.value = sen.func(sen.value)
         if isinstance(sen.value, float):
+            sen.value = round(sen.value, 2)
             if modf(sen.value)[0] == 0:
                 sen.value = int(sen.value)
         _LOGGER.debug(
@@ -124,3 +122,10 @@ def sd_status(val: float) -> str:
     if val == 2000:
         return "ok"
     return f"unknown {val}"
+
+
+def negative(val: float) -> float:
+    """Value might be negative."""
+    if val > 32767:
+        return val - 65535
+    return val

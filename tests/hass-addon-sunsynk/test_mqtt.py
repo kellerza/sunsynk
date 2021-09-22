@@ -20,4 +20,4 @@ def mqtt() -> ModuleType:
 @pytest.mark.addon
 def test_mqtt(mqtt):
     """Test MQTT."""
-    assert mqtt.hass_device_class(unit="") == "energy"
+    assert mqtt.hass_device_class(unit="kWh") == "energy"
