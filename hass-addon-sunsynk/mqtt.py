@@ -83,7 +83,7 @@ class MQTTClient:
             topic = f"homeassistant/sensor/{device_id}/{s_id}/config"
             sen["dev"] = device  # Sensors will be grouped under this device
             sen["exp_aft"] = sen.get("exp_aft", 301)  # unavailable if not updated
-            dev_cla = sen.get("dev_cla", hass_device_class(unit=sen["unit_of_meas"]))
+            dev_cla = sen.get("dev_cla") or hass_device_class(unit=sen["unit_of_meas"])
             if not dev_cla:
                 sen.pop("dev_cla", None)
             if dev_cla == "energy":

@@ -1,4 +1,4 @@
-# Sunsynk Inverter Addon
+# Sunsynk Inverter Add-on
 
 An add-on to receive Sunsynk Inverter Values and push them to Home Assistant through MQTT.
 
