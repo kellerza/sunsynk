@@ -148,8 +148,8 @@ async def main(loop: AbstractEventLoop) -> None:
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
 
-    _LOGGER.info("#" * 50)
     await SUNSYNK.read([ssdefs.serial])
+    _LOGGER.info("#" * 50)
     _LOGGER.info("  SMA serial number %s", ssdefs.serial.value)
     _LOGGER.info("#" * 50)
 
