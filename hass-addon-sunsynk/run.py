@@ -5,6 +5,7 @@ import logging
 import sys
 from asyncio.events import AbstractEventLoop
 from json import loads
+from math import modf
 from pathlib import Path
 from typing import Dict, List
 
@@ -52,16 +53,23 @@ OPT = Options()
 SS_TOPIC = "SUNSYNK/status"
 
 
-async def publish_sensors(sensors: List[Filter]) -> None:
+async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None:
     """Publish sensors."""
     for fsen in sensors:
-        sen = fsen.sensor
-        res = fsen.update(sen.value)
-        if res is None:
-            continue
+        res = fsen.sensor.value
+        if not force:
+            res = fsen.update(res)
+            if res is None:
+                continue
+        if isinstance(res, float):
+            if modf(res)[0] == 0:
+                res = int(res)
+            else:
+                res = f"{res:.2f}".rstrip("0")
+
         await MQTT.connect(OPT)
         await MQTT.publish(
-            topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sen.id}", payload=str(res)
+            topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{fsen.sensor.id}", payload=str(res)
         )
 
 
@@ -79,8 +87,8 @@ async def hass_discover_sensors(serial: str) -> None:
 
     device = {
         "ids": [f"sunsynk_{OPT.sunsynk_id}"],
-        "name": "Sunsynk Inverter",
-        "mdl": f"Inverter - {serial}",
+        "name": f"Sunsynk Inverter {serial}",
+        "mdl": "Inverter",
         "mf": "Sunsynk",
     }
 
@@ -150,7 +158,7 @@ async def main(loop: AbstractEventLoop) -> None:
 
     await SUNSYNK.read([ssdefs.serial])
     _LOGGER.info("#" * 50)
-    _LOGGER.info("  SMA serial number %s", ssdefs.serial.value)
+    _LOGGER.info(f"SMA serial number {ssdefs.serial.value:^50}".rstrip())
     _LOGGER.info("#" * 50)
 
     if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
@@ -161,6 +169,10 @@ async def main(loop: AbstractEventLoop) -> None:
         return
 
     await hass_discover_sensors(str(ssdefs.serial.value))
+
+    # Read all & publish immediately
+    await SUNSYNK.read([f.sensor for f in SENSORS])
+    await publish_sensors(SENSORS, force=True)
 
     async def poll_sensors() -> None:
         """Poll sensors."""

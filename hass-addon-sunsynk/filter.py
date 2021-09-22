@@ -95,7 +95,7 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
         res = Filter(interval=60, samples=1, filter=last, sensor=sensor)
         return res
 
-    if fff and fff != "step":
+    if fff and fff[0] != "step":
         _LOGGER.warning("Unknown filter: %s", fff)
 
     return SCFilter(interval=1, samples=60, filter=mean, sensor=sensor)

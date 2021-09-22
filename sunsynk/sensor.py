@@ -92,9 +92,10 @@ def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None
         if sen.func:
             sen.value = sen.func(sen.value)
         if isinstance(sen.value, float):
-            sen.value = round(sen.value, 2)
             if modf(sen.value)[0] == 0:
                 sen.value = int(sen.value)
+            else:
+                sen.value = round(sen.value, 2)
         _LOGGER.debug(
             "%s low=%d high=%d value=%d%s",
             sen.name,
