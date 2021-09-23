@@ -1,5 +1,10 @@
 # Changelog
 
+## **2021.9.18-0.0.4** - 2021-09-22
+
+- Updated definitions & decoding
+- Unit tests
+
 ## **2021.9.16-0.0.4** - 2021-09-22
 
 - Fix battery_soc
