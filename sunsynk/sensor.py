@@ -2,15 +2,16 @@
 from __future__ import annotations
 
 import logging
+from inspect import getfullargspec
 from math import modf
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Sequence, Tuple, Union
 
 import attr
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def tup(val: Any) -> Tuple[int]:
+def ensure_tuple(val: Any) -> Tuple[int]:
     """Return a tuple."""
     if isinstance(val, tuple):
         return val  # type: ignore
@@ -19,16 +20,23 @@ def tup(val: Any) -> Tuple[int]:
     return tuple(val)  # type: ignore
 
 
+def needs_tup(val: Any) -> bool:
+    """Is the first argument a tuple."""
+    return getfullargspec(val)[0][0] == "tup"
+
+
 @attr.define(slots=True)
 class Sensor:
     """Sunsynk sensor."""
 
-    register: Tuple[int, ...] = attr.field(converter=tup)
+    register: Tuple[int, ...] = attr.field(converter=ensure_tuple)
     name: str = attr.field()
     unit: str = attr.field(default="")
     factor: float = attr.field(default=1)
     value: Union[float, int, str, None] = None
-    func: Optional[Callable[[float], float]] = attr.field(default=None)
+    func: Union[
+        None, Callable[[Tuple[int, ...]], str], Callable[[float], float]
+    ] = attr.field(default=None)
 
     def append_to(self, arr: List[Sensor]) -> Sensor:
         """Append to a list of sensors."""
@@ -72,14 +80,18 @@ def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None
         if not sen.register[0] in registers:
             continue
 
-        if len(sen.register) > 2:  # serial?
-            res = ""
-            for regv in sen.register:
-                b16 = registers[regv]
-                res += chr(b16 >> 8)
-                res += chr(b16 & 0xFF)
-            sen.value = res
-            continue
+        if sen.func and needs_tup(sen.func):
+            try:
+                tup = tuple(registers[i] for i in sen.register)
+            except KeyError as err:
+                _LOGGER.error(
+                    "Could not update_sensor %s - registers[%s] not found",
+                    sen.id,
+                    err,
+                )
+                continue
+            sen.value = sen.func(tup)  # type: ignore
+            return
 
         hval = 0
         try:
@@ -90,7 +102,7 @@ def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None
 
         sen.value = (lval + (hval << 16)) * sen.factor
         if sen.func:
-            sen.value = sen.func(sen.value)
+            sen.value = sen.func(sen.value)  # type: ignore
         if isinstance(sen.value, float):
             if modf(sen.value)[0] == 0:
                 sen.value = int(sen.value)
@@ -116,17 +128,35 @@ def offset100(val: float) -> float:
     return val - 100
 
 
-def sd_status(val: float) -> str:
+def sd_status(tup: Tuple[int, ...]) -> str:
+    """SD card status."""
+    res = {
+        1000: "fault",
+        2000: "ok",
+    }.get(tup[0], "")
+    if res:
+        return res
+    return f"unknown {tup[0]}"
+
+
+def inv_state(tup: Tuple[int, ...]) -> str:
     """Offset by 100 for temperature."""
-    if val == 1000:
-        return "fault"
-    if val == 2000:
+    if tup[0] == 2:
         return "ok"
-    return f"unknown {val}"
+    return f"unknown {tup[0]}"
 
 
-def negative(val: float) -> float:
+def signed(val: float) -> float:
     """Value might be negative."""
-    if val > 32767:
-        return val - 65535
+    if val > 0x7FFF:
+        return val - 0xFFFF
     return val
+
+
+def decode_serial(tup: Tuple[int, ...]) -> str:
+    """Decode serial."""
+    res = ""
+    for b16 in tup:
+        res += chr(b16 >> 8)
+        res += chr(b16 & 0xFF)
+    return res

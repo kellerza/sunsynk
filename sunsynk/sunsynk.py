@@ -1,7 +1,7 @@
 """Sunsync Modbus interface."""
 import asyncio
 import logging
-from typing import Sequence
+from typing import Dict, Sequence
 
 import attr
 from pymodbus.client.asynchronous import schedulers  # type: ignore
@@ -58,7 +58,7 @@ class Sunsynk:
             )
             if r_r.function_code >= 0x80:  # test that we are not an error
                 raise Exception("failed to read")
-            regs = {grp[0] + i: r for (i, r) in enumerate(r_r.registers)}
+            regs = register_map(grp[0], r_r.registers)
 
             _LOGGER.debug(
                 "Request registers: %s glen=%d. Response %s len=%d. regs=%s",
@@ -70,3 +70,8 @@ class Sunsynk:
             )
 
             update_sensors(sensors, regs)
+
+
+def register_map(start: int, registers: Sequence[int]) -> Dict[int, int]:
+    """Turn the registers into a dictionary or map."""
+    return {start + i: r for (i, r) in enumerate(registers)}
