@@ -1,6 +1,6 @@
 # Changelog
 
-## **2021.9.18-0.0.4** - 2021-09-22
+## **2021.9.19-0.0.5** - 2021-09-22
 
 - Updated definitions & decoding
 - Unit tests
