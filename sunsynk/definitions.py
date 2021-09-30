@@ -4,6 +4,7 @@ from typing import Dict, Final
 from sunsynk.sensor import (
     HSensor,
     Sensor,
+    decode_fault,
     decode_serial,
     inv_state,
     offset100,
@@ -42,6 +43,7 @@ sd_status = Sensor(92, "SD Status", "", func=sd_status)  # type: ignore
 temp_environment = HSensor(95, "Temp Environment", CELSIUS, 0.1, func=offset100)
 total_pv_power = HSensor((96, 97), "Total PV Power", KWH, 0.1)
 year_grid_export = HSensor((98, 99), "Year Grid Export", KWH, 0.1)
+fault = Sensor((103, 104, 105, 106, 107), "Fault", func=decode_fault)
 day_pv_energy = HSensor(108, "Day PV Energy", KWH, 0.1)
 pv1_voltage = HSensor(109, "PV1 Voltage", "V", 0.1)
 pv1_current = HSensor(110, "PV1 Current", "A", 0.1)

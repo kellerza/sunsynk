@@ -5,5 +5,7 @@ from sunsynk.sunsynk import Sunsynk
 pytestmark = pytest.mark.asyncio
 
 
-def test_ss():
-    assert Sunsynk()
+async def test_ss():
+    s = Sunsynk()
+    with pytest.raises(ConnectionError):
+        await s.connect()

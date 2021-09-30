@@ -12,3 +12,7 @@ sed -i 's/ sunsynk==[0-9.]*$//' Dockerfile.local
 sed -i 's/# RUN pip3 install -e/RUN pip3 install -e/' Dockerfile.local
 xcopy /Y Dockerfile.local %dest%\Dockerfile
 rm Dockerfile.local
+
+
+set dest=\\192.168.88.3\addons\hass-addon-mbusd\
+xcopy /Y hass-addon-mbusd %dest%

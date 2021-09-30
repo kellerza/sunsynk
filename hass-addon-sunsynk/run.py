@@ -40,12 +40,19 @@ class Options:
     sensors: List[str] = []
     debug: int = 1
     port: str = ""
+    port_address: str = ""
 
     def update(self, json: Dict) -> None:
         """Update options."""
         for key, val in json.items():
             setattr(self, key.lower(), val)
         self.sunsynk_id = slug(self.sunsynk_id)
+        if self.port_address:
+            if self.port:
+                _LOGGER.warning(
+                    "Your config includes PORT and PORT_ADDRESS. PORT_ADDRESS will be used"
+                )
+            self.port = self.port_address
 
 
 OPT = Options()
@@ -162,6 +169,7 @@ def log_bold(msg: str) -> None:
 async def main(loop: AbstractEventLoop) -> None:
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
+    await SUNSYNK.connect()
 
     await SUNSYNK.read([ssdefs.serial])
     log_bold(f"SMA serial number {ssdefs.serial.value}")
@@ -196,6 +204,6 @@ async def main(loop: AbstractEventLoop) -> None:
 
 if __name__ == "__main__":
     startup()
-    LOOP = SUNSYNK.connect()
+    LOOP = asyncio.get_event_loop()
     LOOP.run_until_complete(main(LOOP))
     LOOP.close()

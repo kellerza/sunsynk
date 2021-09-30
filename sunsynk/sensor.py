@@ -160,3 +160,34 @@ def decode_serial(tup: Tuple[int, ...]) -> str:
         res += chr(b16 >> 8)
         res += chr(b16 & 0xFF)
     return res
+
+
+def decode_fault(tup: Tuple[int, ...]) -> str:
+    """Decode faults."""
+    faults = {
+        13: "Working mode change",
+        18: "AC over current",
+        20: "DC over current",
+        23: "F23 AC leak current or transient over current",
+        24: "F24 DC insulation impedance",
+        26: "F26 DC busbar imbalanced",
+        29: "Parallel comms cable",
+        35: "No AC grid",
+        42: "AC line low voltage",
+        47: "AC freq high/low",
+        56: "DC busbar voltage low",
+        63: "ARC fault",
+        64: "Heat sink tempfailure",
+    }
+    err = []
+    off = 0
+    for b16 in tup:
+        for bit in range(16):
+            msk = 1 << bit
+            if msk & b16:
+                msg = f"F{bit+off+1:02} " + faults.get(off + msk, "")
+                err.append(msg.strip())
+        off += 16
+    if not err:
+        return ""
+    return ", ".join(err)

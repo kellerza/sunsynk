@@ -7,6 +7,7 @@ import sunsynk.definitions as defs
 from sunsynk.sensor import (
     HSensor,
     Sensor,
+    decode_fault,
     decode_serial,
     ensure_tuple,
     group_sensors,
@@ -123,3 +124,17 @@ def test_update_float() -> None:
     rmap = register_map(60, [1001])
     update_sensors([s], rmap)
     assert s.value == 0.1
+
+
+def test_decode_fault() -> None:
+    regs = (0x01, 0x0, 0x0, 0x0)
+    assert decode_fault(regs) == "F01"
+    regs = (0x02, 0x0, 0x0, 0x0)
+    assert decode_fault(regs) == "F02"
+    regs = (0x80, 0x0, 0x0, 0x0)
+    assert decode_fault(regs) == "F08"
+
+    regs = (0x0, 0x8000, 0x0, 0x0)
+    assert decode_fault(regs) == "F32"
+    regs = (0x0, 0x0, 0x1, 0x0)
+    assert decode_fault(regs) == "F33"

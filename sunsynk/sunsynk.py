@@ -2,9 +2,16 @@
 import asyncio
 import logging
 from typing import Dict, Sequence
+from urllib.parse import urlparse
 
 import attr
-from pymodbus.client.asynchronous import schedulers  # type: ignore
+from pymodbus.client.asynchronous.async_io import (
+    AsyncioModbusSerialClient,
+    AsyncioModbusTcpClient,
+    ModbusClientProtocol,
+)
+
+# from pymodbus.client.asynchronous import schedulers  # type: ignore
 from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient  # type: ignore
 from serial.serialutil import STOPBITS_ONE  # type: ignore
 
@@ -20,26 +27,57 @@ class Sunsynk:
     port: str = attr.ib(default="/dev/tty0")
     baudrate: int = attr.ib(default=9600)
     address: int = attr.ib(default=1)
-    client: AsyncModbusSerialClient = attr.ib(default=None)
+    client: ModbusClientProtocol = attr.ib(default=None)
 
-    def connect(self) -> asyncio.AbstractEventLoop:
+    async def connect(self) -> None:
         """Connect.
 
         https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
 
         """
-        msc = AsyncModbusSerialClient(
-            schedulers.ASYNC_IO,
-            port=self.port,
-            baudrate=self.baudrate,
-            method="rtu",
-            stopbits=STOPBITS_ONE,
-            bytesize=8,
-        )
-        loop, client = msc  # pylint: disable=unpacking-non-sequence
+        url = urlparse(f"//{self.port}")
+        client = None
+
+        if not url.netloc:
+            # Cannot run from a coroutine currently
+            # https://github.com/riptideio/pymodbus/pull/658/files#r718775308
+
+            # msc = AsyncModbusSerialClient(
+            #     schedulers.ASYNC_IO,
+            #     port=self.port,
+            #     baudrate=self.baudrate,
+            #     method="rtu",
+            #     stopbits=STOPBITS_ONE,
+            #     bytesize=8,
+            # )
+            # loop, client = msc  # pylint: disable=unpacking-non-sequence
+
+            # Alternative interim...
+            client = AsyncioModbusSerialClient(
+                port=self.port,
+                protocol_class=ModbusClientProtocol,
+                framer=AsyncModbusSerialClient._framer(method="rtu"),
+                loop=asyncio.get_running_loop(),
+                baudrate=self.baudrate,
+                stopbits=STOPBITS_ONE,
+                bytesize=8,
+            )
+        else:
+            client = AsyncioModbusTcpClient(
+                host=url.hostname,
+                port=url.port or 502,
+                protocol_class=ModbusClientProtocol,
+                loop=asyncio.get_running_loop(),
+            )
+
+        await client.connect()
+
+        if (hasattr(client, "connected") and not client.connected) or (
+            hasattr(client, "_connected") and not client._connected
+        ):
+            raise ConnectionError
 
         self.client = client.protocol
-        return loop
 
     async def write(self, sensor: Sensor) -> None:
         """Read a list of sensors."""
@@ -47,7 +85,7 @@ class Sunsynk:
             sensor.register, sensor.value, unit=self.address
         )
         if w_r.function_code >= 0x80:  # test that we are not an error
-            raise Exception("failed to write")
+            raise ConnectionError("failed to write")
 
     async def read(self, sensors: Sequence[Sensor]) -> None:
         """Read a list of sensors."""
