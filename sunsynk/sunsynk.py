@@ -5,7 +5,7 @@ from typing import Dict, Sequence
 from urllib.parse import urlparse
 
 import attr
-from pymodbus.client.asynchronous.async_io import (
+from pymodbus.client.asynchronous.async_io import (  # type: ignore
     AsyncioModbusSerialClient,
     AsyncioModbusTcpClient,
     ModbusClientProtocol,
@@ -35,6 +35,7 @@ class Sunsynk:
         https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
 
         """
+        # pylint: disable=protected-access
         url = urlparse(f"//{self.port}")
         client = None
 
