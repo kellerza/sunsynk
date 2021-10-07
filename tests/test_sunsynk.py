@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from sunsynk.definitions import serial
+# from sunsynk.definitions import serial
 from sunsynk.sunsynk import Sunsynk
 
 pytestmark = pytest.mark.asyncio
