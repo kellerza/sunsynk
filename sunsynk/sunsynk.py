@@ -29,7 +29,7 @@ class Sunsynk:
     address: int = attr.ib(default=1)
     client: ModbusClientProtocol = attr.ib(default=None)
 
-    async def connect(self) -> None:
+    async def connect(self, timeout: int = 5) -> None:
         """Connect.
 
         https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
@@ -77,6 +77,11 @@ class Sunsynk:
             hasattr(client, "_connected") and not client._connected
         ):
             raise ConnectionError
+
+        try:
+            client.protocol._timeout = timeout
+        except AttributeError as err:
+            _LOGGER.warning("%s", err)
 
         self.client = client.protocol
 

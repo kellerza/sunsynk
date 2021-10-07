@@ -38,6 +38,7 @@ class Options:
     mqtt_password: str = ""
     sunsynk_id: str = ""
     sensors: List[str] = []
+    timeout: int = 5
     debug: int = 1
     port: str = ""
     port_address: str = ""
@@ -169,7 +170,7 @@ def log_bold(msg: str) -> None:
 async def main(loop: AbstractEventLoop) -> None:
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
-    await SUNSYNK.connect()
+    await SUNSYNK.connect(timeout=OPT.timeout)
 
     await SUNSYNK.read([ssdefs.serial])
     log_bold(f"SMA serial number {ssdefs.serial.value}")

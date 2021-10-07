@@ -2,7 +2,7 @@
     "name": "Modbus TCP to Modbus RTU Gateway Add-on",
     "slug": "hass-addon-mbusd",
     "description": "Add-on for a Modbus TCP to Modbus RTU Gateway using mbusd",
-    "version": "2021.9.0",
+    "version": "2021.10.0",
     "startup": "services",
     "boot": "auto",
     "url": "https://github.com/kellerza/sunsynk",
@@ -25,13 +25,14 @@
       "DEVICE": "/dev/ttyUSB0",
       "BAUDRATE": 9600,
       "MODE": "8N1",
-      "PORT": 502,
+      "TIMEOUT": 5,
       "LOGLEVEL": 2
     },
     "schema": {
       "DEVICE": "device(subsystem=tty)",
       "BAUDRATE": "int",
       "MODE": "str",
+      "TIMEOUT": "int",
       "LOGLEVEL": "int(0,9)"
     }
   }

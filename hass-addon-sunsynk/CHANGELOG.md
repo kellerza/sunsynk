@@ -1,5 +1,9 @@
 # Changelog
 
+## **2021.10.0-0.0.7** - 2021-09-30
+
+- Add a configurable timeout
+
 ## **2021.9.20-0.0.6** - 2021-09-30
 
 - Allow TCP connections (PORT_ADDRESS)
