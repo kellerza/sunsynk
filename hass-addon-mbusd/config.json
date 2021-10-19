@@ -2,7 +2,7 @@
     "name": "Modbus TCP to Modbus RTU Gateway Add-on",
     "slug": "hass-addon-mbusd",
     "description": "Add-on for a Modbus TCP to Modbus RTU Gateway using mbusd",
-    "version": "2021.10.0",
+    "version": "2021.10.1",
     "startup": "services",
     "boot": "auto",
     "url": "https://github.com/kellerza/sunsynk",

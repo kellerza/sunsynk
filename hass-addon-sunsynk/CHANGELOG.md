@@ -1,5 +1,9 @@
 # Changelog
 
+## **2021.10.1-0.0.7** - 2021-10-19
+
+- Quit on Modbus disconnect,- watchdog can restart
+
 ## **2021.10.0-0.0.7** - 2021-09-30
 
 - Add a configurable timeout

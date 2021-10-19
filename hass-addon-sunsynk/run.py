@@ -173,7 +173,7 @@ async def main(loop: AbstractEventLoop) -> None:
     await SUNSYNK.connect(timeout=OPT.timeout)
 
     await SUNSYNK.read([ssdefs.serial])
-    log_bold(f"SMA serial number {ssdefs.serial.value}")
+    log_bold(f"SMA serial number '{ssdefs.serial.value}'")
 
     if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
@@ -199,8 +199,13 @@ async def main(loop: AbstractEventLoop) -> None:
             await publish_sensors(fsensors)
 
     while True:
-        asyncio.ensure_future(poll_sensors())
+        polltask = asyncio.ensure_future(poll_sensors())
         await asyncio.sleep(1)
+        try:
+            await polltask
+        except AttributeError:
+            # The read failed. Exit and let the watchdog restart
+            return
 
 
 if __name__ == "__main__":
