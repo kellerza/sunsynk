@@ -25,13 +25,13 @@ class Options:
 
     def update(self, json: Dict) -> None:
         """Update options."""
-        _LOGGER = logging.getLogger(__name__)
+        logger = logging.getLogger(__name__)
         for key, val in json.items():
             setattr(self, key.lower(), val)
         self.sunsynk_id = slug(self.sunsynk_id)
         if self.port_address:
             if self.port:
-                _LOGGER.warning(
+                logger.warning(
                     "Your config includes PORT and PORT_ADDRESS. PORT_ADDRESS will be used"
                 )
             self.port = self.port_address
