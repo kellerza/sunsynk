@@ -43,7 +43,7 @@ class MQTTClient:
                     f"Could not connect to MQTT server {username}@{host}:{port}"
                 )
             # publish online (Last will sets offline on disconnect)
-            self.publish(self.availability_topic, "online", retain=True)
+            await self.publish(self.availability_topic, "online", retain=True)
 
     async def disconnect(self) -> None:
         """Stop the MQTT client."""
