@@ -18,6 +18,7 @@ class Options:
     mqtt_password: str = ""
     sunsynk_id: str = ""
     sensors: List[str] = []
+    sensor_prefix: str = ""
     timeout: int = 5
     debug: int = 1
     port: str = ""

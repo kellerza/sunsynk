@@ -89,15 +89,17 @@ class MQTTClient:
 
         for s_id, sen in sensors.items():
             topic = f"homeassistant/sensor/{device_id}/{s_id}/config"
-            sen["dev"] = device  # Sensors will be grouped under this device
-            sen["exp_aft"] = sen.get("exp_aft", 301)  # unavailable if not updated
-            dev_cla = sen.get("dev_cla") or hass_device_class(unit=sen["unit_of_meas"])
+            sen["device"] = device  # Sensors will be grouped under this device
+            # sen["expire_after"] = sen.get("expire_after", 301)  # unavailable if not updated
+            dev_cla = sen.get("device_class") or hass_device_class(
+                unit=sen["unit_of_measurement"]
+            )
             if dev_cla:
-                sen["dev_cla"] = dev_cla
+                sen["device_class"] = dev_cla
             else:
-                sen.pop("dev_cla", None)
+                sen.pop("device_class", None)
             if dev_cla == "energy":
-                sen["stat_cla"] = "total_increasing"
+                sen["state_class"] = "total_increasing"
             await self.publish(topic, payload=dumps(sen), retain=True)
 
         await asyncio.sleep(1)  # Wait for all retained messages

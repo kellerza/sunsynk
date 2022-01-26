@@ -55,18 +55,18 @@ async def hass_discover_sensors(serial: str) -> None:
     for filt in SENSORS:
         sensor = filt.sensor
         sensors[sensor.id] = {
-            "name": sensor.name,
-            "stat_t": f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
-            "unit_of_meas": sensor.unit,
-            "uniq_id": f"{OPT.sunsynk_id}_{sensor.id}",
-            "avty_t": MQTT.availability_topic,
+            "name": f"{OPT.sensor_prefix} {sensor.name}".strip(),
+            "state_topic": f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
+            "unit_of_measurement": sensor.unit,
+            "unique_id": f"{OPT.sunsynk_id}_{sensor.id}",
+            "availability": [{"topic": MQTT.availability_topic}],
         }
 
     device = {
-        "ids": [f"sunsynk_{OPT.sunsynk_id}"],
+        "identifiers": [f"sunsynk_{OPT.sunsynk_id}"],
         "name": f"Sunsynk Inverter {serial}",
-        "mdl": f"Inverter {serial}",
-        "mf": "Sunsynk",
+        "model": f"Inverter {serial}",
+        "manufacturer": "Sunsynk",
     }
 
     await MQTT.connect(OPT)
