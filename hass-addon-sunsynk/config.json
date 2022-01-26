@@ -2,7 +2,7 @@
   "name": "Sunsynk Inverter Add-on",
   "slug": "hass-addon-sunsynk",
   "description": "Add-on for the Sunsynk Inverter",
-  "version": "2021.10.1-0.0.7",
+  "version": "2022.01.26-0.0.8",
   "startup": "services",
   "boot": "auto",
   "url": "https://github.com/kellerza/sunsynk",
@@ -24,7 +24,7 @@
     "PORT_ADDRESS": "",
     "SUNSYNK_ID": "your_inverter_serial_number",
     "SENSORS": ["total_pv_power","total_battery_charge", "total_battery_discharge", "total_grid_export", "total_grid_import", "battery_soc"],
-    "TIMEOUT": 5,
+    "TIMEOUT": 10,
     "MQTT_HOST": "core-mosquitto",
     "MQTT_PORT": 1883,
     "MQTT_USERNAME": "hass",
@@ -41,6 +41,6 @@
     "MQTT_PORT": "port",
     "MQTT_USERNAME": "str",
     "MQTT_PASSWORD": "password",
-    "DEBUG": "bool"
+    "DEBUG": "int"
   }
 }

@@ -26,7 +26,7 @@ class Sunsynk:
 
     port: str = attr.ib(default="/dev/tty0")
     baudrate: int = attr.ib(default=9600)
-    address: int = attr.ib(default=1)
+    unit: int = attr.ib(default=1)  # The slave unit this request is targeting
     client: ModbusClientProtocol = attr.ib(default=None)
 
     async def connect(self, timeout: int = 5) -> None:
@@ -88,7 +88,7 @@ class Sunsynk:
     async def write(self, sensor: Sensor) -> None:
         """Read a list of sensors."""
         w_r = await self.client.write_register(
-            sensor.register, sensor.value, unit=self.address
+            sensor.register, sensor.value, unit=self.unit
         )
         if w_r.function_code >= 0x80:  # test that we are not an error
             raise ConnectionError("failed to write")
@@ -97,9 +97,7 @@ class Sunsynk:
         """Read a list of sensors."""
         for grp in group_sensors(sensors):
             glen = grp[-1] - grp[0] + 1
-            r_r = await self.client.read_holding_registers(
-                grp[0], glen, unit=self.address
-            )
+            r_r = await self.client.read_holding_registers(grp[0], glen, unit=self.unit)
             if r_r.function_code >= 0x80:  # test that we are not an error
                 raise Exception("failed to read")
             regs = register_map(grp[0], r_r.registers)

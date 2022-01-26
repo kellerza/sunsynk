@@ -9,13 +9,12 @@ from math import modf
 from pathlib import Path
 from typing import Dict, List
 
-import attr
 from filter import Filter, getfilter, suggested_filter
 from mqtt import MQTTClient
+from options import OPT
 
 import sunsynk.definitions as ssdefs
 from sunsynk import Sunsynk
-from sunsynk.sensor import slug
 
 _LOGGER = logging.getLogger(__name__)
 MQTT = MQTTClient()
@@ -26,37 +25,6 @@ SENSORS: List[Filter] = []
 
 SUNSYNK = Sunsynk()
 
-
-@attr.define(slots=True)
-class Options:
-    """HASS Addon Options."""
-
-    # pylint: disable=too-few-public-methods
-    mqtt_host: str = ""
-    mqtt_port: int = 0
-    mqtt_username: str = ""
-    mqtt_password: str = ""
-    sunsynk_id: str = ""
-    sensors: List[str] = []
-    timeout: int = 5
-    debug: int = 1
-    port: str = ""
-    port_address: str = ""
-
-    def update(self, json: Dict) -> None:
-        """Update options."""
-        for key, val in json.items():
-            setattr(self, key.lower(), val)
-        self.sunsynk_id = slug(self.sunsynk_id)
-        if self.port_address:
-            if self.port:
-                _LOGGER.warning(
-                    "Your config includes PORT and PORT_ADDRESS. PORT_ADDRESS will be used"
-                )
-            self.port = self.port_address
-
-
-OPT = Options()
 
 SS_TOPIC = "SUNSYNK/status"
 
@@ -91,6 +59,7 @@ async def hass_discover_sensors(serial: str) -> None:
             "stat_t": f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
             "unit_of_meas": sensor.unit,
             "uniq_id": f"{OPT.sunsynk_id}_{sensor.id}",
+            "avty_t": MQTT.availability_topic,
         }
 
     device = {
@@ -124,9 +93,11 @@ def startup() -> None:
         OPT.mqtt_password = sys.argv[2]
         OPT.debug = 1
 
+    MQTT.availability_topic = f"{SS_TOPIC}/{OPT.sunsynk_id}/availability"
+
     SUNSYNK.port = OPT.port
 
-    if OPT.debug == 0:
+    if OPT.debug < 2:
         logging.basicConfig(
             format="%(asctime)s %(levelname)-7s %(message)s",
             level=logging.INFO,

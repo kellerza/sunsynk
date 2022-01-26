@@ -4,6 +4,7 @@ from statistics import mean
 from typing import Any, List, Optional, Sequence, Union
 
 import attr
+from options import OPT
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -66,13 +67,14 @@ class SCFilter(Filter):
                 value > self.values[0] + self.threshold
                 or value < self.values[0] - self.threshold
             ):
-                _LOGGER.info(
-                    "%s: significant change %s -> %s (%d samples in buffer)",
-                    getattr(self.sensor, "name", ""),
-                    self.values[0],
-                    value,
-                    len(self.values),
-                )
+                if OPT.debug >= 1:
+                    _LOGGER.info(
+                        "%s: significant change %s -> %s (%d samples in buffer)",
+                        getattr(self.sensor, "name", ""),
+                        self.values[0],
+                        value,
+                        len(self.values),
+                    )
                 self.values = [value]
                 return value
         return super().update(value)

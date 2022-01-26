@@ -1,5 +1,11 @@
 # Changelog
 
+## **2022.1.26-0.0.8** - 2022-01-26
+
+- Added grid_voltage
+- HASS addon: Sensor availability using MQTT LWT
+- HASS addon: Less debug info
+
 ## **2021.10.1-0.0.7** - 2021-10-19
 
 - Quit on Modbus disconnect,- watchdog can restart

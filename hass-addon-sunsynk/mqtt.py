@@ -12,6 +12,8 @@ _LOGGER = logging.getLogger(__name__)
 class MQTTClient:
     """Basic MQTT Client."""
 
+    availability_topic: str = ""
+
     def __init__(self) -> None:
         """Init MQTT Client."""
         self._client = Client()
@@ -25,6 +27,10 @@ class MQTTClient:
             host = getattr(options, "mqtt_host")
             port = getattr(options, "mqtt_port")
             self._client.username_pw_set(username=username, password=password)
+
+            if self.availability_topic:
+                self._client.will_set(self.availability_topic, "offline", retain=True)
+
             self._client.connect_async(host=host, port=port)
             self._client.loop_start()
 
@@ -36,6 +42,8 @@ class MQTTClient:
                 raise ConnectionError(
                     f"Could not connect to MQTT server {username}@{host}:{port}"
                 )
+            # publish online (Last will sets offline on disconnect)
+            self.publish(self.availability_topic, "online", retain=True)
 
     async def disconnect(self) -> None:
         """Stop the MQTT client."""
