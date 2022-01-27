@@ -26,10 +26,29 @@ For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to 
 
 ### Add-On Installation
 
-1. Add the repository to your Supervisor
+1. Add the repository to your HA Supervisor
    <br>[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fkellerza%2Fsunsynk)
    `https://github.com/kellerza/sunsynk` <br><br>
 2. Install the Sunsynk Add-On from the **Add-On Store** and configure through the UI
+
+### Add-on Deployment
+
+The Sunsynk Add-on runs on the Home Assistant OS, reads the Inverter's Modbus registers over RS-485, and publishes sensor values to the MQTT server.
+The architecture is shown below:
+
+![Deployment Option 1](./images/deploy.png)
+
+If the Inverter is far from the server/SBC running Home Assistant, you have several ways to extend the deployment:
+
+1. The preferred remote option is to use MQTT over your home network toward the main MQTT server (typically on the same server as Home Assistant)
+
+   ![Deployment Option MQTT](./images/deploy-mqtt.png)
+
+2. Another option is to use a Modbus TCP to RTU/serial gateway. This can be another Raspberry Pi, even an old one, running the gateway software, like [mbusd](./hass-addon-mbusd/README.md).
+
+   You can also use a commercial Modbus gateway, like the USR-W630 (reported via Powerforum)
+
+   ![Deployment Option Gateway](./images/deploy-gw.png)
 
 ## Tested Inverters
 
