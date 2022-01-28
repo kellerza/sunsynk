@@ -97,6 +97,10 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
         res = Filter(interval=60, samples=1, filter=last, sensor=sensor)
         return res
 
+    if fff[0] == "now":
+        res = Filter(interval=2, samples=1, filter=max, sensor=sensor)
+        return res
+
     if fff and fff[0] != "step":
         _LOGGER.warning("Unknown filter: %s", fff)
 
