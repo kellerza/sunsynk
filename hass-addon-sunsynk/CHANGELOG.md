@@ -6,6 +6,7 @@
 - HASS addon: Sensor availability using MQTT LWT
 - HASS addon: Less debug info
 - HASS addon: sensor prefix
+- HASS addon: New filter option: now
 
 ## **2021.10.1-0.0.7** - 2021-10-19
 
