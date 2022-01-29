@@ -41,14 +41,10 @@
   1 - Messages for filter changes
   2 - debug level logging
 
-## Sensor modifiers - Min/Max/Now/Average/Smart
+## Sensor modifiers - Min/Max/Now/Average/Step
 
 Sensors fields can be modified by adding a modifier to the end of the field name.
-Without any modifier, the sensor will have a smart interval.
-The average will be reported every 60 seconds.
-will be reported immediately.
-These type of fields can be used in automations that will respond within the measurement
-interval of the SMA Energy meter (1 second)
+Without any modifier, a default modifier will be added based on the field name
 
 Other modifiers
 
@@ -57,6 +53,8 @@ Other modifiers
 | `:max`   | the maximum value over the last 60 seconds. <br/> Ideal for _counters_ where you are typically interested only in the last value |
 | `:min`   | the minimum value over the last 60 seconds.                                                                                      |
 | `:now`   | the maximum value over the last 2 seconds. Useful to see current sensor value                                                    |
+| `:avg`   | the average over the last 60 seconds                                                                                             |
+| `:step`  | the average over the last minute will be reported, except if there is a significant change (>80) then it will be reported immediately. This is useful for automations using the current power |
 
 ## Home Assistant Energy Management
 
