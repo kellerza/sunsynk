@@ -33,7 +33,7 @@
     "DEBUG": 0
   },
   "schema": {
-    "PORT": "device(subsystem=tty)?",
+    "PORT": "str?",
     "PORT_ADDRESS": "str?",
     "SUNSYNK_ID": "str",
     "SENSORS": ["str"],

@@ -41,7 +41,7 @@
   1 - Messages for filter changes
   2 - debug level logging
 
-## Sensor modifiers - Min/Max/Average/Smart
+## Sensor modifiers - Min/Max/Now/Average/Smart
 
 Sensors fields can be modified by adding a modifier to the end of the field name.
 Without any modifier, the sensor will have a smart interval.
@@ -56,6 +56,7 @@ Other modifiers
 | -------- | :------------------------------------------------------------------------------------------------------------------------------- |
 | `:max`   | the maximum value over the last 60 seconds. <br/> Ideal for _counters_ where you are typically interested only in the last value |
 | `:min`   | the minimum value over the last 60 seconds.                                                                                      |
+| `:now`   | the maximum value over the last 2 seconds. Useful to see current sensor value                                                    |
 
 ## Home Assistant Energy Management
 
