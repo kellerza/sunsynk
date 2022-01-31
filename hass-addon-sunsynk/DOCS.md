@@ -22,6 +22,10 @@
 
   > This must be a string. So if your serial is a number only place it in single quotes `'1000'`
 
+- `SENSOR_PREFIX`
+
+  A prefix to add to all the MQTT Discovered Home Assistant Sensors (e.g. try SS)
+
 - `SENSORS`
 
   A list of sensors to poll. You can use any sensor defined in the sunsynk Python library - [here](https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions.py)

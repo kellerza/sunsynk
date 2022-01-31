@@ -36,7 +36,7 @@ For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to 
 The Sunsynk Add-on runs on the Home Assistant OS, reads the Inverter's Modbus registers over RS-485, and publishes sensor values to the MQTT server.
 The architecture is shown below:
 
-![Deployment Option 1](./images/deploy.png)
+![Deployment Option](./images/deploy.png)
 
 If the Inverter is far from the server/SBC running Home Assistant, you have several ways to extend the deployment:
 
@@ -60,16 +60,16 @@ There are several inverters that are rebranded Deye inverters, so you might have
 
 ## Hardware
 
-I used a RS485 adaptor sourced from Banggood, very similar to [this](https://www.robotics.org.za/RS485-MINI?search=rs485)
+I used a USB-to-RS485 adaptor sourced from Banggood, very similar to [this](https://www.robotics.org.za/RS485-MINI?search=rs485)
 
-Mine is wired to the Sunsynk **BMS 485** port (top left). I also have a **RS485** port (bottom right) but this did not work.
+Mine is plugged into the Sunsynk's RJ-45 port marked **BMS 485** (top left). I also have an RJ-45 port marked **RS485** (bottom right) but this did not work.
 
-The wiring and Ethernet color code to an RJ-45 plug crimped according to TI-568A. RJ45 requires a twisted pair, but you can use either TI-568A or TI-568B
+The RJ-45 plug on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring). RS485 requires a twisted pair, so works well with CAT5 network cable and the RJ-45 connectors.
 
-| RJ45 Pin | RS485 adaptor | Color (568A) |
-| -------- | ------------- | ------------ |
-| 1        | B/D-          | Green-White  |
-| 2        | A/D+          | Green        |
+| RJ45 Pin<br>(inverter side) | Wire Color<br>(using T568A) | USB-to-RS485<br>adaptor |
+| :-------------------------: | :-------------------------: | :---------------------: |
+|              1              |         Green-White         |          B/D-           |
+|              2              |            Green            |          A/D+           |
 
 ## Credits
 
