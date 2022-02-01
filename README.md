@@ -56,7 +56,7 @@ There are several inverters that are rebranded Deye inverters, so you might have
 
 | Inverter Model | Battery     | Version  | User          | Port(s)                    |
 | -------------- | ----------- | -------- | ------------- | -------------------------- |
-| Sunsynk 5.5kW  | Hubble AM-2 | beta/all | @kellerza     | BMS 485 (top left)         |
+| Sunsynk 5.5kW  | Hubble AM-2 | beta/all | @kellerza     | BMS485 (top left)          |
 | Sunsynk 8.8kW  | BSL 8.2 kWH | 0.0.8    | @dirkackerman | RS485 (1 in image below)   |
 
 ### Sunsynk 5.5kW Inverter
