@@ -54,22 +54,31 @@ If the Inverter is far from the server/SBC running Home Assistant, you have seve
 
 There are several inverters that are rebranded Deye inverters, so you might have success with other inverter brands as well, please add your inverter by editing tis file and creating a Pull Request if you have success
 
-| Inverter Model | Battery     | Version  | User      |
-| -------------- | ----------- | -------- | --------- |
-| Sunsynk 5.5kW  | Hubble AM-2 | beta/all | @kellerza |
+| Inverter Model | Battery     | Version  | User          | Port(s)                    |
+| -------------- | ----------- | -------- | ------------- | -------------------------- |
+| Sunsynk 5.5kW  | Hubble AM-2 | beta/all | @kellerza     | BMS 485 (top left)         |
+| Sunsynk 8.8kW  | BSL 8.2 kWH | 0.0.8    | @dirkackerman | RS485 (1 in image below)   |
+
+### Sunsynk 5.5kW Inverter
+Tested with: USB-to-RS485 adaptor sourced from Banggood, very similar to [this](https://www.robotics.org.za/RS485-MINI?search=rs485)
+
+NOTE: RJ-45 port marked **RS485** (bottom right) does not work.
+
+### Sunsynk 8.8kW Inverter
+![image](https://user-images.githubusercontent.com/10972519/152020379-89f83c00-5fa4-4624-b204-0133cff8bdb2.png)
+
+Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
 ## Hardware
-
-I used a USB-to-RS485 adaptor sourced from Banggood, very similar to [this](https://www.robotics.org.za/RS485-MINI?search=rs485)
-
-Mine is plugged into the Sunsynk's RJ-45 port marked **BMS 485** (top left). I also have an RJ-45 port marked **RS485** (bottom right) but this did not work.
-
 The RJ-45 plug on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring). RS485 requires a twisted pair, so works well with CAT5 network cable and the RJ-45 connectors.
 
 | RJ45 Pin<br>(inverter side) | Wire Color<br>(using T568A) | USB-to-RS485<br>adaptor |
 | :-------------------------: | :-------------------------: | :---------------------: |
 |              1              |         Green-White         |          B/D-           |
 |              2              |            Green            |          A/D+           |
+|              3*             |         Orange-White        |          GND            |
+
+\* tested on Sunsynk 8.8kW only
 
 ## Credits
 
@@ -78,3 +87,5 @@ Information in the Power forum was especially helpful to get this up and running
 Special Kudos to Bloubul7, @jacauc and Sc00bs
 
 The original Node-RED flows can be found on @jacauc's repo [here](https://github.com/jacauc/SunSynk-NodeRed)
+
+Sunsynk 8.8kW diagram from system32 in [this thread](https://powerforum.co.za/topic/8451-sunsynk-inverter-monitoring)
