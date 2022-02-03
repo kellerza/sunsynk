@@ -9,24 +9,22 @@ from math import modf
 from pathlib import Path
 from typing import Dict, List
 
+import yaml
 from filter import Filter, getfilter, suggested_filter
-from mqtt import MQTTClient
-from options import OPT
+from mqtt import MQTT, Device, Entity, SensorEntity
+from options import OPT, SS_TOPIC
+from profiles import profile_add_entities, profile_poll
 
 import sunsynk.definitions as ssdefs
 from sunsynk import Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
-MQTT = MQTTClient()
 
 
 SENSORS: List[Filter] = []
 
 
 SUNSYNK = Sunsynk()
-
-
-SS_TOPIC = "SUNSYNK/status"
 
 
 async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None:
@@ -51,26 +49,30 @@ async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None
 
 async def hass_discover_sensors(serial: str) -> None:
     """Discover all sensors."""
-    sensors = {}
+    ents: List[Entity] = []
+    dev = Device(
+        identifiers=[f"sunsynk_{OPT.sunsynk_id}"],
+        name=f"Sunsynk Inverter {serial}",
+        model=f"Inverter {serial}",
+        manufacturer="Sunsynk",
+    )
+
     for filt in SENSORS:
         sensor = filt.sensor
-        sensors[sensor.id] = {
-            "name": f"{OPT.sensor_prefix} {sensor.name}".strip(),
-            "state_topic": f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
-            "unit_of_measurement": sensor.unit,
-            "unique_id": f"{OPT.sunsynk_id}_{sensor.id}",
-            "availability": [{"topic": MQTT.availability_topic}],
-        }
+        ents.append(
+            SensorEntity(
+                name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
+                state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
+                unit_of_measurement=sensor.unit,
+                unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
+                device=dev,
+            )
+        )
 
-    device = {
-        "identifiers": [f"sunsynk_{OPT.sunsynk_id}"],
-        "name": f"Sunsynk Inverter {serial}",
-        "model": f"Inverter {serial}",
-        "manufacturer": "Sunsynk",
-    }
+    profile_add_entities(entities=ents, device=dev)
 
     await MQTT.connect(OPT)
-    await MQTT.discover(device_id=OPT.sunsynk_id, device=device, sensors=sensors)
+    await MQTT.publish_discovery_info(entities=ents)
 
 
 def startup() -> None:
@@ -87,8 +89,8 @@ def startup() -> None:
         _LOGGER.info(
             "Local test mode - Defaults apply. Pass MQTT host & password as arguments"
         )
-        configf = Path(__file__).parent / "config.json"
-        OPT.update(loads(configf.read_text()).get("options", {}))
+        configf = Path(__file__).parent / "config.yaml"
+        OPT.update(yaml.safe_load(configf.read_text()).get("options", {}))
         OPT.mqtt_host = sys.argv[1]
         OPT.mqtt_password = sys.argv[2]
         OPT.debug = 1
@@ -170,13 +172,18 @@ async def main(loop: AbstractEventLoop) -> None:
             await publish_sensors(fsensors)
 
     while True:
-        polltask = asyncio.ensure_future(poll_sensors())
+        polltask = asyncio.create_task(poll_sensors())
         await asyncio.sleep(1)
         try:
             await polltask
+        except asyncio.TimeoutError as exc:
+            _LOGGER.error("TimeOut %s", exc)
+            continue
         except AttributeError:
             # The read failed. Exit and let the watchdog restart
             return
+        if OPT.profiles:
+            await profile_poll(SUNSYNK)
 
 
 if __name__ == "__main__":

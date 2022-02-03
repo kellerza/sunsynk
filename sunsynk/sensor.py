@@ -35,7 +35,7 @@ class Sensor:
     factor: float = attr.field(default=1)
     value: Union[float, int, str, None] = None
     func: Union[
-        None, Callable[[Tuple[int, ...]], str], Callable[[float], float]
+        None, Callable[[Tuple[int, ...]], str], Callable[[float], Any]
     ] = attr.field(default=None)
 
     def append_to(self, arr: List[Sensor]) -> Sensor:
@@ -51,6 +51,12 @@ class Sensor:
 
 class HSensor(Sensor):
     """Hybrid sensor."""
+
+
+class RWSensor(Sensor):
+    """Read & write sensor."""
+
+    raw_value: Tuple[int, ...] = attr.field(default=(0, 0))
 
 
 def group_sensors(
@@ -100,6 +106,12 @@ def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None
             pass
         lval = registers[sen.register[0]]
 
+        if isinstance(sen, RWSensor):
+            sen.raw_value = (
+                hval,
+                lval,
+            )
+
         sen.value = (lval + (hval << 16)) * sen.factor
         if sen.func:
             sen.value = sen.func(sen.value)  # type: ignore
@@ -126,6 +138,12 @@ def slug(name: str) -> str:
 def offset100(val: float) -> float:
     """Offset by 100 for temperature."""
     return val - 100
+
+
+def timef(val: float) -> str:
+    """Extract the time."""
+    sval = str(val)
+    return f"{sval[:-2]}:{sval[-2:]}"
 
 
 def sd_status(tup: Tuple[int, ...]) -> str:

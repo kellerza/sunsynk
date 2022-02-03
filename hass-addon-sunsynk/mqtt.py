@@ -1,31 +1,163 @@
 """MQTT helper."""
 import asyncio
+import inspect
 import logging
 from json import dumps
-from typing import Any, Callable, Dict, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
+import attr
 from paho.mqtt.client import Client, MQTTMessage  # type: ignore
 
 _LOGGER = logging.getLogger(__name__)
+
+
+@attr.define
+class Device:
+    """A Home Assistant Device, used to group entities."""
+
+    identifiers: List[Union[str, Tuple[str, Any]]] = attr.field()
+    connections: List[str] = attr.field(factory=list)
+    configuration_url: str = attr.field(default="")
+    manufacturer: str = attr.field(default="")
+    model: str = attr.field(default="")
+    name: str = attr.field(default="")
+    suggested_area: str = attr.field(default="")
+    sw_version: str = attr.field(default="")
+    via_device: str = attr.field(default="")
+
+    def __attrs_post_init__(self) -> None:
+        """Init the class."""
+        assert self.identifiers  # Must at least have 1 identifier
+
+    @property
+    def id(self) -> str:
+        """The device identifier."""
+        return str(self.identifiers[0])
+
+
+@attr.define
+class Availability:
+    """Represent Home Assistant entity availability."""
+
+    topic: str = attr.field()
+    payload_available: str = attr.field(default="online")
+    payload_not_available: str = attr.field(default="offline")
+    value_template: str = attr.field(default="")
+
+
+@attr.define
+class Entity:
+    """A generic Home Assistant entity used as the base class for other entities."""
+
+    unique_id: str = attr.field()
+    device: Device = attr.field()
+    state_topic: str = attr.field()
+    name: str = attr.field()
+    availability: List[Availability] = attr.field(factory=list)
+    availability_mode: str = attr.field(default="")
+    device_class: str = attr.field(default="")
+    unit_of_measurement: str = attr.field(default="")
+    state_class: str = attr.field(default="")
+    expire_after: int = attr.field(default=0)  # unavailable if not updated
+    enabled_by_default: bool = attr.field(default=True)
+    entity_category: str = attr.field(default="")
+
+    def __attrs_post_init__(self) -> None:
+        """Init the class."""
+        if not self.device_class:
+            # Try device_class from unit_of_measurement
+            self.device_class = hass_device_class(unit=self.unit_of_measurement)
+        if not self.state_class and self.device_class == "energy":
+            self.state_class = "total_increasing"
+
+    @property
+    def asdict(self) -> Dict:
+        """Represent the entity as a dictionary, without empty values and defaults."""
+
+        def _filter(attr: Any, value: Any) -> bool:
+            return (
+                bool(value) and attr.default != value and not inspect.isfunction(value)
+            )
+
+        return attr.asdict(self, filter=_filter)
+
+    @property
+    def topic(self) -> str:
+        """Discovery topic."""
+        raise NotImplementedError
+
+
+def required(obj: Any, attr_obj: Any, val: Any) -> None:
+    """A property validator, mostly used in child classes."""
+    assert val is not None, "Attribute '{}' needs to be defined (not None)".format(
+        attr_obj.name
+    )
+
+
+@attr.define
+class SensorEntity(Entity):
+    """A Home Assistant Sensor entity."""
+
+    @property
+    def topic(self) -> str:
+        """Discovery topic."""
+        return f"homeassistant/sensor/{self.device.id}/{self.unique_id}/config"
+
+
+@attr.define
+class BinarySensorEntity(Entity):
+    """A Home Assistant Binary Sensor entity."""
+
+    payload_on: str = attr.field(default="ON")
+    payload_off: str = attr.field(default="OFF")
+
+    @property
+    def topic(self) -> str:
+        """Discovery topic."""
+        return f"homeassistant/binary_sensor/{self.device.id}/{self.unique_id}/config"
+
+
+@attr.define
+class SelectEntity(Entity):
+    """A HomeAssistant Select entity."""
+
+    command_topic: str = attr.field(default=None, validator=required)
+    options: list = attr.field(default=None, validator=required)
+
+    on_change: Callable = attr.field(default=None)
+
+    @property
+    def topic(self) -> str:
+        """Discovery topic."""
+        return f"homeassistant/select/{self.device.id}/{self.unique_id}/config"
 
 
 class MQTTClient:
     """Basic MQTT Client."""
 
     availability_topic: str = ""
+    topic_on_change: Dict[str, Callable] = {}
 
     def __init__(self) -> None:
         """Init MQTT Client."""
         self._client = Client()
         self._client.on_connect = _mqtt_on_connect
 
-    async def connect(self, options: Any) -> None:
+    async def connect(
+        self,
+        options: Any = None,
+        *,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        host: Optional[str] = None,
+        port: int = 1883,
+    ) -> None:
         """Connect to MQTT server specified as attributes of the options."""
         if not self._client.is_connected():
-            username = getattr(options, "mqtt_username")
-            password = getattr(options, "mqtt_password")
-            host = getattr(options, "mqtt_host")
-            port = getattr(options, "mqtt_port")
+            username = getattr(options, "mqtt_username", username)
+            password = getattr(options, "mqtt_password", password)
+            host = getattr(options, "mqtt_host", host)
+            port = getattr(options, "mqtt_port", port)
             self._client.username_pw_set(username=username, password=password)
 
             if self.availability_topic:
@@ -43,7 +175,8 @@ class MQTTClient:
                     f"Could not connect to MQTT server {username}@{host}:{port}"
                 )
             # publish online (Last will sets offline on disconnect)
-            await self.publish(self.availability_topic, "online", retain=True)
+            if self.availability_topic:
+                await self.publish(self.availability_topic, "online", retain=True)
 
     async def disconnect(self) -> None:
         """Stop the MQTT client."""
@@ -68,44 +201,94 @@ class MQTTClient:
             None, self._client.publish, topic, payload, qos, retain is True
         )
 
-    async def discover(
-        self, *, device_id: str, device: Dict[str, Any], sensors: Dict[str, Dict]
+    async def publish_discovery_info(
+        self, entities: Sequence[Entity], remove_entities: bool = True
     ) -> None:
         """Home Assistant MQTT discovery helper.
 
         https://www.home-assistant.io/docs/mqtt/discovery/
-        Publish discovery topics on "homeassistant/sensor/{device_id}/{sensor_id}/config"
-
-        device: Information about the device these sensors are part of to tie it into
-                the device registry. Each sensor requires a unique_id
+        Publish discovery topics on "homeassistant/(sensor|switch)/{device_id}/{sensor_id}/config"
         """
         if not self._client.is_connected():
             raise ConnectionError()
 
-        self._client.on_message = _mqtt_on_message(
-            self=self, loop=asyncio.get_running_loop(), sensors=list(sensors.keys())
-        )
-        self._client.subscribe(f"homeassistant/sensor/{device_id}/#")
+        await self.on_change_handler(entities=entities)
 
-        for s_id, sen in sensors.items():
-            topic = f"homeassistant/sensor/{device_id}/{s_id}/config"
-            sen["device"] = device  # Sensors will be grouped under this device
-            # sen["expire_after"] = sen.get("expire_after", 301)  # unavailable if not updated
-            dev_cla = sen.get("device_class") or hass_device_class(
-                unit=sen["unit_of_measurement"]
+        task_remove = None
+        if remove_entities:
+            task_remove = asyncio.create_task(
+                self.remove_discovery_info(
+                    device_ids=list(set(e.device.id for e in entities)),
+                    keep_topics=[e.topic for e in entities],
+                )
             )
-            if dev_cla:
-                sen["device_class"] = dev_cla
+
+        for ent in entities:
+            if self.availability_topic and not ent.availability:
+                ent.availability = [Availability(topic=self.availability_topic)]
+            _LOGGER.debug("publish %s", ent.topic)
+            await self.publish(ent.topic, payload=dumps(ent.asdict), retain=True)
+
+        if task_remove:
+            await task_remove
+
+    async def remove_discovery_info(
+        self, device_ids: Sequence[str], keep_topics: Sequence[str], sleep: float = 0.5
+    ) -> None:
+        """Remove previously discovered entities."""
+        _loop = asyncio.get_running_loop()
+
+        def __on_message(_client: Client, _userdata: Any, message: MQTTMessage) -> None:
+            if not message.retain:
+                return
+            topic = str(message.topic)
+            device = topic.split("/")[-3]
+            _LOGGER.debug("Rx retained msg: topic=%s -- device=%s", topic, device)
+            if device not in device_ids or topic in keep_topics:
+                return
+            _LOGGER.warning("Removing HASS MQTT discovery info %s", topic)
+            _loop.create_task(self.publish(topic, None, retain=True))
+
+        self._client.on_message = __on_message
+
+        subs = [f"homeassistant/+/{did}/+/config" for did in device_ids]
+        for sub in subs:
+            self._client.subscribe(sub)
+        await asyncio.sleep(sleep)  # Wait for all retained messages to be reported
+        for sub in subs:
+            self._client.unsubscribe(sub)
+
+        # re-assign the correct on_message handler
+        # self._client.on_message = None
+        await self.on_change_handler()
+
+    async def on_change_handler(self, entities: Sequence[Entity] = None) -> None:
+        """Assign the MQTT on_message handler for entities' on_change."""
+        _loop = asyncio.get_running_loop()
+
+        def _on_change_handler(
+            _client: Client, _userdata: Any, message: MQTTMessage
+        ) -> None:
+            handler = self.topic_on_change.get(str(message.topic))
+            if not handler:
+                return
+            payload = message.payload.decode("utf-8")
+            if inspect.iscoroutinefunction(handler):
+                _loop.create_task(handler(payload))
             else:
-                sen.pop("device_class", None)
-            if dev_cla == "energy":
-                sen["state_class"] = "total_increasing"
-            await self.publish(topic, payload=dumps(sen), retain=True)
+                handler(payload)
 
-        await asyncio.sleep(1)  # Wait for all retained messages
+        self._client.on_message = _on_change_handler
 
-        self._client.unsubscribe(f"homeassistant/sensor/{device_id}/#")
-        self._client.on_message = None
+        if not entities:
+            return
+
+        for ent in entities:
+            handler = getattr(ent, "on_change", None)
+            topic = getattr(ent, "command_topic", None)
+            if topic and handler:
+                self.topic_on_change[topic] = handler
+                self._client.subscribe(topic)
 
 
 def _mqtt_on_connect(
@@ -122,25 +305,7 @@ def _mqtt_on_connect(
     _LOGGER.info("MQTT: Connection %s", msg)
 
 
-def _mqtt_on_message(
-    *, self: MQTTClient, loop: asyncio.AbstractEventLoop, sensors: Sequence[str]
-) -> Callable[[Client, Any, MQTTMessage], None]:
-    """Receive retained messages & remove if not in sensors."""
-
-    def __on_message(_client: Client, _userdata: Any, message: MQTTMessage) -> None:
-        if not message.retain:
-            return
-        topic = str(message.topic)
-        top = topic.split("/")
-        if top[-1] != "config" or top[-2] in sensors:
-            return
-        _LOGGER.info("Removing HASS MQTT discovery info %s", topic)
-        asyncio.ensure_future(self.publish(topic, None, retain=True), loop=loop)
-
-    return __on_message
-
-
-def hass_device_class(*, unit: str) -> Optional[str]:
+def hass_device_class(*, unit: str) -> str:
     """Get the HASS device_class from the unit."""
     return {
         "W": "power",
@@ -153,3 +318,6 @@ def hass_device_class(*, unit: str) -> Optional[str]:
         "°C": "temperature",
         "%": "battery",
     }.get(unit, "")
+
+
+MQTT = MQTTClient()

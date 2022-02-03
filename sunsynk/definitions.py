@@ -3,6 +3,7 @@ from typing import Dict, Final
 
 from sunsynk.sensor import (
     HSensor,
+    RWSensor,
     Sensor,
     decode_fault,
     decode_serial,
@@ -10,6 +11,7 @@ from sunsynk.sensor import (
     offset100,
     sd_status,
     signed,
+    timef,
 )
 
 CELSIUS: Final = "°C"
@@ -70,11 +72,36 @@ battery_charge = HSensor(312, "Battery charge", "V", 0.01)
 bat1_soc = HSensor(603, "Bat1 SOC", "%", 1)
 bat1_cycle = HSensor(611, "Bat1 Cycle")
 
-prog1_time = Sensor(250, "Prog1 Time")
-prog1_power = Sensor(256, "Prog1 Power", "W", 1)
-prog1_voltage = Sensor(262, "Prog1 Voltage", "V", 0.1)
-prog1_capacity = Sensor(268, "Prog1 Capacity", "%", 1)
-prog1_charge = Sensor(274, "Prog1 Charge")
+prog1_time = RWSensor(250, "Prog1 Time", func=timef)
+prog2_time = RWSensor(251, "Prog2 Time", func=timef)
+prog3_time = RWSensor(252, "Prog3 Time", func=timef)
+prog4_time = RWSensor(253, "Prog4 Time", func=timef)
+prog5_time = RWSensor(254, "Prog5 Time", func=timef)
+prog6_time = RWSensor(255, "Prog6 Time", func=timef)
+
+prog1_power = RWSensor(256, "Prog1 Power", "W", 1)
+prog2_power = RWSensor(257, "Prog2 Power", "W", 1)
+prog3_power = RWSensor(258, "Prog3 Power", "W", 1)
+prog4_power = RWSensor(259, "Prog4 Power", "W", 1)
+prog5_power = RWSensor(260, "Prog5 Power", "W", 1)
+prog6_power = RWSensor(261, "Prog6 Power", "W", 1)
+
+prog1_voltage = RWSensor(262, "Prog1 Voltage", "V", 0.1)
+
+prog1_capacity = RWSensor(268, "Prog1 Capacity", "%", 1)
+prog2_capacity = RWSensor(269, "Prog2 Capacity", "%", 1)
+prog3_capacity = RWSensor(270, "Prog3 Capacity", "%", 1)
+prog4_capacity = RWSensor(271, "Prog4 Capacity", "%", 1)
+prog5_capacity = RWSensor(272, "Prog5 Capacity", "%", 1)
+prog6_capacity = RWSensor(273, "Prog6 Capacity", "%", 1)
+
+# 1- Grid, 2- Gen
+prog1_charge = RWSensor(274, "Prog1 Charge")
+prog2_charge = RWSensor(275, "Prog2 Charge")
+prog3_charge = RWSensor(276, "Prog3 Charge")
+prog4_charge = RWSensor(277, "Prog4 Charge")
+prog5_charge = RWSensor(278, "Prog5 Charge")
+prog6_charge = RWSensor(279, "Prog6 Charge")
 
 
 def all_sensors() -> Dict[str, Sensor]:

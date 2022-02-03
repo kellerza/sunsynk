@@ -1,5 +1,5 @@
 @echo off
-set dest=\\192.168.88.3\addons\hass-addon-sunsynk\
+set dest=\\192.168.1.7\addons\hass-addon-sunsynk\
 echo # Copy to %dest%
 xcopy /Y hass-addon-sunsynk %dest%
 xcopy /Y setup.py %dest%\sunsynk\
@@ -14,5 +14,5 @@ xcopy /Y Dockerfile.local %dest%\Dockerfile
 rm Dockerfile.local
 
 
-set dest=\\192.168.88.3\addons\hass-addon-mbusd\
+set dest=\\192.168.1.7\addons\hass-addon-mbusd\
 xcopy /Y hass-addon-mbusd %dest%
