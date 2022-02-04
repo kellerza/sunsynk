@@ -51,7 +51,7 @@ async def hass_discover_sensors(serial: str) -> None:
     """Discover all sensors."""
     ents: List[Entity] = []
     dev = Device(
-        identifiers=[f"sunsynk_{OPT.sunsynk_id}"],
+        identifiers=[OPT.sunsynk_id],
         name=f"Sunsynk Inverter {serial}",
         model=f"Inverter {serial}",
         manufacturer="Sunsynk",
@@ -143,10 +143,22 @@ def log_bold(msg: str) -> None:
 async def main(loop: AbstractEventLoop) -> None:
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
-    await SUNSYNK.connect(timeout=OPT.timeout)
 
-    await SUNSYNK.read([ssdefs.serial])
-    log_bold(f"SMA serial number '{ssdefs.serial.value}'")
+    try:
+        await SUNSYNK.connect(timeout=OPT.timeout)
+        await SUNSYNK.read([ssdefs.serial])
+    except asyncio.TimeoutError:
+        log_bold(
+            "No response on the Modbus interface, try checking the "
+            "wiring to the Inverter, the USB-to-RS485 converter port, etc"
+        )
+        _LOGGER.info(
+            "This Add-On will terminate in 60 seconds, "
+            "use the Supervisor Watchdog to restart automatically."
+        )
+        asyncio.sleep(20)
+        return
+    log_bold(f"Inverter serial number '{ssdefs.serial.value}'")
 
     if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")

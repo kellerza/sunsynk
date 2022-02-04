@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 env:
-  DEFAULT_PYTHON: 3.8
+  DEFAULT_PYTHON: 3.9
 
 jobs:
   black:
@@ -67,6 +67,7 @@ jobs:
       - name: Install Requirements
         run: |
           pip install mypy .
+          mypy --install-types
       - name: Run mypy
         run: |
           mypy sunsynk/

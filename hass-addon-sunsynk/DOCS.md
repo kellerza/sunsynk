@@ -26,6 +26,25 @@
 
   A prefix to add to all the MQTT Discovered Home Assistant Sensors (e.g. try SS)
 
+- `PROFILES`
+
+  Enables reading / writing settings to your inverter
+
+  The profiles will be presented as a Home Assistant Select Entity, with options for the different profiles.
+
+  The Inverter setting is only read when the Add-On starts, if you want to force re-reading the inverter settings and any configuratio, choose the **UPDATE** option in the Select Entity. (You can schedule **UPDATE** through automations if this is important for you)
+
+  When you **UPDATE** a profile, the Add-On performs the following actions:
+  - Read all the settings related to the profile from the Inverter.
+  - Read all the profile presets from `/share/hass-addon-sunsynk/*.yml`
+  - The value of the Home Assistant Select entity will reflect the matching presets.
+    - If the current settings is not part of existing presets, a new profile will be created.
+
+      You can customize the name of the presets in the Yaml files (followed by an **UPDATE**).
+      One option to access these files is though the Samba Add-On.
+
+  > Use at your own risk!
+
 - `SENSORS`
 
   A list of sensors to poll. You can use any sensor defined in the sunsynk Python library - [here](https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions.py)

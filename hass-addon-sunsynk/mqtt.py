@@ -10,6 +10,8 @@ from paho.mqtt.client import Client, MQTTMessage  # type: ignore
 
 _LOGGER = logging.getLogger(__name__)
 
+# pylint: disable=too-few-public-methods, invalid-name, too-many-instance-attributes
+
 
 @attr.define
 class Device:
@@ -62,6 +64,8 @@ class Entity:
     enabled_by_default: bool = attr.field(default=True)
     entity_category: str = attr.field(default="")
 
+    _path = ""
+
     def __attrs_post_init__(self) -> None:
         """Init the class."""
         if not self.device_class:
@@ -74,9 +78,9 @@ class Entity:
     def asdict(self) -> Dict:
         """Represent the entity as a dictionary, without empty values and defaults."""
 
-        def _filter(attr: Any, value: Any) -> bool:
+        def _filter(atrb: Any, value: Any) -> bool:
             return (
-                bool(value) and attr.default != value and not inspect.isfunction(value)
+                bool(value) and atrb.default != value and not inspect.isfunction(value)
             )
 
         return attr.asdict(self, filter=_filter)
@@ -84,24 +88,22 @@ class Entity:
     @property
     def topic(self) -> str:
         """Discovery topic."""
-        raise NotImplementedError
+        uid, did = self.unique_id, self.device.id
+        if uid.startswith(did):
+            uid = uid[len(did) :].strip("_")
+        return f"homeassistant/{self._path}/{did}/{uid}/config"
 
 
-def required(obj: Any, attr_obj: Any, val: Any) -> None:
+def required(_obj: Any, attr_obj: Any, val: Any) -> None:
     """A property validator, mostly used in child classes."""
-    assert val is not None, "Attribute '{}' needs to be defined (not None)".format(
-        attr_obj.name
-    )
+    assert val is not None, f"Attribute '{attr_obj.name}' must be defined (not None)"
 
 
 @attr.define
 class SensorEntity(Entity):
     """A Home Assistant Sensor entity."""
 
-    @property
-    def topic(self) -> str:
-        """Discovery topic."""
-        return f"homeassistant/sensor/{self.device.id}/{self.unique_id}/config"
+    _path = "sensor"
 
 
 @attr.define
@@ -111,10 +113,7 @@ class BinarySensorEntity(Entity):
     payload_on: str = attr.field(default="ON")
     payload_off: str = attr.field(default="OFF")
 
-    @property
-    def topic(self) -> str:
-        """Discovery topic."""
-        return f"homeassistant/binary_sensor/{self.device.id}/{self.unique_id}/config"
+    _path = "binary_sensor"
 
 
 @attr.define
@@ -122,14 +121,11 @@ class SelectEntity(Entity):
     """A HomeAssistant Select entity."""
 
     command_topic: str = attr.field(default=None, validator=required)
-    options: list = attr.field(default=None, validator=required)
+    options: Sequence[str] = attr.field(default=None, validator=required)
 
     on_change: Callable = attr.field(default=None)
 
-    @property
-    def topic(self) -> str:
-        """Discovery topic."""
-        return f"homeassistant/select/{self.device.id}/{self.unique_id}/config"
+    _path = "select"
 
 
 class MQTTClient:
