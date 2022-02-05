@@ -6,6 +6,8 @@ import attr
 
 from sunsynk.sensor import slug
 
+SS_TOPIC = "SUNSYNK/status"
+
 
 @attr.define(slots=True)
 class Options:
@@ -18,6 +20,7 @@ class Options:
     mqtt_password: str = ""
     sunsynk_id: str = ""
     sensors: List[str] = []
+    profiles: int = 0
     sensor_prefix: str = ""
     timeout: int = 5
     debug: int = 1

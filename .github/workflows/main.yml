@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 env:
-  DEFAULT_PYTHON: 3.8
+  DEFAULT_PYTHON: 3.9
 
 jobs:
   black:
@@ -69,8 +69,7 @@ jobs:
           pip install mypy .
       - name: Run mypy
         run: |
-          mypy sunsynk/
-          mypy hass-addon-sunsynk/
+          mypy --install-types --non-interactive sunsynk/ hass-addon-sunsynk/
 
   pydocstyle:
     name: Check pydocstyle

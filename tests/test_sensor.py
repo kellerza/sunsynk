@@ -5,17 +5,16 @@ import pytest
 
 import sunsynk.definitions as defs
 from sunsynk.sensor import (
+    FaultSensor,
     HSensor,
+    InverterStateSensor,
+    SDStatusSensor,
     Sensor,
-    decode_fault,
-    decode_serial,
+    SerialSensor,
+    TemperatureSensor,
+    TimeRWSensor,
     ensure_tuple,
     group_sensors,
-    inv_state,
-    needs_tup,
-    offset100,
-    sd_status,
-    signed,
     update_sensors,
 )
 from sunsynk.sunsynk import register_map
@@ -77,11 +76,6 @@ def test_ids() -> None:
         assert nme == val.id
 
 
-def test_needs_tup() -> None:
-    assert needs_tup(decode_serial)
-    assert needs_tup(signed) is False
-
-
 def test_ensure_tuple() -> None:
     assert ensure_tuple(1) == (1,)
     assert ensure_tuple((1,)) == (1,)
@@ -90,51 +84,65 @@ def test_ensure_tuple() -> None:
 
 
 def test_signed() -> None:
-    assert signed(1) == 1
-    assert signed(0xFFFE) == -1
+    """Signed sensors have a -1 factor"""
+    s = Sensor(1, "", "", factor=-1)
+    assert s.reg_to_value(1) == 1
+    assert s.reg_to_value(0xFFFE) == -1
 
-    assert offset100(100) == 0
+    s = TemperatureSensor(1, "", "", 0.1)
+    assert s.reg_to_value(1000) == 0
 
-    assert sd_status((1000,)) == "fault"
-    assert sd_status((1,)) == "unknown 1"
+    s = SDStatusSensor(1, "", "")
+    assert s.reg_to_value(1000) == "fault"
+    assert s.reg_to_value(1) == "unknown 1"
 
-    assert inv_state((2,)) == "ok"
-    assert inv_state((1,)) == "unknown 1"
+    s = InverterStateSensor(1, "", "")
+    assert s.reg_to_value(2) == "ok"
+    assert s.reg_to_value(1) == "unknown 1"
 
 
 def test_update_func() -> None:
+    s = SerialSensor(1, "", "")
     regs = (0x4148, 0x3738)
-    assert decode_serial(regs) == "AH78"
+    assert s.reg_to_value(regs) == "AH78"
 
-    s = Sensor((2, 3, 4), "serial", func=decode_serial)
+    # s = Sensor((2, 3, 4), "serial", func=decode_serial)
 
-    rmap = register_map(2, regs)
+    # rmap = register_map(2, regs)
 
-    assert s.value is None
-    update_sensors([s], rmap)
-    assert s.value is None, "no update, not enough registers"
+    # assert s.value is None
+    # update_sensors([s], rmap)
+    # assert s.value is None, "no update, not enough registers"
 
-    rmap = register_map(2, regs + regs)
-    update_sensors([s], rmap)
-    assert s.value == "AH78AH"
+    # rmap = register_map(2, regs + regs)
+    # update_sensors([s], rmap)
+    # assert s.value == "AH78AH"
 
 
 def test_update_float() -> None:
-    s = Sensor(60, "two", factor=0.1, func=offset100)
+    s = TemperatureSensor(60, "two", factor=0.1)
     rmap = register_map(60, [1001])
     update_sensors([s], rmap)
     assert s.value == 0.1
 
 
 def test_decode_fault() -> None:
+    s = FaultSensor(1, "", "")
     regs = (0x01, 0x0, 0x0, 0x0)
-    assert decode_fault(regs) == "F01"
+    assert s.reg_to_value(regs) == "F01"
     regs = (0x02, 0x0, 0x0, 0x0)
-    assert decode_fault(regs) == "F02"
+    assert s.reg_to_value(regs) == "F02"
     regs = (0x80, 0x0, 0x0, 0x0)
-    assert decode_fault(regs) == "F08"
+    assert s.reg_to_value(regs) == "F08"
 
     regs = (0x0, 0x8000, 0x0, 0x0)
-    assert decode_fault(regs) == "F32"
+    assert s.reg_to_value(regs) == "F32"
     regs = (0x0, 0x0, 0x1, 0x0)
-    assert decode_fault(regs) == "F33"
+    assert s.reg_to_value(regs) == "F33"
+
+
+def test_time_rw() -> None:
+    s = TimeRWSensor(60, "two", factor=0.1)
+    rmap = register_map(60, [300])
+    update_sensors([s], rmap)
+    assert s.value == "3:00"

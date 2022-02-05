@@ -60,8 +60,8 @@ def test_versions(run):
     )
 
     v_config = _get_version(
-        filename="hass-addon-sunsynk/config.json",
-        regex=r'"version": ".+-(.+)"',
+        filename="hass-addon-sunsynk/config.yaml",
+        regex=r"version: .+-(.+)",
     )
 
     assert v_setup == v_docker

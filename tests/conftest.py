@@ -9,23 +9,30 @@ import pytest
 # Pytest Mark: https://stackoverflow.com/a/61193490
 #
 
+MARKERS = ("addon", "mqtt")
+
 
 def pytest_addoption(parser):
-    parser.addoption("--addon", action="store_true", help="include the addon tests")
+    """Support command line marks."""
+    for mrk in MARKERS:
+        parser.addoption(
+            f"--{mrk}", action="store_true", help=f"include the {mrk} tests"
+        )
 
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "addon: include the addon tests")
+    """Enable configuration."""
+    for mrk in MARKERS:
+        config.addinivalue_line("markers", f"{mrk}: include the {mrk} tests")
 
 
 def pytest_collection_modifyitems(config, items):
-    if config.getoption("--addon"):
-        # --runslow given in cli: do not skip slow tests
-        return
-    skip_addon = pytest.mark.skip(reason="need --addon option to run")
-    for item in items:
-        if "addon" in item.keywords:
-            item.add_marker(skip_addon)
+    for mrk in MARKERS:
+        if not config.getoption(f"--{mrk}"):
+            skip_mrk = pytest.mark.skip(reason=f"need --{mrk} option to run")
+            for item in items:
+                if mrk in item.keywords:
+                    item.add_marker(skip_mrk)
 
 
 def import_module(mod_name, folder: str):

@@ -2,3 +2,4 @@ pytest
 pytest-asyncio
 pytest-cov
 pytest-github-actions-annotate-failures
+types-PyYAML

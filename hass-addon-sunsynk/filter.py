@@ -6,6 +6,8 @@ from typing import Any, List, Optional, Sequence, Union
 import attr
 from options import OPT
 
+import sunsynk.definitions as ssdef
+
 _LOGGER = logging.getLogger(__name__)
 
 # disable=no-member https://stackoverflow.com/questions/47972143/using-attr-with-pylint
@@ -17,7 +19,7 @@ class Filter:
 
     interval: int = attr.field(default=60)
     _i: int = attr.field(default=0)
-    values: List[float] = attr.field(default=attr.Factory(list))
+    values: List[Any] = attr.field(default=attr.Factory(list))
     samples: int = attr.field(default=1)
     _filter: Any = attr.field(default=mean)
     sensor: Any = attr.field(default=None)
@@ -30,28 +32,40 @@ class Filter:
         self._i -= 1
         return False
 
-    def update(self, value: Union[float, int]) -> Optional[Union[float, int]]:
+    @property
+    def name(self) -> str:
+        """Return the name of the sensor and filter."""
+        nme = getattr(self.sensor, "name", str(self.sensor))
+        if isinstance(self, SCFilter):
+            nme += ":step"
+        return f"{nme}:{self._filter.__name__}"  # pylint: disable=no-member
+
+    def update(self, value: Union[float, int, str]) -> Optional[Union[float, int, str]]:
         """Add value."""
         if value is None:
-            _LOGGER.warning(
-                "%s: should not be None (%s)",
-                getattr(self.sensor, "name", ""),
-                self._filter.__name__,  # pylint: disable=no-member
-            )
+            _LOGGER.warning("%s: should not be None", self.name)
             return None
+        if isinstance(value, str) and self.values and value != str(self.values[-1]):
+            # always significant change for strings!!
+            self.values = [value]
+            return value
+
         self.values.append(value)  # pylint: disable=no-member
         if len(self.values) < self.samples:
             return None
-        res = self._filter(self.values)  # pylint: disable=not-callable
+        try:
+            value = self._filter(self.values)  # pylint: disable=not-callable
+        except TypeError:
+            pass
+
         self.values.clear()  # pylint: disable=no-member
         _LOGGER.debug(
-            "%s: %s over %d samples = %s",
-            getattr(self.sensor, "name", ""),
-            self._filter.__name__,  # pylint: disable=no-member
+            "%s over %d samples = %s",
+            self.name,
             self.samples,
-            res,
+            value,
         )
-        return res
+        return value
 
 
 @attr.define
@@ -60,24 +74,26 @@ class SCFilter(Filter):
 
     threshold: int = attr.field(default=80)
 
-    def update(self, value: Union[float, int]) -> Optional[Union[float, int]]:
+    def update(self, value: Union[float, int, str]) -> Optional[Union[float, int, str]]:
         """Add value."""
-        if self.values:
-            if (
-                value > self.values[0] + self.threshold
-                or value < self.values[0] - self.threshold
-            ):
-                if OPT.debug >= 1:
-                    _LOGGER.info(
-                        "%s: significant change %s -> %s (%d samples in buffer)",
-                        getattr(self.sensor, "name", ""),
-                        self.values[0],
-                        value,
-                        len(self.values),
-                    )
-                self.values = [value]
-                return value
-        return super().update(value)
+        val0 = self.values[0] if self.values else 0
+        if (
+            isinstance(value, str)
+            or isinstance(val0, str)
+            or (not (value > val0 + self.threshold or value < val0 - self.threshold))
+        ):
+            return super().update(value)
+
+        if OPT.debug >= 1:
+            _LOGGER.info(
+                "%s: significant change %s -> %s (%d samples in buffer)",
+                self.name,
+                val0,
+                value,
+                len(self.values),
+            )
+        self.values = [value]
+        return value
 
 
 def getfilter(filter_def: str, sensor: Any) -> Filter:
@@ -104,21 +120,31 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
     if fff and fff[0] != "step":
         _LOGGER.warning("Unknown filter: %s", fff)
 
-    return SCFilter(interval=1, samples=60, filter=mean, sensor=sensor)
+    thr = 80
+    try:
+        thr = int(fff[1])
+    except IndexError:
+        pass
+    except ValueError as err:
+        _LOGGER.error("Bad threshold: %s - %s", fff[1], err)
+
+    return SCFilter(interval=1, samples=60, filter=mean, sensor=sensor, threshold=thr)
 
 
-def suggested_filter(sensor: str) -> str:
+def suggested_filter(sensor: ssdef.Sensor) -> str:
     """Suggested sensors."""
     filt = {
-        "serial": "last",
-        "overall_state": "last",
-        "batter_soc": "last",
-        "total_load": "step",
-    }.get(sensor)
+        ssdef.serial.id: "last",
+        ssdef.overall_state.id: "last",
+        ssdef.battery_soc.id: "last",
+        ssdef.sd_status.id: "last",
+        ssdef.fault.id: "last",
+        ssdef.total_load_power.id: "step",
+    }.get(sensor.id)
     if filt:
         return filt
-    if sensor.startswith("total_"):
-        return "last"
-    if sensor.startswith("temp_"):
+    if isinstance(sensor, ssdef.TemperatureSensor):
         return "avg"
+    if sensor.id.startswith("total_"):
+        return "last"
     return "step"
