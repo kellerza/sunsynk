@@ -134,13 +134,13 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
 def suggested_filter(sensor: ssdef.Sensor) -> str:
     """Suggested sensors."""
     filt = {
-        ssdef.serial: "last",
-        ssdef.overall_state: "last",
-        ssdef.battery_soc: "last",
-        ssdef.sd_status: "last",
-        ssdef.fault: "last",
-        ssdef.total_load_power: "step",
-    }.get(sensor)
+        ssdef.serial.id: "last",
+        ssdef.overall_state.id: "last",
+        ssdef.battery_soc.id: "last",
+        ssdef.sd_status.id: "last",
+        ssdef.fault.id: "last",
+        ssdef.total_load_power.id: "step",
+    }.get(sensor.id)
     if filt:
         return filt
     if isinstance(sensor, ssdef.TemperatureSensor):
