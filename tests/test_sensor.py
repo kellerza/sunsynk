@@ -12,6 +12,7 @@ from sunsynk.sensor import (
     Sensor,
     SerialSensor,
     TemperatureSensor,
+    TimeRWSensor,
     ensure_tuple,
     group_sensors,
     update_sensors,
@@ -138,3 +139,10 @@ def test_decode_fault() -> None:
     assert s.reg_to_value(regs) == "F32"
     regs = (0x0, 0x0, 0x1, 0x0)
     assert s.reg_to_value(regs) == "F33"
+
+
+def test_time_rw() -> None:
+    s = TimeRWSensor(60, "two", factor=0.1)
+    rmap = register_map(60, [300])
+    update_sensors([s], rmap)
+    assert s.value == "3:00"
