@@ -28,6 +28,10 @@
 
 - `PROFILES`
 
+  > BETA!!
+  >
+  > This writes settings, use at your own risk!
+
   Enables reading / writing settings to your inverter
 
   The profiles will be presented as a Home Assistant Select Entity, with options for the different profiles.
@@ -43,7 +47,6 @@
       You can customize the name of the presets in the Yaml files (followed by an **UPDATE**).
       One option to access these files is though the Samba Add-On.
 
-  > Use at your own risk!
 
 - `SENSORS`
 

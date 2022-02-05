@@ -85,14 +85,10 @@ class Sunsynk:
 
         self.client = client.protocol
 
-    async def write(self, sensor: Sensor) -> None:
-        """Write a sensor value."""
-        raw_value = getattr(sensor, "raw_value", None)
-        if raw_value is None:
-            _LOGGER.error("Could not write sensor %s", sensor.name)
-            return
+    async def write(self, *, address: int, value: int) -> None:
+        """Write to a register."""
         w_r = await self.client.write_registers(
-            sensor.register, raw_value, unit=self.unit_id
+            address=address, values=(value,), unit=self.unit_id
         )
         if w_r.function_code >= 0x80:  # test that we are not an error
             raise ConnectionError("failed to write")

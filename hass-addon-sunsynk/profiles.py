@@ -1,4 +1,5 @@
 """Profile read & write support."""
+# pylint: disable=too-few-public-methods, invalid-name, too-many-instance-attributes
 import asyncio
 import logging
 from itertools import chain
@@ -13,13 +14,11 @@ from yaml import safe_dump, safe_load
 
 from sunsynk import Sunsynk
 from sunsynk import definitions as ssd
-from sunsynk.sensor import RWSensor, slug
+from sunsynk.sensor import RWSensor, ensure_tuple, slug
 
 _LOGGER = logging.getLogger(__name__)
-
-# pylint: disable=too-few-public-methods, invalid-name, too-many-instance-attributes
-
 ROOT = "/share/hass-addon-sunsynk/"
+UPDATE = "UPDATE"
 
 
 @attr.s
@@ -38,7 +37,7 @@ class Profile:
 
     def log_values(self) -> None:
         """Display the values for all sensors."""
-        rws = [(s.name, s.raw_value) for s in self.sensors]
+        rws = [(s.name, s.reg_value) for s in self.sensors]
         _LOGGER.info("Profile %s: %s", self.name, rws)
 
     def load(self) -> Tuple[str, Sequence[str]]:
@@ -55,7 +54,7 @@ class Profile:
             _LOGGER.info("%s", file)
             p_items = safe_load(file.read_text(encoding="utf-8"))
             p_name = p_items.pop("name", None) or file.stem[len(self.id) + 1 :]
-            p_items = {n: tuple(v) for n, v in p_items.items()}
+            p_items = {n: ensure_tuple(v) for n, v in p_items.items()}
 
             # Ensure all keys are present
             if expected_s != set(p_items.keys()):
@@ -68,7 +67,7 @@ class Profile:
                 continue
 
             # Ensure all value lengths are correct
-            if not all(len(s.raw_value) == len(p_items[s.id]) for s in self.sensors):
+            if not all(len(s.reg_value) == len(p_items[s.id]) for s in self.sensors):
                 _LOGGER.warning("%s %s bad value length", file.name, p_name)
                 continue
 
@@ -76,8 +75,8 @@ class Profile:
             self.presets[p_name] = p_items
 
             # check if this is the active preset
-            # All values = sensors raw_values
-            if all(s.raw_value == p_items[s.id] for s in self.sensors):
+            # All values = sensors reg_values
+            if all(s.reg_value == p_items[s.id] for s in self.sensors):
                 active_preset = p_name
 
         if not active_preset:
@@ -90,16 +89,20 @@ class Profile:
         active_preset = f"new_{int(random()*1000)}"
         pth = Path(ROOT) / f"{self.id}_{active_preset}.yml"
         value = dict(
-            {s.id: list(s.raw_value) for s in self.sensors},
+            {
+                s.id: list(s.reg_value) if len(s.reg_value) > 1 else s.reg_value[0]
+                for s in self.sensors
+                if s.reg_value
+            },
             name=active_preset,
         )
         pth.write_text(safe_dump(value))
         return active_preset
 
     async def mqtt_update_action(self) -> None:
-        """Use the raw_values of the sensors to determine the profile.
+        """Use the reg_values of the sensors to determine the profile.
 
-        1. determine active preset (from raw_values & all yaml files)
+        1. determine active preset (from reg_values & all yaml files)
         2. create a name and save preset if new
         3. update the entity options (mqtt discovery)
         4. publish the active preset to HASS
@@ -118,52 +121,25 @@ class Profile:
         asyncio.create_task(MQTT.publish(self.entity.state_topic, active_preset))
 
 
-P_MODE = Profile(
-    name="System Mode",
-    sensors=[
-        ssd.prog1_capacity,
-        ssd.prog2_capacity,
-        ssd.prog3_capacity,
-        ssd.prog4_capacity,
-        ssd.prog5_capacity,
-        ssd.prog6_capacity,
-        ssd.prog1_time,
-        ssd.prog2_time,
-        ssd.prog3_time,
-        ssd.prog4_time,
-        ssd.prog5_time,
-        ssd.prog6_time,
-        ssd.prog1_power,
-        ssd.prog2_power,
-        ssd.prog3_power,
-        ssd.prog4_power,
-        ssd.prog5_power,
-        ssd.prog6_power,
-        ssd.prog1_charge,
-        ssd.prog2_charge,
-        ssd.prog3_charge,
-        ssd.prog4_charge,
-        ssd.prog5_charge,
-        ssd.prog6_charge,
-    ],
-)
-
-PROFILE_QUEUE: List[Tuple[Profile, str]] = []
-UPDATE = "UPDATE"
-
-
 async def write_preset_registers(
     ss: Sunsynk, profile: Profile, preset: Dict[str, Tuple[int, ...]]
 ) -> None:
     """Write the preset."""
     for sen in profile.sensors:
-        newv = preset[sen.id]
-        if newv != sen.raw_value:
+        newv = ensure_tuple(preset[sen.id])
+        if newv != sen.reg_value:
             _LOGGER.info(
-                "New value for %s, old: %s, new: %s", sen.id, sen.raw_value, newv
+                "New value for %s, old: %s, new: %s", sen.id, sen.reg_value, newv
             )
-        sen.raw_value = newv
-        await ss.write(sen)
+        sen.reg_value = newv
+        try:
+            for adr, val in zip(sen.reg_address, newv):
+                await asyncio.sleep(0.01)
+                await ss.write(address=adr, value=val)
+        except asyncio.TimeoutError:
+            _LOGGER.critical(
+                "timeout writing the settings %s=%s", sen.reg_address[0], newv
+            )
 
 
 async def profile_poll(ss: Sunsynk) -> None:
@@ -192,7 +168,7 @@ async def profile_poll(ss: Sunsynk) -> None:
 
 def profile_add_entities(entities: List[Entity], device: Device) -> None:
     """Add entities that will be discovered."""
-    for pro in (P_MODE,):
+    for pro in ALL_PROFILES:
         pro.entity = SelectEntity(
             name=f"{OPT.sensor_prefix} {pro.name}",
             unique_id=f"{OPT.sunsynk_id}_{pro.id}",
@@ -206,3 +182,49 @@ def profile_add_entities(entities: List[Entity], device: Device) -> None:
 
         # Make sure the values are read & updated on startup!
         PROFILE_QUEUE.append((pro, UPDATE))
+
+
+PROFILE_QUEUE: List[Tuple[Profile, str]] = []
+
+ALL_PROFILES = (
+    Profile(
+        name="System Mode",
+        sensors=[
+            ssd.prog1_capacity,
+            ssd.prog2_capacity,
+            ssd.prog3_capacity,
+            ssd.prog4_capacity,
+            ssd.prog5_capacity,
+            ssd.prog6_capacity,
+            ssd.prog1_time,
+            ssd.prog2_time,
+            ssd.prog3_time,
+            ssd.prog4_time,
+            ssd.prog5_time,
+            ssd.prog6_time,
+            ssd.prog1_power,
+            ssd.prog2_power,
+            ssd.prog3_power,
+            ssd.prog4_power,
+            ssd.prog5_power,
+            ssd.prog6_power,
+            ssd.prog1_charge,
+            ssd.prog2_charge,
+            ssd.prog3_charge,
+            ssd.prog4_charge,
+            ssd.prog5_charge,
+            ssd.prog6_charge,
+        ],
+    ),
+    Profile(
+        name="System Mode Voltages",
+        sensors=[
+            ssd.prog1_voltage,
+            ssd.prog2_voltage,
+            ssd.prog3_voltage,
+            ssd.prog4_voltage,
+            ssd.prog5_voltage,
+            ssd.prog6_voltage,
+        ],
+    ),
+)

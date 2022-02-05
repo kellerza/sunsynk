@@ -122,7 +122,7 @@ def startup() -> None:
             log_bold(f"Unknown sensor in config: {sensor_def}")
             continue
         if not fstr:
-            fstr = suggested_filter(name)
+            fstr = suggested_filter(sen)
             msg.setdefault(f"*{fstr}", []).append(name)  # type: ignore
         else:
             msg.setdefault(fstr, []).append(name)  # type: ignore
