@@ -67,7 +67,7 @@ jobs:
       - name: Install Requirements
         run: |
           pip install mypy .
-          mypy --install-types
+          mypy --install-types hass-addon-sunsynk/
       - name: Run mypy
         run: |
           mypy sunsynk/
