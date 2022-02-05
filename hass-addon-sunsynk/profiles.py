@@ -176,7 +176,7 @@ def profile_add_entities(entities: List[Entity], device: Device) -> None:
             command_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{pro.id}_set",
             options=[UPDATE],
             device=device,
-            on_change=lambda val: PROFILE_QUEUE.append((pro, val)),
+            on_change=lambda val, p=pro: PROFILE_QUEUE.append((p, val)),
         )
         entities.append(pro.entity)
 
