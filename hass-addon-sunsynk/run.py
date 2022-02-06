@@ -140,7 +140,7 @@ def log_bold(msg: str) -> None:
     _LOGGER.info("#" * 60)
 
 
-async def main(loop: AbstractEventLoop) -> None:
+async def main(loop: AbstractEventLoop) -> None:  # noqa
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
 
@@ -167,7 +167,17 @@ async def main(loop: AbstractEventLoop) -> None:
     await hass_discover_sensors(str(ssdefs.serial.value))
 
     # Read all & publish immediately
-    await SUNSYNK.read([f.sensor for f in SENSORS])
+    await asyncio.sleep(0.01)
+    try:
+        await SUNSYNK.read([f.sensor for f in SENSORS])
+    except asyncio.TimeoutError:
+        _LOGGER.error("Timeout on initial read. Sensors: %s", [f.name for f in SENSORS])
+        for fil in SENSORS:
+            await asyncio.sleep(0.01)
+            try:
+                await SUNSYNK.read([fil.sensor])
+            except asyncio.TimeoutError:
+                _LOGGER.error("Timeout reading single sensor: %s", fil.name)
     await publish_sensors(SENSORS, force=True)
 
     async def poll_sensors() -> None:

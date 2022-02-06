@@ -1,5 +1,9 @@
 # Changelog
 
+## **2022.2.6-0.1.0** - 2022-02-06
+
+- Timeout on first read
+
 ## **2022.2.5-0.1.0** - 2022-02-05
 
 Major update
