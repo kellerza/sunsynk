@@ -150,7 +150,7 @@ async def read(
         return True
     except asyncio.TimeoutError:
         _LOGGER.error("Read error%s: Timeout", msg)
-    except Exception as err:
+    except Exception as err:  # pylint:disable=broad-except
         _LOGGER.error("Read Error%s: %s", msg, err)
 
     if retry_single:
@@ -162,13 +162,10 @@ async def read(
     return False
 
 
-async def critical_error(msg: str):
-    log_bold(msg)
-    _LOGGER.info(
-        "This Add-On will terminate in 30 seconds, "
-        "use the Supervisor Watchdog to restart automatically."
-    )
-    await asyncio.sleep(30)
+TERM = (
+    "This Add-On will terminate in 30 seconds, "
+    "use the Supervisor Watchdog to restart automatically."
+)
 
 
 async def main(loop: AbstractEventLoop) -> None:  # noqa
@@ -178,14 +175,18 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     try:
         await SUNSYNK.connect(timeout=OPT.timeout)
     except ConnectionError:
-        critical_error(f"Could not connect to {SUNSYNK.port}")
+        log_bold(f"Could not connect to {SUNSYNK.port}")
+        _LOGGER.critical(TERM)
+        await asyncio.sleep(30)
         return
 
     if not await read([ssdefs.serial]):
-        critical_error(
+        log_bold(
             "No response on the Modbus interface, try checking the "
-            "wiring to the Inverter, the USB-to-RS485 converter port, etc"
+            "wiring to the Inverter, the USB-to-RS485 converter, etc"
         )
+        _LOGGER.critical(TERM)
+        await asyncio.sleep(30)
         return
 
     log_bold(f"Inverter serial number '{ssdefs.serial.value}'")
