@@ -63,9 +63,11 @@
   The values received will continuously be printed to the add-on's log. This will confirm
   that you receive values.
 
-  0 - No debug messages
-  1 - Messages for filter changes
-  2 - debug level logging
+| Value | Description                 |
+| ----- | --------------------------- |
+| `0`   | No debug messages           |
+| `1`   | Messages for filter changes |
+| `2`   | Debug level logging         |
 
 ## Sensor modifiers - Min/Max/Now/Average/Step
 
