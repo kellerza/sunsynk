@@ -118,7 +118,8 @@ class Profile:
         await MQTT.publish_discovery_info(entities=[self.entity], remove_entities=False)
         # 4.
         _LOGGER.info("publish %s %s", self.entity.state_topic, active_preset)
-        asyncio.create_task(MQTT.publish(self.entity.state_topic, active_preset))
+        await asyncio.sleep(0.05)
+        await MQTT.publish(self.entity.state_topic, active_preset)
 
 
 async def write_preset_registers(

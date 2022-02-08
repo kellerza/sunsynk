@@ -4,7 +4,7 @@ from pathlib import Path
 
 from setuptools import setup
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 URL = "https://github.com/kellerza/sunsynk"
 
 desc = Path("README.md").read_text()

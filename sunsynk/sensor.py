@@ -58,7 +58,7 @@ class Sensor:
         lval = self.reg_value[0]
 
         _LOGGER.debug(
-            "%s low=%d high=%d value=%d%s",
+            "%s low=%d high=%d value=%s%s",
             self.name,
             lval,
             hval,

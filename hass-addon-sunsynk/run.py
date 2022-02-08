@@ -7,7 +7,7 @@ from asyncio.events import AbstractEventLoop
 from json import loads
 from math import modf
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Sequence
 
 import yaml
 from filter import Filter, getfilter, suggested_filter
@@ -17,6 +17,7 @@ from profiles import profile_add_entities, profile_poll
 
 import sunsynk.definitions as ssdefs
 from sunsynk import Sunsynk
+from sunsynk.sensor import Sensor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -140,24 +141,53 @@ def log_bold(msg: str) -> None:
     _LOGGER.info("#" * 60)
 
 
+async def read(
+    sensors: Sequence[Sensor], msg: str = "", retry_single: bool = False
+) -> bool:
+    """Read from the Modbus interface."""
+    try:
+        await SUNSYNK.read(sensors)
+        return True
+    except asyncio.TimeoutError:
+        _LOGGER.error("Read error%s: Timeout", msg)
+    except Exception as err:
+        _LOGGER.error("Read Error%s: %s", msg, err)
+
+    if retry_single:
+        _LOGGER.info("Retrying individual sensors: %s", [s.name for s in SENSORS])
+        for sen in SENSORS:
+            await asyncio.sleep(0.02)
+            await read([sen], msg=sen.name, retry_single=False)
+
+    return False
+
+
+async def critical_error(msg: str):
+    log_bold(msg)
+    _LOGGER.info(
+        "This Add-On will terminate in 30 seconds, "
+        "use the Supervisor Watchdog to restart automatically."
+    )
+    await asyncio.sleep(30)
+
+
 async def main(loop: AbstractEventLoop) -> None:  # noqa
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
 
     try:
         await SUNSYNK.connect(timeout=OPT.timeout)
-        await SUNSYNK.read([ssdefs.serial])
-    except asyncio.TimeoutError:
-        log_bold(
+    except ConnectionError:
+        critical_error(f"Could not connect to {SUNSYNK.port}")
+        return
+
+    if not await read([ssdefs.serial]):
+        critical_error(
             "No response on the Modbus interface, try checking the "
             "wiring to the Inverter, the USB-to-RS485 converter port, etc"
         )
-        _LOGGER.info(
-            "This Add-On will terminate in 60 seconds, "
-            "use the Supervisor Watchdog to restart automatically."
-        )
-        asyncio.sleep(20)
         return
+
     log_bold(f"Inverter serial number '{ssdefs.serial.value}'")
 
     if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
@@ -168,16 +198,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
 
     # Read all & publish immediately
     await asyncio.sleep(0.01)
-    try:
-        await SUNSYNK.read([f.sensor for f in SENSORS])
-    except asyncio.TimeoutError:
-        _LOGGER.error("Timeout on initial read. Sensors: %s", [f.name for f in SENSORS])
-        for fil in SENSORS:
-            await asyncio.sleep(0.01)
-            try:
-                await SUNSYNK.read([fil.sensor])
-            except asyncio.TimeoutError:
-                _LOGGER.error("Timeout reading single sensor: %s", fil.name)
+    await read([f.sensor for f in SENSORS], retry_single=True)
     await publish_sensors(SENSORS, force=True)
 
     async def poll_sensors() -> None:
@@ -189,9 +210,9 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
                 fsensors.append(fil)
         if fsensors:
             # 2. read
-            await SUNSYNK.read([f.sensor for f in fsensors])
-            # 3. decode & publish
-            await publish_sensors(fsensors)
+            if await read([f.sensor for f in fsensors]):
+                # 3. decode & publish
+                await publish_sensors(fsensors)
 
     while True:
         polltask = asyncio.create_task(poll_sensors())
