@@ -155,7 +155,7 @@ async def read(
 
     if retry_single:
         _LOGGER.info("Retrying individual sensors: %s", [s.name for s in SENSORS])
-        for sen in SENSORS:
+        for sen in sensors:
             await asyncio.sleep(0.02)
             await read([sen], msg=sen.name, retry_single=False)
 
