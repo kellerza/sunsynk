@@ -142,15 +142,18 @@ def log_bold(msg: str) -> None:
     _LOGGER.info("#" * 60)
 
 
+READ_ERRORS = 0
+
+
 async def read(
     sensors: Sequence[Sensor], msg: str = "", retry_single: bool = False
 ) -> bool:
     """Read from the Modbus interface."""
-
+    global READ_ERRORS
     try:
         try:
             await SUNSYNK.read(sensors)
-            read.errors = 0
+            READ_ERRORS = 0
             return True
         except asyncio.TimeoutError:
             _LOGGER.error("Read error%s: Timeout", msg)
@@ -160,9 +163,9 @@ async def read(
             await SUNSYNK.connect(timeout=OPT.timeout)
     except Exception as err:  # pylint:disable=broad-except
         _LOGGER.error("Read Error%s: %s", msg, err)
-        read.errors += 1
-        if read.errors > 3:
-            raise Exception("Multiple Modbus read errors: %s", err)
+        READ_ERRORS += 1
+        if READ_ERRORS > 3:
+            raise Exception(f"Multiple Modbus read errors: {err}") from err
 
     if retry_single:
         _LOGGER.info("Retrying individual sensors: %s", [s.name for s in SENSORS])
@@ -172,8 +175,6 @@ async def read(
 
     return False
 
-
-read.errors = 0
 
 TERM = (
     "This Add-On will terminate in 30 seconds, "
