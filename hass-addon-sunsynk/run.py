@@ -14,7 +14,7 @@ from filter import Filter, getfilter, suggested_filter
 from mqtt import MQTT, Device, Entity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
-from pymodbus.exceptions import ModbusIOException
+from pymodbus.exceptions import ModbusIOException  # type: ignore
 
 import sunsynk.definitions as ssdefs
 from sunsynk import Sunsynk
@@ -149,7 +149,7 @@ async def read(
     sensors: Sequence[Sensor], msg: str = "", retry_single: bool = False
 ) -> bool:
     """Read from the Modbus interface."""
-    global READ_ERRORS
+    global READ_ERRORS  # pylint: ignore=global-statement
     try:
         try:
             await SUNSYNK.read(sensors)
