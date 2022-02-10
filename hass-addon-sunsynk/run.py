@@ -149,7 +149,7 @@ async def read(
     sensors: Sequence[Sensor], msg: str = "", retry_single: bool = False
 ) -> bool:
     """Read from the Modbus interface."""
-    global READ_ERRORS  # pylint: ignore=global-statement
+    global READ_ERRORS  # pylint:disable=global-statement
     try:
         try:
             await SUNSYNK.read(sensors)
