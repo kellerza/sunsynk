@@ -1,6 +1,16 @@
 # Changelog
 
-## **2022.2.6-0.1.1** - 2022-02-08
+## **2022.2.8-0.1.2** - 2022-02-08
+
+Python sunsynk module 0.1.2:
+
+- Add sensors
+
+Sunsynk Add-On:
+
+- Fail after multiple read errors
+
+## **2022.2.8-0.1.1** - 2022-02-08
 
 Python sunsynk module 0.1.1:
 

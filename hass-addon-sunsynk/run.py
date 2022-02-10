@@ -14,6 +14,7 @@ from filter import Filter, getfilter, suggested_filter
 from mqtt import MQTT, Device, Entity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
+from pymodbus.exceptions import ModbusIOException
 
 import sunsynk.definitions as ssdefs
 from sunsynk import Sunsynk
@@ -145,13 +146,23 @@ async def read(
     sensors: Sequence[Sensor], msg: str = "", retry_single: bool = False
 ) -> bool:
     """Read from the Modbus interface."""
+
     try:
-        await SUNSYNK.read(sensors)
-        return True
-    except asyncio.TimeoutError:
-        _LOGGER.error("Read error%s: Timeout", msg)
+        try:
+            await SUNSYNK.read(sensors)
+            read.errors = 0
+            return True
+        except asyncio.TimeoutError:
+            _LOGGER.error("Read error%s: Timeout", msg)
+        except ModbusIOException:
+            # TCP: try to reconnect since it got a fairly serious error
+            await asyncio.sleep(1)
+            await SUNSYNK.connect(timeout=OPT.timeout)
     except Exception as err:  # pylint:disable=broad-except
         _LOGGER.error("Read Error%s: %s", msg, err)
+        read.errors += 1
+        if read.errors > 3:
+            raise Exception("Multiple Modbus read errors: %s", err)
 
     if retry_single:
         _LOGGER.info("Retrying individual sensors: %s", [s.name for s in SENSORS])
@@ -161,6 +172,8 @@ async def read(
 
     return False
 
+
+read.errors = 0
 
 TERM = (
     "This Add-On will terminate in 30 seconds, "

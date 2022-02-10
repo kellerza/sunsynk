@@ -52,11 +52,21 @@ pv2_voltage = HSensor(111, "PV2 Voltage", "V", 0.1)
 pv2_current = HSensor(112, "PV2 Current", "A", 0.1)
 grid_voltage = HSensor(150, "Grid Voltage", "V", 0.1)
 inverter_voltage = HSensor(154, "Inverter Voltage", "V", 0.1)
-# Sunsynk 5Kw: 169,172 are the same
+
+aux_load = HSensor(166, "AUX load", "W", -1)
+
+grid_l1_load = HSensor(167, "Grid L1 load", "W", -1)
+grid_l2_load = HSensor(168, "Grid L2 load", "W", -1)
 grid_load = HSensor(169, "Grid load", "W", -1)  # L1(167) + L2(168)
+# Sunsynk 5Kw: 169,172 are the same
+
 grid_ct_load = HSensor(172, "Grid CT load", "W", -1)
 inverter_output = HSensor(175, "Inverter Output", "W", -1)
+
+load_l1_power = HSensor(176, "Load L1 Power", "W", -1)
+load_l2_power = HSensor(177, "Load L2 Power", "W", -1)
 load_power = HSensor(178, "Load Power", "W", -1)  # L1(176) + L2(177)
+
 temp_battery = TemperatureSensor(182, "Temp Battery", CELSIUS, 0.1)
 battery_voltage = HSensor(183, "Battery voltage", "V", 0.01)
 battery_soc = HSensor(184, "Battery SOC", "%")
