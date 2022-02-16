@@ -1,20 +1,20 @@
 """Optionally test filters."""
 import logging
-from types import ModuleType
-from typing import List, Tuple, Union
+from typing import Callable, List, Tuple, Union
 
 import pytest
 
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)
-MOD_FOLDER = "hass-addon-sunsynk"
 
 
 @pytest.fixture
-def getfilter() -> ModuleType:
-    """Import module."""
-    return import_module("filter", MOD_FOLDER).getfilter
+def getfilter() -> Callable:
+    """Import & return the getfilter function."""
+    filter = import_module("filter", "hass-addon-sunsynk-dev")
+    _LOGGER.warning("Module filter: %s", dir(filter))
+    return filter.getfilter
 
 
 @pytest.mark.addon

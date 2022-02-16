@@ -22,7 +22,7 @@ pip install sunsynk
 
 For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk inverter. Sensors are read using the Modbus protocol and sent to a MQTT server. Below an example of the HomeAssistant Energy management dashboard using sensors from the Sunsynk.
 
-![HASS Energy management](./hass-addon-sunsynk/energy.png)
+![HASS Energy management](./images/energy.png)
 
 ### Add-On Installation
 

@@ -8,13 +8,25 @@ import pytest
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)
-MOD_FOLDER = "hass-addon-sunsynk"
+MOD_FOLDER = "hass-addon-sunsynk-dev"
 
 
 @pytest.fixture
 def mqtt() -> ModuleType:
     """Import module."""
     return import_module("mqtt", MOD_FOLDER)
+
+
+@pytest.fixture
+def run() -> ModuleType:
+    """Import module."""
+    return import_module("run", MOD_FOLDER)
+
+
+@pytest.fixture
+def opt():
+    """Import module."""
+    return import_module("options", MOD_FOLDER)
 
 
 @pytest.mark.addon

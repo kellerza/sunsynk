@@ -10,13 +10,12 @@ import pytest
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)
-MOD_FOLDER = "hass-addon-sunsynk"
 
 
 @pytest.fixture
 def run() -> ModuleType:
-    """Import module."""
-    return import_module("run", MOD_FOLDER)
+    """Import the module."""
+    return import_module("run", "hass-addon-sunsynk")
 
 
 @pytest.mark.addon

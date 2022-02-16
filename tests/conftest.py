@@ -2,6 +2,7 @@ import os
 import sys
 from importlib import import_module as _import_module
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -35,7 +36,7 @@ def pytest_collection_modifyitems(config, items):
                     item.add_marker(skip_mrk)
 
 
-def import_module(mod_name, folder: str):
+def import_module(mod_name, folder: str) -> ModuleType:
     """import_module."""
     here = Path(os.getcwd()) / folder
     sys.path.insert(0, str(here))
