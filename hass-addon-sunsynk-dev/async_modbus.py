@@ -13,14 +13,6 @@ import urllib.parse
 from umodbus.client import tcp
 from umodbus.client.serial import rtu
 
-try:
-    import numpy  # noqa
-except ImportError:
-    pass
-else:
-    import async_modbus_use_numpy  # noqa
-
-
 __author__ = """Tiago Coutinho"""
 __email__ = "coutinhotiago@gmail.com"
 __version__ = "0.1.4"

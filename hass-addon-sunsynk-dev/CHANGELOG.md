@@ -1,5 +1,12 @@
 # Changelog
 
+## **2022.2.17b-0.1.2** - 2022-02-17
+
+- Sunsynk Dev Add-On
+
+- Fix step filter bug
+- Use async_modbus / umodbus
+
 ## **2022.2.10-0.1.2** - 2022-02-08
 
 Python sunsynk module 0.1.2:
