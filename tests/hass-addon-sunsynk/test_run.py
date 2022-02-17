@@ -19,7 +19,6 @@ def run() -> ModuleType:
     return import_module("run", MOD_FOLDER)
 
 
-@pytest.mark.addon
 def test_run(run):
     """Test Run."""
     assert not run.SENSORS
@@ -36,7 +35,6 @@ def test_run(run):
     run.OPT.mqtt_host = ""
 
 
-@pytest.mark.addon
 def test_versions(run):
     """Test versions.
 

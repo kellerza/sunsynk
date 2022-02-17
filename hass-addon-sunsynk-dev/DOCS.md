@@ -2,17 +2,19 @@
 
 ## Parameters
 
-- `PORT`
+- `PORT_URL`
 
-  The serial port for RS485 communications. List available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_
+  The port for RS485 communications, which can be either:
 
-- `PORT_ADDRESS`
+  - A serial:// port (e.g. /dev/ttyUSB0 as `serial:///dev/ttyUSB0`)
 
-  The `host:port` or `ip:port` of a Modbus TCP server.
+    List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_
 
-  This repository contains a mbusd TCP gateway add-on that can be used for this purpose.
+  - A tcp:// port of a Modbus TCP server. (e.g. `tcp://homeassistant.local:502`)
 
-  If defined, `PORT_ADDRESS` will be preferred above `PORT`
+    This repository contains a mbusd TCP gateway add-on that can be used for this purpose.
+
+  - A RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
 
 - `SUNSYNK_ID`
 
@@ -20,7 +22,7 @@
 
   The add-on will not run if the expected/configured serial number is not found.
 
-  > This must be a string. So if your serial is a number only place it in single quotes `'1000'`
+  > This must be a string. So if your serial is a number only surround it with quotes `'1000'`
 
 - `SENSOR_PREFIX`
 

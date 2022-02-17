@@ -132,19 +132,21 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
 
 
 def suggested_filter(sensor: ssdef.Sensor) -> str:
-    """Suggested sensors."""
-    filt = {
+    """Default filters."""
+    f_id = {
         ssdef.serial.id: "last",
-        ssdef.overall_state.id: "last",
+        ssdef.overall_state.id: "step",
         ssdef.battery_soc.id: "last",
-        ssdef.sd_status.id: "last",
+        ssdef.sd_status.id: "step",
         ssdef.fault.id: "last",
-        ssdef.total_load_power.id: "step",
-    }.get(sensor.id)
-    if filt:
-        return filt
-    if isinstance(sensor, ssdef.TemperatureSensor):
-        return "avg"
-    if sensor.id.startswith("total_"):
-        return "last"
-    return "step"
+    }
+    f_unit = {
+        "A": "step",
+        "V": "avg",
+        "W": "step",
+        ssdef.KWH: "last",
+        ssdef.CELSIUS: "avg",
+    }
+    res = f_id.get(sensor.id) or f_unit.get(sensor.unit) or "step"
+    _LOGGER.debug("%s unit:%s, id:%s", res, sensor.unit, sensor.id)
+    return res

@@ -1,6 +1,6 @@
 ---
 name: Sunsynk Inverter Add-on (dev)
-version: 2022.02.10-0.1.2
+version: 2022.02.17-0.1.2
 slug: hass-addon-sunsynk-dev
 description: Add-on for the Sunsynk Inverter
 startup: services
@@ -19,9 +19,9 @@ host_network: false
 map:
     - share:rw
 options:
-    PORT_URL: 'serial://'
+    PORT_URL: 'serial:///dev/ttyUSB0'
     PROFILES: 0
-    SUNSYNK_ID: your_inverter_serial_number
+    SUNSYNK_ID: '007'
     SENSORS:
         - total_pv_power
         - total_battery_charge
@@ -30,7 +30,6 @@ options:
         - total_grid_import
         - battery_soc
     SENSOR_PREFIX: ''
-    TIMEOUT: 10
     MQTT_HOST: core-mosquitto
     MQTT_PORT: 1883
     MQTT_USERNAME: hass
@@ -41,9 +40,8 @@ schema:
     PROFILES: int
     SUNSYNK_ID: str
     SENSORS:
-        - str
-    SENSOR_PREFIX: str?
-    TIMEOUT: int
+      - str
+    SENSOR_PREFIX: str
     MQTT_HOST: str
     MQTT_PORT: port
     MQTT_USERNAME: str

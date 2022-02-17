@@ -29,13 +29,11 @@ def opt():
     return import_module("options", MOD_FOLDER)
 
 
-@pytest.mark.addon
 def test_mqtt(mqtt):
     """Test MQTT."""
     assert mqtt.hass_device_class(unit="kWh") == "energy"
 
 
-@pytest.mark.addon
 def test_mqtt_entity(mqtt):
     """Test MQTT."""
     dev = mqtt.Device(identifiers=["123"])

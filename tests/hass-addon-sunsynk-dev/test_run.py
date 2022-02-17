@@ -15,10 +15,9 @@ _LOGGER = logging.getLogger(__name__)
 @pytest.fixture
 def run() -> ModuleType:
     """Import the module."""
-    return import_module("run", "hass-addon-sunsynk")
+    return import_module("run", "hass-addon-sunsynk-dev")
 
 
-@pytest.mark.addon
 def test_run(run):
     """Test Run."""
     assert not run.SENSORS
@@ -35,7 +34,6 @@ def test_run(run):
     run.OPT.mqtt_host = ""
 
 
-@pytest.mark.addon
 def test_versions(run):
     """Test versions.
 

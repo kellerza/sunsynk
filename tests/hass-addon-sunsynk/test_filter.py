@@ -17,7 +17,6 @@ def getfilter() -> ModuleType:
     return import_module("filter", MOD_FOLDER).getfilter
 
 
-@pytest.mark.addon
 def test_last(getfilter):
     """Last filter."""
     fut = getfilter("last", None)
@@ -61,7 +60,6 @@ def run_filter_seq(
     return tick_cnt, upd_cnt, res
 
 
-@pytest.mark.addon
 def test_min(getfilter):
     """Min filter."""
     fut = getfilter("min", None)
@@ -81,7 +79,6 @@ def test_min(getfilter):
     assert res == 22
 
 
-@pytest.mark.addon
 def test_mean(getfilter):
     """Mean filter."""
     fut = getfilter("mean", None)
@@ -101,7 +98,6 @@ def test_mean(getfilter):
     assert res == 50
 
 
-@pytest.mark.addon
 def test_step(getfilter):
     """Step filter."""
     fut = getfilter("", None)

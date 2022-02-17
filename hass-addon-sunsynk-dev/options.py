@@ -20,8 +20,8 @@ class Options:
     sunsynk_id: str = ""
     sensors: List[str] = []
     profiles: int = 0
-    sensor_prefix: str = ""
-    timeout: int = 5
+    sensor_prefix: str = "SS"
+    timeout: int = 10
     debug: int = 1
     port_url: str = ""
 

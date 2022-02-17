@@ -10,7 +10,7 @@ import pytest
 # Pytest Mark: https://stackoverflow.com/a/61193490
 #
 
-MARKERS = ("addon", "mqtt")
+MARKERS = ("mqtt",)
 
 
 def pytest_addoption(parser):

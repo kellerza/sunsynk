@@ -1,3 +1,4 @@
+"""Test sunsynk library."""
 from unittest.mock import AsyncMock
 
 import pytest

@@ -7,20 +7,18 @@ import pytest
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)
+MOD_FOLDER = "hass-addon-sunsynk-dev"
 
 
 @pytest.fixture
-def getfilter() -> Callable:
+def filters() -> Callable:
     """Import & return the getfilter function."""
-    filter = import_module("filter", "hass-addon-sunsynk-dev")
-    _LOGGER.warning("Module filter: %s", dir(filter))
-    return filter.getfilter
+    return import_module("filter", MOD_FOLDER)
 
 
-@pytest.mark.addon
-def test_last(getfilter):
+def test_last(filters):
     """Last filter."""
-    fut = getfilter("last", None)
+    fut = filters.getfilter("last", None)
 
     assert fut.should_update() is True
     res = fut.update(55)
@@ -61,10 +59,9 @@ def run_filter_seq(
     return tick_cnt, upd_cnt, res
 
 
-@pytest.mark.addon
-def test_min(getfilter):
+def test_min(filters):
     """Min filter."""
-    fut = getfilter("min", None)
+    fut = filters.getfilter("min", None)
 
     tick, iup, res = run_filter_seq(
         fut, updates=[50, 44, 100, 100, 100, 100], first1=True, interval=10
@@ -81,10 +78,9 @@ def test_min(getfilter):
     assert res == 22
 
 
-@pytest.mark.addon
-def test_mean(getfilter):
+def test_mean(filters):
     """Mean filter."""
-    fut = getfilter("mean", None)
+    fut = filters.getfilter("mean", None)
 
     tick, iup, res = run_filter_seq(
         fut, updates=[50, 50, 50, 100, 100, 100], first1=True, interval=10
@@ -101,10 +97,9 @@ def test_mean(getfilter):
     assert res == 50
 
 
-@pytest.mark.addon
-def test_step(getfilter):
+def test_step(filters):
     """Step filter."""
-    fut = getfilter("", None)
+    fut = filters.getfilter("", None)
 
     assert fut.should_update()
     assert fut.update(20) is None
@@ -114,3 +109,10 @@ def test_step(getfilter):
     assert fut.update(120) == 120
     assert fut.should_update()
     assert fut.update(140) is None
+
+
+def test_suggest(filters):
+    assert filters.suggested_filter(filters.ssdef.temp_environment) == "avg"
+    assert filters.suggested_filter(filters.ssdef.day_battery_charge) == "last"
+    assert filters.suggested_filter(filters.ssdef.grid_load) == "step"
+    assert filters.suggested_filter(filters.ssdef.sd_status) == "step"

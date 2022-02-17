@@ -33,3 +33,4 @@ repos:
     hooks:
       - id: pydocstyle
         files: "sunsynk/.*.py"
+        exclude: "tests/"

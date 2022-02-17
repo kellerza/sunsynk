@@ -1,3 +1,4 @@
+"""Sunsynk sensor tests."""
 import logging
 from typing import Sequence
 
