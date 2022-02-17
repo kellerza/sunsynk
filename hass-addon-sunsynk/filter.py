@@ -19,7 +19,7 @@ class Filter:
 
     interval: int = attr.field(default=60)
     _i: int = attr.field(default=0)
-    values: List[Any] = attr.field(default=attr.Factory(list))
+    values: List[Any] = attr.field(default=None)
     samples: int = attr.field(default=1)
     _filter: Any = attr.field(default=mean)
     sensor: Any = attr.field(default=None)
@@ -50,11 +50,15 @@ class Filter:
             self.values = [value]
             return value
 
+        if self.values is None:  # quick initial start
+            self.values = []
+            return value
+
         self.values.append(value)  # pylint: disable=no-member
         if len(self.values) < self.samples:
             return None
         try:
-            value = self._filter(self.values)  # pylint: disable=not-callable
+            value = round(self._filter(self.values), 1)  # pylint: disable=not-callable
         except TypeError:
             pass
 
@@ -77,23 +81,20 @@ class SCFilter(Filter):
     def update(self, value: Union[float, int, str]) -> Optional[Union[float, int, str]]:
         """Add value."""
         val0 = self.values[0] if self.values else 0
-        if (
-            isinstance(value, str)
-            or isinstance(val0, str)
-            or (not (value > val0 + self.threshold or value < val0 - self.threshold))
-        ):
-            return super().update(value)
+        try:
+            if value > val0 + self.threshold or value < val0 - self.threshold:
+                if OPT.debug >= 1:
+                    msg = f"{self.name}: {val0}->{value}, {len(self.values)} samples"
+                    _LOGGER.info(msg)
+                self.values = [value]
+                return value
+        except TypeError:
+            pass
 
-        if OPT.debug >= 1:
-            _LOGGER.info(
-                "%s: significant change %s -> %s (%d samples in buffer)",
-                self.name,
-                val0,
-                value,
-                len(self.values),
-            )
-        self.values = [value]
-        return value
+        res = super().update(value)
+        if res and not self.values:
+            self.values = [res]
+        return res
 
 
 def getfilter(filter_def: str, sensor: Any) -> Filter:
@@ -132,19 +133,23 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
 
 
 def suggested_filter(sensor: ssdef.Sensor) -> str:
-    """Suggested sensors."""
-    filt = {
-        ssdef.serial.id: "last",
-        ssdef.overall_state.id: "last",
-        ssdef.battery_soc.id: "last",
-        ssdef.sd_status.id: "last",
-        ssdef.fault.id: "last",
-        ssdef.total_load_power.id: "step",
-    }.get(sensor.id)
-    if filt:
-        return filt
-    if isinstance(sensor, ssdef.TemperatureSensor):
-        return "avg"
-    if sensor.id.startswith("total_"):
+    """Default filters."""
+    if sensor.id.startswith("prog"):
         return "last"
-    return "step"
+    f_id = {
+        ssdef.serial.id: "last",
+        ssdef.overall_state.id: "step",
+        ssdef.battery_soc.id: "last",
+        ssdef.sd_status.id: "step",
+        ssdef.fault.id: "last",
+    }
+    f_unit = {
+        "A": "step",
+        "V": "avg",
+        "W": "step",
+        ssdef.KWH: "last",
+        ssdef.CELSIUS: "avg",
+    }
+    res = f_id.get(sensor.id) or f_unit.get(sensor.unit) or "step"
+    _LOGGER.debug("%s unit:%s, id:%s", res, sensor.unit, sensor.id)
+    return res

@@ -1,5 +1,11 @@
 # Changelog
 
+## **2022.2.17-0.1.2** - 2022-02-17
+
+Sunsynk Add-On:
+
+- Fix step filter bug
+
 ## **2022.2.10-0.1.2** - 2022-02-08
 
 Python sunsynk module 0.1.2:

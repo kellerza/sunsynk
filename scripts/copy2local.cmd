@@ -1,7 +1,7 @@
 @echo off
-CALL :copy2 hass-addon-sunsynk,\\192.168.1.7\addons\hass-addon-sunsynk\
+rem CALL :copy2 hass-addon-sunsynk,\\192.168.1.7\addons\hass-addon-sunsynk\
 CALL :copy2 hass-addon-sunsynk-dev,\\192.168.1.7\addons\hass-addon-sunsynk-dev\
-xcopy /Y hass-addon-mbusd \\192.168.1.7\addons\hass-addon-mbusd\
+rem xcopy /Y hass-addon-mbusd \\192.168.1.7\addons\hass-addon-mbusd\
 
 EXIT /B %ERRORLEVEL%
 
@@ -18,4 +18,11 @@ sed -i 's/ sunsynk==[0-9.]*$//' Dockerfile.tmp
 sed -i 's/# RUN pip3 install -e/RUN pip3 install -e/' Dockerfile.tmp
 xcopy /Y Dockerfile.tmp %~2\Dockerfile
 rm Dockerfile.tmp
+
+
+cp %~1\config.yaml config.tmp
+sed -i 's/name: /name: LOCAL /' config.tmp
+xcopy /Y config.tmp %~2\config.yaml
+rm config.tmp
+
 EXIT /B 0

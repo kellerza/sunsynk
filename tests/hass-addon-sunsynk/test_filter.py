@@ -1,7 +1,7 @@
 """Optionally test filters."""
 import logging
-from types import ModuleType
-from typing import List, Tuple, Union
+from itertools import repeat
+from typing import Any, Callable, List
 
 import pytest
 
@@ -12,101 +12,130 @@ MOD_FOLDER = "hass-addon-sunsynk"
 
 
 @pytest.fixture
-def getfilter() -> ModuleType:
-    """Import module."""
-    return import_module("filter", MOD_FOLDER).getfilter
+def filters() -> Callable:
+    """Import & return the getfilter function."""
+    return import_module("filter", MOD_FOLDER)
 
 
-def test_last(getfilter):
+def assert_sequence(fut, updates: List[Any], counts=None):
+    upd_cnt, i_cnt = 0, 0
+    try:
+        for upd in updates:
+            i_cnt += 1
+            if upd is None:
+                assert not fut.should_update()
+                continue
+
+            assert fut.should_update()
+            upd_cnt += 1
+
+            if isinstance(upd, tuple):  # expecting a result!
+                ures = fut.update(upd[0])
+                if ures is None or ures != upd[1]:
+                    assert 0, f"{upd}: update({upd[0]}) expected {upd[1]} got {ures}"
+            else:
+                ures = fut.update(upd)
+                if ures is not None:
+                    assert 0, f"update({upd}) expected None, got {ures}"
+
+    except AssertionError as err:
+        assert False, f"Index {i_cnt} Update {upd_cnt} - {err}"
+
+    if counts:
+        assert counts == (i_cnt, upd_cnt)
+
+
+def add_intervals(count, val0, *vals):
+    """Generator to insert count intervals between values of an array."""
+    assert not isinstance(val0, list)
+    yield val0
+    for val in vals:
+        # an interval is represented as None
+        yield from repeat(None, count)
+        yield val
+
+
+def test_last(filters):
     """Last filter."""
-    fut = getfilter("last", None)
+    fut = filters.getfilter("last", None)
 
-    assert fut.should_update() is True
-    res = fut.update(55)
-    assert res == 55
-
-    for i in range(59):
-        _LOGGER.error(i)
-        if fut.should_update():
-            assert i is False
-
-    assert fut.should_update() is True
-    res = fut.update(44)
-    assert res == 44
+    assert_sequence(fut, add_intervals(59, *[(55, 55), (44, 44), (43, 43)]))
 
 
-def run_filter_seq(
-    fut, *, updates: List[int], first1: bool, interval: int
-) -> Tuple[int, int, Union[float, int]]:
-    """Run the filter through a sequence."""
-    tick_cnt, upd_cnt, res = 0, 0, None
-    for oi in range(len(updates)):
-        assert res is None
-        if first1 and oi == 0:
-            pass  # filters always have a quick start...
-        else:
-            for i in range(interval - 1):
-                tick_cnt += 1
-                if fut.should_update():
-                    assert (
-                        i is False
-                    ), f"expected no updates, got one at {i}/{interval-1}"
-        tick_cnt += 1
-        upd_cnt += 1
-        assert fut.should_update() is True
-        res = fut.update(updates[oi])
-
-    assert res is not None, "the filter should have returned a value"
-    return tick_cnt, upd_cnt, res
-
-
-def test_min(getfilter):
+def test_min(filters):
     """Min filter."""
-    fut = getfilter("min", None)
+    fut = filters.getfilter("min", None)
 
-    tick, iup, res = run_filter_seq(
-        fut, updates=[50, 44, 100, 100, 100, 100], first1=True, interval=10
-    )
-    assert tick == 51
-    assert iup == 6
-    assert res == 44
+    sq0 = (50, 50)
+    sq1 = [44, 100, 100, 100, 100, (100, 44)]
+    sq2 = [100, 100, 100, 55, 100, (100, 55)]
 
-    tick, iup, res = run_filter_seq(
-        fut, updates=[50, 44, 22, 100, 100, 100], first1=False, interval=10
-    )
-    assert tick == 60
-    assert iup == 6
-    assert res == 22
+    assert_sequence(fut, add_intervals(9, sq0, sq1, sq2))
+
+    assert fut.should_update() is False
 
 
-def test_mean(getfilter):
+def test_mean(filters):
     """Mean filter."""
-    fut = getfilter("mean", None)
+    fut = filters.getfilter("mean", None)
 
-    tick, iup, res = run_filter_seq(
-        fut, updates=[50, 50, 50, 100, 100, 100], first1=True, interval=10
+    assert_sequence(
+        fut,
+        add_intervals(9, *[(50, 50), 50, 50, 50, 100, 100, (100, 75)]),
+        counts=(61, 7),
     )
-    assert tick == 51
-    assert iup == 6
-    assert res == 75
 
-    tick, iup, res = run_filter_seq(
-        fut, updates=[0, 100, 50, 50, 50, 50], first1=False, interval=10
+    assert_sequence(  # a single interval
+        fut,
+        [None] * 9,
+        counts=(9, 0),
     )
-    assert tick == 60
-    assert iup == 6
-    assert res == 50
+
+    assert_sequence(
+        fut,
+        add_intervals(9, *[50, 100, 50, 50, 100, (100, 75)]),
+        counts=(51, 6),
+    )
 
 
-def test_step(getfilter):
+def test_step(filters):
     """Step filter."""
-    fut = getfilter("", None)
+    fut = filters.getfilter("", None)
+    assert_sequence(
+        fut,
+        [(20, 20), 20, 20, 20, (120, 120), 140, 140],
+    )
 
-    assert fut.should_update()
-    assert fut.update(20) is None
-    assert fut.should_update()
-    assert fut.update(20) is None
-    assert fut.should_update()
-    assert fut.update(120) == 120
-    assert fut.should_update()
-    assert fut.update(140) is None
+    fut = filters.getfilter("step:100", None)
+    assert_sequence(
+        fut,
+        [(90, 90)] + [90] * 58 + [(90, 90)],
+    )
+
+    fut = filters.getfilter("step:100", None)
+    sq0 = [(10, 10)]
+    sq0 += [21] * 58 + [(50, 21.3)]
+    sq0 += [(150, 150), (20, 20)]
+    sq0 += [21] * 58 + [(50, 21.5)]
+    sq0 += [20] * 58 + [(50, 20.5)]
+    sq0 += [20] * 58 + [(50, 20.5)]
+    sq0 += [(1000, 1000)] + [950] * 58 + [(950, 950.8)]
+
+    assert_sequence(fut, sq0)
+
+
+def test_step_text(filters):
+    """Step filter."""
+    fut = filters.getfilter("step", None)
+    assert_sequence(
+        fut,
+        [("a", "a"), ("b", "b")],
+    )
+
+
+def test_suggest(filters):
+    assert filters.suggested_filter(filters.ssdef.temp_environment) == "avg"
+    assert filters.suggested_filter(filters.ssdef.day_battery_charge) == "last"
+    assert filters.suggested_filter(filters.ssdef.grid_load) == "step"
+    assert filters.suggested_filter(filters.ssdef.sd_status) == "step"
+    assert filters.suggested_filter(filters.ssdef.prog1_time) == "last"
