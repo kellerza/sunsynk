@@ -4,3 +4,5 @@ pymodbus==2.5.3
 paho-mqtt~=1.5.0
 pyserial-asyncio
 pyyaml~=5.4.1
+connio
+umodbus

@@ -133,6 +133,8 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
 
 def suggested_filter(sensor: ssdef.Sensor) -> str:
     """Default filters."""
+    if sensor.id.startswith("prog"):
+        return "last"
     f_id = {
         ssdef.serial.id: "last",
         ssdef.overall_state.id: "step",

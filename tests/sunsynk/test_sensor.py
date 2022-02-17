@@ -2,8 +2,6 @@
 import logging
 from typing import Sequence
 
-import pytest
-
 import sunsynk.definitions as defs
 from sunsynk.sensor import (
     FaultSensor,
@@ -22,8 +20,6 @@ from sunsynk.sunsynk import register_map
 
 _LOGGER = logging.getLogger(__name__)
 
-pytestmark = pytest.mark.asyncio
-
 
 # @pytest.fixture
 # def sensors():
@@ -34,7 +30,7 @@ pytestmark = pytest.mark.asyncio
 #     ]
 
 
-async def test_sen():
+def test_sen():
     a = []
     s = Sensor(0, "S 1").append_to(a)
     h = HSensor(0, "H 1").append_to(a)
@@ -43,7 +39,7 @@ async def test_sen():
     assert s.id == "s_1"
 
 
-async def test_group() -> None:
+def test_group() -> None:
     sen = [
         Sensor(10, "10"),
         Sensor(11, "11"),
@@ -54,7 +50,7 @@ async def test_group() -> None:
     assert g == [[10, 11, 12], [20]]
 
 
-async def test_all_groups() -> None:
+def test_all_groups() -> None:
     s = [getattr(defs, s) for s in dir(defs) if isinstance(getattr(defs, s), Sensor)]
     for i in range(2, 6):
         _LOGGER.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
