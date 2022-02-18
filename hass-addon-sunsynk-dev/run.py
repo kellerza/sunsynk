@@ -18,7 +18,7 @@ from pymodbus.exceptions import ModbusIOException  # type: ignore
 from usunsynk import uSunsynk
 
 from sunsynk import Sensor
-from sunsynk.definitions import ALL_SENSORS
+from sunsynk.definitions import ALL_SENSORS, DEPRECATED
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -126,8 +126,8 @@ def startup() -> None:
         if not isinstance(sen, Sensor):
             log_bold(f"Unknown sensor in config: {sensor_def}")
             continue
-        if sen.deprecate:
-            log_bold(f"Sensor deprecated: {sen.id} -> {sen.deprecate.id}")
+        if sen.id in DEPRECATED:
+            log_bold(f"Sensor deprecated: {sen.id} -> {DEPRECATED[sen.id].id}")
         if not fstr:
             fstr = suggested_filter(sen)
             msg.setdefault(f"*{fstr}", []).append(name)  # type: ignore
