@@ -8,8 +8,8 @@ FROM ${BUILD_FROM}
 #     python3-pip \
 #   && rm -rf /var/lib/apt/lists/*
 
-# RUN python3 -m pip install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 async_modbus umodbus sunsynk==0.1.2
-RUN python3 -m pip install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 connio umodbus sunsynk==0.1.2
+# RUN python3 -m pip install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 async_modbus umodbus sunsynk==0.1.3
+RUN python3 -m pip install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 connio umodbus sunsynk==0.1.3
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

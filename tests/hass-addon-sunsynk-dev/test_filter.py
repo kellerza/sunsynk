@@ -5,6 +5,7 @@ from typing import Any, Callable, List
 
 import pytest
 
+from sunsynk.definitions import ALL_SENSORS
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)
@@ -134,8 +135,8 @@ def test_step_text(filters):
 
 
 def test_suggest(filters):
-    assert filters.suggested_filter(filters.ssdef.temp_environment) == "avg"
-    assert filters.suggested_filter(filters.ssdef.day_battery_charge) == "last"
-    assert filters.suggested_filter(filters.ssdef.grid_load) == "step"
-    assert filters.suggested_filter(filters.ssdef.sd_status) == "step"
-    assert filters.suggested_filter(filters.ssdef.prog1_time) == "last"
+    assert filters.suggested_filter(ALL_SENSORS["temp_environment"]) == "avg"
+    assert filters.suggested_filter(ALL_SENSORS["day_battery_charge"]) == "last"
+    assert filters.suggested_filter(ALL_SENSORS["grid_load"]) == "step"
+    assert filters.suggested_filter(ALL_SENSORS["sd_status"]) == "step"
+    assert filters.suggested_filter(ALL_SENSORS["prog1_time"]) == "last"

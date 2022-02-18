@@ -1,5 +1,19 @@
 # Changelog
 
+## **2022.2.18-0.1.3** - 2022-02-18
+
+- Python sunsynk module 0.1.3:
+
+  - More consistent sensor names: Power (W) based sensors now all end with _power: aux_power, inverter_output_power, grid_power, grid_ct_power
+
+  - Added "essential_power" & "non_essential_power" sensor, which is a combination of registers
+
+  - New: battery_charging_voltage, grid_charge_enabled
+
+- Sunsynk Dev Add-On
+
+  Better error handling
+
 ## **2022.2.17b-0.1.2** - 2022-02-17
 
 - Sunsynk Dev Add-On

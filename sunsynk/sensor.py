@@ -19,6 +19,21 @@ def ensure_tuple(val: Any) -> Tuple[int]:
     return tuple(val)  # type: ignore
 
 
+def _round(val: Union[int, float, str]) -> Union[int, float, str]:
+    """Round if float."""
+    if not isinstance(val, float):
+        return val
+    val = round(val, 2)
+    if modf(val)[0] == 0:
+        return int(val)
+    return val
+
+
+def _signed(val: Union[int, float]) -> Union[int, float]:
+    """Convert 16-bit value to signed int."""
+    return val if val <= 0x7FFF else val - 0xFFFF
+
+
 @attr.define(slots=True)
 class Sensor:
     """Sunsynk sensor."""
@@ -57,36 +72,35 @@ class Sensor:
         hval = self.reg_value[1] if len(self.reg_value) > 1 else 0
         lval = self.reg_value[0]
 
-        _LOGGER.debug(
-            "%s low=%d high=%d value=%s%s",
-            self.name,
-            lval,
-            hval,
-            self.value,
-            self.unit,
-        )
-
         self.value = (lval + (hval << 16)) * self.factor
 
         if self.factor < 0:  # Indicate this register is signed
-            self.value = -self.value
-            # Value might be negative.
-            if self.value > 0x7FFF:
-                self.value -= 0xFFFF
+            self.value = _round(_signed(-self.value))
+        else:
+            self.value = _round(self.value)
 
-        # if self.func:
-        #     self.value = self.func(self.value)  # type: ignore
-
-        # make integer/round?
-        if isinstance(self.value, float):
-            if modf(self.value)[0] == 0:
-                self.value = int(self.value)
-            else:
-                self.value = round(self.value, 2)
+        _LOGGER.debug("%s=%s%s [%s, %s]", self.name, self.value, self.unit, lval, hval)
 
 
 class HSensor(Sensor):
     """Hybrid sensor."""
+
+
+@attr.define(slots=True)
+class MathSensor(Sensor):
+    """Math sensor, add multiple registers."""
+
+    factors: Tuple[float, ...] = attr.field(default=None, converter=ensure_tuple)
+
+    def update_value(self) -> None:
+        """Update the value."""
+        self.value = _round(
+            sum(_signed(i) * s for i, s in zip(self.reg_value, self.factors))
+        )
+
+    def __attrs_post_init__(self) -> None:
+        """Ensure correct parameters."""
+        assert len(self.reg_address) == len(self.factors)
 
 
 class RWSensor(Sensor):
@@ -126,10 +140,10 @@ def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None
 
 def slug(name: str) -> str:
     """Create a slug."""
-    return name.lower().replace(" ", "_")
+    return name.lower().replace(" ", "_").replace("-", "_")
 
 
-class TemperatureSensor(Sensor):
+class TempSensor(Sensor):
     """Offset by 100 for temperature."""
 
     def update_value(self) -> None:
@@ -178,6 +192,7 @@ class SerialSensor(Sensor):
 
     def update_value(self) -> None:
         """Decode Inverter serial number."""
+        self.value = ""
         res = ""
         for b16 in self.reg_value:
             res += chr(b16 >> 8)

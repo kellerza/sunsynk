@@ -7,18 +7,21 @@ import pytest
 from sunsynk.sunsynk import Sunsynk
 
 
+@pytest.mark.asyncio
 async def test_ss():
     s = Sunsynk()
     with pytest.raises(ConnectionError):
         await s.connect()
 
 
+@pytest.mark.asyncio
 async def test_ss_tcp():
     s = Sunsynk(port="127.0.0.1:502")
     with pytest.raises(ConnectionError):
         await s.connect()
 
 
+@pytest.mark.asyncio
 async def test_ss_read():
     s = Sunsynk()
     s.client = AsyncMock()

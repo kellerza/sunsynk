@@ -16,8 +16,8 @@ from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 from pymodbus.exceptions import ModbusIOException  # type: ignore
 
-import sunsynk.definitions as ssdefs
 from sunsynk import Sunsynk
+from sunsynk.definitions import ALL_SENSORS, DEPRECATED
 from sunsynk.sensor import Sensor
 
 _LOGGER = logging.getLogger(__name__)
@@ -119,10 +119,12 @@ def startup() -> None:
             continue
         sens[name] = True
 
-        sen = getattr(ssdefs, name, None)
-        if not sen:
+        sen = ALL_SENSORS.get(name)
+        if not isinstance(sen, Sensor):
             log_bold(f"Unknown sensor in config: {sensor_def}")
             continue
+        if name in DEPRECATED:
+            log_bold(f"Sensor deprecated: {sen.id} -> {DEPRECATED[name].id}")
         if not fstr:
             fstr = suggested_filter(sen)
             msg.setdefault(f"*{fstr}", []).append(name)  # type: ignore
@@ -181,6 +183,8 @@ TERM = (
     "use the Supervisor Watchdog to restart automatically."
 )
 
+SERIAL = ALL_SENSORS["serial"]
+
 
 async def main(loop: AbstractEventLoop) -> None:  # noqa
     """Main async loop."""
@@ -194,7 +198,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         await asyncio.sleep(30)
         return
 
-    if not await read([ssdefs.serial]):
+    if not await read([SERIAL]):
         log_bold(
             "No response on the Modbus interface, try checking the "
             "wiring to the Inverter, the USB-to-RS485 converter, etc"
@@ -203,13 +207,13 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         await asyncio.sleep(30)
         return
 
-    log_bold(f"Inverter serial number '{ssdefs.serial.value}'")
+    log_bold(f"Inverter serial number '{SERIAL.value}'")
 
-    if OPT.sunsynk_id != ssdefs.serial.value and not OPT.sunsynk_id.startswith("_"):
+    if OPT.sunsynk_id != SERIAL.value and not OPT.sunsynk_id.startswith("_"):
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
         return
 
-    await hass_discover_sensors(str(ssdefs.serial.value))
+    await hass_discover_sensors(str(SERIAL.value))
 
     # Read all & publish immediately
     await asyncio.sleep(0.01)

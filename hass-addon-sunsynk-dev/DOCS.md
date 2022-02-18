@@ -86,19 +86,53 @@ Other modifiers
 | `:avg`   | the average over the last 60 seconds                                                                                             |
 | `:step`  | the average over the last minute will be reported, except if there is a significant change (>80) then it will be reported immediately. This is useful for automations using the current power |
 
-## Home Assistant Energy Management
+## Home Assistant
+
+### Energy Management
 
 An example of a hybrid inverter with a battery
 
 ```yaml
 SENSORS:
-  - total_active_power:last
-  - total_grid_export:last
-  - total_grid_import:last
-  - total_pv_power:last
-  - total_load_power:last
-  - total_battery_charge:last
-  - total_battery_discharge:last
+  - total_active_power
+  - total_grid_export
+  - total_grid_import
+  - total_pv_power
+  - total_load_power
+  - total_battery_charge
+  - total_battery_discharge
 ```
 
 ![HASS Energy management](energy.png)
+
+
+### Templates
+
+You can view sensor values under Home Assistant using the "Developer Tools" -> Templates tab
+
+```jinja
+{% set s186 = states("sensor.ss_pv1_power")|float -%}      PV1:{{s186}}W
+{%- set s187 = states("sensor.ss_pv2_power")|float %}      PV2:{{s187}}W
+{%- set s190 = states("sensor.ss_battery_power")|float %}
+{%- set s166 = states("sensor.ss_aux_power")|float %}      Gen:{{s166}}W
+
+{%- set s169 = states("sensor.ss_grid_power")|float %}
+{%- set s167 = states("sensor.ss_grid_l1_power")|float %}
+{%- set s168 = states("sensor.ss_grid_l2_power")|float %}
+
+Grid power:     {{s169}} = {{s167}} + {{s168}}
+Grid CT power:  {% set s172 = states("sensor.ss_grid_ct_power")|float -%}   {{s172}}
+
+{%- set s178 = states("sensor.ss_load_power")|float %}
+{%- set s176 = states("sensor.ss_load_l1_power")|float %}
+{%- set s177 = states("sensor.ss_load_l2_power")|float %}
+
+Load Power: {{s178}} = {{s176}} + {{s177}}
+
+Inv out: {% set s175 = states("sensor.ss_inverter_output_power")|float %} {{s175}}
+
+Batt:    {{ s190 }}
+Ess:     {{ states("sensor.ss_essential_power") }}   {{ s175-s166+s167 }} [175-166+167]
+Non-Ess: {{ states("sensor.ss_non_essential_power") }}  {{ s172 -s167 }} [172-167]={{s172}}-{{s167}}
+Grid CT: {{ s172 }} [172]
+```

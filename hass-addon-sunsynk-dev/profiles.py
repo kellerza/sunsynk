@@ -13,7 +13,7 @@ from options import OPT, SS_TOPIC
 from yaml import safe_dump, safe_load
 
 from sunsynk import Sunsynk
-from sunsynk import definitions as ssd
+from sunsynk.definitions import PROG_VOLT, PROGRAM
 from sunsynk.sensor import RWSensor, ensure_tuple, slug
 
 _LOGGER = logging.getLogger(__name__)
@@ -188,44 +188,6 @@ def profile_add_entities(entities: List[Entity], device: Device) -> None:
 PROFILE_QUEUE: List[Tuple[Profile, str]] = []
 
 ALL_PROFILES = (
-    Profile(
-        name="System Mode",
-        sensors=[
-            ssd.prog1_capacity,
-            ssd.prog2_capacity,
-            ssd.prog3_capacity,
-            ssd.prog4_capacity,
-            ssd.prog5_capacity,
-            ssd.prog6_capacity,
-            ssd.prog1_time,
-            ssd.prog2_time,
-            ssd.prog3_time,
-            ssd.prog4_time,
-            ssd.prog5_time,
-            ssd.prog6_time,
-            ssd.prog1_power,
-            ssd.prog2_power,
-            ssd.prog3_power,
-            ssd.prog4_power,
-            ssd.prog5_power,
-            ssd.prog6_power,
-            ssd.prog1_charge,
-            ssd.prog2_charge,
-            ssd.prog3_charge,
-            ssd.prog4_charge,
-            ssd.prog5_charge,
-            ssd.prog6_charge,
-        ],
-    ),
-    Profile(
-        name="System Mode Voltages",
-        sensors=[
-            ssd.prog1_voltage,
-            ssd.prog2_voltage,
-            ssd.prog3_voltage,
-            ssd.prog4_voltage,
-            ssd.prog5_voltage,
-            ssd.prog6_voltage,
-        ],
-    ),
+    Profile(name="System Mode", sensors=PROGRAM),
+    Profile(name="System Mode Voltages", sensors=PROG_VOLT),
 )
