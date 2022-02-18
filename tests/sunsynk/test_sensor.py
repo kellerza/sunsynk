@@ -75,9 +75,6 @@ def test_ids() -> None:
     for nme, val in ALL_SENSORS.items():
         assert nme == val.id
 
-        if val.deprecate:
-            assert isinstance(val, Sensor)
-
         if val.id in DEPRECATED:
             continue
         assert val.unit != WATT or val.name.endswith(" power")
