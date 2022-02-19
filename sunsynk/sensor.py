@@ -69,17 +69,16 @@ class Sensor:
 
     def update_value(self) -> None:
         """Update the value from the reg_value."""
-        hval = self.reg_value[1] if len(self.reg_value) > 1 else 0
-        lval = self.reg_value[0]
-
-        self.value = (lval + (hval << 16)) * self.factor
+        val = self.reg_value[0]
+        if len(self.reg_value) > 1:
+            val += self.reg_value[1] << 16
 
         if self.factor < 0:  # Indicate this register is signed
-            self.value = _round(_signed(-self.value))
+            self.value = _round(_signed(val) * -self.factor)
         else:
-            self.value = _round(self.value)
+            self.value = _round(val * self.factor)
 
-        _LOGGER.debug("%s=%s%s [%s, %s]", self.name, self.value, self.unit, lval, hval)
+        _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
 
 
 class HSensor(Sensor):

@@ -39,6 +39,7 @@ _SENSORS += (
 _SENSORS += (
     Sensor(175, "Inverter power", WATT, -1),
     Sensor(154, "Inverter voltage", VOLT, 0.1),
+    Sensor(193, "Inverter frequency", "Hz", 0.01),
 )
 
 #############
@@ -47,7 +48,7 @@ _SENSORS += (
 _SENSORS += (
     Sensor(79, "Grid frequency", "Hz", 0.01),
     Sensor(169, "Grid power", WATT, -1),  # L1(167) + L2(168)
-    Sensor(167, "Grid L1 power", WATT, -1),
+    Sensor(167, "Grid LD power", WATT, -1),  # L1 seems to be LD
     Sensor(168, "Grid L2 power", WATT, -1),
     Sensor(150, "Grid voltage", VOLT, 0.1),
     MathSensor((160, 161), "Grid current", AMPS, factors=(0.01, 0.01)),
@@ -70,7 +71,7 @@ _SENSORS += (
 _SENSORS += (
     Sensor(186, "PV1 power", WATT, -1),
     Sensor(109, "PV1 voltage", VOLT, 0.1),
-    Sensor(110, "PV1 Current", AMPS, 0.1),
+    Sensor(110, "PV1 current", AMPS, 0.1),
 )
 
 ################
@@ -79,7 +80,7 @@ _SENSORS += (
 _SENSORS += (
     Sensor(187, "PV2 power", WATT, -1),
     Sensor(111, "PV2 voltage", VOLT, 0.1),
-    Sensor(112, "PV2 Current", AMPS, 0.1),
+    Sensor(112, "PV2 current", AMPS, 0.1),
 )
 
 ###################
@@ -138,7 +139,7 @@ _SENSORS += (
 ###########
 _SENSORS += (
     Sensor(230, "Grid Charge Battery current", AMPS, -1),
-    Sensor(232, "Grid Charge enabled", AMPS, -1),
+    Sensor(232, "Grid Charge enabled", "", -1),
     Sensor(312, "Battery charging voltage", VOLT, 0.01),
     Sensor(603, "Bat1 SOC", "%"),
     Sensor(611, "Bat1 Cycle"),
@@ -197,7 +198,7 @@ def _deprecated() -> None:
     dep_map: Dict[str, Sensor] = {
         "battery_temperature": TempSensor(182, "Temp Battery", CELSIUS, 0.1),
         "aux_power": Sensor(166, "AUX load", WATT, -1),
-        "grid_l1_power": Sensor(167, "Grid L1 load", WATT, -1),
+        "grid_ld_power": Sensor(167, "Grid L1 load", WATT, -1),
         "grid_l2_power": Sensor(168, "Grid L2 load", WATT, -1),
         "grid_power": Sensor(169, "Grid load", WATT, -1),
         "grid_ct_power": Sensor(172, "Grid CT load", WATT, -1),

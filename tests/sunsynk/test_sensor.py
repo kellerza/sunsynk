@@ -4,7 +4,7 @@ from typing import Sequence
 
 import pytest
 
-from sunsynk.definitions import ALL_SENSORS, DEPRECATED, VOLT, WATT
+from sunsynk.definitions import ALL_SENSORS, AMPS, DEPRECATED, VOLT, WATT
 from sunsynk.sensor import (
     FaultSensor,
     HSensor,
@@ -72,13 +72,17 @@ def waste(groups) -> Sequence[int]:
 
 
 def test_ids() -> None:
-    for nme, val in ALL_SENSORS.items():
-        assert nme == val.id
+    for name, sen in ALL_SENSORS.items():
+        assert name == sen.id
 
-        if val.id in DEPRECATED:
+        if sen.factor and sen.factor < 0 and len(sen.reg_address) > 1:
+            assert False, "only single signed supported"
+
+        if sen.id in DEPRECATED:
             continue
-        assert val.unit != WATT or val.name.endswith(" power")
-        assert val.unit != VOLT or val.name.endswith(" voltage")
+        assert sen.unit != AMPS or sen.name.endswith(" current")
+        assert sen.unit != WATT or sen.name.endswith(" power")
+        assert sen.unit != VOLT or sen.name.endswith(" voltage")
 
 
 def test_ensure_tuple() -> None:
