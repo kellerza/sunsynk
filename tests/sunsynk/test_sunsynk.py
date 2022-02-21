@@ -43,5 +43,5 @@ async def test_ss_read(sss):
             ss.client = AsyncMock()
 
         if pySunsynk:
-            ss = uSunsynk()
+            ss = pySunsynk()
             ss.client = AsyncMock()
