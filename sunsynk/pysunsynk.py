@@ -23,7 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 @attr.define
-class pySunsynk(Sunsynk):
+class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
     """Sunsync Modbus class."""
 
     port: str = attr.ib(default="/dev/tty0")

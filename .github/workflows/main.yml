@@ -50,7 +50,7 @@ jobs:
       - name: Install Requirements
         run: |
           python -m pip install --upgrade pip
-          pip install pylint .
+          pip install pylint .[pymodbus,umodbus]
       - name: Run Pylint
         run: |
           pylint sunsynk

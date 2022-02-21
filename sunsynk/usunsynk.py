@@ -6,14 +6,14 @@ from typing import Dict, Sequence
 import attr
 from async_modbus import AsyncClient, modbus_for_url
 
-from sunsynk import Sensor, Sunsynk, group_sensors, update_sensors
-from sunsynk.sunsynk import register_map
+from sunsynk.sensor import Sensor, group_sensors, update_sensors
+from sunsynk.sunsynk import Sunsynk, register_map
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @attr.define
-class uSunsynk(Sunsynk):
+class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
     """Sunsynk class using umodbus."""
 
     client: AsyncClient = attr.field(default=None)
@@ -50,7 +50,9 @@ class uSunsynk(Sunsynk):
                     self.server_id, grp[0], glen
                 )
             except Exception as err:  # pylint: disable=broad-except
-                raise Exception(f"({self.server_id},{grp[0]},{glen}) {err}")
+                raise Exception(
+                    f"({self.server_id},{grp[0]},{glen}) {err}"
+                )  # pylint: disable=raise-missing-from
 
             # if r_r.function_code >= 0x80:  # test that we are not an error
             #    raise Exception("failed to read")
