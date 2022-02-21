@@ -50,9 +50,9 @@ class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
                     self.server_id, grp[0], glen
                 )
             except Exception as err:  # pylint: disable=broad-except
-                raise Exception(
+                raise Exception(  # pylint: disable=raise-missing-from
                     f"({self.server_id},{grp[0]},{glen}) {err}"
-                )  # pylint: disable=raise-missing-from
+                )
 
             # if r_r.function_code >= 0x80:  # test that we are not an error
             #    raise Exception("failed to read")

@@ -45,11 +45,11 @@ def test_versions(run):
     def _get_version(filename, regex):
         txt = Path(filename).read_text()
         res = re.compile(regex).search(txt)
-        assert res, "version not found in setup.py"
+        assert res, f"version not found in {filename}"
         return res.group(1)
 
     v_setup = _get_version(
-        filename="setup.py",
+        filename="sunsynk/__init__.py",
         regex=r'VERSION = "(.+)"',
     )
 

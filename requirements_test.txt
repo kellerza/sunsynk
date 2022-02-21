@@ -8,3 +8,4 @@ pymodbus==2.5.3
 pyserial-asyncio
 connio
 umodbus
+async_modbus
