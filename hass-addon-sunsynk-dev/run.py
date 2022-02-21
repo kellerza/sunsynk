@@ -15,7 +15,6 @@ from filter import RROBIN, Filter, getfilter, suggested_filter
 from mqtt import MQTT, Device, Entity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
-from pymodbus.exceptions import ModbusIOException  # type: ignore
 
 from sunsynk import Sensor, uSunsynk
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED
@@ -163,10 +162,6 @@ async def read(
             return True
         except asyncio.TimeoutError:
             _LOGGER.error("Read error%s: Timeout", msg)
-        except ModbusIOException:
-            # TCP: try to reconnect since it got a fairly serious error
-            await asyncio.sleep(1)
-            await SUNSYNK.connect(timeout=OPT.timeout)
     except Exception as err:  # pylint:disable=broad-except
         _LOGGER.error("Read Error%s: %s", msg, err)
         READ_ERRORS += 1
