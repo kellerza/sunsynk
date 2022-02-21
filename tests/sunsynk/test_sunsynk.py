@@ -1,33 +1,47 @@
 """Test sunsynk library."""
+from typing import Sequence
 from unittest.mock import AsyncMock
 
 import pytest
 
 # from sunsynk.definitions import serial
-from sunsynk.sunsynk import Sunsynk
+from sunsynk import Sunsynk, pySunsynk, uSunsynk
+
+
+@pytest.fixture
+def sss() -> Sequence[Sunsynk]:
+    res: Sequence[Sunsynk] = []
+    if uSunsynk:
+        res.append(uSunsynk())
+    if pySunsynk:
+        res.append(pySunsynk())
+    return res
 
 
 @pytest.mark.asyncio
 async def test_ss():
-    s = Sunsynk()
-    with pytest.raises(ConnectionError):
-        await s.connect()
+    if pySunsynk:
+        ss = pySunsynk()
+        with pytest.raises(ConnectionError):
+            await ss.connect()
 
 
 @pytest.mark.asyncio
 async def test_ss_tcp():
-    s = Sunsynk(port="127.0.0.1:502")
-    with pytest.raises(ConnectionError):
-        await s.connect()
+    if pySunsynk:
+        ss = pySunsynk()
+        ss.port = "127.0.0.1:502"
+        with pytest.raises(ConnectionError):
+            await ss.connect()
 
 
 @pytest.mark.asyncio
-async def test_ss_read():
-    s = Sunsynk()
-    s.client = AsyncMock()
+async def test_ss_read(sss):
+    for ss in sss:
+        if uSunsynk:
+            ss = uSunsynk()
+            ss.client = AsyncMock()
 
-    # await s.read([serial])
-
-    # s.client.read_holding_registers.assert_called_once()
-
-    # assert serial.value == ""
+        if pySunsynk:
+            ss = uSunsynk()
+            ss.client = AsyncMock()

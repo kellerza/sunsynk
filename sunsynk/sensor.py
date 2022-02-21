@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from math import modf
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from typing import Any, Dict, Generator, List, Sequence, Tuple, Union
 
 import attr
 
@@ -69,14 +69,12 @@ class Sensor:
 
     def update_value(self) -> None:
         """Update the value from the reg_value."""
-        val = self.reg_value[0]
+        val: Union[int, float] = self.reg_value[0]
         if len(self.reg_value) > 1:
             val += self.reg_value[1] << 16
-
-        if self.factor < 0:  # Indicate this register is signed
-            self.value = _round(_signed(val) * -self.factor)
-        else:
-            self.value = _round(val * self.factor)
+        elif self.factor < 0:  # Indicate this register is signed
+            val = _signed(val)
+        self.value = _round(val * abs(self.factor))
 
         _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
 
@@ -108,23 +106,21 @@ class RWSensor(Sensor):
 
 def group_sensors(
     sensors: Sequence[Sensor], allow_gap: int = 3
-) -> Sequence[Sequence[int]]:
+) -> Generator[list[int], None, None]:
     """Group sensor registers into blocks for reading."""
     if not sensors:
-        return []
-    regs = set()
-    for sen in sensors:
-        regs |= set(sen.reg_address)
-    adr = sorted(regs)
-    cgroup = [adr[0]]
-    groups = [cgroup]
-    for idx in range(1, len(adr)):
-        gap = adr[idx] - adr[idx - 1]
-        if gap > allow_gap or len(cgroup) >= 60:
-            cgroup = []
-            groups.append(cgroup)
-        cgroup.append(adr[idx])
-    return groups
+        return
+    regs = {r for s in sensors for r in s.reg_address}
+    group: List[int] = []
+    adr0 = 0
+    for adr1 in sorted(regs):
+        if group and (adr1 - adr0 > allow_gap or len(group) >= 60):
+            yield group
+            group = []
+        adr0 = adr1
+        group.append(adr1)
+    if group:
+        yield group
 
 
 def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None:

@@ -130,9 +130,9 @@ _SENSORS += (
     InverterStateSensor(59, "Overall state"),
     SDStatusSensor(92, "SD Status", ""),  # type: ignore
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
-    TempSensor(90, "Temp DC transformer", CELSIUS, 0.1),
-    TempSensor(95, "Temp Environment", CELSIUS, 0.1),
-    TempSensor(91, "Temp Radiator", CELSIUS, 0.1),
+    TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
+    TempSensor(95, "Environment temperature", CELSIUS, 0.1),
+    TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
 )
 ###########
 # Settings
@@ -196,14 +196,19 @@ ALL_SENSORS: Dict[str, Sensor] = {s.id: s for s in _SENSORS}
 def _deprecated() -> None:
     """Populate the deprecated sensors."""
     dep_map: Dict[str, Sensor] = {
-        "battery_temperature": TempSensor(182, "Temp Battery", CELSIUS, 0.1),
         "aux_power": Sensor(166, "AUX load", WATT, -1),
-        "grid_ld_power": Sensor(167, "Grid L1 load", WATT, -1),
-        "grid_l2_power": Sensor(168, "Grid L2 load", WATT, -1),
-        "grid_power": Sensor(169, "Grid load", WATT, -1),
-        "grid_ct_power": Sensor(172, "Grid CT load", WATT, -1),
-        "inverter_power": Sensor(175, "Inverter Output", WATT, -1),
+        "battery_temperature": TempSensor(182, "Temp Battery", CELSIUS, 0.1),
+        "dc_transformer_temperature": TempSensor(
+            90, "Temp DC transformer", CELSIUS, 0.1
+        ),
+        "environment_temperature": TempSensor(95, "Temp Environment", CELSIUS, 0.1),
         "grid_charge_battery_current": Sensor(230, "Battery Grid Charge", AMPS, -1),
+        "grid_ct_power": Sensor(172, "Grid CT load", WATT, -1),
+        "grid_l2_power": Sensor(168, "Grid L2 load", WATT, -1),
+        "grid_ld_power": Sensor(167, "Grid L1 load", WATT, -1),
+        "grid_power": Sensor(169, "Grid load", WATT, -1),
+        "inverter_power": Sensor(175, "Inverter Output", WATT, -1),
+        "radiator_temperature": TempSensor(91, "Temp Radiator", CELSIUS, 0.1),
     }
 
     for newname, sen in dep_map.items():

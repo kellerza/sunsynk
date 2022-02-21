@@ -24,6 +24,10 @@
 
   > This must be a string. So if your serial is a number only surround it with quotes `'1000'`
 
+- `MODBUS_SERVER_ID`
+
+  The Modbus Server ID, typically 1. Might be different in multi-inverter setups.
+
 - `SENSOR_PREFIX`
 
   A prefix to add to all the MQTT Discovered Home Assistant Sensors (e.g. try SS)
@@ -38,6 +42,11 @@
 
   The profiles will be presented as a Home Assistant Select Entity, with options for the different profiles.
 
+  Available profiles:
+
+  - **system_mode** The system mode, including time, grid charging, target SOC
+  - **system_mode_voltages** The system mode charging voltages (likely used when you dont have a Battery with a BMS)
+
   The Inverter setting is only read when the Add-On starts, if you want to force re-reading the inverter settings and any configuratio, choose the **UPDATE** option in the Select Entity. (You can schedule **UPDATE** through automations if this is important for you)
 
   When you **UPDATE** a profile, the Add-On performs the following actions:
@@ -48,7 +57,6 @@
 
       You can customize the name of the presets in the Yaml files (followed by an **UPDATE**).
       One option to access these files is though the Samba Add-On.
-
 
 - `SENSORS`
 
@@ -80,9 +88,10 @@ Other modifiers
 
 | Modifier | Description                                                                                                                      |
 | -------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `:max`   | the maximum value over the last 60 seconds. <br/> Ideal for _counters_ where you are typically interested only in the last value |
+| `:max`   | the maximum value over the last 60 seconds. Ideal for _counters_ where you are typically interested only in the last value |
 | `:min`   | the minimum value over the last 60 seconds.                                                                                      |
 | `:now`   | the maximum value over the last 2 seconds. Useful to see current sensor value                                                    |
+| `:round_robin` | cycle over all configured settings. Ideal for config settings                                                    |
 | `:avg`   | the average over the last 60 seconds                                                                                             |
 | `:step`  | the average over the last minute will be reported, except if there is a significant change (>80) then it will be reported immediately. This is useful for automations using the current power |
 
@@ -104,7 +113,6 @@ SENSORS:
 ```
 
 ![HASS Energy management](energy.png)
-
 
 ### Templates
 

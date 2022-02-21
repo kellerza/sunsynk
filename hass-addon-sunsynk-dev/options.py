@@ -19,11 +19,12 @@ class Options:
     mqtt_password: str = ""
     sunsynk_id: str = ""
     sensors: List[str] = []
-    profiles: int = 0
+    profiles: List[str] = []
     sensor_prefix: str = "SS"
     timeout: int = 10
     debug: int = 1
     port_url: str = ""
+    modbus_server_id: int = 1
 
     def update(self, json: Dict) -> None:
         """Update options."""

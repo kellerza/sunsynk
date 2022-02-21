@@ -4,7 +4,7 @@ from typing import Sequence
 
 import pytest
 
-from sunsynk.definitions import ALL_SENSORS, AMPS, DEPRECATED, VOLT, WATT
+from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, DEPRECATED, VOLT, WATT
 from sunsynk.sensor import (
     FaultSensor,
     HSensor,
@@ -49,7 +49,7 @@ def test_group() -> None:
         Sensor(12, "12"),
         Sensor(20, "20"),
     ]
-    g = group_sensors(sen)
+    g = list(group_sensors(sen))
     assert g == [[10, 11, 12], [20]]
 
 
@@ -83,6 +83,7 @@ def test_ids() -> None:
         assert sen.unit != AMPS or sen.name.endswith(" current")
         assert sen.unit != WATT or sen.name.endswith(" power")
         assert sen.unit != VOLT or sen.name.endswith(" voltage")
+        assert sen.unit != CELSIUS or sen.name.endswith(" temperature")
 
 
 def test_ensure_tuple() -> None:
@@ -97,6 +98,11 @@ def test_signed() -> None:
     s = Sensor(1, "", "", factor=-1)
     assert s.reg_to_value(1) == 1
     assert s.reg_to_value(0xFFFE) == -1
+
+    s = Sensor(1, "", "", factor=1)
+    assert s.reg_to_value(1) == 1
+    assert s.reg_to_value(0xFFFE) == 0xFFFE
+    assert s.reg_to_value((1, 1)) == 0x10001
 
 
 def test_other_sensros() -> None:

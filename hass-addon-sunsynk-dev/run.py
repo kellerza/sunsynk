@@ -4,20 +4,20 @@ import asyncio
 import logging
 import sys
 from asyncio.events import AbstractEventLoop
+from collections import defaultdict
 from json import loads
 from math import modf
 from pathlib import Path
 from typing import Dict, List, Sequence
 
 import yaml
-from filter import Filter, getfilter, suggested_filter
+from filter import RROBIN, Filter, getfilter, suggested_filter
 from mqtt import MQTT, Device, Entity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 from pymodbus.exceptions import ModbusIOException  # type: ignore
-from usunsynk import uSunsynk
 
-from sunsynk import Sensor
+from sunsynk import Sensor, uSunsynk
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED
 
 _LOGGER = logging.getLogger(__name__)
@@ -103,6 +103,7 @@ def startup() -> None:
     MQTT.availability_topic = f"{SS_TOPIC}/{OPT.sunsynk_id}/availability"
 
     SUNSYNK.port = OPT.port_url
+    SUNSYNK.server_id = OPT.modbus_server_id
 
     if OPT.debug < 2:
         logging.basicConfig(
@@ -113,7 +114,7 @@ def startup() -> None:
 
     sens = {}
 
-    msg: Dict[str, str] = {}
+    msg: Dict[str, List[str]] = defaultdict(list)
 
     for sensor_def in OPT.sensors:
         name, _, fstr = sensor_def.partition(":")
@@ -130,14 +131,14 @@ def startup() -> None:
             log_bold(f"Sensor deprecated: {sen.id} -> {DEPRECATED[sen.id].id}")
         if not fstr:
             fstr = suggested_filter(sen)
-            msg.setdefault(f"*{fstr}", []).append(name)  # type: ignore
+            msg[f"*{fstr}"].append(name)  # type: ignore
         else:
-            msg.setdefault(fstr, []).append(name)  # type: ignore
+            msg[fstr].append(name)  # type: ignore
 
         SENSORS.append(getfilter(fstr, sensor=sen))
 
     for nme, val in msg.items():
-        _LOGGER.info("Filter %s used for %s", nme, val)
+        _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
 
 
 def log_bold(msg: str) -> None:
@@ -225,6 +226,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         """Poll sensors."""
         fsensors = []
         # 1. collect sensors to read
+        RROBIN.tick()
         for fil in SENSORS:
             if fil.should_update():
                 fsensors.append(fil)

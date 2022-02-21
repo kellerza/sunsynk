@@ -86,8 +86,11 @@ class Profile:
 
     def save(self) -> str:
         """Save the preset using a random identifier."""
+        pth = Path(ROOT)
+        if not pth.exists():
+            pth.mkdir(parents=True)
         active_preset = f"new_{int(random()*1000)}"
-        pth = Path(ROOT) / f"{self.id}_{active_preset}.yml"
+        pth /= f"{self.id}_{active_preset}.yml"
         value = dict(
             {
                 s.id: list(s.reg_value) if len(s.reg_value) > 1 else s.reg_value[0]
@@ -113,11 +116,13 @@ class Profile:
             preset_options,
         ) = await asyncio.get_running_loop().run_in_executor(None, self.load)
         # 3.
-        _LOGGER.info("Updating entity options: %s", preset_options)
+        if OPT.debug > 0:
+            _LOGGER.info("Updating entity options: %s", preset_options)
         self.entity.options = preset_options
         await MQTT.publish_discovery_info(entities=[self.entity], remove_entities=False)
         # 4.
-        _LOGGER.info("publish %s %s", self.entity.state_topic, active_preset)
+        if OPT.debug > 0:
+            _LOGGER.info("publish %s %s", self.entity.state_topic, active_preset)
         await asyncio.sleep(0.05)
         await MQTT.publish(self.entity.state_topic, active_preset)
 
@@ -133,14 +138,7 @@ async def write_preset_registers(
                 "New value for %s, old: %s, new: %s", sen.id, sen.reg_value, newv
             )
         sen.reg_value = newv
-        try:
-            for adr, val in zip(sen.reg_address, newv):
-                await asyncio.sleep(0.01)
-                await ss.write(address=adr, value=val)
-        except asyncio.TimeoutError:
-            _LOGGER.critical(
-                "timeout writing the settings %s=%s", sen.reg_address[0], newv
-            )
+        ss.write(sen)
 
 
 async def profile_poll(ss: Sunsynk) -> None:

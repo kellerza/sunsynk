@@ -3,3 +3,8 @@ pytest-asyncio
 pytest-cov
 pytest-github-actions-annotate-failures
 types-PyYAML
+
+pymodbus==2.5.3
+pyserial-asyncio
+connio
+umodbus

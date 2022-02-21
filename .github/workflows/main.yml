@@ -99,7 +99,6 @@ jobs:
       - isort
       - flake8
       - pylint
-      - mypy
     env:
       PYTHON: ${{ matrix.python-version }}
     steps:

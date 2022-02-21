@@ -16,7 +16,7 @@ from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 from pymodbus.exceptions import ModbusIOException  # type: ignore
 
-from sunsynk import Sunsynk
+from sunsynk import pySunsynk
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED
 from sunsynk.sensor import Sensor
 
@@ -26,7 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 SENSORS: List[Filter] = []
 
 
-SUNSYNK = Sunsynk()
+SUNSYNK = pySunsynk()  # type: ignore
 
 
 async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None:
@@ -100,6 +100,7 @@ def startup() -> None:
     MQTT.availability_topic = f"{SS_TOPIC}/{OPT.sunsynk_id}/availability"
 
     SUNSYNK.port = OPT.port
+    SUNSYNK.timeout = OPT.timeout
 
     if OPT.debug < 2:
         logging.basicConfig(
@@ -162,7 +163,7 @@ async def read(
         except ModbusIOException:
             # TCP: try to reconnect since it got a fairly serious error
             await asyncio.sleep(1)
-            await SUNSYNK.connect(timeout=OPT.timeout)
+            await SUNSYNK.connect()
     except Exception as err:  # pylint:disable=broad-except
         _LOGGER.error("Read Error%s: %s", msg, err)
         READ_ERRORS += 1
