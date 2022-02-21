@@ -99,6 +99,9 @@ class SCFilter(Filter):
 
 @attr.define(slots=True)
 class RRobinState:
+    """Round Robin settings."""
+
+    # pylint: disable=too-few-public-methods
     active: List[Sensor] = attr.field(factory=list)
     list: Sequence[Sensor] = attr.field(factory=list)
     idx: int = attr.field(default=-1)
@@ -118,6 +121,8 @@ RROBIN = RRobinState()
 
 @attr.define
 class RoundRobinFilter(Filter):
+    """Round Robin Filter."""
+
     def should_update(self) -> bool:
         """Should we update this sensor."""
         return self.sensor in RROBIN.active
