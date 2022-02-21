@@ -5,6 +5,7 @@ from typing import Any, Callable, List
 
 import pytest
 
+from sunsynk.definitions import ALL_SENSORS
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)
@@ -133,9 +134,34 @@ def test_step_text(filters):
     )
 
 
+def test_rr(filters):
+    """Test round robin."""
+    sen = [filters.Sensor(1, "a"), filters.Sensor(2, "b"), filters.Sensor(3, "c")]
+    fil = [filters.getfilter("round_robin", s) for s in sen]
+
+    RROBIN = filters.RROBIN
+
+    for idx in range(2):
+        assert fil[idx].sensor is sen[idx]
+    assert RROBIN.list == list(sen)
+
+    assert [RROBIN.idx, RROBIN.active] == [-1, []]
+    RROBIN.tick()
+    assert [RROBIN.idx, RROBIN.active] == [0, [sen[0]]]
+
+    # Cycle through should_update()
+    assert [f.should_update() for f in fil] == [True, False, False]
+    RROBIN.tick()
+    assert [f.should_update() for f in fil] == [False, True, False]
+    RROBIN.tick()
+    assert [f.should_update() for f in fil] == [False, False, True]
+    RROBIN.tick()
+    assert [f.should_update() for f in fil] == [True, False, False]
+
+
 def test_suggest(filters):
-    assert filters.suggested_filter(filters.ssdef.temp_environment) == "avg"
-    assert filters.suggested_filter(filters.ssdef.day_battery_charge) == "last"
-    assert filters.suggested_filter(filters.ssdef.grid_load) == "step"
-    assert filters.suggested_filter(filters.ssdef.sd_status) == "step"
-    assert filters.suggested_filter(filters.ssdef.prog1_time) == "last"
+    assert filters.suggested_filter(ALL_SENSORS["temp_environment"]) == "avg"
+    assert filters.suggested_filter(ALL_SENSORS["day_battery_charge"]) == "last"
+    assert filters.suggested_filter(ALL_SENSORS["grid_load"]) == "step"
+    assert filters.suggested_filter(ALL_SENSORS["sd_status"]) == "step"
+    assert filters.suggested_filter(ALL_SENSORS["prog1_time"]) == "round_robin"

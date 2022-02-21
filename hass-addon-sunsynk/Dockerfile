@@ -5,7 +5,7 @@ FROM ${BUILD_FROM}
 #    && ping dl-cdn.alpinelinux.org -c 4 \
 #    && apk add --no-cache \
 #        gcc libc-dev
-RUN pip3 install --no-cache-dir paho-mqtt~=1.5.0 sunsynk==0.1.2
+RUN pip3 install --no-cache-dir paho-mqtt~=1.5.0 sunsynk==0.1.3
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

@@ -24,6 +24,10 @@
 
   > This must be a string. So if your serial is a number only surround it with quotes `'1000'`
 
+- `MODBUS_SERVER_ID`
+
+  The Modbus Server ID, typically 1. Might be different in multi-inverter setups.
+
 - `SENSOR_PREFIX`
 
   A prefix to add to all the MQTT Discovered Home Assistant Sensors (e.g. try SS)
@@ -38,6 +42,11 @@
 
   The profiles will be presented as a Home Assistant Select Entity, with options for the different profiles.
 
+  Available profiles:
+
+  - **system_mode** The system mode, including time, grid charging, target SOC
+  - **system_mode_voltages** The system mode charging voltages (likely used when you dont have a Battery with a BMS)
+
   The Inverter setting is only read when the Add-On starts, if you want to force re-reading the inverter settings and any configuratio, choose the **UPDATE** option in the Select Entity. (You can schedule **UPDATE** through automations if this is important for you)
 
   When you **UPDATE** a profile, the Add-On performs the following actions:
@@ -48,7 +57,6 @@
 
       You can customize the name of the presets in the Yaml files (followed by an **UPDATE**).
       One option to access these files is though the Samba Add-On.
-
 
 - `SENSORS`
 
@@ -80,25 +88,59 @@ Other modifiers
 
 | Modifier | Description                                                                                                                      |
 | -------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `:max`   | the maximum value over the last 60 seconds. <br/> Ideal for _counters_ where you are typically interested only in the last value |
+| `:max`   | the maximum value over the last 60 seconds. Ideal for _counters_ where you are typically interested only in the last value |
 | `:min`   | the minimum value over the last 60 seconds.                                                                                      |
 | `:now`   | the maximum value over the last 2 seconds. Useful to see current sensor value                                                    |
+| `:round_robin` | cycle over all configured settings. Ideal for config settings                                                    |
 | `:avg`   | the average over the last 60 seconds                                                                                             |
 | `:step`  | the average over the last minute will be reported, except if there is a significant change (>80) then it will be reported immediately. This is useful for automations using the current power |
 
-## Home Assistant Energy Management
+## Home Assistant
+
+### Energy Management
 
 An example of a hybrid inverter with a battery
 
 ```yaml
 SENSORS:
-  - total_active_power:last
-  - total_grid_export:last
-  - total_grid_import:last
-  - total_pv_power:last
-  - total_load_power:last
-  - total_battery_charge:last
-  - total_battery_discharge:last
+  - total_active_power
+  - total_grid_export
+  - total_grid_import
+  - total_pv_power
+  - total_load_power
+  - total_battery_charge
+  - total_battery_discharge
 ```
 
 ![HASS Energy management](energy.png)
+
+### Templates
+
+You can view sensor values under Home Assistant using the "Developer Tools" -> Templates tab
+
+```jinja
+{% set s186 = states("sensor.ss_pv1_power")|float -%}      PV1:{{s186}}W
+{%- set s187 = states("sensor.ss_pv2_power")|float %}      PV2:{{s187}}W
+{%- set s190 = states("sensor.ss_battery_power")|float %}
+{%- set s166 = states("sensor.ss_aux_power")|float %}      Gen:{{s166}}W
+
+{%- set s169 = states("sensor.ss_grid_power")|float %}
+{%- set s167 = states("sensor.ss_grid_l1_power")|float %}
+{%- set s168 = states("sensor.ss_grid_l2_power")|float %}
+
+Grid power:     {{s169}} = {{s167}} + {{s168}}
+Grid CT power:  {% set s172 = states("sensor.ss_grid_ct_power")|float -%}   {{s172}}
+
+{%- set s178 = states("sensor.ss_load_power")|float %}
+{%- set s176 = states("sensor.ss_load_l1_power")|float %}
+{%- set s177 = states("sensor.ss_load_l2_power")|float %}
+
+Load Power: {{s178}} = {{s176}} + {{s177}}
+
+Inv out: {% set s175 = states("sensor.ss_inverter_output_power")|float %} {{s175}}
+
+Batt:    {{ s190 }}
+Ess:     {{ states("sensor.ss_essential_power") }}   {{ s175-s166+s167 }} [175-166+167]
+Non-Ess: {{ states("sensor.ss_non_essential_power") }}  {{ s172 -s167 }} [172-167]={{s172}}-{{s167}}
+Grid CT: {{ s172 }} [172]
+```

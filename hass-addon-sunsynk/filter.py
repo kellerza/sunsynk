@@ -6,7 +6,7 @@ from typing import Any, List, Optional, Sequence, Union
 import attr
 from options import OPT
 
-import sunsynk.definitions as ssdef
+from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, KWH, VOLT, WATT, Sensor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -132,23 +132,25 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
     return SCFilter(interval=1, samples=60, filter=mean, sensor=sensor, threshold=thr)
 
 
-def suggested_filter(sensor: ssdef.Sensor) -> str:
+def suggested_filter(sensor: Sensor) -> str:
     """Default filters."""
     if sensor.id.startswith("prog"):
         return "last"
     f_id = {
-        ssdef.serial.id: "last",
-        ssdef.overall_state.id: "step",
-        ssdef.battery_soc.id: "last",
-        ssdef.sd_status.id: "step",
-        ssdef.fault.id: "last",
+        "serial": "last",
+        "overall_state": "step",
+        "battery_soc": "last",
+        "sd_status": "step",
+        "fault": "last",
     }
+    assert all(s in ALL_SENSORS for s in f_id)
+
     f_unit = {
-        "A": "step",
-        "V": "avg",
-        "W": "step",
-        ssdef.KWH: "last",
-        ssdef.CELSIUS: "avg",
+        AMPS: "step",
+        VOLT: "avg",
+        WATT: "step",
+        KWH: "last",
+        CELSIUS: "avg",
     }
     res = f_id.get(sensor.id) or f_unit.get(sensor.unit) or "step"
     _LOGGER.debug("%s unit:%s, id:%s", res, sensor.unit, sensor.id)

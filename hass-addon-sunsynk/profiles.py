@@ -13,7 +13,7 @@ from options import OPT, SS_TOPIC
 from yaml import safe_dump, safe_load
 
 from sunsynk import Sunsynk
-from sunsynk import definitions as ssd
+from sunsynk.definitions import PROG_VOLT, PROGRAM
 from sunsynk.sensor import RWSensor, ensure_tuple, slug
 
 _LOGGER = logging.getLogger(__name__)
@@ -86,8 +86,11 @@ class Profile:
 
     def save(self) -> str:
         """Save the preset using a random identifier."""
+        pth = Path(ROOT)
+        if not pth.exists():
+            pth.mkdir(parents=True)
         active_preset = f"new_{int(random()*1000)}"
-        pth = Path(ROOT) / f"{self.id}_{active_preset}.yml"
+        pth /= f"{self.id}_{active_preset}.yml"
         value = dict(
             {
                 s.id: list(s.reg_value) if len(s.reg_value) > 1 else s.reg_value[0]
@@ -113,11 +116,13 @@ class Profile:
             preset_options,
         ) = await asyncio.get_running_loop().run_in_executor(None, self.load)
         # 3.
-        _LOGGER.info("Updating entity options: %s", preset_options)
+        if OPT.debug > 0:
+            _LOGGER.info("Updating entity options: %s", preset_options)
         self.entity.options = preset_options
         await MQTT.publish_discovery_info(entities=[self.entity], remove_entities=False)
         # 4.
-        _LOGGER.info("publish %s %s", self.entity.state_topic, active_preset)
+        if OPT.debug > 0:
+            _LOGGER.info("publish %s %s", self.entity.state_topic, active_preset)
         await asyncio.sleep(0.05)
         await MQTT.publish(self.entity.state_topic, active_preset)
 
@@ -133,14 +138,7 @@ async def write_preset_registers(
                 "New value for %s, old: %s, new: %s", sen.id, sen.reg_value, newv
             )
         sen.reg_value = newv
-        try:
-            for adr, val in zip(sen.reg_address, newv):
-                await asyncio.sleep(0.01)
-                await ss.write(address=adr, value=val)
-        except asyncio.TimeoutError:
-            _LOGGER.critical(
-                "timeout writing the settings %s=%s", sen.reg_address[0], newv
-            )
+        ss.write(sen)
 
 
 async def profile_poll(ss: Sunsynk) -> None:
@@ -188,44 +186,6 @@ def profile_add_entities(entities: List[Entity], device: Device) -> None:
 PROFILE_QUEUE: List[Tuple[Profile, str]] = []
 
 ALL_PROFILES = (
-    Profile(
-        name="System Mode",
-        sensors=[
-            ssd.prog1_capacity,
-            ssd.prog2_capacity,
-            ssd.prog3_capacity,
-            ssd.prog4_capacity,
-            ssd.prog5_capacity,
-            ssd.prog6_capacity,
-            ssd.prog1_time,
-            ssd.prog2_time,
-            ssd.prog3_time,
-            ssd.prog4_time,
-            ssd.prog5_time,
-            ssd.prog6_time,
-            ssd.prog1_power,
-            ssd.prog2_power,
-            ssd.prog3_power,
-            ssd.prog4_power,
-            ssd.prog5_power,
-            ssd.prog6_power,
-            ssd.prog1_charge,
-            ssd.prog2_charge,
-            ssd.prog3_charge,
-            ssd.prog4_charge,
-            ssd.prog5_charge,
-            ssd.prog6_charge,
-        ],
-    ),
-    Profile(
-        name="System Mode Voltages",
-        sensors=[
-            ssd.prog1_voltage,
-            ssd.prog2_voltage,
-            ssd.prog3_voltage,
-            ssd.prog4_voltage,
-            ssd.prog5_voltage,
-            ssd.prog6_voltage,
-        ],
-    ),
+    Profile(name="System Mode", sensors=PROGRAM),
+    Profile(name="System Mode Voltages", sensors=PROG_VOLT),
 )

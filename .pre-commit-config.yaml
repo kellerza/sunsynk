@@ -24,10 +24,12 @@ repos:
     hooks:
       - id: mypy
         files: "^sunsynk/"
-        additional_dependencies: ["types-attrs", "attrs>21", "types-PyYAML"]
+        exclude: "sunsynk/async_modbus.py"
+        additional_dependencies: ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
       - id: mypy
         files: "^hass-addon-sunsynk/"
-        additional_dependencies: ["types-attrs", "attrs>21", "types-PyYAML"]
+        exclude: "sunsynk/async_modbus.py"
+        additional_dependencies: ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.1.1
     hooks:

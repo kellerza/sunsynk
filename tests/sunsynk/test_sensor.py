@@ -2,15 +2,18 @@
 import logging
 from typing import Sequence
 
-import sunsynk.definitions as defs
+import pytest
+
+from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, DEPRECATED, VOLT, WATT
 from sunsynk.sensor import (
     FaultSensor,
     HSensor,
     InverterStateSensor,
+    MathSensor,
     SDStatusSensor,
     Sensor,
     SerialSensor,
-    TemperatureSensor,
+    TempSensor,
     TimeRWSensor,
     ensure_tuple,
     group_sensors,
@@ -46,12 +49,12 @@ def test_group() -> None:
         Sensor(12, "12"),
         Sensor(20, "20"),
     ]
-    g = group_sensors(sen)
+    g = list(group_sensors(sen))
     assert g == [[10, 11, 12], [20]]
 
 
 def test_all_groups() -> None:
-    s = [getattr(defs, s) for s in dir(defs) if isinstance(getattr(defs, s), Sensor)]
+    s = [ALL_SENSORS[s] for s in ALL_SENSORS]
     for i in range(2, 6):
         _LOGGER.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
 
@@ -69,8 +72,18 @@ def waste(groups) -> Sequence[int]:
 
 
 def test_ids() -> None:
-    for nme, val in defs.all_sensors().items():
-        assert nme == val.id
+    for name, sen in ALL_SENSORS.items():
+        assert name == sen.id
+
+        if sen.factor and sen.factor < 0 and len(sen.reg_address) > 1:
+            assert False, "only single signed supported"
+
+        if sen.id in DEPRECATED:
+            continue
+        assert sen.unit != AMPS or sen.name.endswith(" current")
+        assert sen.unit != WATT or sen.name.endswith(" power")
+        assert sen.unit != VOLT or sen.name.endswith(" voltage")
+        assert sen.unit != CELSIUS or sen.name.endswith(" temperature")
 
 
 def test_ensure_tuple() -> None:
@@ -86,7 +99,14 @@ def test_signed() -> None:
     assert s.reg_to_value(1) == 1
     assert s.reg_to_value(0xFFFE) == -1
 
-    s = TemperatureSensor(1, "", "", 0.1)
+    s = Sensor(1, "", "", factor=1)
+    assert s.reg_to_value(1) == 1
+    assert s.reg_to_value(0xFFFE) == 0xFFFE
+    assert s.reg_to_value((1, 1)) == 0x10001
+
+
+def test_other_sensros() -> None:
+    s = TempSensor(1, "", "", 0.1)
     assert s.reg_to_value(1000) == 0
 
     s = SDStatusSensor(1, "", "")
@@ -96,6 +116,20 @@ def test_signed() -> None:
     s = InverterStateSensor(1, "", "")
     assert s.reg_to_value(2) == "ok"
     assert s.reg_to_value(1) == "unknown 1"
+
+
+def test_math() -> None:
+    s = MathSensor((1, 2), "", "", factors=(1, -1))
+    assert s.reg_to_value((1000, 800)) == 200
+
+    with pytest.raises(AssertionError):
+        MathSensor((0, 1), "", "", factors=(1))
+
+    with pytest.raises(AssertionError):
+        MathSensor((0, 1), "", "", factors="aaa")
+
+    with pytest.raises(TypeError):
+        MathSensor((0, 1), "", "")
 
 
 def test_update_func() -> None:
@@ -117,7 +151,7 @@ def test_update_func() -> None:
 
 
 def test_update_float() -> None:
-    s = TemperatureSensor(60, "two", factor=0.1)
+    s = TempSensor(60, "two", factor=0.1)
     rmap = register_map(60, [1001])
     update_sensors([s], rmap)
     assert s.value == 0.1
@@ -143,3 +177,11 @@ def test_time_rw() -> None:
     rmap = register_map(60, [300])
     update_sensors([s], rmap)
     assert s.value == "3:00"
+
+
+def test_dep() -> None:
+    ctl = ALL_SENSORS["grid_ct_load"]
+    assert ctl.id in DEPRECATED
+
+    ctl = ALL_SENSORS["grid_ct_power"]
+    assert ctl.id not in DEPRECATED
