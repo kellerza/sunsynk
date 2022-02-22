@@ -10,12 +10,13 @@ import pytest
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)
+FOLDER = "hass-addon-sunsynk-dev"
 
 
 @pytest.fixture
 def run() -> ModuleType:
     """Import the module."""
-    return import_module("run", "hass-addon-sunsynk-dev")
+    return import_module("run", FOLDER)
 
 
 def test_run(run):
@@ -54,12 +55,12 @@ def test_versions(run):
     )
 
     v_docker = _get_version(
-        filename="hass-addon-sunsynk/Dockerfile",
+        filename=f"{FOLDER}/Dockerfile",
         regex=r"sunsynk==(.+)",
     )
 
     v_config = _get_version(
-        filename="hass-addon-sunsynk/config.yaml",
+        filename=f"{FOLDER}/config.yaml",
         regex=r"version: .+-(.+)",
     )
 

@@ -1,52 +1,52 @@
 ---
 name: Sunsynk Inverter Add-on (dev)
-version: 2022.02.22c-0.1.3
+version: 2022.02.22d-0.1.3
 slug: hass-addon-sunsynk-dev
 description: Add-on for the Sunsynk Inverter
 startup: services
 boot: auto
-url: 'https://github.com/kellerza/sunsynk'
+url: "https://github.com/kellerza/sunsynk"
 uart: true
 arch:
-    - aarch64
-    - amd64
-    - armhf
-    - armv7
-    - i386
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
 ports: {}
 ports_description: {}
 host_network: false
 map:
-    - share:rw
+  - share:rw
 options:
-    PORT_URL: 'serial:///dev/ttyUSB0'
-    SUNSYNK_ID: '007'
-    SENSOR_PREFIX: ''
-    SENSORS:
-        - total_pv_power
-        - total_battery_charge
-        - total_battery_discharge
-        - total_grid_export
-        - total_grid_import
-        - battery_soc
-    PROFILES: []
-    MODBUS_SERVER_ID: 1
-    MQTT_HOST: core-mosquitto
-    MQTT_PORT: 1883
-    MQTT_USERNAME: hass
-    MQTT_PASSWORD: ''
-    DEBUG: 0
+  PORT_URL: "serial:///dev/ttyUSB0"
+  SUNSYNK_ID: "007"
+  SENSOR_PREFIX: ""
+  SENSORS:
+    - total_pv_power
+    - total_battery_charge
+    - total_battery_discharge
+    - total_grid_export
+    - total_grid_import
+    - battery_soc
+  PROFILES: []
+  MODBUS_SERVER_ID: 1
+  MQTT_HOST: core-mosquitto
+  MQTT_PORT: 1883
+  MQTT_USERNAME: hass
+  MQTT_PASSWORD: ""
+  DEBUG: 0
 schema:
-    PORT_URL: str
-    SUNSYNK_ID: str
-    SENSOR_PREFIX: str
-    SENSORS:
-      - str
-    PROFILES:
-      - str
-    MODBUS_SERVER_ID: int
-    MQTT_HOST: str
-    MQTT_PORT: port
-    MQTT_USERNAME: str
-    MQTT_PASSWORD: password
-    DEBUG: int
+  PORT_URL: str
+  SUNSYNK_ID: str
+  SENSOR_PREFIX: str
+  SENSORS:
+    - str
+  PROFILES:
+    - str
+  MODBUS_SERVER_ID: int
+  MQTT_HOST: str
+  MQTT_PORT: port
+  MQTT_USERNAME: str
+  MQTT_PASSWORD: password
+  DEBUG: int

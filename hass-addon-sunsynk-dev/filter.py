@@ -108,6 +108,8 @@ class RRobinState:
 
     def tick(self):
         """Cycle over entries in the RR list."""
+        if not self.list:
+            return
         self.idx += 1
         try:
             self.active = [self.list[self.idx]]

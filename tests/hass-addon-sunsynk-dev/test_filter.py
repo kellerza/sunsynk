@@ -136,10 +136,11 @@ def test_step_text(filters):
 
 def test_rr(filters):
     """Test round robin."""
+    RROBIN = filters.RROBIN
+    RROBIN.tick()
+
     sen = [filters.Sensor(1, "a"), filters.Sensor(2, "b"), filters.Sensor(3, "c")]
     fil = [filters.getfilter("round_robin", s) for s in sen]
-
-    RROBIN = filters.RROBIN
 
     for idx in range(2):
         assert fil[idx].sensor is sen[idx]

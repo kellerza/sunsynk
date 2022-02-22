@@ -49,14 +49,11 @@ def test_versions(run):
         assert res, f"version not found in {filename}"
         return res.group(1)
 
-    v_setup = _get_version(
-        filename="sunsynk/__init__.py",
-        regex=r'VERSION = "(.+)"',
-    )
+    v_setup = "0.1.3"  # last version
 
     v_docker = _get_version(
         filename="hass-addon-sunsynk/Dockerfile",
-        regex=r"sunsynk==(.+)",
+        regex=r"sunsynk\[pymodbus\]==(.+)",
     )
 
     v_config = _get_version(
