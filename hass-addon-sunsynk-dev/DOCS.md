@@ -99,7 +99,7 @@ Other modifiers
 
 ### Energy Management
 
-You can read more Energy Management in Home Assistant [here](https://www.home-assistant.io/blog/2021/08/04/home-energy-management/)
+You can read more Energy Management in Home Assistant [here](https://www.home-assistant.io/blog/2021/08/04/home-energy-management/) or [here](https://www.home-assistant.io/docs/energy/)
 
 Example sensors that you can use with Energy Management (a hybrid inverter with PV and a battery)
 
@@ -114,7 +114,7 @@ SENSORS:
   - total_battery_discharge
 ```
 
-Add it to your Home Assistant
+Add these sensors to the Home Assistant Energy Panel
 [![Open your Home Assistant instance and show your Energy configuration panel.](https://my.home-assistant.io/badges/config_energy.svg)](https://my.home-assistant.io/redirect/config_energy/) [![Open your Home Assistant instance and show your Energy panel.](https://my.home-assistant.io/badges/energy.svg)](https://my.home-assistant.io/redirect/energy/)
 
 ### Templates
