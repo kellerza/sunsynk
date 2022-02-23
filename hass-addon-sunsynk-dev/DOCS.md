@@ -30,7 +30,7 @@
 
 - `SENSOR_PREFIX`
 
-  A prefix to add to all the MQTT Discovered Home Assistant Sensors (e.g. try SS)
+  A prefix to add to all the MQTT Discovered Home Assistant Sensors (e.g. try SS).
 
 - `PROFILES`
 
@@ -38,7 +38,7 @@
   >
   > This writes settings, use at your own risk!
 
-  Enables reading / writing settings to your inverter
+  Enables reading / writing settings to your inverter.
 
   The profiles will be presented as a Home Assistant Select Entity, with options for the different profiles.
 
@@ -51,7 +51,7 @@
 
   When you **UPDATE** a profile, the Add-On performs the following actions:
   - Read all the settings related to the profile from the Inverter.
-  - Read all the profile presets from `/share/hass-addon-sunsynk/*.yml`
+  - Read all the profile presets from `/share/hass-addon-sunsynk/*.yml`.
   - The value of the Home Assistant Select entity will reflect the matching presets.
     - If the current settings is not part of existing presets, a new profile will be created.
 
@@ -64,14 +64,11 @@
 
 - `MQTT_*`
 
-  You will need a working MQTT sevrer since all values will be sent via MQTT.
-  The default configuration assumes the Mosquitto broker add-on and you simply have to
-  fill in your password.
+  You will need a working MQTT sevrer since all values will be sent via MQTT. The default configuration assumes the Mosquitto broker add-on and you simply have to fill in your password.
 
 - `DEBUG`
 
-  The values received will continuously be printed to the add-on's log. This will confirm
-  that you receive values.
+  The values received will continuously be printed to the add-on's log. This will confirm that you receive values.
 
 | Value | Description                 |
 | ----- | --------------------------- |
@@ -81,27 +78,26 @@
 
 ## Sensor modifiers - Min/Max/Now/Average/Step
 
-Sensors fields can be modified by adding a modifier to the end of the field name.
-Without any modifier, a default modifier will be added based on the field name
+Sensors fields can be modified by adding a modifier to the end of the field name. Without any modifier, a default modifier will be added based on the field name.
 
-Other modifiers
+Other modifiers:
 
 | Modifier | Description                                                                                                                      |
 | -------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `:max`   | the maximum value over the last 60 seconds. Ideal for _counters_ where you are typically interested only in the last value |
+| `:max`   | the maximum value over the last 60 seconds. Ideal for _counters_ where you are typically interested only in the last value.      |
 | `:min`   | the minimum value over the last 60 seconds.                                                                                      |
-| `:now`   | the maximum value over the last 2 seconds. Useful to see current sensor value                                                    |
-| `:round_robin` | cycle over all configured settings. Ideal for config settings                                                    |
-| `:avg`   | the average over the last 60 seconds                                                                                             |
-| `:step`  | the average over the last minute will be reported, except if there is a significant change (>80) then it will be reported immediately. This is useful for automations using the current power |
+| `:now`   | the maximum value over the last 2 seconds. Useful to see current sensor value.                                                   |
+| `:round_robin` | cycle over all configured settings. Ideal for config settings.                                                             |
+| `:avg`   | the average over the last 60 seconds.                                                                                            |
+| `:step`  | the average over the last minute will be reported, except if there is a significant change (>80) then it will be reported immediately. This is useful for automations using the current power. |
 
 ## Home Assistant
 
 ### Energy Management
 
-You can read more Energy Management in Home Assistant [here](https://www.home-assistant.io/blog/2021/08/04/home-energy-management/) or [here](https://www.home-assistant.io/docs/energy/)
+You can read more Energy Management in Home Assistant [here](https://www.home-assistant.io/blog/2021/08/04/home-energy-management/) or [here](https://www.home-assistant.io/docs/energy/).
 
-Example sensors that you can use with Energy Management (a hybrid inverter with PV and a battery)
+Example sensors that you can use with Energy Management (a hybrid inverter with PV and a battery).
 
 ```yaml
 SENSORS:
@@ -115,11 +111,14 @@ SENSORS:
 ```
 
 Add these sensors to the Home Assistant Energy Panel
-[![Open your Home Assistant instance and show your Energy configuration panel.](https://my.home-assistant.io/badges/config_energy.svg)](https://my.home-assistant.io/redirect/config_energy/) [![Open your Home Assistant instance and show your Energy panel.](https://my.home-assistant.io/badges/energy.svg)](https://my.home-assistant.io/redirect/energy/)
+
+[![Open your Home Assistant instance and show your Energy configuration panel.](https://my.home-assistant.io/badges/config_energy.svg)](https://my.home-assistant.io/redirect/config_energy/)
+
+[![Open your Home Assistant instance and show your Energy panel.](https://my.home-assistant.io/badges/energy.svg)](https://my.home-assistant.io/redirect/energy/)
 
 ### Templates
 
-You can view sensor values under Home Assistant using the "Developer Tools" -> Templates tab
+You can view sensor values under Home Assistant using the "Developer Tools" -> Templates tab.
 
 ```jinja
 {% set s186 = states("sensor.ss_pv1_power")|float -%}      PV1:{{s186}}W
