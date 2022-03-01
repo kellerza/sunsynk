@@ -56,7 +56,7 @@ def test_versions(run):
 
     v_docker = _get_version(
         filename=f"{FOLDER}/Dockerfile",
-        regex=r"sunsynk==(.+)",
+        regex=r"sunsynk(?:\[[^\]]+\])?==([0-9.]+)",
     )
 
     v_config = _get_version(
