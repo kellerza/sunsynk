@@ -233,7 +233,6 @@ class MQTTClient:
         self, device_ids: Sequence[str], keep_topics: Sequence[str], sleep: float = 0.5
     ) -> None:
         """Remove previously discovered entities."""
-        _loop = asyncio.get_running_loop()
 
         def __on_message(_client: Client, _userdata: Any, message: MQTTMessage) -> None:
             if not message.retain:
@@ -244,7 +243,8 @@ class MQTTClient:
             if device not in device_ids or topic in keep_topics:
                 return
             _LOGGER.warning("Removing HASS MQTT discovery info %s", topic)
-            _loop.create_task(self.publish(topic, None, retain=True))
+            # Not in the event loop, execute directly
+            self._client.publish(topic=topic, payload=None, qos=1, retain=True)
 
         self._client.on_message = __on_message
 

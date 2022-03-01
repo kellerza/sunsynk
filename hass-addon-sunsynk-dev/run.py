@@ -16,8 +16,8 @@ from mqtt import MQTT, Device, Entity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
-from sunsynk import Sensor, uSunsynk
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED
+from sunsynk.usunsynk import Sensor, uSunsynk
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -157,11 +157,13 @@ async def read(
     global READ_ERRORS  # pylint:disable=global-statement
     try:
         try:
-            await SUNSYNK.read(sensors)
+            await asyncio.wait_for(SUNSYNK.read(sensors), OPT.timeout)
             READ_ERRORS = 0
             return True
         except asyncio.TimeoutError:
-            _LOGGER.error("Read error%s: Timeout", msg)
+            _LOGGER.error("Timeout reading: %s", msg)
+        # except KeyError:
+        #     _LOGGER.error("Read error%s: Timeout", msg)
     except Exception as err:  # pylint:disable=broad-except
         _LOGGER.error("Read Error%s: %s", msg, err)
         READ_ERRORS += 1
