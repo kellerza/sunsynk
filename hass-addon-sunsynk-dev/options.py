@@ -23,8 +23,9 @@ class Options:
     sensor_prefix: str = "SS"
     timeout: int = 10
     debug: int = 1
-    port_url: str = ""
+    port: str = ""
     modbus_server_id: int = 1
+    driver: str = "umodbus"
 
     def update(self, json: Dict) -> None:
         """Update options."""

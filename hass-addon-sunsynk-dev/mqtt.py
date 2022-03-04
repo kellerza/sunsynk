@@ -226,6 +226,8 @@ class MQTTClient:
             _LOGGER.debug("publish %s", ent.topic)
             await self.publish(ent.topic, payload=dumps(ent.asdict), retain=True)
 
+        await asyncio.sleep(0.01)
+
         if task_remove:
             await task_remove
 
@@ -234,7 +236,7 @@ class MQTTClient:
     ) -> None:
         """Remove previously discovered entities."""
 
-        def __on_message(_client: Client, _userdata: Any, message: MQTTMessage) -> None:
+        def __on_message(client: Client, _userdata: Any, message: MQTTMessage) -> None:
             if not message.retain:
                 return
             topic = str(message.topic)
@@ -242,9 +244,9 @@ class MQTTClient:
             _LOGGER.debug("Rx retained msg: topic=%s -- device=%s", topic, device)
             if device not in device_ids or topic in keep_topics:
                 return
-            _LOGGER.warning("Removing HASS MQTT discovery info %s", topic)
+            _LOGGER.info("Removing HASS MQTT discovery info %s", topic)
             # Not in the event loop, execute directly
-            self._client.publish(topic=topic, payload=None, qos=1, retain=True)
+            client.publish(topic=topic, payload=None, qos=1, retain=True)
 
         self._client.on_message = __on_message
 
@@ -271,7 +273,8 @@ class MQTTClient:
                 return
             payload = message.payload.decode("utf-8")
             if inspect.iscoroutinefunction(handler):
-                _loop.create_task(handler(payload))
+                coro = handler(payload)
+                _loop.call_soon_threadsafe(lambda: _loop.create_task(coro))
             else:
                 handler(payload)
 

@@ -17,7 +17,7 @@ from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED
-from sunsynk.usunsynk import Sensor, uSunsynk
+from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 SENSORS: List[Filter] = []
 
 
-SUNSYNK = uSunsynk()
+SUNSYNK: Sunsynk = None  # type: ignore
 
 
 async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None:
@@ -79,6 +79,26 @@ async def hass_discover_sensors(serial: str) -> None:
 SERIAL = ALL_SENSORS["serial"]
 
 
+def setup_driver() -> None:
+    """Setup the correct driver."""
+    global SUNSYNK
+    if OPT.driver == "pymodbus":
+        from sunsynk.pysunsynk import pySunsynk
+
+        SUNSYNK = pySunsynk()
+    elif OPT.driver == "umodbus":
+        from sunsynk.usunsynk import uSunsynk
+
+        SUNSYNK = uSunsynk()
+    else:
+        _LOGGER.critical("Invalid DRIVER: %s. Expected umodbus, pymodbus", OPT.driver)
+        sys.exit(-1)
+
+    SUNSYNK.port = OPT.port
+    SUNSYNK.server_id = OPT.modbus_server_id
+    SUNSYNK.timeout = OPT.timeout
+
+
 def startup() -> None:
     """Read the hassos configuration."""
     logging.basicConfig(
@@ -101,8 +121,7 @@ def startup() -> None:
 
     MQTT.availability_topic = f"{SS_TOPIC}/{OPT.sunsynk_id}/availability"
 
-    SUNSYNK.port = OPT.port_url
-    SUNSYNK.server_id = OPT.modbus_server_id
+    setup_driver()
 
     if OPT.debug < 2:
         logging.basicConfig(
@@ -150,14 +169,14 @@ def log_bold(msg: str) -> None:
 READ_ERRORS = 0
 
 
-async def read(
+async def read_sensors(
     sensors: Sequence[Sensor], msg: str = "", retry_single: bool = False
 ) -> bool:
     """Read from the Modbus interface."""
     global READ_ERRORS  # pylint:disable=global-statement
     try:
         try:
-            await asyncio.wait_for(SUNSYNK.read(sensors), OPT.timeout)
+            await asyncio.wait_for(SUNSYNK.read_sensors(sensors), OPT.timeout)
             READ_ERRORS = 0
             return True
         except asyncio.TimeoutError:
@@ -174,7 +193,7 @@ async def read(
         _LOGGER.info("Retrying individual sensors: %s", [s.name for s in SENSORS])
         for sen in sensors:
             await asyncio.sleep(0.02)
-            await read([sen], msg=sen.name, retry_single=False)
+            await read_sensors([sen], msg=sen.name, retry_single=False)
 
     return False
 
@@ -190,14 +209,14 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     loop.set_debug(OPT.debug > 0)
 
     try:
-        await SUNSYNK.connect(timeout=OPT.timeout)
+        await SUNSYNK.connect()
     except ConnectionError:
         log_bold(f"Could not connect to {SUNSYNK.port}")
         _LOGGER.critical(TERM)
         await asyncio.sleep(30)
         return
 
-    if not await read([SERIAL]):
+    if not await read_sensors([SERIAL]):
         log_bold(
             "No response on the Modbus interface, try checking the "
             "wiring to the Inverter, the USB-to-RS485 converter, etc"
@@ -212,11 +231,11 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
         return
 
-    await hass_discover_sensors(SERIAL.value)
+    await hass_discover_sensors(str(SERIAL.value))
 
     # Read all & publish immediately
     await asyncio.sleep(0.01)
-    await read([f.sensor for f in SENSORS], retry_single=True)
+    await read_sensors([f.sensor for f in SENSORS], retry_single=True)
     await publish_sensors(SENSORS, force=True)
 
     async def poll_sensors() -> None:
@@ -229,7 +248,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
                 fsensors.append(fil)
         if fsensors:
             # 2. read
-            if await read([f.sensor for f in fsensors]):
+            if await read_sensors([f.sensor for f in fsensors]):
                 # 3. decode & publish
                 await publish_sensors(fsensors)
 

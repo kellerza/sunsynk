@@ -5,7 +5,9 @@ from unittest.mock import AsyncMock
 import pytest
 
 # from sunsynk.definitions import serial
-from sunsynk import Sunsynk, pySunsynk, uSunsynk
+from sunsynk import Sunsynk
+from sunsynk.pysunsynk import pySunsynk
+from sunsynk.usunsynk import uSunsynk
 
 
 @pytest.fixture

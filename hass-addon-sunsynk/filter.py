@@ -76,7 +76,7 @@ class Filter:
 class SCFilter(Filter):
     """Significant change filter."""
 
-    threshold: int = attr.field(default=80)
+    threshold: int = attr.field(default=50)
 
     def update(self, value: Union[float, int, str]) -> Optional[Union[float, int, str]]:
         """Add value."""
@@ -97,9 +97,64 @@ class SCFilter(Filter):
         return res
 
 
-def getfilter(filter_def: str, sensor: Any) -> Filter:
+@attr.define(slots=True)
+class RRobinState:
+    """Round Robin settings."""
+
+    # pylint: disable=too-few-public-methods
+    active: List[Sensor] = attr.field(factory=list)
+    list: List[Sensor] = attr.field(factory=list)
+    idx: int = attr.field(default=-1)
+
+    def tick(self) -> None:
+        """Cycle over entries in the RR list."""
+        if not self.list:
+            return
+        self.idx += 1
+        try:
+            self.active = [self.list[self.idx]]
+        except IndexError:
+            self.idx = 0
+            self.active = [self.list[0]]
+
+
+RROBIN = RRobinState()
+
+
+@attr.define
+class RoundRobinFilter(Filter):
+    """Round Robin Filter."""
+
+    def should_update(self) -> bool:
+        """Should we update this sensor."""
+        return self.sensor in RROBIN.active
+
+    def update(self, value: Union[float, int, str]) -> Optional[Union[float, int, str]]:
+        """Add value."""
+        if self.values:
+            val0 = self.values[0]
+
+            if val0 == value:
+                self.samples += 1
+                if self.samples < 100:
+                    self.samples = 0
+                    return None
+                self.samples = 0
+
+        self.values = [value]
+        return value
+
+    def __attrs_post_init__(self) -> None:
+        """Init."""
+        RROBIN.list.append(self.sensor)
+
+
+def getfilter(filter_def: str, sensor: Sensor) -> Filter:
     """Get a filter from a filterstring."""
     fff = filter_def.split(":")
+
+    if fff[0] == "round_robin":
+        return RoundRobinFilter(sensor=sensor)
 
     funcs = {"min": min, "max": max, "mean": mean, "avg": mean}
     if fff[0] in funcs:
@@ -135,13 +190,13 @@ def getfilter(filter_def: str, sensor: Any) -> Filter:
 def suggested_filter(sensor: Sensor) -> str:
     """Default filters."""
     if sensor.id.startswith("prog"):
-        return "last"
+        return "round_robin"
     f_id = {
-        "serial": "last",
+        "serial": "round_robin",
         "overall_state": "step",
         "battery_soc": "last",
         "sd_status": "step",
-        "fault": "last",
+        "fault": "round_robin",
     }
     assert all(s in ALL_SENSORS for s in f_id)
 

@@ -5,7 +5,7 @@ import logging
 from itertools import chain
 from pathlib import Path
 from random import random
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 import attr
 from mqtt import MQTT, Device, Entity, SelectEntity
@@ -41,7 +41,7 @@ class Profile:
         rws = [(s.name, s.reg_value) for s in self.sensors]
         _LOGGER.info("Profile %s: %s", self.name, rws)
 
-    def loadfile(self, file: Path) -> Tuple[str, Optional[Dict]]:
+    def loadfile(self, file: Path) -> Tuple[str, Dict]:
         """Load a single file."""
         _LOGGER.debug("Load %s", file)
         p_items = safe_load(file.read_text(encoding="utf-8"))
@@ -57,12 +57,12 @@ class Profile:
                 expected_s - set(p_items.keys()),
                 set(p_items.keys()) - expected_s,
             )
-            return ("", None)
+            return ("", {})
 
         # Ensure all value lengths are correct
         if not all(len(s.reg_value) == len(p_items[s.id]) for s in self.sensors):
             _LOGGER.warning("%s %s bad value length", file.name, p_name)
-            return ("", None)
+            return ("", {})
 
         # Save the preset
         self.preset_data[p_name] = p_items
@@ -139,7 +139,7 @@ class Profile:
 
     async def write_preset(self, ss: Sunsynk, name: str) -> None:
         """Write the preset."""
-        values = self.preset_data.get(name)
+        values = self.preset_data.get(name, {})
         if not values:
             _LOGGER.error("Preset %s does not exist", name)
 
@@ -153,7 +153,7 @@ class Profile:
                 "Preset %s: %s=%s  [old %s]", name, sen.id, newv, sen.reg_value
             )
             sen.reg_value = newv
-            await ss.write(sen)
+            await ss.write_sensor(sen)
         _LOGGER.info(
             "Preset %s activated on %s (skipped %s, updated %s)",
             name,
@@ -176,7 +176,7 @@ async def profile_poll(ss: Sunsynk) -> None:
     await MQTT.publish(profile.entity.state_topic, action)
 
     if action == UPDATE:
-        await ss.read(profile.sensors)
+        await ss.read_sensors(profile.sensors)
         # profile.log_values()
         await profile.mqtt_update_action()
         return
@@ -199,7 +199,6 @@ async def profile_poll(ss: Sunsynk) -> None:
 
 def profile_add_entities(entities: List[Entity], device: Device) -> None:
     """Add entities that will be discovered."""
-
     for pname in OPT.profiles:
         pro = ALL_PROFILES.get(pname)
         if not pro:

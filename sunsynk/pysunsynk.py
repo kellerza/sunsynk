@@ -1,7 +1,7 @@
 """Sunsync Modbus interface."""
 import asyncio
 import logging
-from typing import Dict, Sequence
+from typing import Sequence
 from urllib.parse import urlparse
 
 import attr
@@ -17,8 +17,6 @@ from serial.serialutil import STOPBITS_ONE
 
 from sunsynk.sunsynk import Sunsynk  # type: ignore
 
-from .sensor import Sensor, group_sensors, update_sensors
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -29,7 +27,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
     port: str = attr.ib(default="/dev/tty0")
     client: ModbusClientProtocol = attr.ib(default=None)
 
-    async def connect(self, timeout: int = 5) -> None:
+    async def connect(self) -> None:
         """Connect.
 
         https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
@@ -79,7 +77,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             raise ConnectionError
 
         try:
-            client.protocol._timeout = timeout
+            client.protocol._timeout = self.timeout
         except AttributeError as err:
             _LOGGER.warning("%s", err)
 
@@ -94,29 +92,11 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             raise ConnectionError("failed to write")
         return True
 
-    async def read(self, sensors: Sequence[Sensor]) -> None:
-        """Read a list of sensors."""
-        for grp in group_sensors(sensors):
-            glen = grp[-1] - grp[0] + 1
-            r_r = await self.client.read_holding_registers(
-                grp[0], glen, unit=self.server_id
-            )
-            if r_r.function_code >= 0x80:  # test that we are not an error
-                raise Exception("failed to read")
-            regs = register_map(grp[0], r_r.registers)
-
-            _LOGGER.debug(
-                "Request registers: %s glen=%d. Response %s len=%d. regs=%s",
-                grp,
-                glen,
-                r_r.registers,
-                len(r_r.registers),
-                regs,
-            )
-
-            update_sensors(sensors, regs)
-
-
-def register_map(start: int, registers: Sequence[int]) -> Dict[int, int]:
-    """Turn the registers into a dictionary or map."""
-    return {start + i: r for (i, r) in enumerate(registers)}
+    async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
+        """Read a holding register."""
+        res = await self.client.read_holding_registers(
+            start, length, unit=self.server_id
+        )
+        if res.function_code >= 0x80:  # test that we are not an error
+            raise Exception("failed to read")
+        return res.registers

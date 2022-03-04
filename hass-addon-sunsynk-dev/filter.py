@@ -103,10 +103,10 @@ class RRobinState:
 
     # pylint: disable=too-few-public-methods
     active: List[Sensor] = attr.field(factory=list)
-    list: Sequence[Sensor] = attr.field(factory=list)
+    list: List[Sensor] = attr.field(factory=list)
     idx: int = attr.field(default=-1)
 
-    def tick(self):
+    def tick(self) -> None:
         """Cycle over entries in the RR list."""
         if not self.list:
             return
@@ -144,7 +144,7 @@ class RoundRobinFilter(Filter):
         self.values = [value]
         return value
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         """Init."""
         RROBIN.list.append(self.sensor)
 

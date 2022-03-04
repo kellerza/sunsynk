@@ -8,14 +8,14 @@ FROM ${BUILD_FROM}
 #     python3-pip \
 #   && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 connio umodbus async_modbus sunsynk[pymodbus]==0.1.3
+RUN pip3 install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 pyyaml~=5.4.1 sunsynk[pymodbus,umodbus]==0.1.4
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY . ./
 
 # local test - install sunsynk
-# RUN pip3 install -e sunsynk
+# RUN pip3 install -e sunsynk[pymodbus,umodbus]
 
 #CMD ["tail", "-f", "/dev/null"]
 CMD ["./run.py"]

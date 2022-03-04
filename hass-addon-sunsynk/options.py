@@ -1,5 +1,4 @@
 """Addon options."""
-import logging
 from typing import Dict, List
 
 import attr
@@ -20,25 +19,19 @@ class Options:
     mqtt_password: str = ""
     sunsynk_id: str = ""
     sensors: List[str] = []
-    profiles: int = 0
-    sensor_prefix: str = ""
-    timeout: int = 5
+    profiles: List[str] = []
+    sensor_prefix: str = "SS"
+    timeout: int = 10
     debug: int = 1
     port: str = ""
-    port_address: str = ""
+    modbus_server_id: int = 1
+    driver: str = "umodbus"
 
     def update(self, json: Dict) -> None:
         """Update options."""
-        logger = logging.getLogger(__name__)
         for key, val in json.items():
             setattr(self, key.lower(), val)
         self.sunsynk_id = slug(self.sunsynk_id)
-        if self.port_address:
-            if self.port:
-                logger.warning(
-                    "Your config includes PORT and PORT_ADDRESS. PORT_ADDRESS will be used"
-                )
-            self.port = self.port_address
 
 
 OPT = Options()
