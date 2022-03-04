@@ -81,7 +81,8 @@ SERIAL = ALL_SENSORS["serial"]
 
 def setup_driver() -> None:
     """Setup the correct driver."""
-    global SUNSYNK
+    # pylint: disable=import-outside-toplevel
+    global SUNSYNK  # pylint: disable=global-statement
     if OPT.driver == "pymodbus":
         from sunsynk.pysunsynk import pySunsynk
 
