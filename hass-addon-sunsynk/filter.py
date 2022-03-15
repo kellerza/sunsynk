@@ -136,8 +136,9 @@ class RoundRobinFilter(Filter):
 
             if val0 == value:
                 self.samples += 1
-                if self.samples < 100:
+                if self.samples > 100:
                     self.samples = 0
+                else:
                     return None
                 self.samples = 0
 
