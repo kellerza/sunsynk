@@ -60,6 +60,7 @@ There are several inverters that are rebranded Deye inverters, so you might have
 | Sunsynk 5.5kW  | Hubble AM-2       | beta/all | @kellerza     | BMS485 (top left)          |
 | Sunsynk 8.8kW  | BSL 8.2 kWH       | 0.0.8    | @dirkackerman | RS485 (1 in image below)   |
 | Deye  8kW      | Pylontech US3000C | 0.1.3dev | @Kladrie      | RS485 (top left)           |
+| Turbo-E   5kW  | DIY with JKBMS    | 0.1.4    | @agtconf      | BMS485 (top left)          |           
 ### Sunsynk 3.6kW Inverter
 ![Sunsynk 3.6kW Inverter](./images/Sunsynk-36-Inverter.jpg)
 
@@ -77,6 +78,9 @@ Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.
 !![20220304_085338](https://user-images.githubusercontent.com/11409124/156717080-489b6c8b-04bf-45c0-8587-bce410c5e91d.jpg)
 
 RS485 is the blue line - top left, as with the Sunsynk inverters. Yellow is the CAN-comms with the Pylontech batteries
+
+### Turbo-Energy 5kW Inverter
+Tested with: USB-to-RS485 adaptor sourced from Aliexpress, very similar to [this](https://www.robotics.org.za/RS485-3P).
 
 ## Hardware
 The RJ-45 plug on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring). RS485 requires a twisted pair, so works well with CAT5 network cable and the RJ-45 connectors.
