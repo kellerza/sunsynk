@@ -133,6 +133,7 @@ _SENSORS += (
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
+    Sensor(194, "Grid Connected Status"),
 )
 ###########
 # Settings
