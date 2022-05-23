@@ -53,6 +53,20 @@ def test_group() -> None:
     assert g == [[10, 11, 12], [20]]
 
 
+def test_group_max_size() -> None:
+    sen = [
+        Sensor(10, "10"),
+        Sensor(11, "11"),
+        Sensor(12, "12"),
+        Sensor(13, "13"),
+        Sensor(14, "14"),
+        Sensor(15, "15"),
+        Sensor(16, "16"),
+    ]
+    g = list(group_sensors(sen, max_group_size=3))
+    assert g == [[10, 11, 12], [13, 14, 15], [16]]
+
+
 def test_all_groups() -> None:
     s = [ALL_SENSORS[s] for s in ALL_SENSORS]
     for i in range(2, 6):
