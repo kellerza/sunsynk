@@ -98,6 +98,7 @@ def setup_driver() -> None:
     SUNSYNK.port = OPT.port
     SUNSYNK.server_id = OPT.modbus_server_id
     SUNSYNK.timeout = OPT.timeout
+    SUNSYNK.read_sensors_batch_size = OPT.read_sensors_batch_size
 
 
 def startup() -> None:
