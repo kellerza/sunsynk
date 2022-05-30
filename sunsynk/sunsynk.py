@@ -18,6 +18,7 @@ class Sunsynk:
     baudrate: int = attr.ib(default=9600)
     server_id: int = attr.ib(default=1)
     timeout: int = attr.ib(default=10)
+    read_sensors_batch_size: int = attr.field(default=60)
 
     async def connect(self) -> None:
         """Connect."""
@@ -45,7 +46,9 @@ class Sunsynk:
     async def read_sensors(self, sensors: Sequence[Sensor]) -> None:
         """Read a list of sensors - Sunsynk supports function code 0x03."""
         all_regs: Dict[int, int] = {}
-        for grp in group_sensors(sensors, allow_gap=1):
+        for grp in group_sensors(
+            sensors, allow_gap=1, max_group_size=self.read_sensors_batch_size
+        ):
             glen = grp[-1] - grp[0] + 1
 
             try:

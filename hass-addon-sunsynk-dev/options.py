@@ -19,6 +19,7 @@ class Options:
     mqtt_password: str = ""
     sunsynk_id: str = ""
     sensors: List[str] = []
+    read_sensors_batch_size: int = 60
     profiles: List[str] = []
     sensor_prefix: str = "SS"
     timeout: int = 10

@@ -105,7 +105,7 @@ class RWSensor(Sensor):
 
 
 def group_sensors(
-    sensors: Sequence[Sensor], allow_gap: int = 3
+    sensors: Sequence[Sensor], allow_gap: int = 3, max_group_size: int = 60
 ) -> Generator[list[int], None, None]:
     """Group sensor registers into blocks for reading."""
     if not sensors:
@@ -114,7 +114,7 @@ def group_sensors(
     group: List[int] = []
     adr0 = 0
     for adr1 in sorted(regs):
-        if group and (adr1 - adr0 > allow_gap or len(group) >= 60):
+        if group and (adr1 - adr0 > allow_gap or len(group) >= max_group_size):
             yield group
             group = []
         adr0 = adr1
