@@ -46,7 +46,9 @@ class Sunsynk:
     async def read_sensors(self, sensors: Sequence[Sensor]) -> None:
         """Read a list of sensors - Sunsynk supports function code 0x03."""
         all_regs: Dict[int, int] = {}
-        for grp in group_sensors(sensors, allow_gap=1, max_group_size=self.read_sensors_batch_size):
+        for grp in group_sensors(
+            sensors, allow_gap=1, max_group_size=self.read_sensors_batch_size
+        ):
             glen = grp[-1] - grp[0] + 1
 
             try:
