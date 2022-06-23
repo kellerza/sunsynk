@@ -62,7 +62,7 @@ There are several inverters that are rebranded Deye inverters, so you might have
 | Deye  8kW      | Pylontech US3000C | 0.1.3dev | @Kladrie      | RS485 (top left)           |
 | Turbo-E   5kW  | DIY with JKBMS    | 0.1.4    | @agtconf      | BMS485 (top left)          |           
 ### Sunsynk 3.6kW Inverter
-![Sunsynk 3.6kW Inverter](./images/Sunsynk-36-Inverter.jpg)
+<img src="./images/inv-ss-3-6kw.png" width="80%">
 
 ### Sunsynk 5.5kW Inverter
 Tested with: USB-to-RS485 adaptor sourced from Banggood, very similar to [this](https://www.robotics.org.za/RS485-MINI?search=rs485).
