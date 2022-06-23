@@ -113,6 +113,7 @@ If you need to have multiple connections to the serial port: ONLY connect mbusd 
 Ensure the Modbus server ID (`MODBUS_SERVER_ID` config setting) setting matches the configured **Modbus SN** value of the inverter
 
 View/update the Modbus server ID on your inverter under "Advanced Settings" / "Multi-Inverter"
+
 <img src="./images/modbus_sn.png" width="80%">
 
 ## Credits
