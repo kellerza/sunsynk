@@ -70,12 +70,14 @@ Tested with: USB-to-RS485 adaptor sourced from Banggood, very similar to [this](
 NOTE: RJ-45 port marked **RS485** (bottom right) does not work.
 
 ### Sunsynk 8.8kW Inverter
-![Sunsynk 8.8kW Inverter](https://user-images.githubusercontent.com/10972519/152020379-89f83c00-5fa4-4624-b204-0133cff8bdb2.png)
+<img src="./images/inv-ss-8kw.png" width="80%">
+
 
 Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
 ### Deye 8kW Inverter
-!![20220304_085338](https://user-images.githubusercontent.com/11409124/156717080-489b6c8b-04bf-45c0-8587-bce410c5e91d.jpg)
+
+<img src="./images/inv-deye-8kw.png" width="80%">
 
 RS485 is the blue line - top left, as with the Sunsynk inverters. Yellow is the CAN-comms with the Pylontech batteries
 
@@ -93,9 +95,25 @@ The RJ-45 plug on the inverter side is crimped according to [T568A](https://en.w
 
 \* tested on Sunsynk 8.8kW only
 
-![USB RS485 Adapter](./images/USB-RS485.jpg)
+<img src="./images/USB-RS485.jpg" width="45%">
+<img src="./images/RS485-and-RJ45.jpg" width="45%">
 
-![RS485 and RJ45](./images/RS485-and-RJ45.jpg)
+## Fault finding
+
+If you fail to get a reply from the inverter, please check the following
+
+### (a) Only a single connection to the serial port 
+
+Ensure you only hve a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon verison.
+
+If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503 )
+
+### (b) Check the Modbus Server ID
+
+Ensure the Modbus server ID (`MODBUS_SERVER_ID` config setting) setting matches the configured **Modbus SN** value of the inverter
+
+View/update the Modbus server ID on your inverter under "Advanced Settings" / "Multi-Inverter"
+<img src="./images/modbus_sn.png" width="80%">
 
 ## Credits
 
