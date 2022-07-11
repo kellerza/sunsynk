@@ -2,7 +2,7 @@
 
 ## Parameters
 
-- `PORT` & `DRIVER`
+- `PORT`, `DEVICE` & `DRIVER`
 
   The port for RS485 communications, which can be either:
 

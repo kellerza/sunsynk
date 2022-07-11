@@ -1,5 +1,18 @@
 # Changelog
 
+## **2022.07.1-0.1.6** - 2022-07-11
+
+- Python sunsynk module 0.1.5:
+
+  - Deprecate Time x Power sensors in favour of Energy - [#27](https://github.com/kellerza/sunsynk/issues/27)
+
+- Sunsynk Add-On
+  - Fix RR filter
+
+- Sunsynk Dev Add-On
+  - Fix RR filter
+  - Add **DEVICE** option as an alternative to **PORT**. **DEVICE** should list all available tty device in HASS IO and will be used if the **PORT** is empty
+
 ## **2022.05.29b-0.1.5** - 2022-05-29
 
 - Python sunsynk module 0.1.5:
