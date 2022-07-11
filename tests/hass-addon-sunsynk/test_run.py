@@ -49,7 +49,7 @@ def test_versions(run):
         assert res, f"version not found in {filename}"
         return res.group(1)
 
-    v_setup = "0.1.4"  # last version
+    v_setup = "0.1.5"  # last version
 
     v_docker = _get_version(
         filename="hass-addon-sunsynk/Dockerfile",

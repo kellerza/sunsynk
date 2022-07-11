@@ -17,6 +17,7 @@ from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED
+from sunsynk.sensor import slug
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
@@ -87,10 +88,16 @@ def setup_driver() -> None:
         from sunsynk.pysunsynk import pySunsynk
 
         SUNSYNK = pySunsynk()
+        if not OPT.port:
+            OPT.port = OPT.device
+
     elif OPT.driver == "umodbus":
         from sunsynk.usunsynk import uSunsynk
 
         SUNSYNK = uSunsynk()
+        if not OPT.port:
+            OPT.port = "serial://" + OPT.device
+
     else:
         _LOGGER.critical("Invalid DRIVER: %s. Expected umodbus, pymodbus", OPT.driver)
         sys.exit(-1)
@@ -138,6 +145,7 @@ def startup() -> None:
 
     for sensor_def in OPT.sensors:
         name, _, fstr = sensor_def.partition(":")
+        name = slug(name)
         if name in sens:
             _LOGGER.warning("Sensor %s only allowed once", name)
             continue

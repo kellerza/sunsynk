@@ -88,12 +88,15 @@ class MathSensor(Sensor):
     """Math sensor, add multiple registers."""
 
     factors: Tuple[float, ...] = attr.field(default=None, converter=ensure_tuple)
+    no_negative: bool = attr.field(default=False)
 
     def update_value(self) -> None:
         """Update the value."""
         self.value = _round(
             sum(_signed(i) * s for i, s in zip(self.reg_value, self.factors))
         )
+        if self.no_negative and not isinstance(self.value, str) and self.value < 0:
+            self.value = 0
 
     def __attrs_post_init__(self) -> None:
         """Ensure correct parameters."""

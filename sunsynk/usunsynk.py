@@ -2,9 +2,11 @@
 import asyncio
 import logging
 from typing import Sequence
+from urllib import parse
 
 import attr
 from async_modbus import AsyncClient, modbus_for_url
+from connio import SERIAL_SCHEMES, SOCKET_SCHEMES
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -19,7 +21,16 @@ class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
 
     async def connect(self) -> None:
         """Connect."""
-        _LOGGER.info("Connecting to %s", self.port)
+        url_result = parse.urlparse(self.port)
+        scheme = url_result.scheme
+        if scheme not in SOCKET_SCHEMES and scheme not in SERIAL_SCHEMES:
+            sks = [f"{s}://" for s in SOCKET_SCHEMES]
+            sks.extend(f"{s}://" for s in SERIAL_SCHEMES)
+            raise Exception(
+                "Bad port/connection URL. It should start with one of the following: "
+                + ", ".join(sks)
+            )
+
         self.client = modbus_for_url(self.port)
 
     async def write_register(self, *, address: int, value: int) -> bool:

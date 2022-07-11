@@ -1,6 +1,10 @@
 ---
 name: Sunsynk Inverter Add-on (dev)
+<<<<<<< HEAD
 version: 2022.05.29b-0.1.5
+=======
+version: 2022.07.11-0.1.5
+>>>>>>> d486e54 (Energy etc)
 slug: hass-addon-sunsynk-dev
 description: Add-on for the Sunsynk Inverter
 startup: services
@@ -19,7 +23,8 @@ host_network: false
 map:
   - share:rw
 options:
-  PORT: "serial:///dev/ttyUSB0"
+  PORT: ""
+  DEVICE: "/dev/ttyUSB0"
   DRIVER: "umodbus"
   SUNSYNK_ID: "007"
   SENSOR_PREFIX: ""
@@ -39,7 +44,8 @@ options:
   MQTT_PASSWORD: ""
   DEBUG: 0
 schema:
-  PORT: str
+  PORT: str?
+  DEVICE: device(subsystem=tty)?
   DRIVER: str?
   SUNSYNK_ID: str
   SENSOR_PREFIX: str

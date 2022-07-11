@@ -193,11 +193,12 @@ def suggested_filter(sensor: Sensor) -> str:
     if sensor.id.startswith("prog"):
         return "round_robin"
     f_id = {
-        "serial": "round_robin",
-        "overall_state": "step",
         "battery_soc": "last",
-        "sd_status": "step",
         "fault": "round_robin",
+        "grid_connected_status": "last",
+        "overall_state": "step",
+        "sd_status": "step",
+        "serial": "round_robin",
     }
     assert all(s in ALL_SENSORS for s in f_id)
 

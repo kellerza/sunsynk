@@ -89,36 +89,38 @@ _SENSORS += (
 _SENSORS += (
     Sensor(166, "AUX power", WATT, -1),
     MathSensor((175, 167, 166), "Essential power", WATT, factors=(1, 1, -1)),
-    MathSensor((172, 167), "Non-Essential power", WATT, factors=(1, -1)),
+    MathSensor(
+        (172, 167), "Non-Essential power", WATT, factors=(1, -1), no_negative=True
+    ),
 )
 
 ###################
 # Energy
 ###################
 _SENSORS += (
-    Sensor(60, "Day Active Power", KWH, -0.1),
+    Sensor(60, "Day Active Energy", KWH, -0.1),
     Sensor(70, "Day Battery Charge", KWH, 0.1),
     Sensor(71, "Day Battery discharge", KWH, 0.1),
     Sensor(77, "Day Grid Export", KWH, 0.1),
     Sensor(76, "Day Grid Import", KWH, 0.1),
-    Sensor(200, "Day Load Power", KWH, 0.01),
-    Sensor(84, "Day Load Power", KWH, 0.1),
+    # Sensor(200, "Day Load Power", KWH, 0.01),
+    Sensor(84, "Day Load Energy", KWH, 0.1),
     Sensor(108, "Day PV Energy", KWH, 0.1),
-    Sensor(61, "Day Reactive Power", "kVarh", -0.1),
-    Sensor((201, 202), "History Load Power", KWH, 0.1),
-    Sensor(67, "Month Grid Power", KWH),
-    Sensor(66, "Month Load Power", KWH),
-    Sensor(65, "Month PV Power", KWH),
-    Sensor((63, 64), "Total Active Power", KWH, 0.1),  # signed?
+    Sensor(61, "Day Reactive Energy", "kVarh", -0.1),
+    # Sensor((201, 202), "History Load Power", KWH, 0.1),
+    Sensor(67, "Month Grid Energy", KWH),
+    Sensor(66, "Month Load Energy", KWH),
+    Sensor(65, "Month PV Energy", KWH),
+    Sensor((63, 64), "Total Active Energy", KWH, 0.1),  # signed?
     Sensor((72, 73), "Total Battery Charge", KWH, 0.1),
     Sensor((74, 75), "Total Battery Discharge", KWH, 0.1),
     Sensor((81, 82), "Total Grid Export", KWH, 0.1),
     Sensor((78, 80), "Total Grid Import", KWH, 0.1),
-    Sensor((85, 86), "Total Load Power", KWH, 0.1),
-    Sensor((96, 97), "Total PV Power", KWH, 0.1),
+    Sensor((85, 86), "Total Load Energy", KWH, 0.1),
+    Sensor((96, 97), "Total PV Energy", KWH, 0.1),
     Sensor((98, 99), "Year Grid Export", KWH, 0.1),
-    Sensor((87, 88), "Year Load Power", KWH, 0.1),
-    Sensor((68, 69), "Year PV Power", KWH, 0.1),
+    Sensor((87, 88), "Year Load Energy", KWH, 0.1),
+    Sensor((68, 69), "Year PV Energy", KWH, 0.1),
 )
 
 ##########
@@ -139,6 +141,9 @@ _SENSORS += (
 # Settings
 ###########
 _SENSORS += (
+    Sensor(200, "Control Mode"),
+    Sensor(201, "Equalization voltage", VOLT, 0.01),
+    Sensor(202, "Absorption voltage", VOLT, 0.01),
     Sensor(230, "Grid Charge Battery current", AMPS, -1),
     Sensor(232, "Grid Charge enabled", "", -1),
     Sensor(312, "Battery charging voltage", VOLT, 0.01),
@@ -210,6 +215,17 @@ def _deprecated() -> None:
         "grid_power": Sensor(169, "Grid load", WATT, -1),
         "inverter_power": Sensor(175, "Inverter Output", WATT, -1),
         "radiator_temperature": TempSensor(91, "Temp Radiator", CELSIUS, 0.1),
+        "day_active_energy": Sensor(60, "Day Active Power", KWH, -0.1),
+        "day_reactive_energy": Sensor(61, "Day Reactive Power", "kVarh", -0.1),
+        "total_active_energy": Sensor((63, 64), "Total Active Power", KWH, 0.1),
+        "month_pv_energy": Sensor(65, "Month PV Power", KWH),
+        "month_load_energy": Sensor(66, "Month Load Power", KWH),
+        "month_grid_energy": Sensor(67, "Month Grid Power", KWH),
+        "year_pv_energy": Sensor((68, 69), "Year PV Power", KWH, 0.1),
+        "day_load_energy": Sensor(84, "Day Load Power", KWH, 0.1),
+        "total_load_energy": Sensor((85, 86), "Total Load Power", KWH, 0.1),
+        "year_load_energy": Sensor((87, 88), "Year Load Power", KWH, 0.1),
+        "total_pv_energy": Sensor((96, 97), "Total PV Power", KWH, 0.1),
     }
 
     for newname, sen in dep_map.items():

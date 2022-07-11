@@ -54,13 +54,13 @@ If the Inverter is far from the server/SBC running Home Assistant, you have seve
 
 There are several inverters that are rebranded Deye inverters, so you might have success with other inverter brands as well, please add your inverter by editing this file and creating a Pull Request if you are successful.
 
-| Inverter Model | Battery           | Version  | User          | Port(s)                    |
-| -------------- | ----------------- | -------- | ------------- | -------------------------- |
-| Sunsynk 3.6kW  | Sunsynk SSLB1     | beta/all | @reedy        | BMS485 (top left)          |
-| Sunsynk 5.5kW  | Hubble AM-2       | beta/all | @kellerza     | BMS485 (top left)          |
-| Sunsynk 8.8kW  | BSL 8.2 kWH       | 0.0.8    | @dirkackerman | RS485 (1 in image below)   |
-| Deye  8kW      | Pylontech US3000C | 0.1.3dev | @Kladrie      | RS485 (top left)           |
-| Turbo-E   5kW  | DIY with JKBMS    | 0.1.4    | @agtconf      | BMS485 (top left)          |           
+| Inverter Model | Battery           | Version  | User          | Port(s)                  |
+| -------------- | ----------------- | -------- | ------------- | ------------------------ |
+| Sunsynk 3.6kW  | Sunsynk SSLB1     | beta/all | @reedy        | BMS485 (top left)        |
+| Sunsynk 5.5kW  | Hubble AM-2       | beta/all | @kellerza     | BMS485 (top left)        |
+| Sunsynk 8.8kW  | BSL 8.2 kWH       | 0.0.8    | @dirkackerman | RS485 (1 in image below) |
+| Deye  8kW      | Pylontech US3000C | 0.1.3dev | @Kladrie      | RS485 (top left)         |
+| Turbo-E   5kW  | DIY with JKBMS    | 0.1.4    | @agtconf      | BMS485 (top left)        |
 ### Sunsynk 3.6kW Inverter
 
 <img src="./images/inv-ss-3-6kw.png" width="80%">
@@ -92,20 +92,20 @@ The RJ-45 plug on the inverter side is crimped according to [T568A](https://en.w
 | :-------------------------: | :-------------------------: | :---------------------: |
 |              1              |         Green-White         |          B/D-           |
 |              2              |            Green            |          A/D+           |
-|              3*             |         Orange-White        |          GND            |
+|             3*              |        Orange-White         |           GND           |
 
 \* tested on Sunsynk 8.8kW only
 
-<img src="./images/USB-RS485.jpg" width="45%">
-<img src="./images/RS485-and-RJ45.jpg" width="45%">
+<img src="./images/usb-rs485.png">
+<img src="./images/usb-rs485-rj45.png">
 
 ## Fault finding
 
 If you fail to get a reply from the inverter, please check the following
 
-### (a) Only a single connection to the serial port 
+### (a) Only a single connection to the serial port
 
-Ensure you only hve a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon verison.
+Ensure you only have a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon version.
 
 If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503 )
 
