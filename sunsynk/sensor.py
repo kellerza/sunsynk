@@ -107,6 +107,14 @@ class RWSensor(Sensor):
     """Read & write sensor."""
 
 
+@attr.define(slots=True)
+class NumberRWSensor(RWSensor):
+    """Numeric sensor which can be read and written."""
+
+    min: int = attr.field(default=0)
+    max: int = attr.field(default=100)
+
+
 def group_sensors(
     sensors: Sequence[Sensor], allow_gap: int = 3, max_group_size: int = 60
 ) -> Generator[list[int], None, None]:

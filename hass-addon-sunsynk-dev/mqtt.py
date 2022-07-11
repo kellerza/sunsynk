@@ -128,6 +128,21 @@ class SelectEntity(Entity):
     _path = "select"
 
 
+@attr.define
+class NumberEntity(Entity):
+    """A HomeAssistant Number entity."""
+
+    command_topic: str = attr.field(default=None, validator=required)
+    min: float = attr.field(default=0.0)
+    max: float = attr.field(default=100.0)
+    step: float = attr.field(default=1.0)
+    mode: str = attr.field(default="auto")
+
+    on_change: Callable = attr.field(default=None)
+
+    _path = "number"
+
+
 class MQTTClient:
     """Basic MQTT Client."""
 

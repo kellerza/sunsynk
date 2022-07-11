@@ -8,16 +8,16 @@ from collections import defaultdict
 from json import loads
 from math import modf
 from pathlib import Path
-from typing import Dict, List, Sequence
+from typing import Callable, Dict, List, Sequence
 
 import yaml
 from filter import RROBIN, Filter, getfilter, suggested_filter
-from mqtt import MQTT, Device, Entity, SensorEntity
+from mqtt import MQTT, Device, Entity, NumberEntity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED
-from sunsynk.sensor import slug
+from sunsynk.sensor import NumberRWSensor, ensure_tuple, slug
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
@@ -59,17 +59,41 @@ async def hass_discover_sensors(serial: str) -> None:
         manufacturer="Sunsynk",
     )
 
+    def create_on_change_handler(filter: Filter, value_func: Callable):
+        async def _handler(value):
+            await write_sensor(filter, value_func(value))
+
+        return _handler
+
     for filt in SENSORS:
         sensor = filt.sensor
-        ents.append(
-            SensorEntity(
-                name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
-                state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
-                unit_of_measurement=sensor.unit,
-                unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
-                device=dev,
+
+        if isinstance(sensor, NumberRWSensor):
+            ents.append(
+                NumberEntity(
+                    name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
+                    entity_category="config",
+                    state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
+                    command_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}_set",
+                    min=sensor.min,
+                    max=sensor.max,
+                    mode="box",
+                    unit_of_measurement=sensor.unit,
+                    unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
+                    device=dev,
+                    on_change=create_on_change_handler(filt, lambda val: int(val)),
+                )
             )
-        )
+        else:
+            ents.append(
+                SensorEntity(
+                    name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
+                    state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
+                    unit_of_measurement=sensor.unit,
+                    unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
+                    device=dev,
+                )
+            )
 
     profile_add_entities(entities=ents, device=dev)
 
@@ -206,6 +230,29 @@ async def read_sensors(
             await read_sensors([sen], msg=sen.name, retry_single=False)
 
     return False
+
+
+async def write_sensor(filter: Filter, value) -> bool:
+    """Write sensor with the Modbus interface."""
+
+    sensor = filter.sensor
+    newv = ensure_tuple(value)
+    if newv == sensor.reg_value:
+        return False
+
+    _LOGGER.info(
+        "Writing sensor %s: %s=%s  [old %s]",
+        sensor.name,
+        sensor.id,
+        newv,
+        sensor.reg_value,
+    )
+    sensor.reg_value = newv
+    await SUNSYNK.write_sensor(sensor)
+    await read_sensors([sensor])
+    await publish_sensors([filter], force=True)
+
+    return True
 
 
 TERM = (
