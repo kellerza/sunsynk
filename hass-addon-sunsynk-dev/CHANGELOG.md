@@ -1,8 +1,8 @@
 # Changelog
 
-## **2022.07.1-0.1.6** - 2022-07-11
+## **2022.07.1-0.2.0** - 2022-07-11
 
-- Python sunsynk module 0.1.6:
+- Python sunsynk module 0.2.0:
 
   - Deprecate Time x Power sensors in favour of Energy - [#27](https://github.com/kellerza/sunsynk/issues/27)
 
