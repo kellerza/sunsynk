@@ -20,7 +20,7 @@ map:
   - share:rw
 options:
   PORT: ""
-  DEVICE: "/dev/ttyUSB0"
+  DEVICE: ""
   DRIVER: "umodbus"
   SUNSYNK_ID: "007"
   SENSOR_PREFIX: ""
