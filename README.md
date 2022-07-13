@@ -117,6 +117,20 @@ View/update the Modbus server ID on your inverter under "Advanced Settings" / "M
 
 <img src="./images/modbus_sn.png" width="80%">
 
+### (c) Check line voltage / termination resistor
+
+If your RS485 adapter has a termination resistor (typically 120 ohms), try removing it.
+
+To check, disconnect the adapter and use a multimeter to measure the resistance between A & B.
+
+The d.c. voltage between A/B on the sunsynk RS485 connection should idle around 4-5v with nothing connected,
+but this may drop to around 0.5v with the 120 ohm load.
+
+RS485 devices are typically multi-drop with a termination resistor on the first and last devices.
+However, the RS485 BMS port may only be intended to connect to a single device.
+
+<img src="./images/rs485-term.jpg">
+
 ## Credits
 
 Information in the Power forum was especially helpful to get this up and running, see [this thread](https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/)
