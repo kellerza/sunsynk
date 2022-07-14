@@ -20,35 +20,130 @@ pip install sunsynk
 
 ## Home Assistant Sunsynk Add-On
 
-For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk inverter. Sensors are read using the Modbus protocol and sent to a MQTT server. Below an example of the HomeAssistant Energy management dashboard using sensors from the Sunsynk.
+For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk inverter. Sensors are read using the Modbus protocol and sent to a MQTT server.
+
+### Installation
+
+1. Add this repository to your HA Supervisor
+
+   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fkellerza%2Fsunsynk)
+
+   `https://github.com/kellerza/sunsynk`
+
+2. Install the Sunsynk Add-On from the **Add-On Store** and configure through the UI
+
+   ![Install Sunsynk Addon](./images/addon-install.png)
+
+
+Below an example of the HomeAssistant Energy management dashboard using sensors from the Sunsynk.
 
 ![HASS Energy management](./images/energy.png)
 
-### Add-On Installation
 
-1. Add the repository to your HA Supervisor
-   <br>[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fkellerza%2Fsunsynk)
-   `https://github.com/kellerza/sunsynk` <br><br>
-2. Install the Sunsynk Add-On from the **Add-On Store** and configure through the UI
+## Deployment options
 
-### Add-on Deployment
+If the Inverter is close to your server/SBC running Home Assistant, you can use the standard deployment option, else you can extend the RS485 over Ethernet via a gateway or even MQTT
 
-The Sunsynk Add-on runs on the Home Assistant OS, reads the Inverter's Modbus registers over RS-485, and publishes sensor values to the MQTT server.
-The architecture is shown below:
+1. Standard
 
-![Deployment Option](./images/deploy.png)
+   The Sunsynk Add-on runs on the Home Assistant OS, reads the Inverter's Modbus registers over RS-485, and publishes sensor values to the MQTT server.
+   The architecture is shown below:
 
-If the Inverter is far from the server/SBC running Home Assistant, you have several ways to extend the deployment:
+   ![Deployment Option](./images/deploy.png)
 
-1. The preferred remote option is to use MQTT over your home network toward the main MQTT server (typically on the same server as Home Assistant)
+2. A Modbus TCP to RTU/serial gateway
+
+   This can be another Raspberry Pi, even an old one, running the gateway software, like [mbusd](./hass-addon-mbusd/README.md).
+
+   You can also use a commercial Modbus gateway, like the USR-W630
+
+   ![Deployment Option Gateway](./images/deploy-gw.png)
+
+3. Extend with an MQTT gateway
+
+   This remote option runs the Sunsynk Addon close to the Inverter, and then sends MQTT messages over your network toward the MQTT server (typically on the same server as Home Assistant)
 
    ![Deployment Option MQTT](./images/deploy-mqtt.png)
 
-2. Another option is to use a Modbus TCP to RTU/serial gateway. This can be another Raspberry Pi, even an old one, running the gateway software, like [mbusd](./hass-addon-mbusd/README.md).
 
-   You can also use a commercial Modbus gateway, like the USR-W630 (reported via Powerforum)
+## Connect to your Inverter with RS485
+RS485 requires a twisted pair, this works with CAT5 network cable and RJ-45 connectors.
 
-   ![Deployment Option Gateway](./images/deploy-gw.png)
+If the RJ-45 connector on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring), you can use the pinout in the following table.
+
+| RJ45 Pin<br>(inverter side) | Wire Color<br>(when using T568A) | RS485<br>pins |
+| :-------------------------: | :------------------------------: | :-----------: |
+|              1              |           Green-White            |     B/D-      |
+|              2              |              Green               |     A/D+      |
+|              3              |           Orange-White           |      GND      |
+
+### USB-to-RS485 adaptors
+
+1. Wave USB-to-RS485 [example](https://www.robotics.org.za/W17286)
+
+   This is my preferred adaptor. It includes a GND and lightning/ESD protection, TVS diodes and a resettable fuse.
+
+   Wave also has a RS485-to-Ethernet module. (not tested)
+
+   <img src="./images/usb-wave-rs485.jpg" width="55%">
+
+1. USB-to-RS485 adaptor with cable [example](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
+
+   Includes a GND and TVS diode and USB self recovery options.
+
+   <img src="./images/usb-rs485-cable.jpg" width="55%">
+
+Other tested adaptors
+- USB-to-RS485 3 Pin adaptor [example](https://www.robotics.org.za/RS485-3P)
+
+  Includes a GND and TVS diode and USB self recovery options.
+
+
+- 2-Wire USB-to-RS485 [example](https://www.robotics.org.za/RS485-MINI)
+
+  This is the adaptor I started with. It works, but does not include a GND, so your success might vary.
+
+  <img src="./images/usb-rs485-rj45.png" width="35%">
+
+### Wifi-to-RS485 gateways
+
+1. USR-W630 Wifi-to-RS485
+
+   This is a tested Wifi-to-RS485 gateway, which also includes a GND.
+
+   Requires `READ_SENSORS_BATCH_SIZE` set to 8 or less
+
+## Fault finding
+
+If you fail to get a reply from the inverter, please check the following
+
+### (a) Only a single connection to the serial port
+
+Ensure you only have a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon version.
+
+If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503 )
+
+### (b) Check the Modbus Server ID
+
+Ensure the Modbus server ID (`MODBUS_SERVER_ID` config setting) setting matches the configured **Modbus SN** value of the inverter
+
+View/update the Modbus server ID on your inverter under "Advanced Settings" / "Multi-Inverter"
+
+<img src="./images/modbus_sn.png" width="80%">
+
+### (c) Check line voltage / termination resistor
+
+If your RS485 adapter has a termination resistor (typically 120 ohms), try removing it.
+
+To check, disconnect the adapter and use a multimeter to measure the resistance between A & B.
+
+The d.c. voltage between A/B on the sunsynk RS485 connection should idle around 4-5v with nothing connected,
+but this may drop to around 0.5v with the 120 ohm load.
+
+RS485 devices are typically multi-drop with a termination resistor on the first and last devices.
+However, the RS485 BMS port may only be intended to connect to a single device.
+
+<img src="./images/rs485-term.jpg">
 
 ## Tested Inverters
 
@@ -85,51 +180,6 @@ RS485 is the blue line - top left, as with the Sunsynk inverters. Yellow is the 
 ### Turbo-Energy 5kW Inverter
 Tested with: USB-to-RS485 adaptor sourced from Aliexpress, very similar to [this](https://www.robotics.org.za/RS485-3P).
 
-## Hardware
-The RJ-45 plug on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring). RS485 requires a twisted pair, so works well with CAT5 network cable and the RJ-45 connectors.
-
-| RJ45 Pin<br>(inverter side) | Wire Color<br>(using T568A) | USB-to-RS485<br>adaptor |
-| :-------------------------: | :-------------------------: | :---------------------: |
-|              1              |         Green-White         |          B/D-           |
-|              2              |            Green            |          A/D+           |
-|             3*              |        Orange-White         |           GND           |
-
-\* tested on Sunsynk 8.8kW only
-
-<img src="./images/usb-rs485.png">
-<img src="./images/usb-rs485-rj45.png">
-
-## Fault finding
-
-If you fail to get a reply from the inverter, please check the following
-
-### (a) Only a single connection to the serial port
-
-Ensure you only have a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon version.
-
-If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503 )
-
-### (b) Check the Modbus Server ID
-
-Ensure the Modbus server ID (`MODBUS_SERVER_ID` config setting) setting matches the configured **Modbus SN** value of the inverter
-
-View/update the Modbus server ID on your inverter under "Advanced Settings" / "Multi-Inverter"
-
-<img src="./images/modbus_sn.png" width="80%">
-
-### (c) Check line voltage / termination resistor
-
-If your RS485 adapter has a termination resistor (typically 120 ohms), try removing it.
-
-To check, disconnect the adapter and use a multimeter to measure the resistance between A & B.
-
-The d.c. voltage between A/B on the sunsynk RS485 connection should idle around 4-5v with nothing connected,
-but this may drop to around 0.5v with the 120 ohm load.
-
-RS485 devices are typically multi-drop with a termination resistor on the first and last devices.
-However, the RS485 BMS port may only be intended to connect to a single device.
-
-<img src="./images/rs485-term.jpg">
 
 ## Credits
 
