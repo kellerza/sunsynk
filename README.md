@@ -112,6 +112,23 @@ Other tested adaptors
    This is a tested Wifi-to-RS485 gateway, which also includes a GND.
 
    Requires `READ_SENSORS_BATCH_SIZE` set to 8 or less
+   
+2. HF5142B  Modbus/serial to ethernet (4x RS232/485/422 to 4x E-Ports)
+
+![image](https://user-images.githubusercontent.com/101097267/179366470-c800c9c7-e79d-4a8d-b8d3-1c8e9b13a519.png)
+
+   This is a tested gateway, with Deye 8k Eu Hybrid inverter.
+   
+   gateway serial setting:
+   ![image](https://user-images.githubusercontent.com/101097267/179366366-3e58f9e2-bad8-4b42-9708-a5661eb2ecef.png)
+   config for plugin:
+   
+   PORT: ip gateway:modbus port of gateway
+   
+   DEVICE: /dev/ttyS0
+   
+   DRIVER: pymodbus
+
 
 ## Fault finding
 
