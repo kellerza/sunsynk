@@ -108,9 +108,9 @@ _SENSORS += (
     Sensor(108, "Day PV Energy", KWH, 0.1),
     Sensor(61, "Day Reactive Energy", "kVarh", -0.1),
     # Sensor((201, 202), "History Load Power", KWH, 0.1),
-    Sensor(67, "Month Grid Energy", KWH),
-    Sensor(66, "Month Load Energy", KWH),
-    Sensor(65, "Month PV Energy", KWH),
+    Sensor(67, "Month Grid Energy", KWH, 0.1),
+    Sensor(66, "Month Load Energy", KWH, 0.1),
+    Sensor(65, "Month PV Energy", KWH, 0.1),
     Sensor((63, 64), "Total Active Energy", KWH, 0.1),  # signed?
     Sensor((72, 73), "Total Battery Charge", KWH, 0.1),
     Sensor((74, 75), "Total Battery Discharge", KWH, 0.1),
