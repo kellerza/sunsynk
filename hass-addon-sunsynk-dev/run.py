@@ -65,6 +65,14 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
 
         return _handler
 
+    async def static_or_sensor_value(val):
+        if isinstance(val, Sensor):
+            if val.value is None:
+                # Read sensor value for the first time
+                await read_sensors([val], retry_single=True)
+            return val.value
+        return val
+
     for filt in SENSORS:
         sensor = filt.sensor
 
@@ -75,16 +83,8 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                     entity_category="config",
                     state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
                     command_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}_set",
-                    min=float(
-                        sensor.min.value
-                        if isinstance(sensor.min, Sensor)
-                        else sensor.min
-                    ),
-                    max=float(
-                        sensor.max.value
-                        if isinstance(sensor.max, Sensor)
-                        else sensor.max
-                    ),
+                    min=float(await static_or_sensor_value(sensor.min)),
+                    max=float(await static_or_sensor_value(sensor.max)),
                     unit_of_measurement=sensor.unit,
                     unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
                     device=dev,
@@ -172,6 +172,7 @@ def startup() -> None:
         )
 
     sens = {}
+    sens_dependencies = {}
 
     msg: Dict[str, List[str]] = defaultdict(list)
 
@@ -196,6 +197,21 @@ def startup() -> None:
             msg[fstr].append(name)  # type: ignore
 
         SENSORS.append(getfilter(fstr, sensor=sen))
+
+        if isinstance(sen, NumberRWSensor):
+            if isinstance(sen.min, Sensor):
+                sens_dependencies[sen.min.id] = sen.min
+            if isinstance(sen.max, Sensor):
+                sens_dependencies[sen.max.id] = sen.max
+
+    # Add any sensors that are depended upon which were not specified in OPT.sensors
+    for name, sen in sens_dependencies.items():
+        if name not in sens and sen != RATED_POWER:  # Rated power does not change
+            fstr = suggested_filter(sen)
+            msg[f"*{fstr}"].append(name)  # type: ignore
+            SENSORS.append(getfilter(fstr, sensor=sen))
+
+            _LOGGER.info("Added sensor %s as other sensors depend on it", name)
 
     for nme, val in msg.items():
         _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))

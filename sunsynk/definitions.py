@@ -153,6 +153,10 @@ _SENSORS += (
     Sensor(603, "Bat1 SOC", "%"),
     Sensor(611, "Bat1 Cycle"),
 )
+BATTERY_SHUTDOWN_CAPACITY = Sensor(217, "Battery Shutdown Capacity", "%")
+BATTERY_RESTART_CAPACITY = Sensor(218, "Battery Restart Capacity", "%")
+BATTERY_LOW_CAPACITY = Sensor(219, "Battery Low Capacity", "%")
+_SENSORS += (BATTERY_SHUTDOWN_CAPACITY, BATTERY_RESTART_CAPACITY, BATTERY_LOW_CAPACITY)
 
 #################
 # System program
@@ -170,12 +174,12 @@ PROGRAM = (
     NumberRWSensor(259, "Prog4 power", WATT, max=RATED_POWER),
     NumberRWSensor(260, "Prog5 power", WATT, max=RATED_POWER),
     NumberRWSensor(261, "Prog6 power", WATT, max=RATED_POWER),
-    NumberRWSensor(268, "Prog1 Capacity", "%"),
-    NumberRWSensor(269, "Prog2 Capacity", "%"),
-    NumberRWSensor(270, "Prog3 Capacity", "%"),
-    NumberRWSensor(271, "Prog4 Capacity", "%"),
-    NumberRWSensor(272, "Prog5 Capacity", "%"),
-    NumberRWSensor(273, "Prog6 Capacity", "%"),
+    NumberRWSensor(268, "Prog1 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(269, "Prog2 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(270, "Prog3 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(271, "Prog4 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(272, "Prog5 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(273, "Prog6 Capacity", "%", min=BATTERY_LOW_CAPACITY),
     # 1- Grid, 2- Gen
     RWSensor(274, "Prog1 Charge"),
     RWSensor(275, "Prog2 Charge"),
