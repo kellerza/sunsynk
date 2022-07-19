@@ -49,13 +49,13 @@ async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None
         )
 
 
-async def hass_discover_sensors(serial: str) -> None:
+async def hass_discover_sensors(serial: str, rated_power: float) -> None:
     """Discover all sensors."""
     ents: List[Entity] = []
     dev = Device(
         identifiers=[OPT.sunsynk_id],
         name=f"Sunsynk Inverter {serial}",
-        model=f"Inverter {serial}",
+        model=f"{int(rated_power/1000)}kW Inverter {serial}",
         manufacturer="Sunsynk",
     )
 
@@ -75,9 +75,16 @@ async def hass_discover_sensors(serial: str) -> None:
                     entity_category="config",
                     state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
                     command_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}_set",
-                    min=sensor.min,
-                    max=sensor.max,
-                    mode="box",
+                    min=float(
+                        sensor.min.value
+                        if isinstance(sensor.min, Sensor)
+                        else sensor.min
+                    ),
+                    max=float(
+                        sensor.max.value
+                        if isinstance(sensor.max, Sensor)
+                        else sensor.max
+                    ),
                     unit_of_measurement=sensor.unit,
                     unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
                     device=dev,
@@ -102,6 +109,7 @@ async def hass_discover_sensors(serial: str) -> None:
 
 
 SERIAL = ALL_SENSORS["serial"]
+RATED_POWER = ALL_SENSORS["rated_power"]
 
 
 def setup_driver() -> None:
@@ -288,7 +296,13 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
         return
 
-    await hass_discover_sensors(str(SERIAL.value))
+    if not await read_sensors([RATED_POWER]):
+        log_bold("Unable to read rated power")
+        _LOGGER.critical(TERM)
+        await asyncio.sleep(30)
+        return
+
+    await hass_discover_sensors(str(SERIAL.value), RATED_POWER.value)
 
     # Read all & publish immediately
     await asyncio.sleep(0.01)

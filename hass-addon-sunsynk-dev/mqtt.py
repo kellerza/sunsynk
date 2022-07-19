@@ -136,11 +136,16 @@ class NumberEntity(Entity):
     min: float = attr.field(default=0.0)
     max: float = attr.field(default=100.0)
     step: float = attr.field(default=1.0)
-    mode: str = attr.field(default="auto")
 
     on_change: Callable = attr.field(default=None)
 
     _path = "number"
+
+    def __attrs_post_init__(self) -> None:
+        """Init the class."""
+        # Override device_class to None
+        # https://github.com/home-assistant/core/issues/74533
+        self.device_class = None
 
 
 class MQTTClient:

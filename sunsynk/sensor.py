@@ -111,8 +111,8 @@ class RWSensor(Sensor):
 class NumberRWSensor(RWSensor):
     """Numeric sensor which can be read and written."""
 
-    min: int = attr.field(default=0)
-    max: int = attr.field(default=100)
+    min: int | Sensor = attr.field(default=0)
+    max: int | Sensor = attr.field(default=100)
 
 
 def group_sensors(

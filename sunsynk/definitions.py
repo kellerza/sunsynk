@@ -127,6 +127,8 @@ _SENSORS += (
 ##########
 # General
 ##########
+RATED_POWER = Sensor((16, 17), "Rated power", WATT, 0.1)
+_SENSORS.append(RATED_POWER)
 _SENSORS += (
     Sensor(0, "Device Type"),
     FaultSensor((103, 104, 105, 106, 107), "Fault"),
@@ -162,12 +164,12 @@ PROGRAM = (
     TimeRWSensor(253, "Prog4 Time"),
     TimeRWSensor(254, "Prog5 Time"),
     TimeRWSensor(255, "Prog6 Time"),
-    NumberRWSensor(256, "Prog1 power", WATT),
-    NumberRWSensor(257, "Prog2 power", WATT),
-    NumberRWSensor(258, "Prog3 power", WATT),
-    NumberRWSensor(259, "Prog4 power", WATT),
-    NumberRWSensor(260, "Prog5 power", WATT),
-    NumberRWSensor(261, "Prog6 power", WATT),
+    NumberRWSensor(256, "Prog1 power", WATT, max=RATED_POWER),
+    NumberRWSensor(257, "Prog2 power", WATT, max=RATED_POWER),
+    NumberRWSensor(258, "Prog3 power", WATT, max=RATED_POWER),
+    NumberRWSensor(259, "Prog4 power", WATT, max=RATED_POWER),
+    NumberRWSensor(260, "Prog5 power", WATT, max=RATED_POWER),
+    NumberRWSensor(261, "Prog6 power", WATT, max=RATED_POWER),
     NumberRWSensor(268, "Prog1 Capacity", "%"),
     NumberRWSensor(269, "Prog2 Capacity", "%"),
     NumberRWSensor(270, "Prog3 Capacity", "%"),
@@ -184,12 +186,12 @@ PROGRAM = (
 )
 _SENSORS.extend(PROGRAM)
 PROG_VOLT = (
-    NumberRWSensor(262, "Prog1 voltage", VOLT, 0.1, max=5000),
-    NumberRWSensor(263, "Prog2 voltage", VOLT, 0.1, max=5000),
-    NumberRWSensor(264, "Prog3 voltage", VOLT, 0.1, max=5000),
-    NumberRWSensor(265, "Prog4 voltage", VOLT, 0.1, max=5000),
-    NumberRWSensor(266, "Prog5 voltage", VOLT, 0.1, max=5000),
-    NumberRWSensor(267, "Prog6 voltage", VOLT, 0.1, max=5000),
+    RWSensor(262, "Prog1 voltage", VOLT, 0.1),
+    RWSensor(263, "Prog2 voltage", VOLT, 0.1),
+    RWSensor(264, "Prog3 voltage", VOLT, 0.1),
+    RWSensor(265, "Prog4 voltage", VOLT, 0.1),
+    RWSensor(266, "Prog5 voltage", VOLT, 0.1),
+    RWSensor(267, "Prog6 voltage", VOLT, 0.1),
 )
 _SENSORS.extend(PROG_VOLT)
 
