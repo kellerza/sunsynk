@@ -59,9 +59,9 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
         manufacturer="Sunsynk",
     )
 
-    def create_on_change_handler(filter: Filter, value_func: Callable):
+    def create_on_change_handler(filt: Filter, value_func: Callable):
         async def _handler(value):
-            await write_sensor(filter, value_func(value))
+            await write_sensor(filt, value_func(value))
 
         return _handler
 
@@ -88,7 +88,7 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                     unit_of_measurement=sensor.unit,
                     unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
                     device=dev,
-                    on_change=create_on_change_handler(filt, lambda val: int(val)),
+                    on_change=create_on_change_handler(filt, int),
                 )
             )
         else:
@@ -240,10 +240,10 @@ async def read_sensors(
     return False
 
 
-async def write_sensor(filter: Filter, value) -> bool:
+async def write_sensor(filt: Filter, value) -> bool:
     """Write sensor with the Modbus interface."""
 
-    sensor = filter.sensor
+    sensor = filt.sensor
     newv = ensure_tuple(value)
     if newv == sensor.reg_value:
         return False
