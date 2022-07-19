@@ -171,6 +171,11 @@ def startup() -> None:
             force=True,
         )
 
+    setup_sensors()
+
+
+def setup_sensors() -> None:
+    """Setup the sensors."""
     sens = {}
     sens_dependencies = {}
 
