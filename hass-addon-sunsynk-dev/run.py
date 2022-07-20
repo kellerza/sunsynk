@@ -200,7 +200,7 @@ def setup_sensors() -> None:
         SENSORS.append(getfilter(fstr, sensor=sen))
 
         if isinstance(sen, NumberRWSensor):
-            startup_sens.update(d.id for d in sen.dependencies()):
+            startup_sens.update(d.id for d in sen.dependencies())
 
     # Add any sensor dependencies to STARTUP_SENSORS
     try:
