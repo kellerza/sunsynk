@@ -26,7 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 SENSORS: List[Filter] = []
 
 SERIAL = ALL_SENSORS["serial"]
-STARTUP_SENSORS: List[Filter] = [RATED_POWER, SERIAL]
+STARTUP_SENSORS: List[Filter] = []
 
 SUNSYNK: Sunsynk = None  # type: ignore
 
@@ -173,7 +173,7 @@ def startup() -> None:
 def setup_sensors() -> None:
     """Setup the sensors."""
     sens = {}
-    sens_dependencies: Dict[str, List[Sensor]] = defaultdict(list)
+    startup_sens = {SERIAL.id, RATED_POWER.id}
 
     msg: Dict[str, List[str]] = defaultdict(list)
 
@@ -200,16 +200,14 @@ def setup_sensors() -> None:
         SENSORS.append(getfilter(fstr, sensor=sen))
 
         if isinstance(sen, NumberRWSensor):
-            for dep in sen.dependencies():
-                sens_dependencies[dep.id].append(sen)
+            startup_sens.update(d.id for d in sen.dependencies()):
 
     # Add any sensor dependencies to STARTUP_SENSORS
-    for name, _ in sens_dependencies.items():
-        sen = ALL_SENSORS.get(name)
-        if sen == RATED_POWER:
-            # Rated power is already a startup sensor
-            continue
-        STARTUP_SENSORS.append(sen)
+    try:
+       STARTUP_SENSORS.clear()
+       STARTUP_SENSORS.extend(ALL_SENSORS[n] for n in startup_sens)
+    except KeyError as err:
+       _LOGGER.fatal("Invalid sensor as dependency - %s", err)
 
     for nme, val in msg.items():
         _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
