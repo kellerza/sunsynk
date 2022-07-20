@@ -269,7 +269,7 @@ async def write_sensor(filt: Filter, value) -> bool:
     )
     sensor.reg_value = newv
     await SUNSYNK.write_sensor(sensor)
-    await read_sensors([sensor])
+    await read_sensors([sensor], msg=sensor.name)
     await publish_sensors([filt], force=True)
 
     return True
