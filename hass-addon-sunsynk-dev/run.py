@@ -16,7 +16,7 @@ from mqtt import MQTT, Device, Entity, NumberEntity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
-from sunsynk.definitions import ALL_SENSORS, DEPRECATED
+from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER
 from sunsynk.sensor import NumberRWSensor, ensure_tuple, slug
 from sunsynk.sunsynk import Sensor, Sunsynk
 
@@ -91,16 +91,17 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                     on_change=create_on_change_handler(filt, int),
                 )
             )
-        else:
-            ents.append(
-                SensorEntity(
-                    name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
-                    state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
-                    unit_of_measurement=sensor.unit,
-                    unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
-                    device=dev,
-                )
+            continue
+
+        ents.append(
+            SensorEntity(
+                name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
+                state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
+                unit_of_measurement=sensor.unit,
+                unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
+                device=dev,
             )
+        )
 
     profile_add_entities(entities=ents, device=dev)
 
@@ -109,7 +110,6 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
 
 
 SERIAL = ALL_SENSORS["serial"]
-RATED_POWER = ALL_SENSORS["rated_power"]
 
 
 def setup_driver() -> None:
