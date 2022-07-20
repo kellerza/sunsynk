@@ -204,10 +204,10 @@ def setup_sensors() -> None:
 
     # Add any sensor dependencies to STARTUP_SENSORS
     try:
-       STARTUP_SENSORS.clear()
-       STARTUP_SENSORS.extend(ALL_SENSORS[n] for n in startup_sens)
+        STARTUP_SENSORS.clear()
+        STARTUP_SENSORS.extend(ALL_SENSORS[n] for n in startup_sens)
     except KeyError as err:
-       _LOGGER.fatal("Invalid sensor as dependency - %s", err)
+        _LOGGER.fatal("Invalid sensor as dependency - %s", err)
 
     for nme, val in msg.items():
         _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
