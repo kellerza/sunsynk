@@ -10,6 +10,7 @@ from sunsynk.sensor import (
     HSensor,
     InverterStateSensor,
     MathSensor,
+    NumberRWSensor,
     SDStatusSensor,
     Sensor,
     SerialSensor,
@@ -144,6 +145,23 @@ def test_math() -> None:
 
     with pytest.raises(TypeError):
         MathSensor((0, 1), "", "")
+
+
+def test_numberrw() -> None:
+    s = NumberRWSensor(1, "")
+
+    deps = s.dependencies()
+    assert len(deps) == 0
+
+    s.min = Sensor(2, "2")
+    deps = s.dependencies()
+    assert len(deps) == 1
+    assert deps[0].id == "2"
+
+    s.max = Sensor(3, "3")
+    deps = s.dependencies()
+    assert len(deps) == 2
+    assert deps[1].id == "3"
 
 
 def test_update_func() -> None:

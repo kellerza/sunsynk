@@ -25,6 +25,8 @@ _LOGGER = logging.getLogger(__name__)
 
 SENSORS: List[Filter] = []
 
+SERIAL = ALL_SENSORS["serial"]
+STARTUP_SENSORS: List[Filter] = [RATED_POWER, SERIAL]
 
 SUNSYNK: Sunsynk = None  # type: ignore
 
@@ -65,11 +67,8 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
 
         return _handler
 
-    async def static_or_sensor_value(val):
+    def static_or_sensor_value(val):
         if isinstance(val, Sensor):
-            if val.value is None:
-                # Read sensor value for the first time
-                await read_sensors([val], retry_single=True)
             return val.value
         return val
 
@@ -83,8 +82,8 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                     entity_category="config",
                     state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
                     command_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}_set",
-                    min=float(await static_or_sensor_value(sensor.min)),
-                    max=float(await static_or_sensor_value(sensor.max)),
+                    min=float(static_or_sensor_value(sensor.min)),
+                    max=float(static_or_sensor_value(sensor.max)),
                     unit_of_measurement=sensor.unit,
                     unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
                     device=dev,
@@ -107,9 +106,6 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
 
     await MQTT.connect(OPT)
     await MQTT.publish_discovery_info(entities=ents)
-
-
-SERIAL = ALL_SENSORS["serial"]
 
 
 def setup_driver() -> None:
@@ -177,7 +173,7 @@ def startup() -> None:
 def setup_sensors() -> None:
     """Setup the sensors."""
     sens = {}
-    sens_dependencies = {}
+    sens_dependencies: Dict[str, List[Sensor]] = defaultdict(list)
 
     msg: Dict[str, List[str]] = defaultdict(list)
 
@@ -204,19 +200,16 @@ def setup_sensors() -> None:
         SENSORS.append(getfilter(fstr, sensor=sen))
 
         if isinstance(sen, NumberRWSensor):
-            if isinstance(sen.min, Sensor):
-                sens_dependencies[sen.min.id] = sen.min
-            if isinstance(sen.max, Sensor):
-                sens_dependencies[sen.max.id] = sen.max
+            for dep in sen.dependencies():
+                sens_dependencies[dep.id].append(sen)
 
-    # Add any sensors that are depended upon which were not specified in OPT.sensors
-    for name, sen in sens_dependencies.items():
-        if name not in sens and sen != RATED_POWER:  # Rated power does not change
-            fstr = suggested_filter(sen)
-            msg[f"*{fstr}"].append(name)  # type: ignore
-            SENSORS.append(getfilter(fstr, sensor=sen))
-
-            _LOGGER.info("Added sensor %s as other sensors depend on it", name)
+    # Add any sensor dependencies to STARTUP_SENSORS
+    for name, _ in sens_dependencies.items():
+        sen = ALL_SENSORS.get(name)
+        if sen == RATED_POWER:
+            # Rated power is already a startup sensor
+            continue
+        STARTUP_SENSORS.append(sen)
 
     for nme, val in msg.items():
         _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
@@ -302,7 +295,11 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         await asyncio.sleep(30)
         return
 
-    if not await read_sensors([SERIAL]):
+    _LOGGER.info(
+        "Reading startup sensors %s", ", ".join([s.id for s in STARTUP_SENSORS])
+    )
+
+    if not await read_sensors(STARTUP_SENSORS):
         log_bold(
             "No response on the Modbus interface, try checking the "
             "wiring to the Inverter, the USB-to-RS485 converter, etc"
@@ -315,12 +312,6 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
 
     if OPT.sunsynk_id != SERIAL.value and not OPT.sunsynk_id.startswith("_"):
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
-        return
-
-    if not await read_sensors([RATED_POWER]):
-        log_bold("Unable to read rated power")
-        _LOGGER.critical(TERM)
-        await asyncio.sleep(30)
         return
 
     await hass_discover_sensors(str(SERIAL.value), RATED_POWER.value)

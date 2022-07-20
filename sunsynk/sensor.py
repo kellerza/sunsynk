@@ -114,6 +114,15 @@ class NumberRWSensor(RWSensor):
     min: int | Sensor = attr.field(default=0)
     max: int | Sensor = attr.field(default=100)
 
+    def dependencies(self) -> List[Sensor]:
+        """Get a list of sensors upon which this sensor depends."""
+        sensors: List[Sensor] = []
+        if isinstance(self.min, Sensor):
+            sensors.append(self.min)
+        if isinstance(self.max, Sensor):
+            sensors.append(self.max)
+        return sensors
+
 
 def group_sensors(
     sensors: Sequence[Sensor], allow_gap: int = 3, max_group_size: int = 60
