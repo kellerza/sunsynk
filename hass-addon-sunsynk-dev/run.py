@@ -8,7 +8,7 @@ from collections import defaultdict
 from json import loads
 from math import modf
 from pathlib import Path
-from typing import Callable, Dict, List, Sequence
+from typing import Any, Callable, Dict, List, Sequence, Tuple
 
 import yaml
 from filter import RROBIN, Filter, getfilter, suggested_filter
@@ -27,6 +27,7 @@ SENSORS: List[Filter] = []
 
 SERIAL = ALL_SENSORS["serial"]
 STARTUP_SENSORS: List[Filter] = []
+SENSOR_WRITE_QUEUE: Dict[str, Tuple[Filter, Any]] = {}
 
 SUNSYNK: Sunsynk = None  # type: ignore
 
@@ -62,8 +63,8 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
     )
 
     def create_on_change_handler(filt: Filter, value_func: Callable):
-        async def _handler(value):
-            await write_sensor(filt, value_func(value))
+        def _handler(value):
+            SENSOR_WRITE_QUEUE[filt.sensor.id] = (filt, value_func(value))
 
         return _handler
 
@@ -247,29 +248,6 @@ async def read_sensors(
     return False
 
 
-async def write_sensor(filt: Filter, value) -> bool:
-    """Write sensor with the Modbus interface."""
-
-    sensor = filt.sensor
-    newv = ensure_tuple(value)
-    if newv == sensor.reg_value:
-        return False
-
-    _LOGGER.info(
-        "Writing sensor %s: %s=%s  [old %s]",
-        sensor.name,
-        sensor.id,
-        newv,
-        sensor.reg_value,
-    )
-    sensor.reg_value = newv
-    await SUNSYNK.write_sensor(sensor)
-    await read_sensors([sensor], msg=sensor.name)
-    await publish_sensors([filt], force=True)
-
-    return True
-
-
 TERM = (
     "This Add-On will terminate in 30 seconds, "
     "use the Supervisor Watchdog to restart automatically."
@@ -314,6 +292,28 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     await read_sensors([f.sensor for f in SENSORS], retry_single=True)
     await publish_sensors(SENSORS, force=True)
 
+    async def write_sensors() -> set[str]:
+        """Flush any pending sensor writes"""
+
+        while SENSOR_WRITE_QUEUE:
+            _, (filt, value) = SENSOR_WRITE_QUEUE.popitem()
+            sensor = filt.sensor
+            newv = ensure_tuple(value)
+            if newv == sensor.reg_value:
+                continue
+
+            _LOGGER.info(
+                "Writing sensor %s: %s=%s  [old %s]",
+                sensor.name,
+                sensor.id,
+                newv,
+                sensor.reg_value,
+            )
+            sensor.reg_value = newv
+            await SUNSYNK.write_sensor(sensor)
+            await read_sensors([sensor], msg=sensor.name)
+            await publish_sensors([filt], force=True)
+
     async def poll_sensors() -> None:
         """Poll sensors."""
         fsensors = []
@@ -329,6 +329,8 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
                 await publish_sensors(fsensors)
 
     while True:
+        await write_sensors()
+
         polltask = asyncio.create_task(poll_sensors())
         await asyncio.sleep(1)
         try:
