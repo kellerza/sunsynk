@@ -148,20 +148,32 @@ def test_math() -> None:
 
 
 def test_numberrw() -> None:
-    s = NumberRWSensor(1, "")
+    s = NumberRWSensor(1, "", min=1, max=10)
 
     deps = s.dependencies()
     assert len(deps) == 0
+    assert s.min_value == 1
+    assert s.max_value == 10
 
     s.min = Sensor(2, "2")
     deps = s.dependencies()
     assert len(deps) == 1
     assert deps[0].id == "2"
+    assert s.min_value == 0
+    s.min.value = 20
+    assert s.min_value == 20
+    s.min.value = "20"
+    assert s.min_value == 20
+    s.min.value = None
+    assert s.min_value == 0
 
     s.max = Sensor(3, "3")
     deps = s.dependencies()
     assert len(deps) == 2
     assert deps[1].id == "3"
+    assert s.max_value == 0
+    s.max.value = 30
+    assert s.max_value == 30
 
 
 def test_update_func() -> None:

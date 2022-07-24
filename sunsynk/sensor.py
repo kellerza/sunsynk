@@ -114,6 +114,24 @@ class NumberRWSensor(RWSensor):
     min: int | Sensor = attr.field(default=0)
     max: int | Sensor = attr.field(default=100)
 
+    @property
+    def min_value(self) -> int | float:
+        """Get the min value from the configured sensor or static value."""
+        return self.__static_or_sensor_value(self.min)
+
+    @property
+    def max_value(self) -> int | float:
+        """Get the max value from the configured sensor or static value."""
+        return self.__static_or_sensor_value(self.max)
+
+    @staticmethod
+    def __static_or_sensor_value(val: int | Sensor) -> int | float:
+        if isinstance(val, Sensor):
+            if isinstance(val.value, (int, float)):
+                return val.value
+            return float(val.value or 0)
+        return val
+
     def dependencies(self) -> List[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
         sensors: List[Sensor] = []

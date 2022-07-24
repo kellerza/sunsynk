@@ -67,11 +67,6 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
 
         return _handler
 
-    def static_or_sensor_value(val):
-        if isinstance(val, Sensor):
-            return val.value
-        return val
-
     for filt in SENSORS:
         sensor = filt.sensor
 
@@ -82,8 +77,8 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                     entity_category="config",
                     state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
                     command_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}_set",
-                    min=float(static_or_sensor_value(sensor.min)),
-                    max=float(static_or_sensor_value(sensor.max)),
+                    min=float(sensor.min_value),
+                    max=float(sensor.max_value),
                     unit_of_measurement=sensor.unit,
                     unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
                     device=dev,
