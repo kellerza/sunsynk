@@ -8,7 +8,7 @@ FROM ${BUILD_FROM}
 #     python3-pip \
 #   && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 pyyaml~=5.4.1 sunsynk[pymodbus,umodbus]==0.2.0
+RUN pip3 install --no-cache-dir --disable-pip-version-check paho-mqtt~=1.5.0 pyyaml~=5.4.1 sunsynk[pymodbus,umodbus]==0.2.1
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
