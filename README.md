@@ -105,7 +105,7 @@ Other tested adaptors
 
   <img src="./images/usb-rs485-rj45.png" width="35%">
 
-### Wifi-to-RS485 gateways
+### RS485 gateways
 
 1. USR-W630 Wifi-to-RS485
 
