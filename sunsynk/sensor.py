@@ -106,6 +106,24 @@ class MathSensor(Sensor):
 class RWSensor(Sensor):
     """Read & write sensor."""
 
+    def update_reg_value(self, value: Any) -> bool:
+        """Update the reg_value from a new value."""
+        newv = ensure_tuple(self.value_to_reg(value))
+
+        if newv == self.reg_value:
+            return False
+
+        self.reg_value = newv
+        self.update_value()
+
+        _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
+
+        return True
+
+    def value_to_reg(self, value: Any) -> int | Tuple[int, ...]:
+        """Get the reg value from a display value."""
+        raise NotImplementedError()
+
 
 @attr.define(slots=True)
 class NumberRWSensor(RWSensor):
@@ -124,14 +142,6 @@ class NumberRWSensor(RWSensor):
         """Get the max value from the configured sensor or static value."""
         return self.__static_or_sensor_value(self.max)
 
-    @staticmethod
-    def __static_or_sensor_value(val: int | Sensor) -> int | float:
-        if isinstance(val, Sensor):
-            if isinstance(val.value, (int, float)):
-                return val.value
-            return float(val.value or 0)
-        return val
-
     def dependencies(self) -> List[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
         sensors: List[Sensor] = []
@@ -140,6 +150,48 @@ class NumberRWSensor(RWSensor):
         if isinstance(self.max, Sensor):
             sensors.append(self.max)
         return sensors
+
+    def value_to_reg(self, value: int) -> int | Tuple[int, ...]:
+        """Get the reg value from a display value, or the current reg value if out of range."""
+        if value < self.min_value or value > self.max_value:
+            # Return current reg_value if value is out of range
+            return self.reg_value
+
+        return int(value / abs(self.factor))
+
+    @staticmethod
+    def __static_or_sensor_value(val: int | Sensor) -> int | float:
+        if isinstance(val, Sensor):
+            if isinstance(val.value, (int, float)):
+                return val.value
+            return float(val.value or 0)
+        return val
+
+
+@attr.define(slots=True)
+class SelectRWSensor(RWSensor):
+    """Sensor with a set of options to select from."""
+
+    options: Dict[int, str] = attr.field(default={})
+    __values_map: Dict[str, int] = {}
+
+    def __attrs_post_init__(self) -> None:
+        """Ensure correct parameters."""
+        self.__values_map = {v: k for k, v in self.options.items()}
+
+    def available_values(self) -> List[str]:
+        """Get the available values for this sensor."""
+        return list(self.options.values())
+
+    def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
+        """Get the reg value from a display value, or the current reg value if out of range."""
+        return self.__values_map.get(value, self.reg_value[0])
+
+    def update_value(self) -> None:
+        """Update value from current register values."""
+        self.value = (
+            self.options.get(self.reg_value[0]) or f"Unknown {self.reg_value[0]}"
+        )
 
 
 def group_sensors(

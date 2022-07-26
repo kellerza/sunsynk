@@ -8,6 +8,7 @@ from sunsynk.sensor import (
     NumberRWSensor,
     RWSensor,
     SDStatusSensor,
+    SelectRWSensor,
     Sensor,
     SerialSensor,
     TempSensor,
@@ -161,6 +162,9 @@ _SENSORS += (BATTERY_SHUTDOWN_CAPACITY, BATTERY_RESTART_CAPACITY, BATTERY_LOW_CA
 #################
 # System program
 #################
+_SENSORS.append(
+    SelectRWSensor(243, "Priority Mode", options={0: "Battery first", 1: "Load first"})
+)
 PROGRAM = (
     TimeRWSensor(250, "Prog1 Time"),
     TimeRWSensor(251, "Prog2 Time"),
