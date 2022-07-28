@@ -241,17 +241,72 @@ class TempSensor(Sensor):
             _LOGGER.error("Could not decode temperature: %s", err)
 
 
+@attr.define(slots=True)
 class TimeRWSensor(RWSensor):
     """Extract the time."""
 
+    min: TimeRWSensor = attr.field(default=None)
+    max: TimeRWSensor = attr.field(default=None)
+
+    def available_values(self, step_minutes: int) -> List[str]:
+        """Get the available values for this sensor."""
+        full_day = 24 * 60
+
+        def reg_to_minutes(reg_value: int) -> int:
+            hours, mins = self.__reg_to_timespan(reg_value)
+            return hours * 60 + mins
+
+        min_val = reg_to_minutes(self.min.reg_value[0]) if self.min else 0
+        max_val = reg_to_minutes(self.max.reg_value[0]) if self.max else full_day
+        val = reg_to_minutes(self.reg_value[0])
+
+        time_range = self.__time_range(min_val, max_val, val, step_minutes, full_day)
+
+        return list(
+            map(lambda minutes: self.__format(*divmod(minutes, 60)), time_range)
+        )
+
+    def dependencies(self) -> List[Sensor]:
+        """Get a list of sensors upon which this sensor depends."""
+        sensors: List[Sensor] = []
+        if isinstance(self.min, TimeRWSensor):
+            sensors.append(self.min)
+        if isinstance(self.max, TimeRWSensor):
+            sensors.append(self.max)
+        return sensors
+
+    def min_max(self, min_value: TimeRWSensor, max_value: TimeRWSensor) -> None:
+        """Set the min and max values."""
+        self.min = min_value
+        self.max = max_value
+
     def update_value(self) -> None:
         """Extract the time."""
-        sval = str(self.reg_value[0])
-        self.value = f"{sval[:-2]}:{sval[-2:]}"
+        self.value = self.__format(*self.__reg_to_timespan(self.reg_value[0]))
 
-    def value_to_reg(self, value: Any) -> int | Tuple[int, ...]:
+    def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value."""
-        raise NotImplementedError()
+        return int(value.replace(":", ""))
+
+    @staticmethod
+    def __time_range(
+        start: int, end: int, val: int, step: int, modulo: int
+    ) -> Generator[int, None, None]:
+        if val % step != 0:
+            yield val
+        stop = end if start <= end else end + modulo
+        for i in range(start, stop, step):
+            yield i % modulo
+        if start == end or start != end % modulo:
+            yield end
+
+    @staticmethod
+    def __reg_to_timespan(reg_value: int) -> tuple[int, int]:
+        return divmod(reg_value, 100)
+
+    @staticmethod
+    def __format(hours: int, minutes: int) -> str:
+        return f"{hours}:{minutes:02}"
 
 
 class SDStatusSensor(Sensor):

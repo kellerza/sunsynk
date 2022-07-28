@@ -252,6 +252,35 @@ def test_time_rw() -> None:
     update_sensors([s], rmap)
     assert s.value == "3:00"
 
+    assert len(s.available_values(15)) == 24 * 60 / 15
+
+    s.min = s_min = TimeRWSensor(50, "min", factor=0.1)
+    s.max = s_max = TimeRWSensor(70, "max", factor=0.1)
+
+    s_min.reg_to_value(200)
+    s_max.reg_to_value(300)
+    assert s.available_values(15) == ["2:00", "2:15", "2:30", "2:45", "3:00"]
+
+    s.reg_to_value(201)
+    assert s.available_values(15) == ["2:01", "2:00", "2:15", "2:30", "2:45", "3:00"]
+
+    s.reg_to_value(2330)
+    s_min.reg_to_value(2330)
+    s.max.reg_to_value(30)
+    assert s.available_values(15) == ["23:30", "23:45", "0:00", "0:15", "0:30"]
+
+    s.reg_to_value(200)
+    s_min.reg_to_value(200)
+    s.max.reg_to_value(200)
+    assert s.available_values(15) == ["2:00"]
+
+    s.min_max(None, None)
+    assert s.min is None
+    assert s.max is None
+    s.min_max(s_min, s_max)
+    assert s.min == s_min
+    assert s.max == s_max
+
 
 def test_dep() -> None:
     ctl = ALL_SENSORS["grid_ct_load"]

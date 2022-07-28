@@ -1,4 +1,14 @@
 # Changelog
+## **2022.08.05-0.2.3** - 2022-08-05
+
+- Python sunsynk module 0.2.3:
+
+  - Made TimeRWSensor writable - [#37](https://github.com/kellerza/sunsynk/issues/37)
+  - Updated Prog1..6 Time sensors to have min/max values
+
+- Sunsynk Dev Add-On
+  - Use Home Assistant MQTT Select integration for TimeRWSensors
+
 ## **2022.08.01-0.2.2** - 2022-08-01
 
 - Python sunsynk module 0.2.2:
