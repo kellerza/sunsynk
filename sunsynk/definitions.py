@@ -5,6 +5,7 @@ from sunsynk.sensor import (
     FaultSensor,
     InverterStateSensor,
     MathSensor,
+    NumberRWSensor,
     RWSensor,
     SDStatusSensor,
     Sensor,
@@ -126,6 +127,8 @@ _SENSORS += (
 ##########
 # General
 ##########
+RATED_POWER = Sensor((16, 17), "Rated power", WATT, 0.1)
+_SENSORS.append(RATED_POWER)
 _SENSORS += (
     Sensor(0, "Device Type"),
     FaultSensor((103, 104, 105, 106, 107), "Fault"),
@@ -150,6 +153,10 @@ _SENSORS += (
     Sensor(603, "Bat1 SOC", "%"),
     Sensor(611, "Bat1 Cycle"),
 )
+BATTERY_SHUTDOWN_CAPACITY = Sensor(217, "Battery Shutdown Capacity", "%")
+BATTERY_RESTART_CAPACITY = Sensor(218, "Battery Restart Capacity", "%")
+BATTERY_LOW_CAPACITY = Sensor(219, "Battery Low Capacity", "%")
+_SENSORS += (BATTERY_SHUTDOWN_CAPACITY, BATTERY_RESTART_CAPACITY, BATTERY_LOW_CAPACITY)
 
 #################
 # System program
@@ -161,18 +168,18 @@ PROGRAM = (
     TimeRWSensor(253, "Prog4 Time"),
     TimeRWSensor(254, "Prog5 Time"),
     TimeRWSensor(255, "Prog6 Time"),
-    RWSensor(256, "Prog1 power", WATT),
-    RWSensor(257, "Prog2 power", WATT),
-    RWSensor(258, "Prog3 power", WATT),
-    RWSensor(259, "Prog4 power", WATT),
-    RWSensor(260, "Prog5 power", WATT),
-    RWSensor(261, "Prog6 power", WATT),
-    RWSensor(268, "Prog1 Capacity", "%"),
-    RWSensor(269, "Prog2 Capacity", "%"),
-    RWSensor(270, "Prog3 Capacity", "%"),
-    RWSensor(271, "Prog4 Capacity", "%"),
-    RWSensor(272, "Prog5 Capacity", "%"),
-    RWSensor(273, "Prog6 Capacity", "%"),
+    NumberRWSensor(256, "Prog1 power", WATT, max=RATED_POWER),
+    NumberRWSensor(257, "Prog2 power", WATT, max=RATED_POWER),
+    NumberRWSensor(258, "Prog3 power", WATT, max=RATED_POWER),
+    NumberRWSensor(259, "Prog4 power", WATT, max=RATED_POWER),
+    NumberRWSensor(260, "Prog5 power", WATT, max=RATED_POWER),
+    NumberRWSensor(261, "Prog6 power", WATT, max=RATED_POWER),
+    NumberRWSensor(268, "Prog1 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(269, "Prog2 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(270, "Prog3 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(271, "Prog4 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(272, "Prog5 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(273, "Prog6 Capacity", "%", min=BATTERY_LOW_CAPACITY),
     # 1- Grid, 2- Gen
     RWSensor(274, "Prog1 Charge"),
     RWSensor(275, "Prog2 Charge"),

@@ -8,16 +8,16 @@ from collections import defaultdict
 from json import loads
 from math import modf
 from pathlib import Path
-from typing import Dict, List, Sequence
+from typing import Any, Callable, Dict, List, Sequence, Tuple
 
 import yaml
 from filter import RROBIN, Filter, getfilter, suggested_filter
-from mqtt import MQTT, Device, Entity, SensorEntity
+from mqtt import MQTT, Device, Entity, NumberEntity, SensorEntity
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
-from sunsynk.definitions import ALL_SENSORS, DEPRECATED
-from sunsynk.sensor import slug
+from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER
+from sunsynk.sensor import NumberRWSensor, ensure_tuple, slug
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,6 +25,9 @@ _LOGGER = logging.getLogger(__name__)
 
 SENSORS: List[Filter] = []
 
+SERIAL = ALL_SENSORS["serial"]
+STARTUP_SENSORS: List[Filter] = []
+SENSOR_WRITE_QUEUE: Dict[str, Tuple[Filter, Any]] = {}
 
 SUNSYNK: Sunsynk = None  # type: ignore
 
@@ -49,18 +52,42 @@ async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None
         )
 
 
-async def hass_discover_sensors(serial: str) -> None:
+async def hass_discover_sensors(serial: str, rated_power: float) -> None:
     """Discover all sensors."""
     ents: List[Entity] = []
     dev = Device(
         identifiers=[OPT.sunsynk_id],
         name=f"Sunsynk Inverter {serial}",
-        model=f"Inverter {serial}",
+        model=f"{int(rated_power/1000)}kW Inverter {serial}",
         manufacturer="Sunsynk",
     )
 
+    def create_on_change_handler(filt: Filter, value_func: Callable):
+        def _handler(value):
+            SENSOR_WRITE_QUEUE[filt.sensor.id] = (filt, value_func(value))
+
+        return _handler
+
     for filt in SENSORS:
         sensor = filt.sensor
+
+        if isinstance(sensor, NumberRWSensor):
+            ents.append(
+                NumberEntity(
+                    name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
+                    entity_category="config",
+                    state_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}",
+                    command_topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}_set",
+                    min=float(sensor.min_value),
+                    max=float(sensor.max_value),
+                    unit_of_measurement=sensor.unit,
+                    unique_id=f"{OPT.sunsynk_id}_{sensor.id}",
+                    device=dev,
+                    on_change=create_on_change_handler(filt, int),
+                )
+            )
+            continue
+
         ents.append(
             SensorEntity(
                 name=f"{OPT.sensor_prefix} {sensor.name}".strip(),
@@ -75,9 +102,6 @@ async def hass_discover_sensors(serial: str) -> None:
 
     await MQTT.connect(OPT)
     await MQTT.publish_discovery_info(entities=ents)
-
-
-SERIAL = ALL_SENSORS["serial"]
 
 
 def setup_driver() -> None:
@@ -139,7 +163,13 @@ def startup() -> None:
             force=True,
         )
 
+    setup_sensors()
+
+
+def setup_sensors() -> None:
+    """Setup the sensors."""
     sens = {}
+    startup_sens = {SERIAL.id, RATED_POWER.id}
 
     msg: Dict[str, List[str]] = defaultdict(list)
 
@@ -164,6 +194,16 @@ def startup() -> None:
             msg[fstr].append(name)  # type: ignore
 
         SENSORS.append(getfilter(fstr, sensor=sen))
+
+        if isinstance(sen, NumberRWSensor):
+            startup_sens.update(d.id for d in sen.dependencies())
+
+    # Add any sensor dependencies to STARTUP_SENSORS
+    try:
+        STARTUP_SENSORS.clear()
+        STARTUP_SENSORS.extend(ALL_SENSORS[n] for n in startup_sens)
+    except KeyError as err:
+        _LOGGER.fatal("Invalid sensor as dependency - %s", err)
 
     for nme, val in msg.items():
         _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
@@ -226,7 +266,11 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         await asyncio.sleep(30)
         return
 
-    if not await read_sensors([SERIAL]):
+    _LOGGER.info(
+        "Reading startup sensors %s", ", ".join([s.id for s in STARTUP_SENSORS])
+    )
+
+    if not await read_sensors(STARTUP_SENSORS):
         log_bold(
             "No response on the Modbus interface, try checking the "
             "wiring to the Inverter, the USB-to-RS485 converter, etc"
@@ -241,12 +285,34 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
         return
 
-    await hass_discover_sensors(str(SERIAL.value))
+    await hass_discover_sensors(str(SERIAL.value), RATED_POWER.value)
 
     # Read all & publish immediately
     await asyncio.sleep(0.01)
     await read_sensors([f.sensor for f in SENSORS], retry_single=True)
     await publish_sensors(SENSORS, force=True)
+
+    async def write_sensors() -> set[str]:
+        """Flush any pending sensor writes"""
+
+        while SENSOR_WRITE_QUEUE:
+            _, (filt, value) = SENSOR_WRITE_QUEUE.popitem()
+            sensor = filt.sensor
+            newv = ensure_tuple(value)
+            if newv == sensor.reg_value:
+                continue
+
+            _LOGGER.info(
+                "Writing sensor %s: %s=%s  [old %s]",
+                sensor.name,
+                sensor.id,
+                newv,
+                sensor.reg_value,
+            )
+            sensor.reg_value = newv
+            await SUNSYNK.write_sensor(sensor)
+            await read_sensors([sensor], msg=sensor.name)
+            await publish_sensors([filt], force=True)
 
     async def poll_sensors() -> None:
         """Poll sensors."""
@@ -263,6 +329,8 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
                 await publish_sensors(fsensors)
 
     while True:
+        await write_sensors()
+
         polltask = asyncio.create_task(poll_sensors())
         await asyncio.sleep(1)
         try:

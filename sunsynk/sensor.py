@@ -107,6 +107,41 @@ class RWSensor(Sensor):
     """Read & write sensor."""
 
 
+@attr.define(slots=True)
+class NumberRWSensor(RWSensor):
+    """Numeric sensor which can be read and written."""
+
+    min: int | Sensor = attr.field(default=0)
+    max: int | Sensor = attr.field(default=100)
+
+    @property
+    def min_value(self) -> int | float:
+        """Get the min value from the configured sensor or static value."""
+        return self.__static_or_sensor_value(self.min)
+
+    @property
+    def max_value(self) -> int | float:
+        """Get the max value from the configured sensor or static value."""
+        return self.__static_or_sensor_value(self.max)
+
+    @staticmethod
+    def __static_or_sensor_value(val: int | Sensor) -> int | float:
+        if isinstance(val, Sensor):
+            if isinstance(val.value, (int, float)):
+                return val.value
+            return float(val.value or 0)
+        return val
+
+    def dependencies(self) -> List[Sensor]:
+        """Get a list of sensors upon which this sensor depends."""
+        sensors: List[Sensor] = []
+        if isinstance(self.min, Sensor):
+            sensors.append(self.min)
+        if isinstance(self.max, Sensor):
+            sensors.append(self.max)
+        return sensors
+
+
 def group_sensors(
     sensors: Sequence[Sensor], allow_gap: int = 3, max_group_size: int = 60
 ) -> Generator[list[int], None, None]:

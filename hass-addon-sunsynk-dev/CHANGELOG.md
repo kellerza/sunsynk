@@ -1,6 +1,18 @@
 # Changelog
 
-## **2022.07.1-0.2.0** - 2022-07-11
+## **2022.07.24-0.2.1** - 2022-07-24
+
+- Python sunsynk module 0.2.1:
+
+  - Introduced NumberRWSensor - [#37](https://github.com/kellerza/sunsynk/issues/37)
+
+- Sunsynk Dev Add-On
+  - Use Home Assistant MQTT Number integration when encountering NumberRWSensor
+  - Prog1 to 6 battery capacity and power sensors are now editable in the Home
+    Assistant UI
+  - Added Rated Power to device model
+
+## **2022.07.11-0.2.0** - 2022-07-11
 
 - Python sunsynk module 0.2.0:
 
