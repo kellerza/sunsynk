@@ -106,6 +106,7 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                     on_change=create_on_change_handler(filt, str),
                 )
             )
+            continue
 
         ents.append(
             SensorEntity(
