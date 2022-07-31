@@ -249,6 +249,10 @@ class TimeRWSensor(RWSensor):
         sval = str(self.reg_value[0])
         self.value = f"{sval[:-2]}:{sval[-2:]}"
 
+    def value_to_reg(self, value: Any) -> int | Tuple[int, ...]:
+        """Get the reg value from a display value."""
+        raise NotImplementedError()
+
 
 class SDStatusSensor(Sensor):
     """SD card status."""
