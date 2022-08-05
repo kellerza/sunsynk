@@ -254,8 +254,20 @@ def test_time_rw() -> None:
 
     assert len(s.available_values(15)) == 24 * 60 / 15
 
+    assert s.value_to_reg("0:00") == 0
+    assert s.value_to_reg("4:01") == 401
+    assert s.value_to_reg("23:59") == 2359
+
+    deps = s.dependencies()
+    assert len(deps) == 0
     s.min = s_min = TimeRWSensor(50, "min", factor=0.1)
+    deps = s.dependencies()
+    assert len(deps) == 1
+    assert deps[0].id == "min"
     s.max = s_max = TimeRWSensor(70, "max", factor=0.1)
+    deps = s.dependencies()
+    assert len(deps) == 2
+    assert deps[1].id == "max"
 
     s_min.reg_to_value(200)
     s_max.reg_to_value(300)
