@@ -1,4 +1,15 @@
 # Changelog
+## **2022.08.01-0.2.2** - 2022-08-01
+
+- Python sunsynk module 0.2.2:
+
+  - Introduced SelectRWSensor - [#37](https://github.com/kellerza/sunsynk/issues/37)
+  - Added "priority_mode" writable sensor allowing switching between battery and load priorities
+  - NumberRWSensor now supports factor and validates min/max
+
+- Sunsynk Dev Add-On
+  - Use Home Assistant MQTT Select integration when encountering SelectRWSensor
+  - The "priority_mode" sensor is now available as a Select entity
 
 ## **2022.07.24-0.2.1** - 2022-07-24
 

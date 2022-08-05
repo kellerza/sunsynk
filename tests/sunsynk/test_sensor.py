@@ -12,6 +12,7 @@ from sunsynk.sensor import (
     MathSensor,
     NumberRWSensor,
     SDStatusSensor,
+    SelectRWSensor,
     Sensor,
     SerialSensor,
     TempSensor,
@@ -147,7 +148,7 @@ def test_math() -> None:
         MathSensor((0, 1), "", "")
 
 
-def test_numberrw() -> None:
+def test_number_rw() -> None:
     s = NumberRWSensor(1, "", min=1, max=10)
 
     deps = s.dependencies()
@@ -174,6 +175,35 @@ def test_numberrw() -> None:
     assert s.max_value == 0
     s.max.value = 30
     assert s.max_value == 30
+
+    assert s.update_reg_value(25)
+    assert s.reg_value == (25,)
+
+    assert s.update_reg_value(500) is False
+    assert s.update_reg_value(-1) is False
+    assert s.reg_value == (25,)
+
+    s = NumberRWSensor(1, "", factor=0.1)
+    s.reg_to_value(485)
+    assert s.value == 48.5
+    s.update_reg_value(50)
+    assert s.reg_value == (500,)
+
+
+def test_select_rw() -> None:
+    s = SelectRWSensor(1, "", options={1: "one", 2: "two"})
+    s.reg_to_value(1)
+
+    assert s.value == "one"
+    assert s.available_values() == ["one", "two"]
+    assert s.update_reg_value("two")
+    assert s.reg_value == (2,)
+
+    assert s.update_reg_value("five") is False
+    assert s.reg_value == (2,)
+
+    s.reg_to_value(5)
+    assert s.value == "Unknown 5"
 
 
 def test_update_func() -> None:

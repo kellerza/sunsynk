@@ -197,6 +197,7 @@ def suggested_filter(sensor: Sensor) -> str:
         "fault": "round_robin",
         "grid_connected_status": "last",
         "overall_state": "step",
+        "priority_mode": "round_robin",
         "sd_status": "step",
         "serial": "round_robin",
     }
