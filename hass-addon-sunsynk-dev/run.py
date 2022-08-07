@@ -23,12 +23,12 @@ from sunsynk.sunsynk import Sensor, Sunsynk
 _LOGGER = logging.getLogger(__name__)
 
 
+DEVICE: Device = None
+HASS_DISCOVERY_INFO_UPDATE_QUEUE: Dict[str, Filter] = {}
 SENSORS: List[Filter] = []
-
+SENSOR_WRITE_QUEUE: Dict[str, Tuple[Filter, Any]] = {}
 SERIAL = ALL_SENSORS["serial"]
 STARTUP_SENSORS: List[Filter] = []
-SENSOR_WRITE_QUEUE: Dict[str, Tuple[Filter, Any]] = {}
-
 SUNSYNK: Sunsynk = None  # type: ignore
 
 
@@ -54,13 +54,39 @@ async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None
 
 async def hass_discover_sensors(serial: str, rated_power: float) -> None:
     """Discover all sensors."""
-    ents: List[Entity] = []
     dev = Device(
         identifiers=[OPT.sunsynk_id],
         name=f"Sunsynk Inverter {serial}",
         model=f"{int(rated_power/1000)}kW Inverter {serial}",
         manufacturer="Sunsynk",
     )
+    # pylint: disable=import-outside-toplevel
+    global DEVICE  # pylint: disable=global-statement
+    DEVICE = dev
+
+    ents = create_entities(SENSORS, dev)
+
+    profile_add_entities(entities=ents, device=dev)
+
+    await MQTT.connect(OPT)
+    await MQTT.publish_discovery_info(entities=ents)
+
+
+async def hass_update_discovery_info() -> None:
+    """Update discovery info for existing sensors"""
+    if not HASS_DISCOVERY_INFO_UPDATE_QUEUE:
+        return
+
+    ents = create_entities(HASS_DISCOVERY_INFO_UPDATE_QUEUE.values(), DEVICE)
+    HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
+
+    await MQTT.connect(OPT)
+    await MQTT.publish_discovery_info(entities=ents, remove_entities=False)
+
+
+def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
+    """Create HASS entities out of an existing list of filters"""
+    ents: List[Entity] = []
 
     def create_on_change_handler(filt: Filter, value_func: Callable):
         def _handler(value):
@@ -68,7 +94,7 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
 
         return _handler
 
-    for filt in SENSORS:
+    for filt in sensors:
         sensor = filt.sensor
 
         state_topic = f"{SS_TOPIC}/{OPT.sunsynk_id}/{sensor.id}"
@@ -119,10 +145,7 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
 
         ents.append(SensorEntity(**ent))
 
-    profile_add_entities(entities=ents, device=dev)
-
-    await MQTT.connect(OPT)
-    await MQTT.publish_discovery_info(entities=ents)
+    return ents
 
 
 def setup_driver() -> None:
@@ -190,9 +213,22 @@ def startup() -> None:
 def setup_sensors() -> None:
     """Setup the sensors."""
     sens = {}
+    sens_dependencies: Dict[str, List[Sensor]] = defaultdict(list)
     startup_sens = {SERIAL.id, RATED_POWER.id}
+    filters: Dict[str, Filter] = {}
 
     msg: Dict[str, List[str]] = defaultdict(list)
+
+    def enqueue_hass_discovery_info_update(sen: Sensor, deps: List[Sensor]):
+        if not DEVICE:
+            return
+
+        _LOGGER.debug(
+            "%s changed: Enqueuing discovery info updates for %s",
+            sen.name,
+            ", ".join(sorted(d.name for d in deps)),
+        )
+        HASS_DISCOVERY_INFO_UPDATE_QUEUE.update((d.id, filters[d.id]) for d in deps)
 
     for sensor_def in OPT.sensors:
         name, _, fstr = sensor_def.partition(":")
@@ -214,18 +250,36 @@ def setup_sensors() -> None:
         else:
             msg[fstr].append(name)  # type: ignore
 
-        SENSORS.append(getfilter(fstr, sensor=sen))
+        filt = getfilter(fstr, sensor=sen)
+        SENSORS.append(filt)
+        filters[sen.id] = filt
 
         if isinstance(sen, (NumberRWSensor, TimeRWSensor)):
-            startup_sens.update(d.id for d in sen.dependencies())
+            for dep in sen.dependencies():
+                sens_dependencies[dep.id].append(sen)
+
+    for sen_id, deps in sens_dependencies.items():
+        try:
+            sen = ALL_SENSORS.get(sen_id)
+        except KeyError as err:
+            _LOGGER.fatal("Invalid sensor as dependency - %s", err)
+
+        if sen_id not in sens and sen != RATED_POWER:  # Rated power does not change
+            fstr = suggested_filter(sen)
+            msg[f"*{fstr}"].append(name)  # type: ignore
+            filt = getfilter(fstr, sensor=sen)
+            SENSORS.append(filt)
+            filters[sen.id] = filt
+            _LOGGER.info("Added sensor %s as other sensors depend on it", sen_id)
+
+        startup_sens.add(sen_id)
+        sen.on_change = lambda sen=sen, deps=deps: enqueue_hass_discovery_info_update(
+            sen, deps
+        )
 
     # Add any sensor dependencies to STARTUP_SENSORS
-    try:
-        STARTUP_SENSORS.clear()
-        STARTUP_SENSORS.extend(ALL_SENSORS[n] for n in startup_sens)
-    except KeyError as err:
-        _LOGGER.fatal("Invalid sensor as dependency - %s", err)
-
+    STARTUP_SENSORS.clear()
+    STARTUP_SENSORS.extend(ALL_SENSORS[n] for n in startup_sens)
     for nme, val in msg.items():
         _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
 
@@ -361,6 +415,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         except AttributeError:
             # The read failed. Exit and let the watchdog restart
             return
+        await hass_update_discovery_info()
         if OPT.profiles:
             await profile_poll(SUNSYNK)
 
