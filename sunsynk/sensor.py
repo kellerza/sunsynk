@@ -38,6 +38,8 @@ def _signed(val: Union[int, float]) -> Union[int, float]:
 class Sensor:
     """Sunsynk sensor."""
 
+    # pylint: disable=too-many-instance-attributes
+
     reg_address: Tuple[int, ...] = attr.field(converter=ensure_tuple)
     name: str = attr.field()
     unit: str = attr.field(default="")
