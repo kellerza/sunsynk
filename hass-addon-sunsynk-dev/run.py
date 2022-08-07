@@ -213,7 +213,7 @@ def startup() -> None:
 def setup_sensors() -> None:
     """Setup the sensors."""
     sens = {}
-    sens_dependencies: Dict[str, List[Sensor]] = defaultdict(list)
+    sens_dependants: Dict[str, List[Sensor]] = defaultdict(list)
     startup_sens = {SERIAL.id, RATED_POWER.id}
     filters: Dict[str, Filter] = {}
 
@@ -256,9 +256,9 @@ def setup_sensors() -> None:
 
         if isinstance(sen, (NumberRWSensor, TimeRWSensor)):
             for dep in sen.dependencies():
-                sens_dependencies[dep.id].append(sen)
+                sens_dependants[dep.id].append(sen)
 
-    for sen_id, deps in sens_dependencies.items():
+    for sen_id, deps in sens_dependants.items():
         try:
             sen = ALL_SENSORS.get(sen_id)
         except KeyError as err:
