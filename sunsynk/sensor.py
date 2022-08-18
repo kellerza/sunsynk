@@ -135,12 +135,12 @@ class NumberRWSensor(RWSensor):
     @property
     def min_value(self) -> int | float:
         """Get the min value from the configured sensor or static value."""
-        return self.__static_or_sensor_value(self.min)
+        return self._static_or_sensor_value(self.min)
 
     @property
     def max_value(self) -> int | float:
         """Get the max value from the configured sensor or static value."""
-        return self.__static_or_sensor_value(self.max)
+        return self._static_or_sensor_value(self.max)
 
     def dependencies(self) -> List[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
@@ -160,7 +160,7 @@ class NumberRWSensor(RWSensor):
         return int(value / abs(self.factor))
 
     @staticmethod
-    def __static_or_sensor_value(val: int | Sensor) -> int | float:
+    def _static_or_sensor_value(val: int | Sensor) -> int | float:
         if isinstance(val, Sensor):
             if isinstance(val.value, (int, float)):
                 return val.value
@@ -173,11 +173,11 @@ class SelectRWSensor(RWSensor):
     """Sensor with a set of options to select from."""
 
     options: Dict[int, str] = attr.field(default={})
-    __values_map: Dict[str, int] = {}
+    _values_map: Dict[str, int] = {}
 
     def __attrs_post_init__(self) -> None:
         """Ensure correct parameters."""
-        self.__values_map = {v: k for k, v in self.options.items()}
+        self._values_map = {v: k for k, v in self.options.items()}
 
     def available_values(self) -> List[str]:
         """Get the available values for this sensor."""
@@ -185,7 +185,7 @@ class SelectRWSensor(RWSensor):
 
     def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value, or the current reg value if out of range."""
-        return self.__values_map.get(value, self.reg_value[0])
+        return self._values_map.get(value, self.reg_value[0])
 
     def update_value(self) -> None:
         """Update value from current register values."""
@@ -253,18 +253,16 @@ class TimeRWSensor(RWSensor):
         full_day = 24 * 60
 
         def reg_to_minutes(reg_value: int) -> int:
-            hours, mins = self.__reg_to_timespan(reg_value)
+            hours, mins = self._reg_to_timespan(reg_value)
             return hours * 60 + mins
 
         min_val = reg_to_minutes(self.min.reg_value[0]) if self.min else 0
         max_val = reg_to_minutes(self.max.reg_value[0]) if self.max else full_day
         val = reg_to_minutes(self.reg_value[0])
 
-        time_range = self.__time_range(min_val, max_val, val, step_minutes, full_day)
+        time_range = self._time_range(min_val, max_val, val, step_minutes, full_day)
 
-        return list(
-            map(lambda minutes: self.__format(*divmod(minutes, 60)), time_range)
-        )
+        return list(map(lambda minutes: self._format(*divmod(minutes, 60)), time_range))
 
     def dependencies(self) -> List[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
@@ -282,14 +280,14 @@ class TimeRWSensor(RWSensor):
 
     def update_value(self) -> None:
         """Extract the time."""
-        self.value = self.__format(*self.__reg_to_timespan(self.reg_value[0]))
+        self.value = self._format(*self._reg_to_timespan(self.reg_value[0]))
 
     def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value."""
         return int(value.replace(":", ""))
 
     @staticmethod
-    def __time_range(
+    def _time_range(
         start: int, end: int, val: int, step: int, modulo: int
     ) -> Generator[int, None, None]:
         if val % step != 0:
@@ -301,11 +299,11 @@ class TimeRWSensor(RWSensor):
             yield end
 
     @staticmethod
-    def __reg_to_timespan(reg_value: int) -> tuple[int, int]:
+    def _reg_to_timespan(reg_value: int) -> tuple[int, int]:
         return divmod(reg_value, 100)
 
     @staticmethod
-    def __format(hours: int, minutes: int) -> str:
+    def _format(hours: int, minutes: int) -> str:
         return f"{hours}:{minutes:02}"
 
 
