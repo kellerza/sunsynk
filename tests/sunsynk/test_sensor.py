@@ -10,6 +10,7 @@ from sunsynk.sensor import (
     HSensor,
     InverterStateSensor,
     MathSensor,
+    Minutes,
     NumberRWSensor,
     SDStatusSensor,
     SelectRWSensor,
@@ -244,6 +245,28 @@ def test_decode_fault() -> None:
     assert s.reg_to_value(regs) == "F32"
     regs = (0x0, 0x0, 0x1, 0x0)
     assert s.reg_to_value(regs) == "F33"
+
+
+def test_minutes() -> None:
+    mins = Minutes(10)
+    assert mins.str_value == "0:10"
+    assert mins.reg_value == 10
+    assert Minutes.from_reg_value(10) == mins
+    assert Minutes.from_str_value("0:10") == mins
+    assert Minutes.from_str_value("00:10") == mins
+
+    mins = Minutes(100)
+    assert mins.str_value == "1:40"
+    assert mins.reg_value == 140
+    assert Minutes.from_reg_value(140) == mins
+    assert Minutes.from_str_value("1:40") == mins
+    assert Minutes.from_str_value("01:40") == mins
+
+    mins = Minutes(23 * 60 + 59)
+    assert mins.str_value == "23:59"
+    assert mins.reg_value == 2359
+    assert Minutes.from_reg_value(2359) == mins
+    assert Minutes.from_str_value("23:59") == mins
 
 
 def test_time_rw() -> None:

@@ -241,6 +241,33 @@ class TempSensor(Sensor):
             _LOGGER.error("Could not decode temperature: %s", err)
 
 
+class Minutes(int):
+    """Deals with inverter time format conversion complexities."""
+
+    @classmethod
+    def from_str_value(cls, str_value: str) -> Minutes:
+        """Create from a string in hh:mm format."""
+        return cls(int(str_value[:-3]) * 60 + int(str_value[-2:]))
+
+    @classmethod
+    def from_reg_value(cls, reg_value: int) -> Minutes:
+        """Create from a register value."""
+        hours, minutes = divmod(reg_value, 100)
+        return cls(hours * 60 + minutes)
+
+    @property
+    def reg_value(self) -> int:
+        """Get the register value."""
+        hours, minutes = divmod(self, 60)
+        return hours * 100 + minutes
+
+    @property
+    def str_value(self) -> str:
+        """Get the value in hh:mm format."""
+        hours, minutes = divmod(self, 60)
+        return f"{hours}:{minutes:02}"
+
+
 @attr.define(slots=True)
 class TimeRWSensor(RWSensor):
     """Extract the time."""
@@ -248,21 +275,22 @@ class TimeRWSensor(RWSensor):
     min: TimeRWSensor = attr.field(default=None)
     max: TimeRWSensor = attr.field(default=None)
 
+    @property
+    def minutes(self) -> Minutes:
+        """Get the value of this sensor as total minutes."""
+        return Minutes.from_reg_value(self.reg_value[0])
+
     def available_values(self, step_minutes: int) -> List[str]:
         """Get the available values for this sensor."""
         full_day = 24 * 60
 
-        def reg_to_minutes(reg_value: int) -> int:
-            hours, mins = self._reg_to_timespan(reg_value)
-            return hours * 60 + mins
+        min_val = self.min.minutes if self.min else 0
+        max_val = self.max.minutes if self.max else full_day
+        val = self.minutes
 
-        min_val = reg_to_minutes(self.min.reg_value[0]) if self.min else 0
-        max_val = reg_to_minutes(self.max.reg_value[0]) if self.max else full_day
-        val = reg_to_minutes(self.reg_value[0])
+        time_range = self._range(min_val, max_val, val, step_minutes, full_day)
 
-        time_range = self._time_range(min_val, max_val, val, step_minutes, full_day)
-
-        return list(map(lambda minutes: self._format(*divmod(minutes, 60)), time_range))
+        return list(map(lambda i: Minutes(i).str_value, time_range))
 
     def dependencies(self) -> List[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
@@ -280,14 +308,14 @@ class TimeRWSensor(RWSensor):
 
     def update_value(self) -> None:
         """Extract the time."""
-        self.value = self._format(*self._reg_to_timespan(self.reg_value[0]))
+        self.value = self.minutes.str_value
 
     def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value."""
-        return int(value.replace(":", ""))
+        return Minutes.from_str_value(value).reg_value
 
     @staticmethod
-    def _time_range(
+    def _range(
         start: int, end: int, val: int, step: int, modulo: int
     ) -> Generator[int, None, None]:
         if val % step != 0:
@@ -297,14 +325,6 @@ class TimeRWSensor(RWSensor):
             yield i % modulo
         if start == end or start != end % modulo:
             yield end
-
-    @staticmethod
-    def _reg_to_timespan(reg_value: int) -> tuple[int, int]:
-        return divmod(reg_value, 100)
-
-    @staticmethod
-    def _format(hours: int, minutes: int) -> str:
-        return f"{hours}:{minutes:02}"
 
 
 class SDStatusSensor(Sensor):
