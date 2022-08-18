@@ -111,6 +111,7 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                 SelectEntity(
                     **ent,
                     command_topic=command_topic,
+                    icon="mdi:clock",
                     options=sensor.available_values(step_minutes=15),
                     on_change=create_on_change_handler(filt, str),
                 )
