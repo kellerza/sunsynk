@@ -72,6 +72,19 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
     await MQTT.publish_discovery_info(entities=ents)
 
 
+def enqueue_hass_discovery_info_update(changed_sen: Sensor, deps: List[Filter]):
+    """Add a sensor's dependants to the HASS discovery info update queue."""
+    if not DEVICE:
+        return
+
+    _LOGGER.debug(
+        "%s changed: Enqueuing discovery info updates for %s",
+        changed_sen.name,
+        ", ".join(sorted(f.sensor.name for f in deps)),
+    )
+    HASS_DISCOVERY_INFO_UPDATE_QUEUE.update((f.sensor.id, f) for f in deps)
+
+
 async def hass_update_discovery_info() -> None:
     """Update discovery info for existing sensors"""
     if not HASS_DISCOVERY_INFO_UPDATE_QUEUE:
@@ -212,23 +225,11 @@ def startup() -> None:
 
 def setup_sensors() -> None:
     """Setup the sensors."""
-    sens = {}
+    sens: Dict[str, Filter] = {}
     sens_dependants: Dict[str, List[Sensor]] = defaultdict(list)
     startup_sens = {SERIAL.id, RATED_POWER.id}
-    filters: Dict[str, Filter] = {}
 
     msg: Dict[str, List[str]] = defaultdict(list)
-
-    def enqueue_hass_discovery_info_update(sen: Sensor, deps: List[Sensor]):
-        if not DEVICE:
-            return
-
-        _LOGGER.debug(
-            "%s changed: Enqueuing discovery info updates for %s",
-            sen.name,
-            ", ".join(sorted(d.name for d in deps)),
-        )
-        HASS_DISCOVERY_INFO_UPDATE_QUEUE.update((d.id, filters[d.id]) for d in deps)
 
     for sensor_def in OPT.sensors:
         name, _, fstr = sensor_def.partition(":")
@@ -236,7 +237,6 @@ def setup_sensors() -> None:
         if name in sens:
             _LOGGER.warning("Sensor %s only allowed once", name)
             continue
-        sens[name] = True
 
         sen = ALL_SENSORS.get(name)
         if not isinstance(sen, Sensor):
@@ -252,7 +252,7 @@ def setup_sensors() -> None:
 
         filt = getfilter(fstr, sensor=sen)
         SENSORS.append(filt)
-        filters[sen.id] = filt
+        sens[sen.id] = filt
 
         if isinstance(sen, (NumberRWSensor, TimeRWSensor)):
             for dep in sen.dependencies():
@@ -269,12 +269,12 @@ def setup_sensors() -> None:
             msg[f"*{fstr}"].append(name)  # type: ignore
             filt = getfilter(fstr, sensor=sen)
             SENSORS.append(filt)
-            filters[sen.id] = filt
+            sens[sen.id] = filt
             _LOGGER.info("Added sensor %s as other sensors depend on it", sen_id)
 
         startup_sens.add(sen_id)
         sen.on_change = lambda sen=sen, deps=deps: enqueue_hass_discovery_info_update(
-            sen, deps
+            sen, list(sens[d.id] for d in deps)
         )
 
     # Add any sensor dependencies to STARTUP_SENSORS
