@@ -339,3 +339,7 @@ def test_on_changed() -> None:
     handler.reset_mock()
     s.reg_to_value(10)
     handler.assert_called_once()
+
+    handler.reset_mock()
+    s.reg_to_value(10)
+    handler.assert_not_called()

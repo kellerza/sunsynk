@@ -49,7 +49,7 @@ class Sensor:
     # ] = attr.field(default=None)
     reg_value: Tuple[int, ...] = attr.field(init=False, factory=tuple)
     on_change: Callable = attr.field(default=None)
-    __value: Union[float, int, str, None] = None
+    _value: Union[float, int, str, None] = None
 
     def append_to(self, arr: List[Sensor]) -> Sensor:
         """Append to a list of sensors."""
@@ -84,12 +84,12 @@ class Sensor:
     @property
     def value(self) -> Union[float, int, str, None]:
         """Get the current value."""
-        return self.__value
+        return self._value
 
     @value.setter
     def value(self, val: Union[float, int, str, None]) -> None:
-        old_value = self.__value
-        self.__value = val
+        old_value = self._value
+        self._value = val
         if old_value != val and self.on_change:
             self.on_change()
 
