@@ -309,13 +309,6 @@ def test_time_rw() -> None:
     s.max.reg_to_value(200)
     assert s.available_values(15) == ["2:00"]
 
-    s.min_max(None, None)
-    assert s.min is None
-    assert s.max is None
-    s.min_max(s_min, s_max)
-    assert s.min == s_min
-    assert s.max == s_max
-
 
 def test_dep() -> None:
     ctl = ALL_SENSORS["grid_ct_load"]

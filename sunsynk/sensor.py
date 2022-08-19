@@ -301,11 +301,6 @@ class TimeRWSensor(RWSensor):
             sensors.append(self.max)
         return sensors
 
-    def min_max(self, min_value: TimeRWSensor, max_value: TimeRWSensor) -> None:
-        """Set the min and max values."""
-        self.min = min_value
-        self.max = max_value
-
     def update_value(self) -> None:
         """Extract the time."""
         self.value = self.minutes.str_value
