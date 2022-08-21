@@ -258,7 +258,7 @@ class SSTime:
 
     @reg_value.setter
     def reg_value(self, reg_value: int) -> None:
-        """Create from a register value."""
+        """Convert from a register value."""
         hours, minutes = divmod(reg_value, 100)
         self.minutes = hours * 60 + minutes
 
@@ -271,8 +271,8 @@ class SSTime:
     @str_value.setter
     def str_value(self, value: str) -> None:
         """Parse a string in hh:mm format."""
-        (hour, _, min) = value.partition(":")
-        self.minutes = int(hour) * 60 + int(min)
+        (hours, _, minutes) = value.partition(":")
+        self.minutes = int(hours) * 60 + int(minutes)
 
 
 @attr.define(slots=True)
