@@ -63,7 +63,6 @@ class Entity:
     expire_after: int = attr.field(default=0)  # unavailable if not updated
     enabled_by_default: bool = attr.field(default=True)
     entity_category: str = attr.field(default="")
-    icon: str = attr.field(default="")
 
     _path = ""
 
