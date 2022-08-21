@@ -10,12 +10,12 @@ from sunsynk.sensor import (
     HSensor,
     InverterStateSensor,
     MathSensor,
-    Minutes,
     NumberRWSensor,
     SDStatusSensor,
     SelectRWSensor,
     Sensor,
     SerialSensor,
+    SSTime,
     TempSensor,
     TimeRWSensor,
     ensure_tuple,
@@ -247,26 +247,35 @@ def test_decode_fault() -> None:
     assert s.reg_to_value(regs) == "F33"
 
 
-def test_minutes() -> None:
-    mins = Minutes(10)
-    assert mins.str_value == "0:10"
-    assert mins.reg_value == 10
-    assert Minutes.from_reg_value(10) == mins
-    assert Minutes.from_str_value("0:10") == mins
-    assert Minutes.from_str_value("00:10") == mins
+def test_time() -> None:
+    time = SSTime(10)
+    assert time.str_value == "0:10"
+    assert time.reg_value == 10
+    time.str_value = "0:10"
+    assert time.minutes == 10
+    time.str_value = "00:10"
+    assert time.minutes == 10
+    time.reg_value = 10
+    assert time.minutes == 10
 
-    mins = Minutes(100)
-    assert mins.str_value == "1:40"
-    assert mins.reg_value == 140
-    assert Minutes.from_reg_value(140) == mins
-    assert Minutes.from_str_value("1:40") == mins
-    assert Minutes.from_str_value("01:40") == mins
+    time = SSTime(100)
+    assert time.str_value == "1:40"
+    assert time.reg_value == 140
+    time.str_value = "1:40"
+    assert time.minutes == 100
+    time.str_value = "01:40"
+    assert time.minutes == 100
+    time.reg_value = 140
+    assert time.minutes == 100
 
-    mins = Minutes(23 * 60 + 59)
-    assert mins.str_value == "23:59"
-    assert mins.reg_value == 2359
-    assert Minutes.from_reg_value(2359) == mins
-    assert Minutes.from_str_value("23:59") == mins
+    just_before_midnight = 23 * 60 + 59
+    time = SSTime(just_before_midnight)
+    assert time.str_value == "23:59"
+    assert time.reg_value == 2359
+    time.str_value = "23:59"
+    assert time.minutes == just_before_midnight
+    time.reg_value = 2359
+    assert time.minutes == just_before_midnight
 
 
 def test_time_rw() -> None:

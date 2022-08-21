@@ -241,31 +241,38 @@ class TempSensor(Sensor):
             _LOGGER.error("Could not decode temperature: %s", err)
 
 
-class Minutes(int):
+class SSTime:
     """Deals with inverter time format conversion complexities."""
 
-    @classmethod
-    def from_str_value(cls, str_value: str) -> Minutes:
-        """Create from a string in hh:mm format."""
-        return cls(int(str_value[:-3]) * 60 + int(str_value[-2:]))
+    minutes: int
 
-    @classmethod
-    def from_reg_value(cls, reg_value: int) -> Minutes:
-        """Create from a register value."""
-        hours, minutes = divmod(reg_value, 100)
-        return cls(hours * 60 + minutes)
+    def __init__(self, minutes: int = 0) -> None:
+        """Init the time with minutes."""
+        self.minutes = minutes
 
     @property
     def reg_value(self) -> int:
         """Get the register value."""
-        hours, minutes = divmod(self, 60)
+        hours, minutes = divmod(self.minutes, 60)
         return hours * 100 + minutes
+
+    @reg_value.setter
+    def reg_value(self, reg_value: int) -> None:
+        """Create from a register value."""
+        hours, minutes = divmod(reg_value, 100)
+        self.minutes = hours * 60 + minutes
 
     @property
     def str_value(self) -> str:
         """Get the value in hh:mm format."""
-        hours, minutes = divmod(self, 60)
+        hours, minutes = divmod(self.minutes, 60)
         return f"{hours}:{minutes:02}"
+
+    @str_value.setter
+    def str_value(self, value: str) -> None:
+        """Parse a string in hh:mm format."""
+        (hour, _, min) = value.partition(":")
+        self.minutes = int(hour) * 60 + int(min)
 
 
 @attr.define(slots=True)
@@ -276,21 +283,23 @@ class TimeRWSensor(RWSensor):
     max: TimeRWSensor = attr.field(default=None)
 
     @property
-    def minutes(self) -> Minutes:
+    def time(self) -> SSTime:
         """Get the value of this sensor as total minutes."""
-        return Minutes.from_reg_value(self.reg_value[0])
+        time = SSTime()
+        time.reg_value = self.reg_value[0]
+        return time
 
     def available_values(self, step_minutes: int) -> List[str]:
         """Get the available values for this sensor."""
         full_day = 24 * 60
 
-        min_val = self.min.minutes if self.min else 0
-        max_val = self.max.minutes if self.max else full_day
-        val = self.minutes
+        min_val = self.min.time.minutes if self.min else 0
+        max_val = self.max.time.minutes if self.max else full_day
+        val = self.time.minutes
 
         time_range = self._range(min_val, max_val, val, step_minutes, full_day)
 
-        return list(map(lambda i: Minutes(i).str_value, time_range))
+        return list(map(lambda i: SSTime(i).str_value, time_range))
 
     def dependencies(self) -> List[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
@@ -303,11 +312,13 @@ class TimeRWSensor(RWSensor):
 
     def update_value(self) -> None:
         """Extract the time."""
-        self.value = self.minutes.str_value
+        self.value = self.time.str_value
 
     def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value."""
-        return Minutes.from_str_value(value).reg_value
+        time = SSTime()
+        time.str_value = value
+        return time.reg_value
 
     @staticmethod
     def _range(
