@@ -15,6 +15,7 @@ from sunsynk.sensor import (
     SelectRWSensor,
     Sensor,
     SerialSensor,
+    SSTime,
     TempSensor,
     TimeRWSensor,
     ensure_tuple,
@@ -246,11 +247,76 @@ def test_decode_fault() -> None:
     assert s.reg_to_value(regs) == "F33"
 
 
+def test_time() -> None:
+    time = SSTime(10)
+    assert time.str_value == "0:10"
+    assert time.reg_value == 10
+    time.str_value = "0:10"
+    assert time.minutes == 10
+    time.str_value = "00:10"
+    assert time.minutes == 10
+    time.reg_value = 10
+    assert time.minutes == 10
+
+    time = SSTime(100)
+    assert time.str_value == "1:40"
+    assert time.reg_value == 140
+    time.str_value = "1:40"
+    assert time.minutes == 100
+    time.str_value = "01:40"
+    assert time.minutes == 100
+    time.reg_value = 140
+    assert time.minutes == 100
+
+    just_before_midnight = 23 * 60 + 59
+    time = SSTime(just_before_midnight)
+    assert time.str_value == "23:59"
+    assert time.reg_value == 2359
+    time.str_value = "23:59"
+    assert time.minutes == just_before_midnight
+    time.reg_value = 2359
+    assert time.minutes == just_before_midnight
+
+
 def test_time_rw() -> None:
     s = TimeRWSensor(60, "two", factor=0.1)
     rmap = register_map(60, [300])
     update_sensors([s], rmap)
     assert s.value == "3:00"
+
+    assert len(s.available_values(15)) == 24 * 60 / 15
+
+    assert s.value_to_reg("0:00") == 0
+    assert s.value_to_reg("4:01") == 401
+    assert s.value_to_reg("23:59") == 2359
+
+    deps = s.dependencies()
+    assert len(deps) == 0
+    s.min = s_min = TimeRWSensor(50, "min", factor=0.1)
+    deps = s.dependencies()
+    assert len(deps) == 1
+    assert deps[0].id == "min"
+    s.max = s_max = TimeRWSensor(70, "max", factor=0.1)
+    deps = s.dependencies()
+    assert len(deps) == 2
+    assert deps[1].id == "max"
+
+    s_min.reg_to_value(200)
+    s_max.reg_to_value(300)
+    assert s.available_values(15) == ["2:00", "2:15", "2:30", "2:45", "3:00"]
+
+    s.reg_to_value(201)
+    assert s.available_values(15) == ["2:01", "2:00", "2:15", "2:30", "2:45", "3:00"]
+
+    s.reg_to_value(2330)
+    s_min.reg_to_value(2330)
+    s.max.reg_to_value(30)
+    assert s.available_values(15) == ["23:30", "23:45", "0:00", "0:15", "0:30"]
+
+    s.reg_to_value(200)
+    s_min.reg_to_value(200)
+    s.max.reg_to_value(200)
+    assert s.available_values(15) == ["2:00"]
 
 
 def test_dep() -> None:

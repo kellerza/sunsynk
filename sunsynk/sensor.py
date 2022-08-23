@@ -135,12 +135,12 @@ class NumberRWSensor(RWSensor):
     @property
     def min_value(self) -> int | float:
         """Get the min value from the configured sensor or static value."""
-        return self.__static_or_sensor_value(self.min)
+        return self._static_or_sensor_value(self.min)
 
     @property
     def max_value(self) -> int | float:
         """Get the max value from the configured sensor or static value."""
-        return self.__static_or_sensor_value(self.max)
+        return self._static_or_sensor_value(self.max)
 
     def dependencies(self) -> List[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
@@ -160,7 +160,7 @@ class NumberRWSensor(RWSensor):
         return int(value / abs(self.factor))
 
     @staticmethod
-    def __static_or_sensor_value(val: int | Sensor) -> int | float:
+    def _static_or_sensor_value(val: int | Sensor) -> int | float:
         if isinstance(val, Sensor):
             if isinstance(val.value, (int, float)):
                 return val.value
@@ -173,11 +173,11 @@ class SelectRWSensor(RWSensor):
     """Sensor with a set of options to select from."""
 
     options: Dict[int, str] = attr.field(default={})
-    __values_map: Dict[str, int] = {}
+    _values_map: Dict[str, int] = {}
 
     def __attrs_post_init__(self) -> None:
         """Ensure correct parameters."""
-        self.__values_map = {v: k for k, v in self.options.items()}
+        self._values_map = {v: k for k, v in self.options.items()}
 
     def available_values(self) -> List[str]:
         """Get the available values for this sensor."""
@@ -185,7 +185,7 @@ class SelectRWSensor(RWSensor):
 
     def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value, or the current reg value if out of range."""
-        return self.__values_map.get(value, self.reg_value[0])
+        return self._values_map.get(value, self.reg_value[0])
 
     def update_value(self) -> None:
         """Update value from current register values."""
@@ -241,17 +241,96 @@ class TempSensor(Sensor):
             _LOGGER.error("Could not decode temperature: %s", err)
 
 
+class SSTime:
+    """Deals with inverter time format conversion complexities."""
+
+    minutes: int
+
+    def __init__(self, minutes: int = 0) -> None:
+        """Init the time with minutes."""
+        self.minutes = minutes
+
+    @property
+    def reg_value(self) -> int:
+        """Get the register value."""
+        hours, minutes = divmod(self.minutes, 60)
+        return hours * 100 + minutes
+
+    @reg_value.setter
+    def reg_value(self, reg_value: int) -> None:
+        """Convert from a register value."""
+        hours, minutes = divmod(reg_value, 100)
+        self.minutes = hours * 60 + minutes
+
+    @property
+    def str_value(self) -> str:
+        """Get the value in hh:mm format."""
+        hours, minutes = divmod(self.minutes, 60)
+        return f"{hours}:{minutes:02}"
+
+    @str_value.setter
+    def str_value(self, value: str) -> None:
+        """Parse a string in hh:mm format."""
+        (hours, _, minutes) = value.partition(":")
+        self.minutes = int(hours) * 60 + int(minutes)
+
+
+@attr.define(slots=True)
 class TimeRWSensor(RWSensor):
     """Extract the time."""
 
+    min: TimeRWSensor = attr.field(default=None)
+    max: TimeRWSensor = attr.field(default=None)
+
+    @property
+    def time(self) -> SSTime:
+        """Get the value of this sensor as total minutes."""
+        time = SSTime()
+        time.reg_value = self.reg_value[0]
+        return time
+
+    def available_values(self, step_minutes: int) -> List[str]:
+        """Get the available values for this sensor."""
+        full_day = 24 * 60
+
+        min_val = self.min.time.minutes if self.min else 0
+        max_val = self.max.time.minutes if self.max else full_day
+        val = self.time.minutes
+
+        time_range = self._range(min_val, max_val, val, step_minutes, full_day)
+
+        return list(map(lambda i: SSTime(i).str_value, time_range))
+
+    def dependencies(self) -> List[Sensor]:
+        """Get a list of sensors upon which this sensor depends."""
+        sensors: List[Sensor] = []
+        if isinstance(self.min, TimeRWSensor):
+            sensors.append(self.min)
+        if isinstance(self.max, TimeRWSensor):
+            sensors.append(self.max)
+        return sensors
+
     def update_value(self) -> None:
         """Extract the time."""
-        sval = str(self.reg_value[0])
-        self.value = f"{sval[:-2]}:{sval[-2:]}"
+        self.value = self.time.str_value
 
-    def value_to_reg(self, value: Any) -> int | Tuple[int, ...]:
+    def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value."""
-        raise NotImplementedError()
+        time = SSTime()
+        time.str_value = value
+        return time.reg_value
+
+    @staticmethod
+    def _range(
+        start: int, end: int, val: int, step: int, modulo: int
+    ) -> Generator[int, None, None]:
+        if val % step != 0:
+            yield val
+        stop = end if start <= end else end + modulo
+        for i in range(start, stop, step):
+            yield i % modulo
+        if start == end or start != end % modulo:
+            yield end
 
 
 class SDStatusSensor(Sensor):

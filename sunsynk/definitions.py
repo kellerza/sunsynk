@@ -165,13 +165,27 @@ _SENSORS += (BATTERY_SHUTDOWN_CAPACITY, BATTERY_RESTART_CAPACITY, BATTERY_LOW_CA
 _SENSORS.append(
     SelectRWSensor(243, "Priority Mode", options={0: "Battery first", 1: "Load first"})
 )
+PROG1_TIME = TimeRWSensor(250, "Prog1 Time")
+PROG2_TIME = TimeRWSensor(251, "Prog2 Time", min=PROG1_TIME)
+PROG3_TIME = TimeRWSensor(252, "Prog3 Time", min=PROG2_TIME)
+PROG4_TIME = TimeRWSensor(253, "Prog4 Time", min=PROG3_TIME)
+PROG5_TIME = TimeRWSensor(254, "Prog5 Time", min=PROG4_TIME)
+PROG6_TIME = TimeRWSensor(255, "Prog6 Time", min=PROG5_TIME)
+PROG1_TIME.min = PROG6_TIME
+PROG1_TIME.max = PROG2_TIME
+PROG2_TIME.max = PROG3_TIME
+PROG3_TIME.max = PROG4_TIME
+PROG4_TIME.max = PROG5_TIME
+PROG5_TIME.max = PROG6_TIME
+PROG6_TIME.max = PROG1_TIME
+
 PROGRAM = (
-    TimeRWSensor(250, "Prog1 Time"),
-    TimeRWSensor(251, "Prog2 Time"),
-    TimeRWSensor(252, "Prog3 Time"),
-    TimeRWSensor(253, "Prog4 Time"),
-    TimeRWSensor(254, "Prog5 Time"),
-    TimeRWSensor(255, "Prog6 Time"),
+    PROG1_TIME,
+    PROG2_TIME,
+    PROG3_TIME,
+    PROG4_TIME,
+    PROG5_TIME,
+    PROG6_TIME,
     NumberRWSensor(256, "Prog1 power", WATT, max=RATED_POWER),
     NumberRWSensor(257, "Prog2 power", WATT, max=RATED_POWER),
     NumberRWSensor(258, "Prog3 power", WATT, max=RATED_POWER),

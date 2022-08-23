@@ -17,7 +17,7 @@ from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER
-from sunsynk.sensor import NumberRWSensor, RWSensor, SelectRWSensor, slug
+from sunsynk.sensor import NumberRWSensor, RWSensor, SelectRWSensor, TimeRWSensor, slug
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
@@ -101,6 +101,17 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
                     **ent,
                     command_topic=command_topic,
                     options=sensor.available_values(),
+                    on_change=create_on_change_handler(filt, str),
+                )
+            )
+            continue
+
+        if isinstance(sensor, TimeRWSensor):
+            ents.append(
+                SelectEntity(
+                    **ent,
+                    command_topic=command_topic,
+                    options=sensor.available_values(step_minutes=15),
                     on_change=create_on_change_handler(filt, str),
                 )
             )
@@ -205,7 +216,7 @@ def setup_sensors() -> None:
 
         SENSORS.append(getfilter(fstr, sensor=sen))
 
-        if isinstance(sen, NumberRWSensor):
+        if isinstance(sen, (NumberRWSensor, TimeRWSensor)):
             startup_sens.update(d.id for d in sen.dependencies())
 
     # Add any sensor dependencies to STARTUP_SENSORS
