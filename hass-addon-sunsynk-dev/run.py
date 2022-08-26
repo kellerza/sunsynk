@@ -12,7 +12,16 @@ from typing import Any, Callable, Dict, List, Sequence, Tuple
 
 import yaml
 from filter import RROBIN, Filter, getfilter, suggested_filter
-from mqtt import MQTT, Device, Entity, NumberEntity, SelectEntity, SensorEntity
+from mqtt import (
+    MQTT,
+    Device,
+    Entity,
+    NumberEntity,
+    SelectEntity,
+    SensorEntity,
+    hass_default_rw_icon,
+    hass_device_class,
+)
 from options import OPT, SS_TOPIC
 from profiles import profile_add_entities, profile_poll
 
@@ -115,12 +124,21 @@ def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
 
         ent = {
             "device": dev,
-            "entity_category": "config" if isinstance(sensor, RWSensor) else "",
             "name": f"{OPT.sensor_prefix} {sensor.name}".strip(),
             "state_topic": state_topic,
             "unique_id": f"{OPT.sunsynk_id}_{sensor.id}",
             "unit_of_measurement": sensor.unit,
         }
+
+        if isinstance(sensor, RWSensor):
+            ent.update(
+                {
+                    "entity_category": "config",
+                    "icon": hass_default_rw_icon(unit=sensor.unit),
+                }
+            )
+        else:
+            ent.update({"device_class": hass_device_class(unit=sensor.unit)})
 
         if isinstance(sensor, NumberRWSensor):
             ents.append(
@@ -146,6 +164,7 @@ def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
             continue
 
         if isinstance(sensor, TimeRWSensor):
+            ent.update({"icon": "mdi:clock"})
             ents.append(
                 SelectEntity(
                     **ent,

@@ -63,14 +63,12 @@ class Entity:
     expire_after: int = attr.field(default=0)  # unavailable if not updated
     enabled_by_default: bool = attr.field(default=True)
     entity_category: str = attr.field(default="")
+    icon: str = attr.field(default="")
 
     _path = ""
 
     def __attrs_post_init__(self) -> None:
         """Init the class."""
-        if not self.device_class:
-            # Try device_class from unit_of_measurement
-            self.device_class = hass_device_class(unit=self.unit_of_measurement)
         if not self.state_class and self.device_class == "energy":
             self.state_class = "total_increasing"
 
@@ -140,12 +138,6 @@ class NumberEntity(Entity):
     on_change: Callable = attr.field(default=None)
 
     _path = "number"
-
-    def __attrs_post_init__(self) -> None:
-        """Init the class."""
-        # Override device_class to None
-        # https://github.com/home-assistant/core/issues/74533
-        self.device_class = None
 
 
 class MQTTClient:
@@ -337,6 +329,16 @@ def hass_device_class(*, unit: str) -> str:
         "A": "current",
         "°C": "temperature",
         "%": "battery",
+    }.get(unit, "")
+
+
+def hass_default_rw_icon(*, unit: str) -> str:
+    """Get the HASS default icon from the unit."""
+    return {
+        "W": "mdi:flash",
+        "V": "mdi:sine-wave",
+        "A": "mdi:current-ac",
+        "%": "mdi:battery-lock",
     }.get(unit, "")
 
 
