@@ -1,4 +1,19 @@
 # Changelog
+
+## **2022.08.27-0.2.4** - 2022-08-27
+
+- Python sunsynk module 0.2.4:
+
+  - Added on_change callback on Sensor class allowing for reacting to value changes
+  - Changed battery shutdown, restart and low capacity sensors to be instances of RWSensor in prepraration for them to become writable and to distinguish them from the battery SOC sensors
+
+- Sunsynk Dev Add-On
+
+  - Update HASS discovery info for a sensor's dependants when its value changes
+  - Automatically add sensor dependencies, if not specified in OPTS, as hidden sensors
+  - HASS device_class is no longer set for RWSensor entities
+  - Added icons for RWSensor entities
+
 ## **2022.08.21-0.2.3** - 2022-08-21
 
 - Python sunsynk module 0.2.3:
