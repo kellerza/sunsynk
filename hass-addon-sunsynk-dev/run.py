@@ -34,6 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DEVICE: Device = None
 HASS_DISCOVERY_INFO_UPDATE_QUEUE: Dict[str, Filter] = {}
+HIDDEN_SENSOR_IDS: set[str] = set()
 SENSORS: List[Filter] = []
 SENSOR_WRITE_QUEUE: Dict[str, Tuple[Filter, Any]] = {}
 SERIAL = ALL_SENSORS["serial"]
@@ -115,6 +116,8 @@ def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
             SENSOR_WRITE_QUEUE[filt.sensor.id] = (filt, value_func(value))
 
         return _handler
+
+    sensors = [s for s in sensors if s.sensor.id not in HIDDEN_SENSOR_IDS]
 
     for filt in sensors:
         sensor = filt.sensor
@@ -288,8 +291,9 @@ def setup_sensors() -> None:
             msg[f"*{fstr}"].append(name)  # type: ignore
             filt = getfilter(fstr, sensor=sen)
             SENSORS.append(filt)
+            HIDDEN_SENSOR_IDS.add(sen_id)
             sens[sen.id] = filt
-            _LOGGER.info("Added sensor %s as other sensors depend on it", sen_id)
+            _LOGGER.info("Added hidden sensor %s as other sensors depend on it", sen_id)
 
         startup_sens.add(sen_id)
         sen.on_change = lambda sen=sen, deps=deps: enqueue_hass_discovery_info_update(
