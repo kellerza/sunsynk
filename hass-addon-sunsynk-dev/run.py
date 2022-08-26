@@ -70,7 +70,6 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
         model=f"{int(rated_power/1000)}kW Inverter {serial}",
         manufacturer="Sunsynk",
     )
-    # pylint: disable=import-outside-toplevel
     global DEVICE  # pylint: disable=global-statement
     DEVICE = dev
 
@@ -134,14 +133,10 @@ def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
         }
 
         if isinstance(sensor, RWSensor):
-            ent.update(
-                {
-                    "entity_category": "config",
-                    "icon": hass_default_rw_icon(unit=sensor.unit),
-                }
-            )
+            ent["entity_category"] = "config"
+            ent["icon"] = hass_default_rw_icon(unit=sensor.unit)
         else:
-            ent.update({"device_class": hass_device_class(unit=sensor.unit)})
+            ent["device_class"] = hass_device_class(unit=sensor.unit)
 
         if isinstance(sensor, NumberRWSensor):
             ents.append(
@@ -167,7 +162,7 @@ def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
             continue
 
         if isinstance(sensor, TimeRWSensor):
-            ent.update({"icon": "mdi:clock"})
+            ent["icon"] = "mdi:clock"
             ents.append(
                 SelectEntity(
                     **ent,
