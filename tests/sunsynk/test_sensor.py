@@ -1,6 +1,7 @@
 """Sunsynk sensor tests."""
 import logging
 from typing import Sequence
+from unittest.mock import Mock
 
 import pytest
 
@@ -325,3 +326,20 @@ def test_dep() -> None:
 
     ctl = ALL_SENSORS["grid_ct_power"]
     assert ctl.id not in DEPRECATED
+
+
+def test_on_changed() -> None:
+    s = Sensor(1, "", "")
+    handler = Mock()
+    s.on_change = handler
+
+    s.value = 5
+    handler.assert_called_once()
+
+    handler.reset_mock()
+    s.reg_to_value(10)
+    handler.assert_called_once()
+
+    handler.reset_mock()
+    s.reg_to_value(10)
+    handler.assert_not_called()

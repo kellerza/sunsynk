@@ -37,6 +37,7 @@ def opt():
 def test_mqtt(mqtt):
     """Test MQTT."""
     assert mqtt.hass_device_class(unit="kWh") == "energy"
+    assert mqtt.hass_default_rw_icon(unit="W") == "mdi:flash"
 
 
 def test_mqtt_entity(mqtt):

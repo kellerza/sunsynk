@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from math import modf
-from typing import Any, Dict, Generator, List, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, Generator, List, Sequence, Tuple, Union
 
 import attr
 
@@ -38,15 +38,18 @@ def _signed(val: Union[int, float]) -> Union[int, float]:
 class Sensor:
     """Sunsynk sensor."""
 
+    # pylint: disable=too-many-instance-attributes
+
     reg_address: Tuple[int, ...] = attr.field(converter=ensure_tuple)
     name: str = attr.field()
     unit: str = attr.field(default="")
     factor: float = attr.field(default=1)
-    value: Union[float, int, str, None] = None
     # func: Union[
     #     None, Callable[[Tuple[int, ...]], str], Callable[[float], Any]
     # ] = attr.field(default=None)
     reg_value: Tuple[int, ...] = attr.field(init=False, factory=tuple)
+    on_change: Callable = attr.field(default=None)
+    _value: Union[float, int, str, None] = None
 
     def append_to(self, arr: List[Sensor]) -> Sensor:
         """Append to a list of sensors."""
@@ -77,6 +80,18 @@ class Sensor:
         self.value = _round(val * abs(self.factor))
 
         _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
+
+    @property
+    def value(self) -> Union[float, int, str, None]:
+        """Get the current value."""
+        return self._value
+
+    @value.setter
+    def value(self, val: Union[float, int, str, None]) -> None:
+        old_value = self._value
+        self._value = val
+        if old_value != val and self.on_change:
+            self.on_change()
 
 
 class HSensor(Sensor):

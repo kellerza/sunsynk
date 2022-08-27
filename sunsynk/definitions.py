@@ -154,9 +154,9 @@ _SENSORS += (
     Sensor(603, "Bat1 SOC", "%"),
     Sensor(611, "Bat1 Cycle"),
 )
-BATTERY_SHUTDOWN_CAPACITY = Sensor(217, "Battery Shutdown Capacity", "%")
-BATTERY_RESTART_CAPACITY = Sensor(218, "Battery Restart Capacity", "%")
-BATTERY_LOW_CAPACITY = Sensor(219, "Battery Low Capacity", "%")
+BATTERY_SHUTDOWN_CAPACITY = RWSensor(217, "Battery Shutdown Capacity", "%")
+BATTERY_RESTART_CAPACITY = RWSensor(218, "Battery Restart Capacity", "%")
+BATTERY_LOW_CAPACITY = RWSensor(219, "Battery Low Capacity", "%")
 _SENSORS += (BATTERY_SHUTDOWN_CAPACITY, BATTERY_RESTART_CAPACITY, BATTERY_LOW_CAPACITY)
 
 #################
