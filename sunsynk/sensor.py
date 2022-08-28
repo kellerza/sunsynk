@@ -144,8 +144,8 @@ class RWSensor(Sensor):
 class NumberRWSensor(RWSensor):
     """Numeric sensor which can be read and written."""
 
-    min: int | Sensor = attr.field(default=0)
-    max: int | Sensor = attr.field(default=100)
+    min: int | float | Sensor = attr.field(default=0)
+    max: int | float | Sensor = attr.field(default=100)
 
     @property
     def min_value(self) -> int | float:
@@ -166,7 +166,7 @@ class NumberRWSensor(RWSensor):
             sensors.append(self.max)
         return sensors
 
-    def value_to_reg(self, value: int) -> int | Tuple[int, ...]:
+    def value_to_reg(self, value: int | float) -> int | Tuple[int, ...]:
         """Get the reg value from a display value, or the current reg value if out of range."""
         if value < self.min_value or value > self.max_value:
             # Return current reg_value if value is out of range
@@ -175,7 +175,7 @@ class NumberRWSensor(RWSensor):
         return int(value / abs(self.factor))
 
     @staticmethod
-    def _static_or_sensor_value(val: int | Sensor) -> int | float:
+    def _static_or_sensor_value(val: int | float | Sensor) -> int | float:
         if isinstance(val, Sensor):
             if isinstance(val.value, (int, float)):
                 return val.value

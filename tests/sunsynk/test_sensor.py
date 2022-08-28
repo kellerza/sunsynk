@@ -185,11 +185,21 @@ def test_number_rw() -> None:
     assert s.update_reg_value(-1) is False
     assert s.reg_value == (25,)
 
-    s = NumberRWSensor(1, "", factor=0.1)
-    s.reg_to_value(485)
+    s = NumberRWSensor(1, "", factor=0.01)
+    s.reg_to_value(4850)
     assert s.value == 48.5
     s.update_reg_value(50)
-    assert s.reg_value == (500,)
+    assert s.reg_value == (5000,)
+    s.update_reg_value(50.1)
+    assert s.reg_value == (5010,)
+
+    s.min = Sensor(2, "2", factor=0.01)
+    s.min.reg_to_value(4710)
+    assert s.min_value == 47.1
+
+    s.max = Sensor(3, "3", factor=0.01)
+    s.max.reg_to_value(5450)
+    assert s.max_value == 54.5
 
 
 def test_select_rw() -> None:
