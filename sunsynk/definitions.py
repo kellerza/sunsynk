@@ -156,14 +156,14 @@ _SENSORS += (
 MIN_VOLTAGE = 41
 MAX_VOLTAGE = 60
 
-EQUALIZATION_VOLTAGE = NumberRWSensor(
-    201, "Equalization voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
+BATTERY_EQUALIZATION_VOLTAGE = NumberRWSensor(
+    201, "Battery Equalization voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
 )
-ABSORPTION_VOLTAGE = NumberRWSensor(
-    202, "Absorption voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
+BATTERY_ABSORPTION_VOLTAGE = NumberRWSensor(
+    202, "Battery Absorption voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
 )
-FLOAT_VOLTAGE = NumberRWSensor(
-    203, "Float voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
+BATTERY_FLOAT_VOLTAGE = NumberRWSensor(
+    203, "Battery Float voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
 )
 
 BATTERY_SHUTDOWN_CAPACITY = NumberRWSensor(217, "Battery Shutdown Capacity", "%")
@@ -196,9 +196,9 @@ BATTERY_SHUTDOWN_VOLTAGE.max = BATTERY_LOW_VOLTAGE
 BATTERY_RESTART_VOLTAGE.min = BATTERY_LOW_VOLTAGE
 
 _SENSORS += (
-    EQUALIZATION_VOLTAGE,
-    ABSORPTION_VOLTAGE,
-    FLOAT_VOLTAGE,
+    BATTERY_EQUALIZATION_VOLTAGE,
+    BATTERY_ABSORPTION_VOLTAGE,
+    BATTERY_FLOAT_VOLTAGE,
     BATTERY_SHUTDOWN_CAPACITY,
     BATTERY_RESTART_CAPACITY,
     BATTERY_LOW_CAPACITY,
@@ -262,22 +262,52 @@ PROGRAM = (
 _SENSORS.extend(PROGRAM)
 PROG_VOLT = (
     NumberRWSensor(
-        262, "Prog1 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLTAGE, max=FLOAT_VOLTAGE
+        262,
+        "Prog1 voltage",
+        VOLT,
+        0.01,
+        min=BATTERY_LOW_VOLTAGE,
+        max=BATTERY_FLOAT_VOLTAGE,
     ),
     NumberRWSensor(
-        263, "Prog2 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLTAGE, max=FLOAT_VOLTAGE
+        263,
+        "Prog2 voltage",
+        VOLT,
+        0.01,
+        min=BATTERY_LOW_VOLTAGE,
+        max=BATTERY_FLOAT_VOLTAGE,
     ),
     NumberRWSensor(
-        264, "Prog3 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLTAGE, max=FLOAT_VOLTAGE
+        264,
+        "Prog3 voltage",
+        VOLT,
+        0.01,
+        min=BATTERY_LOW_VOLTAGE,
+        max=BATTERY_FLOAT_VOLTAGE,
     ),
     NumberRWSensor(
-        265, "Prog4 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLTAGE, max=FLOAT_VOLTAGE
+        265,
+        "Prog4 voltage",
+        VOLT,
+        0.01,
+        min=BATTERY_LOW_VOLTAGE,
+        max=BATTERY_FLOAT_VOLTAGE,
     ),
     NumberRWSensor(
-        266, "Prog5 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLTAGE, max=FLOAT_VOLTAGE
+        266,
+        "Prog5 voltage",
+        VOLT,
+        0.01,
+        min=BATTERY_LOW_VOLTAGE,
+        max=BATTERY_FLOAT_VOLTAGE,
     ),
     NumberRWSensor(
-        267, "Prog6 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLTAGE, max=FLOAT_VOLTAGE
+        267,
+        "Prog6 voltage",
+        VOLT,
+        0.01,
+        min=BATTERY_LOW_VOLTAGE,
+        max=BATTERY_FLOAT_VOLTAGE,
     ),
 )
 _SENSORS.extend(PROG_VOLT)
@@ -316,6 +346,8 @@ def _deprecated() -> None:
         "total_load_energy": Sensor((85, 86), "Total Load Power", KWH, 0.1),
         "year_load_energy": Sensor((87, 88), "Year Load Power", KWH, 0.1),
         "total_pv_energy": Sensor((96, 97), "Total PV Power", KWH, 0.1),
+        "battery_equalization_voltage": Sensor(201, "Equalization voltage", VOLT, 0.01),
+        "battery_absorption_voltage": Sensor(202, "Absorption voltage", VOLT, 0.01),
     }
 
     for newname, sen in dep_map.items():
