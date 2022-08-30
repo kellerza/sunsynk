@@ -1,5 +1,20 @@
 # Changelog
 
+## **2022.08.30-0.2.5** - 2022-08-30
+
+- Python sunsynk module 0.2.5:
+
+  - Introduced new _Battery Shutdown voltage_, _Battery Restart voltage_ and _Battery Low Voltage_ sensors
+  - Introduced new _Battery Float voltage_ sensor upon which the _Prog1-6 Voltage_ sensors depend
+  - Made _Prog1-6 Charge_ and _Prog1-6 Voltage_ sensors writable
+  - Made _Equalization voltage_ and _Absorption voltage_ writable and renamed them to have a _Battery_ prefix
+  - Made _Battery Shutdown Capacity_, _Battery Restart Capacity_ and _Battery Low Capacity_ writable
+  - Corrected _Prog1-6 Voltage_ factor to be 0.01
+
+- Sunsynk Dev Add-On
+
+  - For NumberEntity, use a step value to 0.1 if the factor of the sensor is less than 1
+
 ## **2022.08.27-0.2.4** - 2022-08-27
 
 - Python sunsynk module 0.2.4:
@@ -55,6 +70,7 @@
   - Deprecate Time x Power sensors in favour of Energy - [#27](https://github.com/kellerza/sunsynk/issues/27)
 
 - Sunsynk Add-On
+
   - Fix RR filter
 
 - Sunsynk Dev Add-On
