@@ -46,10 +46,9 @@ async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None
     """Publish sensors."""
     for fsen in sensors:
         res = fsen.sensor.value
-        if not force:
-            res = fsen.update(res)
-            if res is None:
-                continue
+        res = fsen.update(res)
+        if not force and res is None:
+            continue
         if isinstance(res, float):
             if modf(res)[0] == 0:
                 res = int(res)
