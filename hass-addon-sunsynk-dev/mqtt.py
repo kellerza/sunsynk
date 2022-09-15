@@ -133,6 +133,7 @@ class NumberEntity(Entity):
     command_topic: str = attr.field(default=None, validator=required)
     min: float = attr.field(default=0.0)
     max: float = attr.field(default=100.0)
+    mode: float = attr.field(default="auto")
     step: float = attr.field(default=1.0)
 
     on_change: Callable = attr.field(default=None)
