@@ -7,6 +7,7 @@ import attr
 from options import OPT
 
 from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, KWH, VOLT, WATT, Sensor
+from sunsynk.sensor import RWSensor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -190,14 +191,13 @@ def getfilter(filter_def: str, sensor: Sensor) -> Filter:
 
 def suggested_filter(sensor: Sensor) -> str:
     """Default filters."""
-    if sensor.id.startswith("prog"):
+    if isinstance(sensor, RWSensor):
         return "round_robin"
     f_id = {
         "battery_soc": "last",
         "fault": "round_robin",
         "grid_connected_status": "last",
         "overall_state": "step",
-        "priority_mode": "round_robin",
         "sd_status": "step",
         "serial": "round_robin",
     }

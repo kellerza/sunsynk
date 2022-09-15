@@ -1,5 +1,12 @@
 # Changelog
 
+## **2022.09.16-0.2.5** - 2022-09-16
+
+- Sunsynk Dev Add-On
+
+  - Suggested filter for all RWSensors is now round_robin [#61](https://github.com/kellerza/sunsynk/issues/61)
+  - Filters now also get updated when force publishing sensor values
+
 ## **2022.08.30-0.2.5** - 2022-08-30
 
 - Python sunsynk module 0.2.5:
