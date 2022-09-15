@@ -17,6 +17,7 @@ class Options:
     mqtt_port: int = 0
     mqtt_username: str = ""
     mqtt_password: str = ""
+    number_entity_mode: str = "auto"
     sunsynk_id: str = ""
     sensors: List[str] = []
     read_sensors_batch_size: int = 60

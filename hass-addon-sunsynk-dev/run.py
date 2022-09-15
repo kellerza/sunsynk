@@ -144,7 +144,7 @@ def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
                     command_topic=command_topic,
                     min=float(sensor.min_value),
                     max=float(sensor.max_value),
-                    mode="box",
+                    mode=OPT.number_entity_mode,
                     on_change=create_on_change_handler(filt, float),
                     step=0.1 if sensor.factor < 1 else 1,
                 )
