@@ -1,5 +1,11 @@
 # Changelog
 
+## **2022.09.16-0.2.5** - 2022-09-16
+
+- Sunsynk Dev Add-On
+
+  - Allow for customizing the `mode` of NumberEntity sensors allowing for forcing either `box` or `slider` mode instead of the default `auto` - requires Home Assistant 2022.9.0 for the effect to be seen - [#58](https://github.com/kellerza/sunsynk/pull/58)
+
 ## **2022.09.15-0.2.5** - 2022-09-15
 
 - Sunsynk Dev Add-On

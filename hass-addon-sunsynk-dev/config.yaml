@@ -1,6 +1,6 @@
 ---
 name: Sunsynk Inverter Add-on (dev)
-version: 2022.09.15-0.2.5
+version: 2022.09.16-0.2.5
 slug: hass-addon-sunsynk-dev
 description: Add-on for the Sunsynk Inverter
 startup: services
@@ -32,6 +32,7 @@ options:
     - total_grid_import
     - battery_soc
   READ_SENSORS_BATCH_SIZE: 60
+  NUMBER_ENTITY_MODE: "auto"
   PROFILES: []
   MODBUS_SERVER_ID: 1
   MQTT_HOST: core-mosquitto
@@ -48,6 +49,7 @@ schema:
   SENSORS:
     - str
   READ_SENSORS_BATCH_SIZE: int?
+  NUMBER_ENTITY_MODE: list(auto|box|slider)?
   PROFILES:
     - str
   MODBUS_SERVER_ID: int

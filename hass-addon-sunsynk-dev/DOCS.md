@@ -88,6 +88,10 @@
 
   A list of sensors to poll. You can use any sensor defined in the sunsynk Python library - [here](https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions.py).
 
+- `NUMBER_ENTITY_MODE`
+
+  When adding read/write sensors which present as number entities in Home Assistant, the default display mode is `auto`. This setting controls how the number entity should be displayed in the UI. Can be set to `box` or `slider` to force a display mode.
+
 - `MQTT_*`
 
   You will need a working MQTT sevrer since all values will be sent via MQTT.
