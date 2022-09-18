@@ -1,6 +1,6 @@
-# Sunsynk Inverters
+# Deye/Sunsynk Inverters
 
-This repo enables access to Sunsynk Hybrid Inverter through a Python 3 library. It also provides an Add-On that can be installed in the Home Assistant OS.
+This repo enables access to Deye Hybrid Inverters & Deye branded inverters like Sunsynk through a Python 3 library. It also provides an Add-On that can be installed in the Home Assistant OS.
 
 See <https://www.sunsynk.org/> for more information on Sunsynk inverters.
 
@@ -10,6 +10,7 @@ This code was developed on a Sunsynk 5.5 kWh.
 
 ## Sunsynk Python Library
 
+[![PyPI version](https://badge.fury.io/py/sunsynk.svg)](https://pypi.org/project/sunsynk/)
 [![codecov](https://codecov.io/gh/kellerza/sunsynk/branch/main/graph/badge.svg?token=ILKRC5UTXI)](https://codecov.io/gh/kellerza/sunsynk)
 
 The Python library is available through pip:
@@ -115,11 +116,10 @@ Other tested adaptors
 
 2. HF5142B  Modbus/serial to ethernet (4x RS232/485/422 to 4x E-Ports)
 
-![settings](https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142.png)
+   ![settings](https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142.png)
 
-   This is a tested gateway, with Deye 8k Eu Hybrid inverter.
-
-   gateway serial setting:
+   This gateway was tested with the Deye 8k EU Hybrid inverter. The following serial settings were used:
+   
    <img src="https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142-settings.png" width="80%" alt="settings">
 
 ## Fault finding
