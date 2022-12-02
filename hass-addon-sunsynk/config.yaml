@@ -1,6 +1,6 @@
 ---
 name: Sunsynk Inverter Add-on
-version: 2022.03.04b-0.1.4
+version: 2022.11.29-0.2.5
 slug: hass-addon-sunsynk
 description: Add-on for the Sunsynk Inverter
 startup: services
@@ -19,7 +19,8 @@ host_network: false
 map:
   - share:rw
 options:
-  PORT: "serial:///dev/ttyUSB0"
+  PORT: ""
+  DEVICE: ""
   DRIVER: "umodbus"
   SUNSYNK_ID: "007"
   SENSOR_PREFIX: ""
@@ -30,6 +31,8 @@ options:
     - total_grid_export
     - total_grid_import
     - battery_soc
+  READ_SENSORS_BATCH_SIZE: 60
+  NUMBER_ENTITY_MODE: "auto"
   PROFILES: []
   MODBUS_SERVER_ID: 1
   MQTT_HOST: core-mosquitto
@@ -38,12 +41,15 @@ options:
   MQTT_PASSWORD: ""
   DEBUG: 0
 schema:
-  PORT: str
+  PORT: str?
+  DEVICE: device(subsystem=tty)?
   DRIVER: str?
   SUNSYNK_ID: str
   SENSOR_PREFIX: str
   SENSORS:
     - str
+  READ_SENSORS_BATCH_SIZE: int?
+  NUMBER_ENTITY_MODE: list(auto|box|slider)?
   PROFILES:
     - str
   MODBUS_SERVER_ID: int

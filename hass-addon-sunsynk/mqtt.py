@@ -63,14 +63,12 @@ class Entity:
     expire_after: int = attr.field(default=0)  # unavailable if not updated
     enabled_by_default: bool = attr.field(default=True)
     entity_category: str = attr.field(default="")
+    icon: str = attr.field(default="")
 
     _path = ""
 
     def __attrs_post_init__(self) -> None:
         """Init the class."""
-        if not self.device_class:
-            # Try device_class from unit_of_measurement
-            self.device_class = hass_device_class(unit=self.unit_of_measurement)
         if not self.state_class and self.device_class == "energy":
             self.state_class = "total_increasing"
 
@@ -126,6 +124,21 @@ class SelectEntity(Entity):
     on_change: Callable = attr.field(default=None)
 
     _path = "select"
+
+
+@attr.define
+class NumberEntity(Entity):
+    """A HomeAssistant Number entity."""
+
+    command_topic: str = attr.field(default=None, validator=required)
+    min: float = attr.field(default=0.0)
+    max: float = attr.field(default=100.0)
+    mode: float = attr.field(default="auto")
+    step: float = attr.field(default=1.0)
+
+    on_change: Callable = attr.field(default=None)
+
+    _path = "number"
 
 
 class MQTTClient:
@@ -310,13 +323,23 @@ def hass_device_class(*, unit: str) -> str:
     return {
         "W": "power",
         "kW": "power",
-        "kVA": "power",
+        "kVA": "apparent_power",
         "V": "voltage",
         "kWh": "energy",
-        "kVa": "energy",
+        "kVah": "",  # Not energy
         "A": "current",
         "°C": "temperature",
         "%": "battery",
+    }.get(unit, "")
+
+
+def hass_default_rw_icon(*, unit: str) -> str:
+    """Get the HASS default icon from the unit."""
+    return {
+        "W": "mdi:flash",
+        "V": "mdi:sine-wave",
+        "A": "mdi:current-ac",
+        "%": "mdi:battery-lock",
     }.get(unit, "")
 
 

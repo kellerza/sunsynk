@@ -1,20 +1,130 @@
 # Changelog
 
+## **2022.11.29-0.2.5** - 2022-11-29
+
+- Sunsynk Dev Add-On: Update apparent_power
+- Sunsynk Addon: Sync to Dev
+
+## **2022.09.16-0.2.5** - 2022-09-16
+
+- Sunsynk Dev Add-On
+
+  - Allow for customizing the `mode` of NumberEntity sensors allowing for forcing either `box` or `slider` mode instead of the default `auto` - requires Home Assistant 2022.9.0 for the effect to be seen - [#58](https://github.com/kellerza/sunsynk/pull/58)
+
+## **2022.09.15-0.2.5** - 2022-09-15
+
+- Sunsynk Dev Add-On
+
+  - Suggested filter for all RWSensors is now round_robin [#61](https://github.com/kellerza/sunsynk/issues/61)
+  - Filters now also get updated when force publishing sensor values
+
+## **2022.08.30-0.2.5** - 2022-08-30
+
+- Python sunsynk module 0.2.5:
+
+  - Introduced new _Battery Shutdown voltage_, _Battery Restart voltage_ and _Battery Low Voltage_ sensors
+  - Introduced new _Battery Float voltage_ sensor upon which the _Prog1-6 Voltage_ sensors depend
+  - Made _Prog1-6 Charge_ and _Prog1-6 Voltage_ sensors writable
+  - Made _Equalization voltage_ and _Absorption voltage_ writable and renamed them to have a _Battery_ prefix
+  - Made _Battery Shutdown Capacity_, _Battery Restart Capacity_ and _Battery Low Capacity_ writable
+  - Corrected _Prog1-6 Voltage_ factor to be 0.01
+
+- Sunsynk Dev Add-On
+
+  - For NumberEntity, use a step value to 0.1 if the factor of the sensor is less than 1
+
+## **2022.08.27-0.2.4** - 2022-08-27
+
+- Python sunsynk module 0.2.4:
+
+  - Added on_change callback on Sensor class allowing for reacting to value changes
+  - Changed battery shutdown, restart and low capacity sensors to be instances of RWSensor in prepraration for them to become writable and to distinguish them from the battery SOC sensors
+
+- Sunsynk Dev Add-On
+
+  - Update HASS discovery info for a sensor's dependants when its value changes
+  - Automatically add sensor dependencies, if not specified in OPTS, as hidden sensors
+  - HASS device_class is no longer set for RWSensor entities
+  - Added icons for RWSensor entities
+
+## **2022.08.21-0.2.3** - 2022-08-21
+
+- Python sunsynk module 0.2.3:
+
+  - Made TimeRWSensor writable - [#37](https://github.com/kellerza/sunsynk/issues/37)
+  - Updated Prog1..6 Time sensors to have min/max values
+
+- Sunsynk Dev Add-On
+  - Use Home Assistant MQTT Select integration for TimeRWSensors
+
+## **2022.08.01-0.2.2** - 2022-08-01
+
+- Python sunsynk module 0.2.2:
+
+  - Introduced SelectRWSensor - [#37](https://github.com/kellerza/sunsynk/issues/37)
+  - Added "priority_mode" writable sensor allowing switching between battery and load priorities
+  - NumberRWSensor now supports factor and validates min/max
+
+- Sunsynk Dev Add-On
+  - Use Home Assistant MQTT Select integration when encountering SelectRWSensor
+  - The "priority_mode" sensor is now available as a Select entity
+
+## **2022.07.24-0.2.1** - 2022-07-24
+
+- Python sunsynk module 0.2.1:
+
+  - Introduced NumberRWSensor - [#37](https://github.com/kellerza/sunsynk/issues/37)
+
+- Sunsynk Dev Add-On
+  - Use Home Assistant MQTT Number integration when encountering NumberRWSensor
+  - Prog1 to 6 battery capacity and power sensors are now editable in the Home
+    Assistant UI
+  - Added Rated Power to device model
+
+## **2022.07.11-0.2.0** - 2022-07-11
+
+- Python sunsynk module 0.2.0:
+
+  - Deprecate Time x Power sensors in favour of Energy - [#27](https://github.com/kellerza/sunsynk/issues/27)
+
+- Sunsynk Add-On
+
+  - Fix RR filter
+
+- Sunsynk Dev Add-On
+  - Fix RR filter
+  - Add **DEVICE** option as an alternative to **PORT**. **DEVICE** should list all available tty device in HASS IO and will be used if the **PORT** is empty
+
+## **2022.05.29b-0.1.5** - 2022-05-29
+
+- Python sunsynk module 0.1.5:
+
+  - Added read_sensors_batch_size field to allow for customizing how many holding registers are read at a time from the inverter. Certain implementations, such as using a USR-W630, require less registers to be read at a time, otherwise the modbus response can be truncated, leading to errors. The default is 60, which matches the previous behaviour.
+
+- Sunsynk Dev Add-On
+
+  - Added READ_SENSORS_BATCH_SIZE option to expose the read_sensors_batch_size field from the sunsynk module.
+
 ## **2022.2.18-0.1.3** - 2022-02-18
 
 - Python sunsynk module 0.1.3:
 
-  - More consistent sensor names: Power (W) based sensors now all end with _power: aux_power, inverter_output_power, grid_power, grid_ct_power
+  - More consistent sensor names: Power (W) based sensors now all end with \_power: aux_power, inverter_output_power, grid_power, grid_ct_power
 
   - Added "essential_power" & "non_essential_power" sensor, which is a combination of registers
 
   - New: battery_charging_voltage, grid_charge_enabled
 
-## **2022.2.17-0.1.2** - 2022-02-17
+- Sunsynk Dev Add-On
 
-Sunsynk Add-On:
+  Better error handling
+
+## **2022.2.17b-0.1.2** - 2022-02-17
+
+- Sunsynk Dev Add-On
 
 - Fix step filter bug
+- Use async_modbus / umodbus
 
 ## **2022.2.10-0.1.2** - 2022-02-08
 

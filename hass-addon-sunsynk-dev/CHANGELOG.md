@@ -1,5 +1,10 @@
 # Changelog
 
+## **2022.11.29-0.2.5** - 2022-11-29
+
+- Sunsynk Dev Add-On: Update apparent_power
+- Sunsynk Addon: Sync to Dev
+
 ## **2022.09.16-0.2.5** - 2022-09-16
 
 - Sunsynk Dev Add-On

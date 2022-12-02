@@ -323,10 +323,10 @@ def hass_device_class(*, unit: str) -> str:
     return {
         "W": "power",
         "kW": "power",
-        "kVA": "power",
+        "kVA": "apparent_power",
         "V": "voltage",
         "kWh": "energy",
-        "kVa": "energy",
+        "kVah": "",  # Not energy
         "A": "current",
         "°C": "temperature",
         "%": "battery",

@@ -17,13 +17,16 @@ class Options:
     mqtt_port: int = 0
     mqtt_username: str = ""
     mqtt_password: str = ""
+    number_entity_mode: str = "auto"
     sunsynk_id: str = ""
     sensors: List[str] = []
+    read_sensors_batch_size: int = 60
     profiles: List[str] = []
     sensor_prefix: str = "SS"
     timeout: int = 10
     debug: int = 1
     port: str = ""
+    device: str = ""
     modbus_server_id: int = 1
     driver: str = "umodbus"
 
