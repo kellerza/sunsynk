@@ -3,7 +3,14 @@
 ## **2022.11.29-0.2.5** - 2022-11-29
 
 - Sunsynk Dev Add-On: Update apparent_power
-- Sunsynk Addon: Sync to Dev
+- Sunsynk Addon: Sync to Dev. The normal addon will get all the new capabilities of the DEV addon, capability to update settings etc.
+
+  **BREAKING CHANGE**:
+
+  - Please ensure you make a copy of your settings (Ideally in Yaml)
+  - Update the addon and click on the three dots to "Reset to defaults"
+  - Ensure that you fill in the correct ID, MQTT details and SENSORS from your old config.
+
 
 ## **2022.09.16-0.2.5** - 2022-09-16
 
