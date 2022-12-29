@@ -1,5 +1,11 @@
 # Changelog
 
+## **2022.12.29-0.2.5** - 2022-11-29
+
+- Sunsynk Dev Add-On:
+  - Deprecate PROFILES (System Mode & System Mode Voltages)
+  - Retain MQTT messages for configuration sensors (partially solves #78)
+
 ## **2022.11.29-0.2.5** - 2022-11-29
 
 - Sunsynk Dev Add-On: Update apparent_power

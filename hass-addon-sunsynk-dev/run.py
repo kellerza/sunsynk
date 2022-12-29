@@ -23,7 +23,6 @@ from mqtt import (
     hass_device_class,
 )
 from options import OPT, SS_TOPIC
-from profiles import profile_add_entities, profile_poll
 
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER
 from sunsynk.sensor import NumberRWSensor, RWSensor, SelectRWSensor, TimeRWSensor, slug
@@ -57,7 +56,9 @@ async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None
 
         await MQTT.connect(OPT)
         await MQTT.publish(
-            topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{fsen.sensor.id}", payload=str(res)
+            topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{fsen.sensor.id}",
+            payload=str(res),
+            retain=isinstance(fsen, RWSensor),  # where entity_category="config"
         )
 
 
@@ -73,8 +74,6 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
     DEVICE = dev
 
     ents = create_entities(SENSORS, dev)
-
-    profile_add_entities(entities=ents, device=dev)
 
     await MQTT.connect(OPT)
     await MQTT.publish_discovery_info(entities=ents)
@@ -226,6 +225,9 @@ def startup() -> None:
         OPT.mqtt_host = sys.argv[1]
         OPT.mqtt_password = sys.argv[2]
         OPT.debug = 1
+
+    if OPT.profiles:
+        _LOGGER.info("PROFILES were deprecated. Please remove this configuration.")
 
     MQTT.availability_topic = f"{SS_TOPIC}/{OPT.sunsynk_id}/availability"
 
@@ -435,8 +437,6 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
             # The read failed. Exit and let the watchdog restart
             return
         await hass_update_discovery_info()
-        if OPT.profiles:
-            await profile_poll(SUNSYNK)
 
 
 if __name__ == "__main__":
