@@ -58,7 +58,7 @@ async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None
         await MQTT.publish(
             topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{fsen.sensor.id}",
             payload=str(res),
-            retain=isinstance(fsen, RWSensor),  # where entity_category="config"
+            retain=isinstance(fsen.sensor, RWSensor),  # where entity_category="config"
         )
 
 
