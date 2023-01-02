@@ -41,23 +41,31 @@ STARTUP_SENSORS: List[Filter] = []
 SUNSYNK: Sunsynk = None  # type: ignore
 
 
+def tostr(val: Any) -> str:
+    """Convert a value to a string with maximum 3 decimal places."""
+    if val is None:
+        return ""
+    if not isinstance(val, float):
+        return str(val)
+    if modf(val)[0] == 0:
+        return str(int(val))
+    return f"{val:.3f}".rstrip("0")
+
+
 async def publish_sensors(sensors: List[Filter], *, force: bool = False) -> None:
     """Publish sensors."""
+    res = None
     for fsen in sensors:
-        res = fsen.sensor.value
-        res = fsen.update(res)
-        if not force and res is None:
+        if isinstance(fsen, Filter):
+            res = fsen.update(fsen.sensor.value)
+            if force and res is None:
+                res = fsen.sensor.value
+        if res is None:
             continue
-        if isinstance(res, float):
-            if modf(res)[0] == 0:
-                res = int(res)
-            else:
-                res = f"{res:.2f}".rstrip("0")
-
         await MQTT.connect(OPT)
         await MQTT.publish(
             topic=f"{SS_TOPIC}/{OPT.sunsynk_id}/{fsen.sensor.id}",
-            payload=str(res),
+            payload=tostr(res),
             retain=isinstance(fsen.sensor, RWSensor),  # where entity_category="config"
         )
 
@@ -97,11 +105,16 @@ async def hass_update_discovery_info() -> None:
     if not HASS_DISCOVERY_INFO_UPDATE_QUEUE:
         return
 
-    ents = create_entities(HASS_DISCOVERY_INFO_UPDATE_QUEUE.values(), DEVICE)
+    sens = list(HASS_DISCOVERY_INFO_UPDATE_QUEUE.values())
+    ents = create_entities(sens, DEVICE)
     HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
 
     await MQTT.connect(OPT)
     await MQTT.publish_discovery_info(entities=ents, remove_entities=False)
+
+    # Force state update:
+    # https://github.com/home-assistant/core/issues/84844#issuecomment-1368045986
+    await publish_sensors(sens, force=True)
 
 
 def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:

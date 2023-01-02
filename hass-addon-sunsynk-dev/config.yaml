@@ -1,6 +1,6 @@
 ---
 name: Sunsynk Inverter Add-on (dev)
-version: 2022.12.29b-0.2.5
+version: 2023.01.02-0.2.6
 slug: hass-addon-sunsynk-dev
 description: Add-on for the Sunsynk Inverter
 startup: services

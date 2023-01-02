@@ -1,5 +1,14 @@
 # Changelog
 
+## **2023.01.01-0.2.6** - 2022-11-29
+
+- Python sunsynk module 0.2.6:
+  - Add Load Limit RW Sensor (Zero Export & Limit to Load)
+
+- Sunsynk Dev Add-On:
+  - Always update config entity state after discovery
+  - Round floats to 3 decomal place instead of 2
+
 ## **2022.12.29b-0.2.5** - 2022-11-29
 
 - Sunsynk Dev Add-On:

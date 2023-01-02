@@ -213,6 +213,13 @@ _SENSORS += (
 _SENSORS.append(
     SelectRWSensor(243, "Priority Mode", options={0: "Battery first", 1: "Load first"})
 )
+_SENSORS.append(
+    SelectRWSensor(
+        244,
+        "Load Limit",
+        options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
+    )
+)
 PROG1_TIME = TimeRWSensor(250, "Prog1 Time")
 PROG2_TIME = TimeRWSensor(251, "Prog2 Time", min=PROG1_TIME)
 PROG3_TIME = TimeRWSensor(252, "Prog3 Time", min=PROG2_TIME)
