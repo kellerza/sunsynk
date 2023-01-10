@@ -235,10 +235,10 @@ PROG5_TIME.max = PROG6_TIME
 PROG6_TIME.max = PROG1_TIME
 
 PROG_CHARGE_OPTIONS = {
-    4: "No Grid or Gen",
-    5: "Allow Grid",
-    6: "Allow Gen",
-    7: "Allow Grid & Gen",
+    0: "No Grid or Gen",
+    1: "Allow Grid",
+    2: "Allow Gen",
+    3: "Allow Grid & Gen",
 }
 PROGRAM = (
     PROG1_TIME,
