@@ -21,15 +21,14 @@ class RWSensor(Sensor):
     def update_reg_value(self, value: Any) -> bool:
         """Update the reg_value from a new value."""
         newv = self.value_to_reg(value)
-        if self.bitmask:
-            if newv[0] != (newv[0] & self.bitmask):
-                _LOGGER.error(
-                    "Trying to set a value outside the sensor's bitmask! %s (value=%s, regvalue=%s)",
-                    self.name,
-                    value,
-                    newv,
-                )
-                newv = (newv[0] & self.bitmask,)
+        if self.bitmask and newv[0] != (newv[0] & self.bitmask):
+            _LOGGER.error(
+                "Trying to set a value outside the sensor's bitmask! %s (value=%s, regvalue=%s)",
+                self.name,
+                value,
+                newv,
+            )
+            newv = (newv[0] & self.bitmask,)
 
         newv = ensure_tuple(newv)
 
