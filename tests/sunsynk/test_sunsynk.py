@@ -1,6 +1,6 @@
 """Test sunsynk library."""
 from typing import Sequence
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -72,3 +72,18 @@ async def test_ss_write_sensor():
     assert sen.reg_value == (99 & 3,)
     with pytest.raises(NotImplementedError):
         await ss.write_sensor(sen)
+
+
+@pytest.mark.asyncio
+@patch("sunsynk.Sunsynk.read_holding_registers")
+async def test_ss_read_sensor(rhr: MagicMock):
+    ss = Sunsynk()
+    sen = NumberRWSensor((1,), "", min=1, max=10)
+    rhr.return_value = (1,)
+    assert sen.value is None
+    await ss.read_sensors([sen])
+    assert sen.value == 1
+
+    rhr.side_effect = Exception("a")
+    with pytest.raises(Exception):
+        await ss.read_sensors([sen])
