@@ -5,8 +5,9 @@ from unittest.mock import AsyncMock
 import pytest
 
 # from sunsynk.definitions import serial
-from sunsynk import Sunsynk
+from sunsynk import Sunsynk, update_sensors
 from sunsynk.pysunsynk import pySunsynk
+from sunsynk.rwsensors import NumberRWSensor
 from sunsynk.usunsynk import uSunsynk
 
 
@@ -47,3 +48,27 @@ async def test_ss_read(sss):
         if pySunsynk:
             ss = pySunsynk()
             ss.client = AsyncMock()
+
+
+@pytest.mark.asyncio
+async def test_ss_base_class():
+    ss = Sunsynk()
+    with pytest.raises(NotImplementedError):
+        await ss.connect()
+
+
+@pytest.mark.asyncio
+async def test_ss_write_sensor():
+    ss = Sunsynk()
+    sen = NumberRWSensor((1,), "", min=1, max=10)
+    sen.reg_value = (99,)
+    with pytest.raises(NotImplementedError):
+        await ss.write_sensor(sen)
+
+    # test a sensor with a bitmask
+    sen = NumberRWSensor((1,), "", min=1, max=10, bitmask=0x3)
+    update_sensors([sen], {1: 99})
+    assert sen.reg_value != (99,)
+    assert sen.reg_value == (99 & 3,)
+    with pytest.raises(NotImplementedError):
+        await ss.write_sensor(sen)
