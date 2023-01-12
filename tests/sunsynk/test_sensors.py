@@ -15,9 +15,8 @@ from sunsynk.sensors import (
     SerialSensor,
     TempSensor,
     group_sensors,
-    update_sensors,
 )
-from sunsynk.sunsynk import register_map
+from sunsynk.sunsynk import register_map, update_sensors
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,6 +37,8 @@ def test_group() -> None:
     ]
     g = list(group_sensors(sen))
     assert g == [[10, 11, 12], [20]]
+
+    assert len(list(group_sensors(None))) == 0
 
 
 def test_group_max_size() -> None:
@@ -113,6 +114,10 @@ def test_math() -> None:
     with pytest.raises(TypeError):
         MathSensor((0, 1), "", "")
 
+    assert s.reg_to_value((200, 800)) == -600
+    s.no_negative = True
+    assert s.reg_to_value((200, 800)) == 0
+
 
 def test_update_func() -> None:
     s = SerialSensor(1, "", "")
@@ -120,11 +125,15 @@ def test_update_func() -> None:
     assert s.reg_to_value(regs) == "AH78"
 
 
-def test_update_float() -> None:
+def test_update_float(caplog) -> None:
     s = TempSensor(60, "two", factor=0.1)
     rmap = register_map(60, [1001])
     update_sensors([s], rmap)
     assert s.value == 0.1
+
+    s.reg_value = (None,)
+    s.update_value()
+    assert "Could not decode" in caplog.text
 
 
 def test_decode_fault() -> None:

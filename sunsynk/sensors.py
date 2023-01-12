@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, Dict, Generator, List, Optional, Sequence, Tuple, Union
+from typing import Callable, Generator, List, Optional, Sequence, Tuple, Union
 
 import attr
 
@@ -110,24 +110,15 @@ def group_sensors(
         yield group
 
 
-def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None:
-    """Update sensors."""
-    for sen in sensors:
-        try:
-            sen.reg_value = tuple(registers[i] for i in sen.reg_address)
-        except KeyError:
-            continue
-        sen.update_value()
-
-
 class TempSensor(Sensor):
     """Offset by 100 for temperature."""
 
     def update_value(self) -> None:
         """Offset by 100 for temperature."""
-        super().update_value()
+        val: Union[int, float] = self.reg_value[0]
         try:
-            self.value = round(float(self.value) - 100, 2)  # type: ignore
+            _LOGGER.debug(str(val))
+            self.value = int_round((float(val) * abs(self.factor)) - 100)  # type: ignore
         except (TypeError, ValueError) as err:
             self.value = 0
             _LOGGER.error("Could not decode temperature: %s", err)

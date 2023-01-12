@@ -1,5 +1,5 @@
 """Test helpers."""
-from sunsynk.helpers import SSTime, ensure_tuple, int_round, signed
+from sunsynk.helpers import SSTime, ensure_tuple, int_round, patch_bitmask, signed
 from sunsynk.sensors import Sensor
 
 
@@ -62,3 +62,12 @@ def test_time() -> None:
     assert time.minutes == just_before_midnight
     time.reg_value = 2359
     assert time.minutes == just_before_midnight
+
+
+def test_patch_bitmask() -> None:
+    assert patch_bitmask(2, 1, 1) == 3
+    assert patch_bitmask(1, 2, 2) == 3
+
+    assert patch_bitmask(0xFFF, 0, 1) == 0xFFE
+    assert patch_bitmask(0xFFFF, 0, 1) == 0xFFFE
+    assert patch_bitmask(0xFFF, 0, 2) == 0xFFD

@@ -12,12 +12,25 @@ from sunsynk.sensors import Sensor
 _LOGGER = logging.getLogger(__name__)
 
 
+@attr.define(slots=True)
 class RWSensor(Sensor):
     """Read & write sensor."""
 
+    bitmask: int = 0
+
     def update_reg_value(self, value: Any) -> bool:
         """Update the reg_value from a new value."""
-        newv = ensure_tuple(self.value_to_reg(value))
+        newv = self.value_to_reg(value)
+        if self.bitmask and newv[0] != (newv[0] & self.bitmask):
+            _LOGGER.error(
+                "Trying to set a value outside the sensor's bitmask! %s (value=%s, regvalue=%s)",
+                self.name,
+                value,
+                newv,
+            )
+            newv = (newv[0] & self.bitmask,)
+
+        newv = ensure_tuple(newv)
 
         if newv == self.reg_value:
             return False
@@ -29,9 +42,18 @@ class RWSensor(Sensor):
 
         return True
 
-    def value_to_reg(self, value: Any) -> int | Tuple[int, ...]:
+    def value_to_reg(self, value: Any) -> Tuple[int, ...]:
         """Get the reg value from a display value."""
         raise NotImplementedError()
+
+    def __attrs_post_init__(self) -> None:
+        """Run post init."""
+        if self.bitmask > 0 and len(self.reg_address) != 1:
+            _LOGGER.fatal(
+                "Sensors with a bitmask should reference a single register! %s [registers=%s]",
+                self.name,
+                self.reg_address,
+            )
 
 
 @attr.define(slots=True)
@@ -60,13 +82,13 @@ class NumberRWSensor(RWSensor):
             sensors.append(self.max)
         return sensors
 
-    def value_to_reg(self, value: int | float) -> int | Tuple[int, ...]:
+    def value_to_reg(self, value: int | float) -> Tuple[int, ...]:
         """Get the reg value from a display value, or the current reg value if out of range."""
         if value < self.min_value or value > self.max_value:
             # Return current reg_value if value is out of range
             return self.reg_value
 
-        return int(value / abs(self.factor))
+        return (int(value / abs(self.factor)),)
 
     @staticmethod
     def _static_or_sensor_value(val: int | float | Sensor) -> int | float:
@@ -92,13 +114,13 @@ class SelectRWSensor(RWSensor):
         """Get the available values for this sensor."""
         return list(self.options.values())
 
-    def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
+    def value_to_reg(self, value: str) -> Tuple[int, ...]:
         """Get the reg value from a display value, or the current reg value if out of range."""
         res = self._values_map.get(value)
         if res is not None:
-            return res
-        _LOGGER.warning(f"Unknown {value}")
-        return self.reg_value[0]
+            return (res,)
+        _LOGGER.warning("Unknown %s", value)
+        return (self.reg_value[0],)
 
     def update_value(self) -> None:
         """Update value from current register values."""
@@ -144,11 +166,11 @@ class TimeRWSensor(RWSensor):
         """Extract the time."""
         self.value = self.time.str_value
 
-    def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
+    def value_to_reg(self, value: str) -> Tuple[int, ...]:
         """Get the reg value from a display value."""
         time = SSTime()
         time.str_value = value
-        return time.reg_value
+        return (time.reg_value,)
 
     @staticmethod
     def _range(

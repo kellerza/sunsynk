@@ -233,11 +233,18 @@ PROG5_TIME.max = PROG6_TIME
 PROG6_TIME.max = PROG1_TIME
 
 PROG_CHARGE_OPTIONS = {
-    4: "No Grid or Gen",
-    5: "Allow Grid",
-    6: "Allow Gen",
-    7: "Allow Grid & Gen",
+    0: "No Grid or Gen",
+    1: "Allow Grid",
+    2: "Allow Gen",
+    3: "Allow Grid & Gen",
 }
+PROG_MODE_OPTIONS = {
+    0: "None",
+    4: "General",
+    8: "Backup",
+    16: "Charge",
+}
+
 PROGRAM = (
     PROG1_TIME,
     PROG2_TIME,
@@ -257,12 +264,18 @@ PROGRAM = (
     NumberRWSensor(271, "Prog4 Capacity", "%", min=BATTERY_LOW_CAPACITY),
     NumberRWSensor(272, "Prog5 Capacity", "%", min=BATTERY_LOW_CAPACITY),
     NumberRWSensor(273, "Prog6 Capacity", "%", min=BATTERY_LOW_CAPACITY),
-    SelectRWSensor(274, "Prog1 Charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(275, "Prog2 Charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(276, "Prog3 Charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(277, "Prog4 Charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(278, "Prog5 Charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(279, "Prog6 Charge", options=PROG_CHARGE_OPTIONS),
+    SelectRWSensor(274, "Prog1 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(275, "Prog2 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(276, "Prog3 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(277, "Prog4 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(278, "Prog5 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(279, "Prog6 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(274, "Prog1 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(275, "Prog2 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(276, "Prog3 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(277, "Prog4 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(278, "Prog5 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(279, "Prog6 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
 )
 _SENSORS.extend(PROGRAM)
 PROG_VOLT = (

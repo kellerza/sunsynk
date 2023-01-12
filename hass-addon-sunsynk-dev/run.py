@@ -365,6 +365,7 @@ TERM = (
 
 async def main(loop: AbstractEventLoop) -> None:  # noqa
     """Main async loop."""
+    # pylint: disable=too-many-statements
     loop.set_debug(OPT.debug > 0)
 
     try:
@@ -416,15 +417,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
             old_reg_value = sensor.reg_value
             if not sensor.update_reg_value(value):
                 continue
-
-            _LOGGER.info(
-                "Writing sensor %s: %s=%s  [old %s]",
-                sensor.name,
-                sensor.id,
-                sensor.reg_value,
-                old_reg_value,
-            )
-            await SUNSYNK.write_sensor(sensor)
+            await SUNSYNK.write_sensor(sensor, msg=f"[old {old_reg_value}]")
             await read_sensors([sensor], msg=sensor.name)
             await publish_sensors([filt], force=True)
 
