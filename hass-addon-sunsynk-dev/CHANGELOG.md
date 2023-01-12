@@ -1,6 +1,6 @@
 # Changelog
 
-## **2023.01.01-0.2.6** - 2022-11-29
+## **2023.01.02-0.2.6** - 2022-11-29
 
 - Python sunsynk module 0.2.6:
   - Add Load Limit RW Sensor (Zero Export & Limit to Load)
