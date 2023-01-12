@@ -1,16 +1,18 @@
-"""Sunsynk hybrid inverter sensor definitions."""
+"""Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 from typing import Dict, Final, List
 
-from sunsynk.rwsensors import (
+from sunsynk.sensors import (
     FaultSensor,
     InverterStateSensor,
     MathSensor,
-    NumberRWSensor,
     SDStatusSensor,
-    SelectRWSensor,
     Sensor,
     SerialSensor,
     TempSensor,
+)
+from sunsynk.rwsensors import (
+    NumberRWSensor,
+    SelectRWSensor,
     TimeRWSensor,
 )
 

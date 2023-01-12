@@ -30,8 +30,8 @@ from sunsynk.rwsensors import (
     RWSensor,
     SelectRWSensor,
     TimeRWSensor,
-    slug,
 )
+from sunsynk.helpers import slug
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)

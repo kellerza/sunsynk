@@ -12,7 +12,7 @@ def ensure_tuple(val: Any) -> Tuple[int]:
     return tuple(val)  # type: ignore
 
 
-def round(val: Union[int, float, str]) -> Union[int, float, str]:
+def int_round(val: Union[int, float, str]) -> Union[int, float, str]:
     """Round if float."""
     if not isinstance(val, float):
         return val

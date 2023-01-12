@@ -3,7 +3,7 @@ from typing import Dict, List
 
 import attr
 
-from sunsynk.rwsensors import slug
+from sunsynk.helpers import slug
 
 SS_TOPIC = "SUNSYNK/status"
 

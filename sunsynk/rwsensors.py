@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Dict, Generator, List, Tuple
-from sensors import Sensor
+from sunsynk.sensors import Sensor
 from sunsynk.helpers import SSTime, ensure_tuple
 
 
@@ -94,13 +94,15 @@ class SelectRWSensor(RWSensor):
 
     def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
         """Get the reg value from a display value, or the current reg value if out of range."""
-        return self._values_map.get(value, self.reg_value[0])
+        res = self._values_map.get(value)
+        if res is not None:
+            return res
+        _LOGGER.warning(f"Unknown {value}")
+        return self.reg_value[0]
 
     def update_value(self) -> None:
         """Update value from current register values."""
         self.value = self.options.get(self.reg_value[0])
-        if not self.value:
-            _LOGGER.warning or f"Unknown {self.reg_value[0]}"
 
 
 @attr.define(slots=True)

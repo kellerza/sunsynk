@@ -5,7 +5,7 @@ from typing import Dict, Sequence
 
 import attr
 
-from sunsynk.rwsensors import Sensor, group_sensors, update_sensors
+from sunsynk.sensors import Sensor, group_sensors, update_sensors
 
 _LOGGER = logging.getLogger(__name__)
 
