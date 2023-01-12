@@ -365,7 +365,7 @@ TERM = (
 
 async def main(loop: AbstractEventLoop) -> None:  # noqa
     """Main async loop."""
-    # pylint: ignore=too-many-statements
+    # pylint: disable=too-many-statements
     loop.set_debug(OPT.debug > 0)
 
     try:
