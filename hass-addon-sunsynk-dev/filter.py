@@ -7,7 +7,7 @@ import attr
 from options import OPT
 
 from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, KWH, VOLT, WATT, Sensor
-from sunsynk.sensor import RWSensor
+from sunsynk.rwsensors import RWSensor
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -204,8 +204,9 @@ class SelectRWSensor(RWSensor):
 
     def update_value(self) -> None:
         """Update value from current register values."""
-        self.value = (
-            self.options.get(self.reg_value[0]) or f"Unknown {self.reg_value[0]}"
+        self.value = self.options.get(self.reg_value[0])
+        if not self.value:
+            _LOGGER.warning or f"Unknown {self.reg_value[0]}"
         )
 
 

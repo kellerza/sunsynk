@@ -1,7 +1,7 @@
 """Sunsynk hybrid inverter sensor definitions."""
 from typing import Dict, Final, List
 
-from sunsynk.sensor import (
+from sunsynk.rwsensors import (
     FaultSensor,
     InverterStateSensor,
     MathSensor,

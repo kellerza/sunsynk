@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import pytest
 
 from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, DEPRECATED, VOLT, WATT
-from sunsynk.sensor import (
+from sunsynk.rwsensors import (
     FaultSensor,
     HSensor,
     InverterStateSensor,

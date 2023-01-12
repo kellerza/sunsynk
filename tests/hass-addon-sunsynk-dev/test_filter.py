@@ -6,7 +6,7 @@ from typing import Any, Callable, List
 import pytest
 
 from sunsynk.definitions import ALL_SENSORS
-from sunsynk.sensor import RWSensor
+from sunsynk.rwsensors import RWSensor
 from tests.conftest import import_module
 
 _LOGGER = logging.getLogger(__name__)

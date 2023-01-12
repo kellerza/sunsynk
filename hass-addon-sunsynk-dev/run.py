@@ -25,7 +25,13 @@ from mqtt import (
 from options import OPT, SS_TOPIC
 
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER
-from sunsynk.sensor import NumberRWSensor, RWSensor, SelectRWSensor, TimeRWSensor, slug
+from sunsynk.rwsensors import (
+    NumberRWSensor,
+    RWSensor,
+    SelectRWSensor,
+    TimeRWSensor,
+    slug,
+)
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
