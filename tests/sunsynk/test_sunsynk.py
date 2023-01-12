@@ -58,20 +58,30 @@ async def test_ss_base_class():
 
 
 @pytest.mark.asyncio
-async def test_ss_write_sensor():
+async def test_ss_NotImplemented():
+    ss = Sunsynk()
+    with pytest.raises(NotImplementedError):
+        await ss.connect()
+    with pytest.raises(NotImplementedError):
+        await ss.write_register(address=1, value=1)
+
+
+@pytest.mark.asyncio
+@patch("sunsynk.Sunsynk.read_holding_registers")
+@patch("sunsynk.Sunsynk.write_register")
+async def test_ss_write_sensor(rhr: MagicMock, wreg: MagicMock):
     ss = Sunsynk()
     sen = NumberRWSensor((1,), "", min=1, max=10)
     sen.reg_value = (99,)
-    with pytest.raises(NotImplementedError):
-        await ss.write_sensor(sen)
+    await ss.write_sensor(sen)
 
     # test a sensor with a bitmask
     sen = NumberRWSensor((1,), "", min=1, max=10, bitmask=0x3)
+    rhr.return_value = (1,)
     update_sensors([sen], {1: 99})
     assert sen.reg_value != (99,)
     assert sen.reg_value == (99 & 3,)
-    with pytest.raises(NotImplementedError):
-        await ss.write_sensor(sen)
+    await ss.write_sensor(sen)
 
 
 @pytest.mark.asyncio
@@ -87,3 +97,17 @@ async def test_ss_read_sensor(rhr: MagicMock):
     rhr.side_effect = Exception("a")
     with pytest.raises(Exception):
         await ss.read_sensors([sen])
+
+
+def test_update_sensor(caplog) -> None:
+    s = NumberRWSensor(60, "two", factor=0.1)
+    assert s.value is None
+    update_sensors([s], {})
+    assert s.value is None
+    update_sensors([s], {60: 10})
+    assert s.value == 1
+
+
+def test_bad_sensor(caplog) -> None:
+    NumberRWSensor((60, 1), "two", factor=0.1, bitmask=1)
+    assert "single register" in caplog.text
