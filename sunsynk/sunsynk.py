@@ -38,7 +38,7 @@ class Sunsynk:
             r_r = await self.read_holding_registers(sensor.reg_address[0], 1)
             val0 = r_r[0]
             val1 = patch_bitmask(val0, val1, sensor.bitmask)
-            msg = " [Register {val0}-->{val1}] "
+            msg = f"[Register {val0}-->{val1}]"
 
         _LOGGER.info(
             "Writing sensor %s: %s=%s %s",
