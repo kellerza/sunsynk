@@ -66,6 +66,6 @@ class SSTime:
         self.minutes = int(hours) * 60 + int(minutes)
 
 
-def patch_bitmask(value: int, patch: int, patch_bitmask: int) -> int:
+def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
     """Combine bitmask values."""
-    return (patch & patch_bitmask) + (value & (0xFFFF - patch_bitmask))
+    return (patch & bitmask) + (value & (0xFFFF - bitmask))
