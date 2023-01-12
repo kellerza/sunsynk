@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, Dict, Generator, List, Sequence, Tuple, Union
-from sunsynk.helpers import ensure_tuple, int_round, slug, signed
+from typing import Callable, Dict, Generator, List, Optional, Sequence, Tuple, Union
 
 import attr
+
+from sunsynk.helpers import ensure_tuple, int_round, signed, slug
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class Sensor:
     #     None, Callable[[Tuple[int, ...]], str], Callable[[float], Any]
     # ] = attr.field(default=None)
     reg_value: Tuple[int, ...] = attr.field(init=False, factory=tuple)
-    on_change: Callable = attr.field(default=None)
+    on_change: Optional[Callable] = attr.field(default=None)
     _value: Union[float, int, str, None] = None
 
     def append_to(self, arr: List[Sensor]) -> Sensor:

@@ -1,5 +1,5 @@
 """Test helpers."""
-from sunsynk.helpers import SSTime, ensure_tuple, signed, int_round
+from sunsynk.helpers import SSTime, ensure_tuple, int_round, signed
 from sunsynk.sensors import Sensor
 
 

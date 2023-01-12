@@ -25,25 +25,20 @@ from mqtt import (
 from options import OPT, SS_TOPIC
 
 from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER
-from sunsynk.rwsensors import (
-    NumberRWSensor,
-    RWSensor,
-    SelectRWSensor,
-    TimeRWSensor,
-)
 from sunsynk.helpers import slug
+from sunsynk.rwsensors import NumberRWSensor, RWSensor, SelectRWSensor, TimeRWSensor
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
 
 
-DEVICE: Device = None
+DEVICE: Device = None  # type:ignore
 HASS_DISCOVERY_INFO_UPDATE_QUEUE: Dict[str, Filter] = {}
 HIDDEN_SENSOR_IDS: set[str] = set()
 SENSORS: List[Filter] = []
 SENSOR_WRITE_QUEUE: Dict[str, Tuple[Filter, Any]] = {}
 SERIAL = ALL_SENSORS["serial"]
-STARTUP_SENSORS: List[Filter] = []
+STARTUP_SENSORS: List[Sensor] = []
 SUNSYNK: Sunsynk = None  # type: ignore
 
 
@@ -93,7 +88,7 @@ async def hass_discover_sensors(serial: str, rated_power: float) -> None:
     await MQTT.publish_discovery_info(entities=ents)
 
 
-def enqueue_hass_discovery_info_update(changed_sen: Sensor, deps: List[Filter]):
+def enqueue_hass_discovery_info_update(changed_sen: Sensor, deps: List[Filter]) -> None:
     """Add a sensor's dependants to the HASS discovery info update queue."""
     if not DEVICE:
         return
@@ -127,8 +122,8 @@ def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
     """Create HASS entities out of an existing list of filters"""
     ents: List[Entity] = []
 
-    def create_on_change_handler(filt: Filter, value_func: Callable):
-        def _handler(value):
+    def create_on_change_handler(filt: Filter, value_func: Callable) -> Callable:
+        def _handler(value: Any) -> None:
             SENSOR_WRITE_QUEUE[filt.sensor.id] = (filt, value_func(value))
 
         return _handler
@@ -298,10 +293,9 @@ def setup_sensors() -> None:
                 sens_dependants[dep.id].append(sen)
 
     for sen_id, deps in sens_dependants.items():
-        try:
-            sen = ALL_SENSORS.get(sen_id)
-        except KeyError as err:
-            _LOGGER.fatal("Invalid sensor as dependency - %s", err)
+        if sen_id not in ALL_SENSORS:
+            _LOGGER.fatal("Invalid sensor as dependency - %s", sen_id)
+        sen = ALL_SENSORS[sen_id]
 
         if sen_id not in sens and sen != RATED_POWER:  # Rated power does not change
             fstr = suggested_filter(sen)
@@ -400,14 +394,20 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         log_bold("SUNSYNK_ID should be set to the serial number of your Inverter!")
         return
 
-    await hass_discover_sensors(str(SERIAL.value), RATED_POWER.value)
+    powr = float(5000)
+    try:
+        powr = float(RATED_POWER.value)  # type:ignore
+    except (ValueError, TypeError):
+        pass
+
+    await hass_discover_sensors(str(SERIAL.value), powr)
 
     # Read all & publish immediately
     await asyncio.sleep(0.01)
     await read_sensors([f.sensor for f in SENSORS], retry_single=True)
     await publish_sensors(SENSORS, force=True)
 
-    async def write_sensors() -> set[str]:
+    async def write_sensors() -> None:
         """Flush any pending sensor writes"""
 
         while SENSOR_WRITE_QUEUE:

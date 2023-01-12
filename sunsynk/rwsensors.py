@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Dict, Generator, List, Tuple
-from sunsynk.sensors import Sensor
-from sunsynk.helpers import SSTime, ensure_tuple
-
 
 import attr
+
+from sunsynk.helpers import SSTime, ensure_tuple
+from sunsynk.sensors import Sensor
 
 _LOGGER = logging.getLogger(__name__)
 

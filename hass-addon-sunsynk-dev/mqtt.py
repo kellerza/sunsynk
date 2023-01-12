@@ -133,7 +133,7 @@ class NumberEntity(Entity):
     command_topic: str = attr.field(default=None, validator=required)
     min: float = attr.field(default=0.0)
     max: float = attr.field(default=100.0)
-    mode: float = attr.field(default="auto")
+    mode: str = attr.field(default="auto")
     step: float = attr.field(default=1.0)
 
     on_change: Callable = attr.field(default=None)
@@ -274,7 +274,9 @@ class MQTTClient:
         # self._client.on_message = None
         await self.on_change_handler()
 
-    async def on_change_handler(self, entities: Sequence[Entity] = None) -> None:
+    async def on_change_handler(
+        self, entities: Optional[Sequence[Entity]] = None
+    ) -> None:
         """Assign the MQTT on_message handler for entities' on_change."""
         _loop = asyncio.get_running_loop()
 

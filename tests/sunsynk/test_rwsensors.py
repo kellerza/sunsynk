@@ -1,14 +1,8 @@
 """Sunsynk sensor tests."""
 import logging
 
+from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, Sensor, TimeRWSensor
 from sunsynk.sensors import update_sensors
-
-from sunsynk.rwsensors import (
-    NumberRWSensor,
-    SelectRWSensor,
-    Sensor,
-    TimeRWSensor,
-)
 from sunsynk.sunsynk import register_map
 
 _LOGGER = logging.getLogger(__name__)

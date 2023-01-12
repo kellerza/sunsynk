@@ -1,6 +1,7 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 from typing import Dict, Final, List
 
+from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, TimeRWSensor
 from sunsynk.sensors import (
     FaultSensor,
     InverterStateSensor,
@@ -9,11 +10,6 @@ from sunsynk.sensors import (
     Sensor,
     SerialSensor,
     TempSensor,
-)
-from sunsynk.rwsensors import (
-    NumberRWSensor,
-    SelectRWSensor,
-    TimeRWSensor,
 )
 
 CELSIUS: Final = "°C"

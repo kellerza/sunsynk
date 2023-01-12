@@ -94,7 +94,7 @@ def enqueue_hass_discovery_info_update(changed_sen: Sensor, deps: List[Filter]):
 
 
 async def hass_update_discovery_info() -> None:
-    """Update discovery info for existing sensors"""
+    """Update discovery info for existing sensors."""
     if not HASS_DISCOVERY_INFO_UPDATE_QUEUE:
         return
 
@@ -106,7 +106,7 @@ async def hass_update_discovery_info() -> None:
 
 
 def create_entities(sensors: list[Filter], dev: Device) -> list[Entity]:
-    """Create HASS entities out of an existing list of filters"""
+    """Create HASS entities out of an existing list of filters."""
     ents: List[Entity] = []
 
     def create_on_change_handler(filt: Filter, value_func: Callable):
@@ -387,8 +387,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     await publish_sensors(SENSORS, force=True)
 
     async def write_sensors() -> set[str]:
-        """Flush any pending sensor writes"""
-
+        """Flush any pending sensor writes."""
         while SENSOR_WRITE_QUEUE:
             _, (filt, value) = SENSOR_WRITE_QUEUE.popitem()
             sensor: RWSensor = filt.sensor
