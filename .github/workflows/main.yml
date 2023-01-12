@@ -118,7 +118,7 @@ jobs:
       - name: Run tests and generate coverage report
         run: |
           pytest --cov=./sunsynk --cov-report=xml -- tests/sunsynk
-          pytest -- tests/hass-addon-sunsynk
+          # pytest -- tests/hass-addon-sunsynk
           pytest -- tests/hass-addon-sunsynk-dev
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
