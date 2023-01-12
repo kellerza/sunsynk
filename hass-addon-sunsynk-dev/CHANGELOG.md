@@ -1,5 +1,13 @@
 # Changelog
 
+## **2023.01.12-0.2.7** - 2022-11-29
+
+- Python sunsynk module 0.2.7:
+  - Add bitmask sensors to support Modes (GM/BM/CM)
+
+- Sunsynk Dev Add-On:
+  - Update to use the latest sensors
+
 ## **2023.01.02-0.2.6** - 2022-11-29
 
 - Python sunsynk module 0.2.6:

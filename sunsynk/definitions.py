@@ -239,9 +239,10 @@ PROG_CHARGE_OPTIONS = {
     3: "Allow Grid & Gen",
 }
 PROG_MODE_OPTIONS = {
-    4: "General Mode",
-    8: "Backup Mode",
-    16: "Charge Mode",
+    0: "None",
+    4: "General",
+    8: "Backup",
+    16: "Charge",
 }
 
 PROGRAM = (

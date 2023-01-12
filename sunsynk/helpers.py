@@ -64,3 +64,8 @@ class SSTime:
         """Parse a string in hh:mm format."""
         (hours, _, minutes) = value.partition(":")
         self.minutes = int(hours) * 60 + int(minutes)
+
+
+def patch_bitmask(value: int, patch: int, patch_bitmask: int) -> int:
+    """Combine bitmask values."""
+    return (patch & patch_bitmask) + (value & (0xFFFF - patch_bitmask))

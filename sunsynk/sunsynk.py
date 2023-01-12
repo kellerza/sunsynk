@@ -5,6 +5,7 @@ from typing import Dict, Sequence
 
 import attr
 
+from sunsynk.helpers import patch_bitmask
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, group_sensors
 
@@ -29,14 +30,24 @@ class Sunsynk:
         """Write to a register - Sunsynk support function code 0x10."""
         raise NotImplementedError
 
-    async def write_sensor(self, sensor: RWSensor) -> None:
+    async def write_sensor(self, sensor: RWSensor, *, msg: str = "") -> None:
         """Write a sensor."""
-        val0 = sensor.reg_value[0]
+        val1 = sensor.reg_value[0]
         # if bitmask we should READ the register first!!!
         if sensor.bitmask:
             r_r = await self.read_holding_registers(sensor.reg_address[0], 1)
             val0 = r_r[0]
-        await self.write_register(address=sensor.reg_address[0], value=val0)
+            val1 = patch_bitmask(val0, val1, sensor.bitmask)
+            msg = " [Register {val0}-->{val1}] "
+
+        _LOGGER.info(
+            "Writing sensor %s: %s=%s %s",
+            sensor.name,
+            sensor.id,
+            sensor.reg_value,
+            msg,
+        )
+        await self.write_register(address=sensor.reg_address[0], value=val1)
         for idx in range(len(sensor.reg_address) - 1):
             await asyncio.sleep(0.05)
             await self.write_register(
