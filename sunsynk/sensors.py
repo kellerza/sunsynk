@@ -2,36 +2,12 @@
 from __future__ import annotations
 
 import logging
-from math import modf
-from typing import Any, Callable, Dict, Generator, List, Sequence, Tuple, Union
+from typing import Callable, Dict, Generator, List, Sequence, Tuple, Union
+from sunsynk.helpers import ensure_tuple, int_round, slug, signed
 
 import attr
 
 _LOGGER = logging.getLogger(__name__)
-
-
-def ensure_tuple(val: Any) -> Tuple[int]:
-    """Return a tuple."""
-    if isinstance(val, tuple):
-        return val  # type: ignore
-    if isinstance(val, int):
-        return (val,)
-    return tuple(val)  # type: ignore
-
-
-def _round(val: Union[int, float, str]) -> Union[int, float, str]:
-    """Round if float."""
-    if not isinstance(val, float):
-        return val
-    val = round(val, 2)
-    if modf(val)[0] == 0:
-        return int(val)
-    return val
-
-
-def _signed(val: Union[int, float]) -> Union[int, float]:
-    """Convert 16-bit value to signed int."""
-    return val if val <= 0x7FFF else val - 0xFFFF
 
 
 @attr.define(slots=True)
@@ -76,8 +52,8 @@ class Sensor:
         if len(self.reg_value) > 1:
             val += self.reg_value[1] << 16
         elif self.factor < 0:  # Indicate this register is signed
-            val = _signed(val)
-        self.value = _round(val * abs(self.factor))
+            val = signed(val)
+        self.value = int_round(val * abs(self.factor))
 
         _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
 
@@ -94,10 +70,6 @@ class Sensor:
             self.on_change()
 
 
-class HSensor(Sensor):
-    """Hybrid sensor."""
-
-
 @attr.define(slots=True)
 class MathSensor(Sensor):
     """Math sensor, add multiple registers."""
@@ -107,8 +79,8 @@ class MathSensor(Sensor):
 
     def update_value(self) -> None:
         """Update the value."""
-        self.value = _round(
-            sum(_signed(i) * s for i, s in zip(self.reg_value, self.factors))
+        self.value = int_round(
+            sum(signed(i) * s for i, s in zip(self.reg_value, self.factors))
         )
         if self.no_negative and not isinstance(self.value, str) and self.value < 0:
             self.value = 0
@@ -116,97 +88,6 @@ class MathSensor(Sensor):
     def __attrs_post_init__(self) -> None:
         """Ensure correct parameters."""
         assert len(self.reg_address) == len(self.factors)
-
-
-class RWSensor(Sensor):
-    """Read & write sensor."""
-
-    def update_reg_value(self, value: Any) -> bool:
-        """Update the reg_value from a new value."""
-        newv = ensure_tuple(self.value_to_reg(value))
-
-        if newv == self.reg_value:
-            return False
-
-        self.reg_value = newv
-        self.update_value()
-
-        _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
-
-        return True
-
-    def value_to_reg(self, value: Any) -> int | Tuple[int, ...]:
-        """Get the reg value from a display value."""
-        raise NotImplementedError()
-
-
-@attr.define(slots=True)
-class NumberRWSensor(RWSensor):
-    """Numeric sensor which can be read and written."""
-
-    min: int | float | Sensor = attr.field(default=0)
-    max: int | float | Sensor = attr.field(default=100)
-
-    @property
-    def min_value(self) -> int | float:
-        """Get the min value from the configured sensor or static value."""
-        return self._static_or_sensor_value(self.min)
-
-    @property
-    def max_value(self) -> int | float:
-        """Get the max value from the configured sensor or static value."""
-        return self._static_or_sensor_value(self.max)
-
-    def dependencies(self) -> List[Sensor]:
-        """Get a list of sensors upon which this sensor depends."""
-        sensors: List[Sensor] = []
-        if isinstance(self.min, Sensor):
-            sensors.append(self.min)
-        if isinstance(self.max, Sensor):
-            sensors.append(self.max)
-        return sensors
-
-    def value_to_reg(self, value: int | float) -> int | Tuple[int, ...]:
-        """Get the reg value from a display value, or the current reg value if out of range."""
-        if value < self.min_value or value > self.max_value:
-            # Return current reg_value if value is out of range
-            return self.reg_value
-
-        return int(value / abs(self.factor))
-
-    @staticmethod
-    def _static_or_sensor_value(val: int | float | Sensor) -> int | float:
-        if isinstance(val, Sensor):
-            if isinstance(val.value, (int, float)):
-                return val.value
-            return float(val.value or 0)
-        return val
-
-
-@attr.define(slots=True)
-class SelectRWSensor(RWSensor):
-    """Sensor with a set of options to select from."""
-
-    options: Dict[int, str] = attr.field(default={})
-    _values_map: Dict[str, int] = {}
-
-    def __attrs_post_init__(self) -> None:
-        """Ensure correct parameters."""
-        self._values_map = {v: k for k, v in self.options.items()}
-
-    def available_values(self) -> List[str]:
-        """Get the available values for this sensor."""
-        return list(self.options.values())
-
-    def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
-        """Get the reg value from a display value, or the current reg value if out of range."""
-        return self._values_map.get(value, self.reg_value[0])
-
-    def update_value(self) -> None:
-        """Update value from current register values."""
-        self.value = (
-            self.options.get(self.reg_value[0]) or f"Unknown {self.reg_value[0]}"
-        )
 
 
 def group_sensors(
@@ -238,11 +119,6 @@ def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None
         sen.update_value()
 
 
-def slug(name: str) -> str:
-    """Create a slug."""
-    return name.lower().replace(" ", "_").replace("-", "_")
-
-
 class TempSensor(Sensor):
     """Offset by 100 for temperature."""
 
@@ -254,98 +130,6 @@ class TempSensor(Sensor):
         except (TypeError, ValueError) as err:
             self.value = 0
             _LOGGER.error("Could not decode temperature: %s", err)
-
-
-class SSTime:
-    """Deals with inverter time format conversion complexities."""
-
-    minutes: int
-
-    def __init__(self, minutes: int = 0) -> None:
-        """Init the time with minutes."""
-        self.minutes = minutes
-
-    @property
-    def reg_value(self) -> int:
-        """Get the register value."""
-        hours, minutes = divmod(self.minutes, 60)
-        return hours * 100 + minutes
-
-    @reg_value.setter
-    def reg_value(self, reg_value: int) -> None:
-        """Convert from a register value."""
-        hours, minutes = divmod(reg_value, 100)
-        self.minutes = hours * 60 + minutes
-
-    @property
-    def str_value(self) -> str:
-        """Get the value in hh:mm format."""
-        hours, minutes = divmod(self.minutes, 60)
-        return f"{hours}:{minutes:02}"
-
-    @str_value.setter
-    def str_value(self, value: str) -> None:
-        """Parse a string in hh:mm format."""
-        (hours, _, minutes) = value.partition(":")
-        self.minutes = int(hours) * 60 + int(minutes)
-
-
-@attr.define(slots=True)
-class TimeRWSensor(RWSensor):
-    """Extract the time."""
-
-    min: TimeRWSensor = attr.field(default=None)
-    max: TimeRWSensor = attr.field(default=None)
-
-    @property
-    def time(self) -> SSTime:
-        """Get the value of this sensor as total minutes."""
-        time = SSTime()
-        time.reg_value = self.reg_value[0]
-        return time
-
-    def available_values(self, step_minutes: int) -> List[str]:
-        """Get the available values for this sensor."""
-        full_day = 24 * 60
-
-        min_val = self.min.time.minutes if self.min else 0
-        max_val = self.max.time.minutes if self.max else full_day
-        val = self.time.minutes
-
-        time_range = self._range(min_val, max_val, val, step_minutes, full_day)
-
-        return list(map(lambda i: SSTime(i).str_value, time_range))
-
-    def dependencies(self) -> List[Sensor]:
-        """Get a list of sensors upon which this sensor depends."""
-        sensors: List[Sensor] = []
-        if isinstance(self.min, TimeRWSensor):
-            sensors.append(self.min)
-        if isinstance(self.max, TimeRWSensor):
-            sensors.append(self.max)
-        return sensors
-
-    def update_value(self) -> None:
-        """Extract the time."""
-        self.value = self.time.str_value
-
-    def value_to_reg(self, value: str) -> int | Tuple[int, ...]:
-        """Get the reg value from a display value."""
-        time = SSTime()
-        time.str_value = value
-        return time.reg_value
-
-    @staticmethod
-    def _range(
-        start: int, end: int, val: int, step: int, modulo: int
-    ) -> Generator[int, None, None]:
-        if val % step != 0:
-            yield val
-        stop = end if start <= end else end + modulo
-        for i in range(start, stop, step):
-            yield i % modulo
-        if start == end or start != end % modulo:
-            yield end
 
 
 class SDStatusSensor(Sensor):

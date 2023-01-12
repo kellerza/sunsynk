@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import logging
-from math import modf
-from typing import Any, Callable, Dict, Generator, List, Sequence, Tuple, Union
+from typing import Any, Dict, Generator, List, Tuple
+from sensors import Sensor
+from sunsynk.helpers import SSTime, ensure_tuple
+
 
 import attr
 
@@ -99,8 +101,6 @@ class SelectRWSensor(RWSensor):
         self.value = self.options.get(self.reg_value[0])
         if not self.value:
             _LOGGER.warning or f"Unknown {self.reg_value[0]}"
-        )
-
 
 
 @attr.define(slots=True)
