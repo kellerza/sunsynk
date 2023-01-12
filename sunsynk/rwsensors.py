@@ -12,11 +12,21 @@ from sunsynk.sensors import Sensor
 _LOGGER = logging.getLogger(__name__)
 
 
+@attr.define(slots=True)
 class RWSensor(Sensor):
     """Read & write sensor."""
 
+    bitmask: int = 0
+
     def update_reg_value(self, value: Any) -> bool:
         """Update the reg_value from a new value."""
+        if self.bitmask:
+            if value != value & self.bitmask:
+                _LOGGER.error(
+                    "Trying to set a value outside the sensor's bitmask! %s (value=%s)",
+                    self.name,
+                    value,
+                )
         newv = ensure_tuple(self.value_to_reg(value))
 
         if newv == self.reg_value:
@@ -97,7 +107,7 @@ class SelectRWSensor(RWSensor):
         res = self._values_map.get(value)
         if res is not None:
             return res
-        _LOGGER.warning(f"Unknown {value}")
+        _LOGGER.warning("Unknown %s", value)
         return self.reg_value[0]
 
     def update_value(self) -> None:

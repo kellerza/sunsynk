@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, Dict, Generator, List, Optional, Sequence, Tuple, Union
+from typing import Callable, Generator, List, Optional, Sequence, Tuple, Union
 
 import attr
 
@@ -108,16 +108,6 @@ def group_sensors(
         group.append(adr1)
     if group:
         yield group
-
-
-def update_sensors(sensors: Sequence[Sensor], registers: Dict[int, int]) -> None:
-    """Update sensors."""
-    for sen in sensors:
-        try:
-            sen.reg_value = tuple(registers[i] for i in sen.reg_address)
-        except KeyError:
-            continue
-        sen.update_value()
 
 
 class TempSensor(Sensor):

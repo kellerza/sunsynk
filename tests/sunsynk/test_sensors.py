@@ -15,9 +15,8 @@ from sunsynk.sensors import (
     SerialSensor,
     TempSensor,
     group_sensors,
-    update_sensors,
 )
-from sunsynk.sunsynk import register_map
+from sunsynk.sunsynk import register_map, update_sensors
 
 _LOGGER = logging.getLogger(__name__)
 
