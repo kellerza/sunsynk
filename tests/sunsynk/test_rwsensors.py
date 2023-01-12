@@ -1,10 +1,38 @@
 """Sunsynk sensor tests."""
 import logging
 
-from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, Sensor, TimeRWSensor
+import pytest
+
+from sunsynk.rwsensors import (
+    NumberRWSensor,
+    RWSensor,
+    SelectRWSensor,
+    Sensor,
+    TimeRWSensor,
+)
 from sunsynk.sunsynk import register_map, update_sensors
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def test_bitmask(caplog) -> None:
+    s = RWSensor(1, "", bitmask=0x1)
+    with pytest.raises(NotImplementedError):
+        s.value_to_reg(None)
+
+    s = NumberRWSensor(1, "", min=1, max=10, bitmask=0x1)
+
+    assert s.value is None
+
+    s.update_reg_value(1)
+    assert "" == caplog.text
+    assert s.reg_value == (1,)
+    assert s.value == 1
+
+    s.update_reg_value(3)
+    assert s.reg_value == (1,)
+    assert "outside" in caplog.text
+    assert s.value == 1
 
 
 def test_number_rw() -> None:
@@ -86,9 +114,9 @@ def test_time_rw() -> None:
 
     assert len(s.available_values(15)) == 24 * 60 / 15
 
-    assert s.value_to_reg("0:00") == 0
-    assert s.value_to_reg("4:01") == 401
-    assert s.value_to_reg("23:59") == 2359
+    assert s.value_to_reg("0:00") == (0,)
+    assert s.value_to_reg("4:01") == (401,)
+    assert s.value_to_reg("23:59") == (2359,)
 
     deps = s.dependencies()
     assert len(deps) == 0

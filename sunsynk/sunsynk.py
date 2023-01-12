@@ -34,11 +34,6 @@ class Sunsynk:
         val0 = sensor.reg_value[0]
         # if bitmask we should READ the register first!!!
         if sensor.bitmask:
-            if len(sensor.reg_address) != 1:
-                _LOGGER.warning(
-                    "Writing multiple bitmask sensors is not implemented - %s",
-                    sensor.name,
-                )
             r_r = await self.read_holding_registers(sensor.reg_address[0], 1)
             val0 = r_r[0]
         await self.write_register(address=sensor.reg_address[0], value=val0)

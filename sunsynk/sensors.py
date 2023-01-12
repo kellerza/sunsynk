@@ -115,9 +115,10 @@ class TempSensor(Sensor):
 
     def update_value(self) -> None:
         """Offset by 100 for temperature."""
-        super().update_value()
+        val: Union[int, float] = self.reg_value[0]
         try:
-            self.value = round(float(self.value) - 100, 2)  # type: ignore
+            _LOGGER.debug(str(val))
+            self.value = int_round((float(val) * abs(self.factor)) - 100)  # type: ignore
         except (TypeError, ValueError) as err:
             self.value = 0
             _LOGGER.error("Could not decode temperature: %s", err)
