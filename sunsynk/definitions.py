@@ -92,14 +92,14 @@ _SENSORS += (
         (172, 167), "Non-Essential power", WATT, factors=(1, -1), no_negative=True
     ),
     MathSensor(
-        (175, 167, 166), "Essential power abs", WATT, factors=(1, 1, -1), absolute=True
+        (175, 167, 166), "Essential abs power", WATT, factors=(1, 1, -1), absolute=True
     ),
     # https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
     MathSensor(
-        (175, 169, 166), "Essential power l2", WATT, factors=(1, 1, -1), absolute=True
+        (175, 169, 166), "Essential l2 power", WATT, factors=(1, 1, -1), absolute=True
     ),
     MathSensor(
-        (172, 167), "Non-Essential power abs", WATT, factors=(1, -1), absolute=True
+        (172, 167), "Non-Essential abs power", WATT, factors=(1, -1), absolute=True
     ),
 )
 
