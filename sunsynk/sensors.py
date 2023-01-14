@@ -84,6 +84,8 @@ class MathSensor(Sensor):
         self.value = int_round(
             sum(signed(i) * s for i, s in zip(self.reg_value, self.factors))
         )
+        if self.absolute and not isinstance(self.value, str) and self.value < 0:
+            self.value = -self.value
         if self.no_negative and not isinstance(self.value, str) and self.value < 0:
             self.value = 0
 
