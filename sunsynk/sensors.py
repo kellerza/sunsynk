@@ -77,6 +77,7 @@ class MathSensor(Sensor):
 
     factors: Tuple[float, ...] = attr.field(default=None, converter=ensure_tuple)
     no_negative: bool = attr.field(default=False)
+    absolute: bool = attr.field(default=False)
 
     def update_value(self) -> None:
         """Update the value."""
