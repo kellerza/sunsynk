@@ -31,7 +31,13 @@ class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
                 + ", ".join(sks)
             )
 
-        self.client = modbus_for_url(self.port)
+        self.client = modbus_for_url(
+            self.port,
+            {
+                "connection_timeout": self.timeout,  # sockio.TCP
+                "timeout": self.timeout,  # sockio.TCP
+            },
+        )
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk support function code 0x10."""
@@ -42,7 +48,7 @@ class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
                     starting_address=address,
                     values=(value,),
                 ),
-                timeout=10,
+                timeout=self.timeout,
             )
             return True
         except asyncio.TimeoutError:

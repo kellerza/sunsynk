@@ -40,6 +40,8 @@
       DRIVER: pymodbus
       ```
 
+  `DEVICE` allows you to select the USB port in the UI. It will only be used if `PORT` is empty.
+
 - `SUNSYNK_ID`
 
   The serial number of your inverter. When you start the add-on the connected serial will be displayed in the log.
@@ -55,34 +57,6 @@
 - `SENSOR_PREFIX`
 
   A prefix to add to all the MQTT Discovered Home Assistant Sensors (default: SS).
-
-- `PROFILES`
-
-  > BETA!!
-  >
-  > This writes settings, use at your own risk!
-
-  Read & Write settings to your inverter.
-
-  The profiles will be presented as a Home Assistant Select Entity, with options for the different profiles.
-
-  Available profiles:
-
-  | Profile              | Description                                                                              |
-  | -------------------- | ---------------------------------------------------------------------------------------- |
-  | system_mode          | The system mode, including time, grid charging, target SOC.                              |
-  | system_mode_voltages | The system mode charging voltages (likely used when you dont have a Battery with a BMS). |
-
-  The Inverter setting is only read when the Add-On starts, if you want to force re-reading the inverter settings and any configuration, choose the **UPDATE** option in the Select Entity. (You can schedule **UPDATE** through automations if this is important for you)
-
-  When you **UPDATE** a profile, the Add-On performs the following actions:
-  - Read all the settings related to the profile from the Inverter.
-  - Read all the profile presets from `/share/hass-addon-sunsynk/*.yml`
-  - The value of the Home Assistant Select entity will reflect the matching presets.
-    - If the current settings is not part of existing presets, a new profile will be created.
-
-      You can customize the name of the presets in the Yaml files (followed by an **UPDATE**).
-      One option to access these files is though the Samba Add-On.
 
 - `SENSORS`
 

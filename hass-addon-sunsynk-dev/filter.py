@@ -195,10 +195,10 @@ def suggested_filter(sensor: Sensor) -> str:
         return "round_robin"
     f_id = {
         "battery_soc": "last",
-        "fault": "round_robin",
+        "fault": "last",
         "grid_connected_status": "last",
-        "overall_state": "step",
-        "sd_status": "step",
+        "overall_state": "last",
+        "sd_status": "last",
         "serial": "round_robin",
     }
     assert all(s in ALL_SENSORS for s in f_id)

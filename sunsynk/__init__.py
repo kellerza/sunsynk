@@ -4,4 +4,4 @@
 from .sensors import Sensor, group_sensors
 from .sunsynk import Sunsynk, update_sensors
 
-VERSION = "0.2.7"
+VERSION = "0.2.8"
