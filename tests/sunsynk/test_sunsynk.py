@@ -71,9 +71,12 @@ async def test_ss_NotImplemented():
 @patch("sunsynk.Sunsynk.write_register")
 async def test_ss_write_sensor(rhr: MagicMock, wreg: MagicMock):
     ss = Sunsynk()
-    sen = NumberRWSensor((1,), "", min=1, max=10)
-    sen.reg_value = (99,)
+    sen = NumberRWSensor((1, 2), "", min=1, max=10)
+    sen.reg_value = (99, 98)
     await ss.write_sensor(sen)
+
+    # with pytest.raises(NotImplementedError):
+    await ss.read_holding_registers(1, 1)
 
     # test a sensor with a bitmask
     sen = NumberRWSensor((1,), "", min=1, max=10, bitmask=0x3)
@@ -97,6 +100,13 @@ async def test_ss_read_sensor(rhr: MagicMock):
     rhr.side_effect = Exception("a")
     with pytest.raises(Exception):
         await ss.read_sensors([sen])
+
+
+@pytest.mark.asyncio
+async def test_ss_rhr():
+    ss = Sunsynk()
+    with pytest.raises(NotImplementedError):
+        await ss.read_holding_registers(1, 1)
 
 
 def test_update_sensor(caplog) -> None:
