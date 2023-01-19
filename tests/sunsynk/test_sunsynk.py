@@ -1,5 +1,6 @@
 """Test sunsynk library."""
 import logging
+import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -32,6 +33,8 @@ async def test_uss_schemes():
             await ss.connect()
         except ModuleNotFoundError as err:  # not working on windows
             _LOGGER.error("usunsynk could not connect to %s: %s", port, err)
+            if os.name == "posix":
+                raise
 
     for port in ("127.0.0.1:502", "xxx", "localhost"):
         ss = uSunsynk(port=port)
