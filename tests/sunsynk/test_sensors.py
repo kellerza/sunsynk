@@ -117,6 +117,11 @@ def test_math() -> None:
     assert s.reg_to_value((200, 800)) == -600
     s.no_negative = True
     assert s.reg_to_value((200, 800)) == 0
+    s.no_negative = False
+    s.absolute = True
+    assert s.reg_to_value((200, 800)) == 600
+    s = MathSensor((1, 2), "", "", factors=(1, -1), absolute=True)
+    assert s.reg_to_value((200, 800)) == 600
 
 
 def test_update_func() -> None:

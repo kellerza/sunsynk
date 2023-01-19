@@ -165,7 +165,7 @@ def test_suggest(filters):
     assert filters.suggested_filter(ALL_SENSORS["temp_environment"]) == "avg"
     assert filters.suggested_filter(ALL_SENSORS["day_battery_charge"]) == "last"
     assert filters.suggested_filter(ALL_SENSORS["grid_load"]) == "step"
-    assert filters.suggested_filter(ALL_SENSORS["sd_status"]) == "step"
+    assert filters.suggested_filter(ALL_SENSORS["sd_status"]) == "last"
 
     rw_sensors = [s for s in ALL_SENSORS.values() if isinstance(s, RWSensor)]
     for s in rw_sensors:

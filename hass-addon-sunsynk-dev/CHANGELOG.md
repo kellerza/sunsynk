@@ -1,6 +1,14 @@
 # Changelog
 
-## **2023.01.12-0.2.7** - 2022-11-29
+## **2023.01.18-0.2.8**
+
+- Python sunsynk module 0.2.8:
+  - MathSensor absolute mode
+
+- Sunsynk Dev Add-On:
+  - Add non-essential test sensors
+
+## **2023.01.12-0.2.7**
 
 - Python sunsynk module 0.2.7:
   - Add bitmask sensors to support Modes (GM/BM/CM)
@@ -8,7 +16,7 @@
 - Sunsynk Dev Add-On:
   - Update to use the latest sensors
 
-## **2023.01.02-0.2.6** - 2022-11-29
+## **2023.01.02-0.2.6**
 
 - Python sunsynk module 0.2.6:
   - Add Load Limit RW Sensor (Zero Export & Limit to Load)
@@ -17,7 +25,7 @@
   - Always update config entity state after discovery
   - Round floats to 3 decomal place instead of 2
 
-## **2022.12.29b-0.2.5** - 2022-11-29
+## **2022.12.29b-0.2.5**
 
 - Sunsynk Dev Add-On:
   - Deprecate PROFILES (System Mode & System Mode Voltages)

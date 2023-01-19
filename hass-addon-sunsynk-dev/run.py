@@ -24,7 +24,7 @@ from mqtt import (
 )
 from options import OPT, SS_TOPIC
 
-from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER
+from sunsynk.definitions import ALL_SENSORS, DEPRECATED, RATED_POWER, WATT, MathSensor
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import NumberRWSensor, RWSensor, SelectRWSensor, TimeRWSensor
 from sunsynk.sunsynk import Sensor, Sunsynk
@@ -254,7 +254,22 @@ def startup() -> None:
             force=True,
         )
 
+    # Add test sensors
+    for sen in TEST_SENSORS:
+        ALL_SENSORS[sen.id] = sen
+
     setup_sensors()
+
+
+TEST_SENSORS = (
+    MathSensor(
+        (175, 167, 166), "Essential abs power", WATT, factors=(1, 1, -1), absolute=True
+    ),
+    # https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
+    MathSensor(
+        (175, 169, 166), "Essential l2 power", WATT, factors=(1, 1, -1), absolute=True
+    ),
+)
 
 
 def setup_sensors() -> None:
