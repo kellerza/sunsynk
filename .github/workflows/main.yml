@@ -10,8 +10,8 @@ jobs:
     name: Check black
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - uses: psf/black@stable
@@ -23,8 +23,8 @@ jobs:
     name: Check isort
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - uses: jamescurtin/isort-action@master
@@ -33,8 +33,8 @@ jobs:
     name: Check flake8
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - uses: TrueBrain/actions-flake8@master
@@ -43,8 +43,8 @@ jobs:
     name: Check pylint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install Requirements
@@ -56,15 +56,27 @@ jobs:
       - name: Run Pylint
         run: |
           pylint sunsynk
-          # pylint hass-addon-sunsynk
-          pylint hass-addon-sunsynk-dev
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            addon:
+              - 'hass-addon-sunsynk/**'
+            addondev:
+              - 'hass-addon-sunsynk-dev/**'
+      - if: steps.changes.outputs.addon == 'true'
+        name: Run pylint on the HASS addon
+        run: pylint hass-addon-sunsynk
+      - if: steps.changes.outputs.addondev == 'true'
+        name: Run pylint on the dev HASS addon
+        run: pylint hass-addon-sunsynk-dev
 
   mypy:
     name: Check mypy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install Requirements
@@ -79,8 +91,8 @@ jobs:
     name: Check pydocstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install Requirements
@@ -105,8 +117,8 @@ jobs:
     env:
       PYTHON: ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Requirements
@@ -118,8 +130,18 @@ jobs:
       - name: Run tests and generate coverage report
         run: |
           pytest --cov=./sunsynk --cov-report=xml -- tests/sunsynk
-          # pytest -- tests/hass-addon-sunsynk
-          pytest -- tests/hass-addon-sunsynk-dev
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            addon:
+              - 'hass-addon-sunsynk/**'
+            addondev:
+              - 'hass-addon-sunsynk-dev/**'
+      - if: steps.changes.outputs.addon == 'true'
+        run: pytest -- tests/hass-addon-sunsynk
+      - if: steps.changes.outputs.addondev == 'true'
+        run: pytest -- tests/hass-addon-sunsynk-dev
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -134,9 +156,9 @@ jobs:
     needs:
       - pytest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install pypa/build
