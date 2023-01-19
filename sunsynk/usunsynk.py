@@ -26,18 +26,18 @@ class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
         if scheme not in SOCKET_SCHEMES and scheme not in SERIAL_SCHEMES:
             sks = [f"{s}://" for s in SOCKET_SCHEMES]
             sks.extend(f"{s}://" for s in SERIAL_SCHEMES)
-            raise Exception(
+            raise ValueError(
                 "Bad port/connection URL. It should start with one of the following: "
                 + ", ".join(sks)
             )
 
-        self.client = modbus_for_url(
-            self.port,
-            {
-                "connection_timeout": self.timeout,  # sockio.TCP
-                "timeout": self.timeout,  # sockio.TCP
-            },
-        )
+        conn_opt = {
+            "timeout": self.timeout,  # sockio.TCP & Serial._timeout
+        }
+        if scheme and scheme in SOCKET_SCHEMES:
+            conn_opt["connection_timeout"] = self.timeout  # sockio.TCP
+
+        self.client = modbus_for_url(self.port, conn_opt)
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk support function code 0x10."""

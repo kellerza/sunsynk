@@ -1,5 +1,12 @@
 # Changelog
 
+## **2023.01.19-0.2.9**
+
+- Python sunsynk module 0.2.9:
+  - Removed connection_timeout for Serial
+
+- Sunsynk Dev Add-On: 0.2.9
+
 ## **2023.01.18-0.2.8**
 
 - Python sunsynk module 0.2.8:
