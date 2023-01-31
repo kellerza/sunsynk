@@ -1,4 +1,4 @@
-"""Sunsynk 3phase hybrid inverter sensor definitions."""
+"""Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 from typing import Dict, Final, List
 
 from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, TimeRWSensor
@@ -140,18 +140,17 @@ _SENSORS += (
 # General
 ##########
 RATED_POWER = Sensor((20, 21), "Rated power", WATT, 0.1) 
-BATTERY_CAPACITY = Sensor(102, "Battery Capacity", AMPS, -1),
-
 _SENSORS.append(RATED_POWER)
+
 _SENSORS += (
     Sensor(0, "Device Type"),                                   #{2: "Inverter", 3: "Hybrid Inverter", 4: "Micro Inverter", 5: "3 Phase Hybrid Inverter" }),
     FaultSensor((555, 556, 557, 558), "Fault"), 
-    InverterStateSensor(551, "Overall state"),                  # 0 = Off, 1 = On
-    SDStatusSensor(92, "SD Status", ""),  # type: ignore        # 3 Phase ??
+    InverterStateSensor(500, "Overall state"),                  
+    SDStatusSensor(0, "SD Status", ""),   # type: ignore        # 3 Phase does not have SD Card but crashes when removed
     SerialSensor((3, 4, 5, 6, 7), "Serial"),         
     TempSensor(540, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(541, "Radiator temperature", CELSIUS, 0.1),
-    Sensor(552, "Grid Connected Status"),                       # 0 = Off, 1 = On
+    Sensor(552, "Grid Connected Status"),                       # Bit 0 = INV Relay, 1 = Undef, 2 = Grid relay, 3 = Gen relay, 4 = Grid give, 5, Dry contact
 )
 
 
@@ -159,27 +158,27 @@ _SENSORS += (
 # Settings
 ###########
 _SENSORS += (
-    NumberRWSensor(128, "Grid Charge Battery current", AMPS, -1),
+    NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=210),      
     SelectRWSensor(130, "Grid Charge enabled", options={0: "Off", 1: "On"}),
     SelectRWSensor(146, "Use Timer", options={0: "Off", 255: "On"}),
-    NumberRWSensor(145, "Solar Export", WATT, -1),
+    SelectRWSensor(145, "Solar Export", options={0: "Off", 1: "On"}),
     NumberRWSensor(143, "Export Limit", WATT, max=RATED_POWER),
-    NumberRWSensor(108, "Battery Max Charge", AMPS, -1),        # should be max batt capacity
-    NumberRWSensor(109, "Battery Max Discharge", AMPS, -1),     # should be max batt capacity
-
+    NumberRWSensor(108, "Battery Max Charge", AMPS, max=210),       
+    NumberRWSensor(109, "Battery Max Discharge", AMPS, max=210),   
+    NumberRWSensor(102, "Battery Capacity", AMPS, max=2000)
 
 )
 
 # Additional optional sensors
 _SENSORS +=(
-    NumberRWSensor(103, "Battery max low??", VOLT, -1),         # interesting perhaps not available in menu. default 4500
+    NumberRWSensor(103, "Battery max low??", VOLT, -1),         # interesting perhaps not available in menu. default 4500 (45V)
     SelectRWSensor(133, "Generator Port Usage", options={0: "Generator", 1: "Smartload", 2: "Micro Inverter"}),
     SelectRWSensor(129, "Generator Charge enabled", options={0: "Off", 1: "On"}),
-    SelectRWSensor(112, "Batt Activate", options={0: "Off", 1: "On"}),
-    NumberRWSensor(113, "Batt Resistance", -1, -1),
+    SelectRWSensor(112, "Battery Activate", options={0: "Off", 1: "On"}),
+    NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
     NumberRWSensor(104, "System Zero Export Power", WATT, -1),
-    NumberRWSensor(105, "Batt Equalization Days", -1, -1),
-    NumberRWSensor(106, "Batt Equalization Hours", -1, -1),     # 1 = 0.5 hourse
+    NumberRWSensor(105, "Battery Equalization Days", -1, -1),
+    NumberRWSensor(106, "Battery Equalization Hours", -1, -1),     # 1 = 0.5 hourse
 
 
 )
@@ -273,12 +272,12 @@ PROG_CHARGE_OPTIONS = {
     2: "Allow Gen",
     3: "Allow Grid & Gen",
 }
-PROG_MODE_OPTIONS = {
-    0: "None",
-    4: "General",
-    8: "Backup",
-    16: "Charge",
-}
+# PROG_MODE_OPTIONS = {
+#     0: "None",
+#     4: "General",
+#     8: "Backup",
+#     16: "Charge",
+# }
 
 PROGRAM = (
     PROG1_TIME,
