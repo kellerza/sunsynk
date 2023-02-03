@@ -126,6 +126,33 @@ class SelectRWSensor(RWSensor):
         """Update value from current register values."""
         self.value = self.options.get(self.reg_value[0])
 
+@attr.define(slots=True)
+class SwitchRWSensor(RWSensor):
+    """Sensor with a set of options to switch from."""
+
+    options: Dict[int, str] = attr.field(default={})
+    _values_map: Dict[str, int] = {}
+
+    def __attrs_post_init__(self) -> None:
+        """Ensure correct parameters."""
+        self._values_map = {v: k for k, v in self.options.items()}
+
+    def available_values(self) -> List[str]:
+        """Get the available values for this sensor."""
+        return list(self.options.values())
+
+    def value_to_reg(self, value: str) -> Tuple[int, ...]:
+        """Get the reg value from a display value, or the current reg value if out of range."""
+        res = self._values_map.get(value)
+        if res is not None:
+            return (res,)
+        _LOGGER.warning("Unknown %s", value)
+        return (self.reg_value[0],)
+
+    def update_value(self) -> None:
+        """Update value from current register values."""
+        self.value = self.options.get(self.reg_value[0])
+
 
 @attr.define(slots=True)
 class TimeRWSensor(RWSensor):
