@@ -1,4 +1,5 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
+# pylint: disable=duplicate-code
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
 from sunsynk.rwsensors import (
     NumberRWSensor,

@@ -114,8 +114,6 @@ class SelectRWSensor(RWSensor):
 class SwitchRWSensor(SelectRWSensor):
     """Sensor with a set of options to switch from."""
 
-    pass
-
 
 @attr.define(slots=True, eq=False)
 class TimeRWSensor(RWSensor):
