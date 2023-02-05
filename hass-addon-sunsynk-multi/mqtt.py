@@ -127,6 +127,18 @@ class SelectEntity(Entity):
 
 
 @attr.define
+class SwitchEntity(Entity):
+    """A Home Assistant Binary Sensor entity."""
+
+    payload_on: str = attr.field(default=1)
+    payload_off: str = attr.field(default=0)
+    command_topic: str = attr.field(default=None, validator=required)
+
+    on_change: Callable = attr.field(default=None)
+    _path = "switch"
+
+
+@attr.define
 class NumberEntity(Entity):
     """A HomeAssistant Number entity."""
 
