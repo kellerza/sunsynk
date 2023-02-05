@@ -103,7 +103,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             start, length, unit=self.server_id
         )
         if res.function_code >= 0x80:  # test that we are not an error
-            raise Exception(
+            raise Exception(  # pylint: disable=broad-exception-raised
                 f"failed to read register {start} - function code: {res.function_code}"
             )
         return res.registers

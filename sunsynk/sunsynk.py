@@ -88,7 +88,7 @@ class Sunsynk:
                 self.timeouts += 1
                 raise
             except Exception as err:  # pylint: disable=broad-except
-                raise Exception(  # pylint: disable=raise-missing-from
+                raise Exception(  # pylint: disable=raise-missing-from,broad-exception-raised
                     f"({self.server_id},{grp[0]},{glen}) {err}"
                 )
 
