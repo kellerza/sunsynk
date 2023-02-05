@@ -113,6 +113,7 @@ class BinarySensorEntity(Entity):
 
     _path = "binary_sensor"
 
+
 @attr.define
 class SwitchEntity(Entity):
     """A Home Assistant Binary Sensor entity."""
