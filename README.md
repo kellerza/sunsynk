@@ -140,24 +140,7 @@ View/update the Modbus server ID on your inverter under "Advanced Settings" / "M
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/modbus_sn.png" width="80%">
 
-### (c) Reducing timeouts
-
-If you get many timeouts, or if the addon does not read all your sensors on startup (i.e. you see **Retrying individual sensors** in the log), you can try the following:
-
-- Set `READ_SENSORS_BATCH_SIZE` to a smaller value, i.e. 8
-- The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote device.
-
-The hardware and cabling also has a big impact:
-
-- Use a RJ45 converter with a GROUND pin. Ensure the ground is connected.
-- Ensure the data line is on a twisted pair
-- Re-crimp your RJ45 connector
-- Use a good quality solid CAT5e/CAT6 cable
-- Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking 
-  - It could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal platic RJ45 connector on the inverter side.
-  - While fault finding use as short as possible cable, completely outside any sprague/trunking etc.
-
-### (d) Check line voltage / termination resistor
+### (c) Check line voltage / termination resistor
 
 If your RS485 adapter has a termination resistor (typically 120 ohms), try removing it.
 
@@ -171,7 +154,6 @@ However, the RS485 BMS port may only be intended to connect to a single device.
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg">
 
- 
 ## Tested Inverters
 
 There are several inverters that are rebranded Deye inverters, so you might have success with other inverter brands as well, please add your inverter by editing this file and creating a Pull Request if you are successful.

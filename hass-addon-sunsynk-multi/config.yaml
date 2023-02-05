@@ -1,0 +1,61 @@
+---
+name: Sunsynk Inverter Add-on (multi)
+version: 2023.01.19-0.2.9
+slug: hass-addon-sunsynk-multi
+description: Add-on for the Sunsynk Inverter
+startup: services
+boot: auto
+url: "https://github.com/kellerza/sunsynk"
+uart: true
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+ports: {}
+ports_description: {}
+host_network: false
+map:
+  - share:rw
+options:
+  DRIVER: "umodbus"
+  INVERTERS:
+    - SERIAL_NR: "007"
+      HA_PREFIX: SS
+      MODBUS_ID: 1
+      PORT: ""
+      DEVICE: ""
+  SENSORS:
+    - total_pv_energy
+    - total_battery_charge
+    - total_battery_discharge
+    - total_grid_export
+    - total_grid_import
+    - battery_soc
+  MANUFACTURER: Sunsynk
+  READ_SENSORS_BATCH_SIZE: 60
+  NUMBER_ENTITY_MODE: "auto"
+  MQTT_HOST: core-mosquitto
+  MQTT_PORT: 1883
+  MQTT_USERNAME: hass
+  MQTT_PASSWORD: ""
+  DEBUG: 0
+schema:
+  DRIVER: str?
+  INVERTERS:
+    - SERIAL_NR: str
+      HA_PREFIX: str
+      MODBUS_ID: int(1,10)
+      PORT: str?
+      DEVICE: device(subsystem=tty)?
+  SENSORS:
+    - str
+  READ_SENSORS_BATCH_SIZE: int?
+  MANUFACTURER: str(5,)
+  NUMBER_ENTITY_MODE: list(auto|box|slider)?
+  MQTT_HOST: str
+  MQTT_PORT: port
+  MQTT_USERNAME: str
+  MQTT_PASSWORD: password
+  DEBUG: int

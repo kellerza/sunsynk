@@ -1,0 +1,6 @@
+[run]
+source = .
+omit =
+  hass-addon-mbusd
+  hass-addon-sunsynk
+  tests/hass-addon-sunsynk

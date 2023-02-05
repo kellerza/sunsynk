@@ -84,13 +84,18 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
         self.client = client.protocol
 
     async def write_register(self, *, address: int, value: int) -> bool:
-        """Write to a register."""
-        w_r = await self.client.write_registers(
-            address=address, values=(value,), unit=self.server_id
-        )
-        if w_r.function_code >= 0x80:  # test that we are not an error
-            raise ConnectionError("failed to write")
-        return True
+        """Write to a register - Sunsynk supports modbus function 0x10."""
+        try:
+            w_r = await self.client.write_registers(
+                address=address, values=(value,), unit=self.server_id
+            )
+            if w_r.function_code < 0x80:  # test that we are not an error
+                return True
+            _LOGGER.error("failed to write register %s=%s", address, value)
+        except asyncio.TimeoutError:
+            _LOGGER.error("timeout writing register %s=%s", address, value)
+        self.timeouts += 1
+        return False
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read a holding register."""
@@ -98,5 +103,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             start, length, unit=self.server_id
         )
         if res.function_code >= 0x80:  # test that we are not an error
-            raise Exception("failed to read")
+            raise Exception(
+                f"failed to read register {start} - function code: {res.function_code}"
+            )
         return res.registers

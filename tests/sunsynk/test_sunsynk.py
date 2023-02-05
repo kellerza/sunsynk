@@ -1,14 +1,15 @@
 """Test sunsynk library."""
 import logging
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
 # from sunsynk.definitions import serial
-from sunsynk import Sunsynk, update_sensors
+from sunsynk import Sunsynk
 from sunsynk.pysunsynk import pySunsynk
 from sunsynk.rwsensors import NumberRWSensor
+from sunsynk.state import InverterState
 from sunsynk.usunsynk import uSunsynk
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,33 +75,48 @@ async def test_ss_NotImplemented():
 @pytest.mark.asyncio
 @patch("sunsynk.Sunsynk.read_holding_registers")
 @patch("sunsynk.Sunsynk.write_register")
-async def test_ss_write_sensor(rhr: MagicMock, wreg: MagicMock):
+async def test_ss_write_sensor(
+    wreg: MagicMock, rhr: MagicMock, state: InverterState, caplog
+):
     ss = Sunsynk()
-    sen = NumberRWSensor((1, 2), "", min=1, max=10)
-    sen.reg_value = (99, 98)
-    await ss.write_sensor(sen)
+    ss.state = state
 
-    # with pytest.raises(NotImplementedError):
-    await ss.read_holding_registers(1, 1)
+    sen = NumberRWSensor((1,), "s1")
+    state.track(sen)
+
+    assert sen.value_to_reg(44, state.get) == (44,)
+
+    await ss.write_sensor(sen, 44)
+    assert state.registers == {1: 44}
+
+    wreg.assert_called_once()
+    assert wreg.call_args == call(address=1, value=44)
 
     # test a sensor with a bitmask
-    sen = NumberRWSensor((1,), "", min=1, max=10, bitmask=0x3)
+    sen = NumberRWSensor((1,), "s2", min=1, max=10, bitmask=0x3)
+    state.track(sen)
     rhr.return_value = (1,)
-    update_sensors([sen], {1: 99})
-    assert sen.reg_value != (99,)
-    assert sen.reg_value == (99 & 3,)
-    await ss.write_sensor(sen)
+
+    await ss.write_sensor(sen, 3)
+    assert state.registers == {1: 3}
+
+    await ss.write_sensor(sen, 5)
+    assert state.registers == {1: 1}
+    assert "outside" in caplog.text
 
 
 @pytest.mark.asyncio
 @patch("sunsynk.Sunsynk.read_holding_registers")
-async def test_ss_read_sensors(rhr: MagicMock):
+async def test_ss_read_sensors(rhr: MagicMock, state: InverterState):
     ss = Sunsynk()
+    ss.state = state
     sen = NumberRWSensor((1,), "", min=1, max=10)
+    ss.state.track(sen)
+
     rhr.return_value = (1,)
-    assert sen.value is None
+    assert ss.state[sen] is None
     await ss.read_sensors([sen])
-    assert sen.value == 1
+    assert ss.state[sen] == 1
 
     rhr.side_effect = Exception("a")
     with pytest.raises(Exception):

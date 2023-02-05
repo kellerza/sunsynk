@@ -126,13 +126,15 @@ _SENSORS += (
 # General
 ##########
 RATED_POWER = Sensor((16, 17), "Rated power", WATT, 0.1)
+SERIAL = SerialSensor((3, 4, 5, 6, 7), "Serial")
 _SENSORS.append(RATED_POWER)
 _SENSORS += (
+    RATED_POWER,
+    SERIAL,
     Sensor(0, "Device Type"),
     FaultSensor((103, 104, 105, 106, 107), "Fault"),
     InverterStateSensor(59, "Overall state"),
     SDStatusSensor(92, "SD Status", ""),  # type: ignore
-    SerialSensor((3, 4, 5, 6, 7), "Serial"),
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),

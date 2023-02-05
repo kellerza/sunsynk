@@ -40,7 +40,7 @@ class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
         self.client = modbus_for_url(self.port, conn_opt)
 
     async def write_register(self, *, address: int, value: int) -> bool:
-        """Write to a register - Sunsynk support function code 0x10."""
+        """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
             await asyncio.wait_for(
                 self.client.write_registers(
@@ -52,7 +52,8 @@ class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
             )
             return True
         except asyncio.TimeoutError:
-            _LOGGER.critical("timeout writing register %s=%s", address, value)
+            _LOGGER.error("timeout writing register %s=%s", address, value)
+        self.timeouts += 1
         return False
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
