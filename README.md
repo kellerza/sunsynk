@@ -214,4 +214,4 @@ Information in the Power forum was especially helpful to get this up and running
 
 @Ivan-L added the writable sensors.
 
-@kababook & @archi for the 3-phase definitions
+@kababook & @archi for the 3-phase definitions.
