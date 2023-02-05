@@ -123,7 +123,6 @@ def setup_driver() -> None:
         sys.exit(-1)
 
     for opt in OPT.inverters:
-
         kwargs: OrderedDict = {  # type:ignore
             "port": opt.port if opt.port else port_prefix + opt.device,
             "server_id": opt.modbus_id,

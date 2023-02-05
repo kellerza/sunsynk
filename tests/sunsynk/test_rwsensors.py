@@ -106,7 +106,6 @@ def test_select_rw(caplog, state) -> None:
 
 
 def test_time_rw(state) -> None:
-
     s = TimeRWSensor(60, "two", factor=0.1)
     state.track(s)
 

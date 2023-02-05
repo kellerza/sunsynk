@@ -72,7 +72,7 @@ class InverterState:
 
         if not self.onchange:
             return
-        for (sen, (new, old)) in changed.items():
+        for sen, (new, old) in changed.items():
             self.onchange(sen, new, old)
 
 
