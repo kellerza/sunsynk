@@ -119,7 +119,7 @@ Other tested adaptors
    ![settings](https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142.png)
 
    This gateway was tested with the Deye 8k EU Hybrid inverter. The following serial settings were used:
-   
+
    <img src="https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142-settings.png" width="80%" alt="settings">
 
 ## Fault finding
@@ -140,7 +140,24 @@ View/update the Modbus server ID on your inverter under "Advanced Settings" / "M
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/modbus_sn.png" width="80%">
 
-### (c) Check line voltage / termination resistor
+### (c) Reducing timeouts
+
+If you get many timeouts, or if the addon does not read all your sensors on startup (i.e. you see **Retrying individual sensors** in the log), you can try the following:
+
+- Set `READ_SENSORS_BATCH_SIZE` to a smaller value, i.e. 8
+- The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote device.
+
+The hardware and cabling also has a big impact:
+
+- Use a RJ45 converter with a GROUND pin. Ensure the ground is connected.
+- Ensure the data line is on a twisted pair
+- Re-crimp your RJ45 connector
+- Use a good quality solid CAT5e/CAT6 cable
+- Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking
+  - It could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal platic RJ45 connector on the inverter side.
+  - While fault finding use as short as possible cable, completely outside any sprague/trunking etc.
+
+### (d) Check line voltage / termination resistor
 
 If your RS485 adapter has a termination resistor (typically 120 ohms), try removing it.
 
@@ -153,6 +170,7 @@ RS485 devices are typically multi-drop with a termination resistor on the first 
 However, the RS485 BMS port may only be intended to connect to a single device.
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg">
+
 
 ## Tested Inverters
 
@@ -194,6 +212,6 @@ Tested with: USB-to-RS485 adaptor sourced from Aliexpress, very similar to [this
 
 Information in the Power forum was especially helpful to get this up and running, see [this thread](https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/). Special Kudos to Bloubul7, @jacauc and Sc00bs. The Node-RED flows can be found [here](https://github.com/jacauc/SunSynk-NodeRed)
 
-Sunsynk 8.8kW diagram from system32 in [this thread](https://powerforum.co.za/topic/8451-sunsynk-inverter-monitoring)
+@Ivan-L added the writable sensors.
 
-@Ivan-L added all the writable sensors.
+@kababook & @archi for the 3-phase definitions
