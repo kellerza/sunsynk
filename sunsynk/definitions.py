@@ -143,7 +143,6 @@ _SENSORS += (
 ###########
 _SENSORS += (
     Sensor(200, "Control Mode"),
-    Sensor(230, "Grid Charge Battery current", AMPS, -1),
     Sensor(232, "Grid Charge enabled", "", -1),
     Sensor(312, "Battery charging voltage", VOLT, 0.01),
     Sensor(603, "Bat1 SOC", "%"),
@@ -330,6 +329,12 @@ PROG_VOLT = (
 )
 _SENSORS.extend(PROG_VOLT)
 
+#############
+# Inverter settings
+#############
+_SENSORS.append(
+    NumberRWSensor(230, "Grid Charge Battery current", AMPS, min=0, max=185)
+)
 
 #############
 # Deprecated
