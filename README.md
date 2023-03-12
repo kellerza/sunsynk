@@ -119,7 +119,7 @@ Other tested adaptors
    ![settings](https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142.png)
 
    This gateway was tested with the Deye 8k EU Hybrid inverter. The following serial settings were used:
-   
+
    <img src="https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142-settings.png" width="80%" alt="settings">
 
 ## Fault finding
@@ -153,7 +153,7 @@ The hardware and cabling also has a big impact:
 - Ensure the data line is on a twisted pair
 - Re-crimp your RJ45 connector
 - Use a good quality solid CAT5e/CAT6 cable
-- Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking 
+- Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking
   - It could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal platic RJ45 connector on the inverter side.
   - While fault finding use as short as possible cable, completely outside any sprague/trunking etc.
 
@@ -171,7 +171,7 @@ However, the RS485 BMS port may only be intended to connect to a single device.
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg">
 
- 
+
 ## Tested Inverters
 
 There are several inverters that are rebranded Deye inverters, so you might have success with other inverter brands as well, please add your inverter by editing this file and creating a Pull Request if you are successful.
@@ -212,6 +212,6 @@ Tested with: USB-to-RS485 adaptor sourced from Aliexpress, very similar to [this
 
 Information in the Power forum was especially helpful to get this up and running, see [this thread](https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/). Special Kudos to Bloubul7, @jacauc and Sc00bs. The Node-RED flows can be found [here](https://github.com/jacauc/SunSynk-NodeRed)
 
-Sunsynk 8.8kW diagram from system32 in [this thread](https://powerforum.co.za/topic/8451-sunsynk-inverter-monitoring)
+@Ivan-L added the writable sensors.
 
-@Ivan-L added all the writable sensors.
+@kababook & @archi for the 3-phase definitions.

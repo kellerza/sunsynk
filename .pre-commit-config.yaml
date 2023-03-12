@@ -1,12 +1,12 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
       - id: black
         args:
           - --quiet
   - repo: https://github.com/PyCQA/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/flake8
@@ -23,16 +23,12 @@ repos:
     rev: v0.991
     hooks:
       - id: mypy
-        files: "^sunsynk/"
+        files: "^(sunsynk|hass-addon-multi)/"
         exclude: "sunsynk/async_modbus.py"
         additional_dependencies:
           ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
-      - id: mypy
-        files: "^hass-addon-sunsynk-dev/"
-        additional_dependencies:
-          ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
   - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.2.3
+    rev: 6.3.0
     hooks:
       - id: pydocstyle
         files: "sunsynk/.*.py"

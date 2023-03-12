@@ -10,138 +10,173 @@ from sunsynk.rwsensors import (
     Sensor,
     TimeRWSensor,
 )
-from sunsynk.sunsynk import register_map, update_sensors
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def test_bitmask(caplog) -> None:
+def test_bitmask(caplog, state) -> None:
     s = RWSensor(1, "", bitmask=0x1)
     with pytest.raises(NotImplementedError):
-        s.value_to_reg(None)
+        s.value_to_reg(None, state.get)
 
     s = NumberRWSensor(1, "", min=1, max=10, bitmask=0x1)
 
-    assert s.value is None
+    state.track(s)
 
-    s.update_reg_value(1)
-    assert "" == caplog.text
-    assert s.reg_value == (1,)
-    assert s.value == 1
+    assert state[s] is None
+    state.update({1: 1})
 
-    s.update_reg_value(3)
-    assert s.reg_value == (1,)
+    assert state[s] == 1
+    assert "outside" not in caplog.text
+
+    state.update({1: 3})
+
+    val = 3
+    reg = s.value_to_reg(val, state.get)
+    reg = s.check_bitmask(val, reg)
+
+    assert reg == (1,)
     assert "outside" in caplog.text
-    assert s.value == 1
 
 
-def test_number_rw() -> None:
-    s = NumberRWSensor(1, "", min=1, max=10)
+def test_number_rw(state) -> None:
+    s = NumberRWSensor(1, "s1", min=1, max=10, factor=1)
 
-    deps = s.dependencies()
-    assert len(deps) == 0
-    assert s.min_value == 1
-    assert s.max_value == 10
+    assert s.dependencies == []
+    assert s.min == 1
+    assert s.max == 10
 
     s.min = Sensor(2, "2")
-    deps = s.dependencies()
-    assert len(deps) == 1
-    assert deps[0].id == "2"
-    assert s.min_value == 0
-    s.min.value = 20
-    assert s.min_value == 20
-    s.min.value = "20"
-    assert s.min_value == 20
-    s.min.value = None
-    assert s.min_value == 0
+    assert s.dependencies == [s.min]
 
     s.max = Sensor(3, "3")
-    deps = s.dependencies()
-    assert len(deps) == 2
-    assert deps[1].id == "3"
-    assert s.max_value == 0
-    s.max.value = 30
-    assert s.max_value == 30
+    assert s.dependencies == [s.min, s.max]
 
-    assert s.update_reg_value(25)
-    assert s.reg_value == (25,)
+    state.track(s)
 
-    assert s.update_reg_value(500) is False
-    assert s.update_reg_value(-1) is False
-    assert s.reg_value == (25,)
+    state.update(
+        {
+            1: 230,
+            2: 1,
+            3: 300,
+        }
+    )
+    assert state[s] == 230
 
-    s = NumberRWSensor(1, "", factor=0.01)
-    s.reg_to_value(4850)
-    assert s.value == 48.5
-    s.update_reg_value(50)
-    assert s.reg_value == (5000,)
-    s.update_reg_value(50.1)
-    assert s.reg_value == (5010,)
+    state.update({1: 500})
+    assert state[s] == 500  # does not take min/max into account!
 
-    s.min = Sensor(2, "2", factor=0.01)
-    s.min.reg_to_value(4710)
-    assert s.min_value == 47.1
+    assert s.value_to_reg(200, state.get) == (200,)
+    assert s.value_to_reg(500, state.get) == (300,)
+    assert s.value_to_reg(-1, state.get) == (1,)
 
-    s.max = Sensor(3, "3", factor=0.01)
-    s.max.reg_to_value(5450)
-    assert s.max_value == 54.5
+    s = NumberRWSensor(1, "s2", factor=0.01)
+    state.track(s)
+
+    state.update({1: 4850})
+    assert state.registers[1] == 4850
+    assert state[s] == 48.5
+
+    long = NumberRWSensor((1, 2), "long", max=0xFFFFF)
+    reg55 = (55, 1)
+    res55 = (1 << 16) + 55
+    assert long.reg_to_value(reg55) == res55
+    assert long.value_to_reg(res55, state.get) == reg55
 
 
-def test_select_rw(caplog) -> None:
+def test_select_rw(caplog, state) -> None:
     s = SelectRWSensor(1, "", options={1: "one", 2: "two"})
-    s.reg_to_value(1)
 
-    assert s.value == "one"
+    assert s.reg_to_value((2,)) == "two"
+    assert s.value_to_reg("two", state.get) == (2,)
+    assert s.reg_to_value((5,)) is None
+
+    state.track(s)
+    state.update({1: 1})
+    assert state[s] == "one"
+
+    state.update({1: 2})
+    assert state[s] == "two"
+
     assert s.available_values() == ["one", "two"]
-    assert s.update_reg_value("two")
-    assert s.reg_value == (2,)
 
-    assert s.update_reg_value("five") is False
-    assert s.value == "two"
-    assert s.reg_value == (2,)
+    assert s.value_to_reg("five", state.get) == (2,)
     assert caplog.records[-1].message == "Unknown five"
     assert caplog.records[-1].levelname == "WARNING"
 
-    assert s.reg_to_value(2) == "two"
-    assert s.reg_to_value(5) is None
 
-
-def test_time_rw() -> None:
+def test_time_rw(state) -> None:
     s = TimeRWSensor(60, "two", factor=0.1)
-    rmap = register_map(60, [300])
-    update_sensors([s], rmap)
-    assert s.value == "3:00"
+    state.track(s)
 
-    assert len(s.available_values(15)) == 24 * 60 / 15
+    state.update(
+        {
+            60: 300,
+        }
+    )
+    assert state[s] == "3:00"
 
-    assert s.value_to_reg("0:00") == (0,)
-    assert s.value_to_reg("4:01") == (401,)
-    assert s.value_to_reg("23:59") == (2359,)
+    assert s.value_to_reg("0:00", state.get) == (0,)
+    assert s.value_to_reg("4:01", state.get) == (401,)
+    assert s.value_to_reg("23:59", state.get) == (2359,)
 
-    deps = s.dependencies()
-    assert len(deps) == 0
-    s.min = s_min = TimeRWSensor(50, "min", factor=0.1)
-    deps = s.dependencies()
-    assert len(deps) == 1
-    assert deps[0].id == "min"
-    s.max = s_max = TimeRWSensor(70, "max", factor=0.1)
-    deps = s.dependencies()
-    assert len(deps) == 2
-    assert deps[1].id == "max"
+    assert s.dependencies == []
+    s.min = TimeRWSensor(50, "min", factor=0.1)
+    assert s.dependencies == [s.min]
+    s.max = TimeRWSensor(70, "max", factor=0.1)
+    assert s.dependencies == [s.min, s.max]
 
-    s_min.reg_to_value(200)
-    s_max.reg_to_value(300)
-    assert s.available_values(15) == ["2:00", "2:15", "2:30", "2:45", "3:00"]
+    state.track(s.min, s.max)
+    assert state[s.min] is None
+    assert state[s.max] is None
+    state.update({50: 200, 70: 300})
+    assert state[s.min] == "2:00"
+    assert state[s.max] == "3:00"
 
-    s.reg_to_value(201)
-    assert s.available_values(15) == ["2:01", "2:00", "2:15", "2:30", "2:45", "3:00"]
+    assert s.available_values(15, state.get) == ["2:00", "2:15", "2:30", "2:45", "3:00"]
 
-    s.reg_to_value(2330)
-    s_min.reg_to_value(2330)
-    s.max.reg_to_value(30)
-    assert s.available_values(15) == ["23:30", "23:45", "0:00", "0:15", "0:30"]
+    s.reg_to_value((201,))
+    assert s.available_values(15, state.get) == [
+        "2:00",
+        "2:15",
+        "2:30",
+        "2:45",
+        "3:00",
+    ]
 
-    s.reg_to_value(200)
-    s_min.reg_to_value(200)
-    s.max.reg_to_value(200)
-    assert s.available_values(15) == ["2:00"]
+    state.update(
+        {
+            50: 2330,
+            60: 2330,
+            70: 30,
+        }
+    )
+    assert s.available_values(15, state.get) == [
+        "23:30",
+        "23:45",
+        "0:00",
+        "0:15",
+        "0:30",
+    ]
+
+    state.update(
+        {
+            50: 200,
+            70: 200,
+        }
+    )
+    assert s.available_values(15, state.get) == ["2:00"]
+
+
+# def test_update_sensor(caplog) -> None:
+#     s = NumberRWSensor(60, "two", factor=0.1)
+#     assert s.value is None
+#     update_sensors([s], {})
+#     assert s.value is None
+#     update_sensors([s], {60: 10})
+#     assert s.value == 1
+
+
+def test_bad_sensor(caplog) -> None:
+    NumberRWSensor((60, 1), "two", factor=0.1, bitmask=1)
+    assert "single register" in caplog.text

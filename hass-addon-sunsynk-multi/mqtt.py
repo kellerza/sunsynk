@@ -76,7 +76,7 @@ class Entity:
     def asdict(self) -> Dict:
         """Represent the entity as a dictionary, without empty values and defaults."""
 
-        def _filter(atrb: Any, value: Any) -> bool:
+        def _filter(atrb: attr.Attribute, value: Any) -> bool:
             return (
                 bool(value) and atrb.default != value and not inspect.isfunction(value)
             )
@@ -115,17 +115,6 @@ class BinarySensorEntity(Entity):
 
 
 @attr.define
-class SwitchEntity(Entity):
-    """A Home Assistant Binary Sensor entity."""
-
-    payload_on: str = attr.field(default=1)
-    payload_off: str = attr.field(default=0)
-    command_topic: str = attr.field(default=None, validator=required)
-    on_change: Callable = attr.field(default=None)
-    _path = "switch"
-
-
-@attr.define
 class SelectEntity(Entity):
     """A HomeAssistant Select entity."""
 
@@ -135,6 +124,18 @@ class SelectEntity(Entity):
     on_change: Callable = attr.field(default=None)
 
     _path = "select"
+
+
+@attr.define
+class SwitchEntity(Entity):
+    """A Home Assistant Binary Sensor entity."""
+
+    payload_on: str = attr.field(default=1)
+    payload_off: str = attr.field(default=0)
+    command_topic: str = attr.field(default=None, validator=required)
+
+    on_change: Callable = attr.field(default=None)
+    _path = "switch"
 
 
 @attr.define
@@ -237,6 +238,9 @@ class MQTTClient:
 
         task_remove = None
         if remove_entities:
+            _LOGGER.debug(
+                "Remove entities %s", [e.name if e else str(e) for e in entities]
+            )
             task_remove = asyncio.create_task(
                 self.remove_discovery_info(
                     device_ids=list(set(e.device.id for e in entities)),

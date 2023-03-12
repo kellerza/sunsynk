@@ -1,11 +1,11 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
-from typing import Final
-
+# pylint: disable=duplicate-code
+from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
-    TimeRWSensor,
     SwitchRWSensor,
+    TimeRWSensor,
 )
 from sunsynk.sensors import (
     FaultSensor,
@@ -16,13 +16,6 @@ from sunsynk.sensors import (
     SerialSensor,
     TempSensor,
 )
-
-CELSIUS: Final = "°C"
-KWH: Final = "kWh"
-AMPS: Final = "A"
-VOLT: Final = "V"
-WATT: Final = "W"
-
 
 _SENSORS: list[Sensor] = []
 DEPRECATED: dict[str, Sensor] = {}
@@ -194,8 +187,8 @@ _SENSORS += (
     SelectRWSensor(112, "Battery Activate", options={0: "Off", 1: "On"}),
     NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
     NumberRWSensor(104, "System Zero Export Power", WATT, -1),
-    NumberRWSensor(105, "Battery Equalization Days", -1, -1),
-    NumberRWSensor(106, "Battery Equalization Hours", -1, -1),  # 1 = 0.5 hourse
+    NumberRWSensor(105, "Battery Equalization Days", "days", -1),
+    NumberRWSensor(106, "Battery Equalization Hours", "h", -1),  # 1 = 0.5 hours
 )
 
 # Absolute min and max voltage based on Deye inverter

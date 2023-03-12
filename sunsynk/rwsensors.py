@@ -2,61 +2,54 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Generator, List, Tuple
+from typing import Callable, Generator, Union
 
 import attr
 
-from sunsynk.helpers import SSTime, ensure_tuple
+from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num
 from sunsynk.sensors import Sensor
 
 _LOGGER = logging.getLogger(__name__)
 
 
-@attr.define(slots=True)
+@attr.define(slots=True, eq=False)
 class RWSensor(Sensor):
     """Read & write sensor."""
 
-    bitmask: int = 0
-
-    def update_reg_value(self, value: Any) -> bool:
-        """Update the reg_value from a new value."""
-        newv = self.value_to_reg(value)
-        if self.bitmask and newv[0] != (newv[0] & self.bitmask):
+    def check_bitmask(self, value: ValType, regs: RegType) -> RegType:
+        """Check the registers are within the bitmask."""
+        if self.bitmask and regs[0] != (regs[0] & self.bitmask):
             _LOGGER.error(
                 "Trying to set a value outside the sensor's bitmask! %s (value=%s, regvalue=%s)",
                 self.name,
                 value,
-                newv,
+                regs,
             )
-            newv = (newv[0] & self.bitmask,)
+            return (regs[0] & self.bitmask,)
+        return regs
 
-        newv = ensure_tuple(newv)
-
-        if newv == self.reg_value:
-            return False
-
-        self.reg_value = newv
-        self.update_value()
-
-        _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
-
-        return True
-
-    def value_to_reg(self, value: Any) -> Tuple[int, ...]:
+    def value_to_reg(
+        self, value: ValType, resolve: Callable[[Sensor, ValType], ValType]
+    ) -> RegType:
         """Get the reg value from a display value."""
         raise NotImplementedError()
 
     def __attrs_post_init__(self) -> None:
         """Run post init."""
-        if self.bitmask > 0 and len(self.reg_address) != 1:
+        if self.bitmask > 0 and len(self.address) != 1:
             _LOGGER.fatal(
                 "Sensors with a bitmask should reference a single register! %s [registers=%s]",
                 self.name,
-                self.reg_address,
+                self.address,
             )
 
+    @property
+    def dependencies(self) -> list[Sensor]:
+        """Dependencies."""
+        return []
 
-@attr.define(slots=True)
+
+@attr.define(slots=True, eq=False)
 class NumberRWSensor(RWSensor):
     """Numeric sensor which can be read and written."""
 
@@ -64,140 +57,129 @@ class NumberRWSensor(RWSensor):
     max: int | float | Sensor = attr.field(default=100)
 
     @property
-    def min_value(self) -> int | float:
-        """Get the min value from the configured sensor or static value."""
-        return self._static_or_sensor_value(self.min)
-
-    @property
-    def max_value(self) -> int | float:
-        """Get the max value from the configured sensor or static value."""
-        return self._static_or_sensor_value(self.max)
-
-    def dependencies(self) -> List[Sensor]:
+    def dependencies(self) -> list[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
-        sensors: List[Sensor] = []
-        if isinstance(self.min, Sensor):
-            sensors.append(self.min)
-        if isinstance(self.max, Sensor):
-            sensors.append(self.max)
-        return sensors
+        return [s for s in (self.min, self.max) if isinstance(s, Sensor)]
 
-    def value_to_reg(self, value: int | float) -> Tuple[int, ...]:
+    def value_to_reg(
+        self, value: ValType, resolve: Callable[[Sensor, ValType], ValType]
+    ) -> RegType:
         """Get the reg value from a display value, or the current reg value if out of range."""
-        if value < self.min_value or value > self.max_value:
-            # Return current reg_value if value is out of range
-            return self.reg_value
-
-        return (int(value / abs(self.factor)),)
-
-    @staticmethod
-    def _static_or_sensor_value(val: int | float | Sensor) -> int | float:
-        if isinstance(val, Sensor):
-            if isinstance(val.value, (int, float)):
-                return val.value
-            return float(val.value or 0)
-        return val
+        if value is None or isinstance(value, str):
+            raise TypeError
+        minv = resolve_num(resolve, self.min, 0)
+        maxv = resolve_num(resolve, self.max, 100)
+        val = int(max(minv, min(maxv, value / abs(self.factor))))
+        if len(self.address) == 1:
+            return (val,)
+        if len(self.address) == 2:
+            return (val & 0xFFFF, int(val >> 16))
+        raise NotImplementedError
 
 
-@attr.define(slots=True)
+@attr.define(slots=True, eq=False)
 class SelectRWSensor(RWSensor):
     """Sensor with a set of options to select from."""
 
-    options: Dict[int, str] = attr.field(default={})
-    _values_map: Dict[str, int] = {}
+    options: dict[int, str] = attr.field(default={})
 
-    def __attrs_post_init__(self) -> None:
-        """Ensure correct parameters."""
-        self._values_map = {v: k for k, v in self.options.items()}
-
-    def available_values(self) -> List[str]:
+    def available_values(self) -> list[str]:
         """Get the available values for this sensor."""
         return list(self.options.values())
 
-    def value_to_reg(self, value: str) -> Tuple[int, ...]:
+    def value_to_reg(
+        self, value: ValType, resolve: Callable[[Sensor, ValType], ValType]
+    ) -> RegType:
         """Get the reg value from a display value, or the current reg value if out of range."""
-        res = self._values_map.get(value)
-        if res is not None:
-            return (res,)
+        value = str(value)
+        for reg, val in self.options.items():
+            if val == value:
+                return (reg,)
+        # Unknown value, try to get the existing value
         _LOGGER.warning("Unknown %s", value)
-        return (self.reg_value[0],)
+        if resolve is None:
+            return None
+        current = resolve(self, None)
+        return self.value_to_reg(current, None)  # type:ignore
 
-    def update_value(self) -> None:
-        """Update value from current register values."""
-        self.value = self.options.get(self.reg_value[0])
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the register."""
+        if regs[0] in self.options:
+            return self.options[regs[0]]
+        _LOGGER.warning("%s: Unknown register value %s", self.id, regs[0])
+        return None
+
 
 @attr.define(slots=True)
 class SwitchRWSensor(RWSensor):
     """Sensor with a set of options to switch from."""
 
-    options: Dict[int, str] = attr.field(default={})
-    _values_map: Dict[str, int] = {}
+    options: dict[int, str] = attr.field(default={})
+    _values_map: dict[str, int] = {}
 
     def __attrs_post_init__(self) -> None:
         """Ensure correct parameters."""
         self._values_map = {v: k for k, v in self.options.items()}
 
-    def available_values(self) -> List[str]:
+    def available_values(self) -> list[str]:
         """Get the available values for this sensor."""
         return list(self.options.values())
 
-    def value_to_reg(self, value: str) -> Tuple[int, ...]:
+    def value_to_reg(
+        self, value: ValType, resolve: Callable[[Sensor, ValType], ValType]
+    ) -> RegType:
         """Get the reg value from a display value, or the current reg value if out of range."""
-        res = self._values_map.get(value)
+        res = self._values_map.get(str(value))
         if res is not None:
             return (res,)
         _LOGGER.warning("Unknown %s", value)
-        return (self.reg_value[0],)
+        current = resolve(self, None)
+        return self.value_to_reg(current, None)  # type:ignore
 
-    def update_value(self) -> None:
-        """Update value from current register values."""
-        self.value = self.options.get(self.reg_value[0])
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the register."""
+        if regs[0] in self.options:
+            return self.options[regs[0]]
+        _LOGGER.warning("%s: Unknown register value %s", self.id, regs[0])
+        return None
 
 
-@attr.define(slots=True)
+@attr.define(slots=True, eq=False)
 class TimeRWSensor(RWSensor):
     """Extract the time."""
 
     min: TimeRWSensor = attr.field(default=None)
     max: TimeRWSensor = attr.field(default=None)
 
-    @property
-    def time(self) -> SSTime:
-        """Get the value of this sensor as total minutes."""
-        time = SSTime()
-        time.reg_value = self.reg_value[0]
-        return time
-
-    def available_values(self, step_minutes: int) -> List[str]:
+    def available_values(
+        self, step_minutes: int, resolve: Callable[[Sensor, ValType], ValType]
+    ) -> list[str]:
         """Get the available values for this sensor."""
         full_day = 24 * 60
 
-        min_val = self.min.time.minutes if self.min else 0
-        max_val = self.max.time.minutes if self.max else full_day
-        val = self.time.minutes
+        min_val = SSTime(string=str(resolve(self.min, 0))).minutes if self.min else 0
+        max_val = (
+            SSTime(string=str(resolve(self.max, 0))).minutes if self.max else full_day
+        )
+        val = SSTime(string=str(resolve(self, 0))).minutes
 
         time_range = self._range(min_val, max_val, val, step_minutes, full_day)
+        return list(map(lambda m: SSTime(minutes=m).str_value, time_range))
 
-        return list(map(lambda i: SSTime(i).str_value, time_range))
-
-    def dependencies(self) -> List[Sensor]:
+    @property
+    def dependencies(self) -> list[Sensor]:
         """Get a list of sensors upon which this sensor depends."""
-        sensors: List[Sensor] = []
-        if isinstance(self.min, TimeRWSensor):
-            sensors.append(self.min)
-        if isinstance(self.max, TimeRWSensor):
-            sensors.append(self.max)
-        return sensors
+        return [s for s in (self.min, self.max) if isinstance(s, TimeRWSensor)]
 
-    def update_value(self) -> None:
-        """Extract the time."""
-        self.value = self.time.str_value
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the time from a register."""
+        return SSTime(register=regs[0]).str_value
 
-    def value_to_reg(self, value: str) -> Tuple[int, ...]:
+    def value_to_reg(
+        self, value: ValType, resolve: Callable[[Sensor, ValType], ValType]
+    ) -> RegType:
         """Get the reg value from a display value."""
-        time = SSTime()
-        time.str_value = value
-        return (time.reg_value,)
+        return (SSTime(string=str(value)).reg_value,)
 
     @staticmethod
     def _range(
@@ -210,3 +192,17 @@ class TimeRWSensor(RWSensor):
             yield i % modulo
         if start == end or start != end % modulo:
             yield end
+
+
+def resolve_num(
+    resolve: Callable[[Sensor, ValType], ValType],
+    val: Union[NumType, Sensor],
+    default: NumType = 0,
+) -> NumType:
+    """Resolve a number helper."""
+    if isinstance(val, (int, float)):
+        return val
+    if isinstance(val, Sensor):
+        res = resolve(val, default)
+        return as_num(res)
+    return as_num(val)

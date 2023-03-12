@@ -1,12 +1,17 @@
 """Sensor classes represent modbus registers for an inverter."""
-from __future__ import annotations
-
 import logging
-from typing import Callable, Generator, List, Optional, Sequence, Tuple, Union
 
 import attr
 
-from sunsynk.helpers import ensure_tuple, int_round, signed, slug
+from sunsynk.helpers import (
+    NumType,
+    RegType,
+    ValType,
+    ensure_tuple,
+    int_round,
+    signed,
+    slug,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,156 +21,116 @@ class Sensor:
     """Sunsynk sensor."""
 
     # pylint: disable=too-many-instance-attributes
-
-    reg_address: Tuple[int, ...] = attr.field(converter=ensure_tuple)
+    address: RegType = attr.field(converter=ensure_tuple)
     name: str = attr.field()
     unit: str = attr.field(default="")
     factor: float = attr.field(default=1)
-    # func: Union[
-    #     None, Callable[[Tuple[int, ...]], str], Callable[[float], Any]
-    # ] = attr.field(default=None)
-    reg_value: Tuple[int, ...] = attr.field(init=False, factory=tuple)
-    on_change: Optional[Callable] = attr.field(default=None)
-    _value: Union[float, int, str, None] = None
-
-    def append_to(self, arr: List[Sensor]) -> Sensor:
-        """Append to a list of sensors."""
-        arr.append(self)
-        return self
-
-    def reg_to_value(self, value: Tuple[int, ...]) -> Union[float, int, str, None]:
-        """Update the reg_value and update."""
-        if isinstance(value, tuple):
-            self.reg_value = value
-        else:
-            self.reg_value = (value,)
-        self.update_value()
-        return self.value
+    bitmask: int = 0
 
     @property
     def id(self) -> str:  # pylint: disable=invalid-name
         """Get the sensor ID."""
         return slug(self.name)
 
-    def update_value(self) -> None:
-        """Update the value from the reg_value."""
-        val: Union[int, float] = self.reg_value[0]
-        if len(self.reg_value) > 1:
-            val += self.reg_value[1] << 16
-        elif self.factor < 0:  # Indicate this register is signed
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Return the value from the registers."""
+        val: NumType = regs[0]
+        if len(regs) == 2:
+            val += regs[1] << 16
+        elif self.factor < 0:  # Indicates this register is signed
             val = signed(val)
-        self.value = int_round(val * abs(self.factor))
+        val = int_round(val * abs(self.factor))
+        _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
+        return val
 
-        _LOGGER.debug("%s=%s%s %s", self.name, self.value, self.unit, self.reg_value)
+    def __hash__(self) -> int:
+        """Hash the sensor id."""
+        return hash(self.id)
 
-    @property
-    def value(self) -> Union[float, int, str, None]:
-        """Get the current value."""
-        return self._value
-
-    @value.setter
-    def value(self, val: Union[float, int, str, None]) -> None:
-        old_value = self._value
-        self._value = val
-        if old_value != val and self.on_change:
-            self.on_change()
+    def __eq__(self, other: object) -> bool:
+        """Sensor equality is based on the ID only."""
+        if not isinstance(other, Sensor):
+            raise TypeError
+        return self.id == other.id
 
 
-@attr.define(slots=True)
+@attr.define(slots=True, eq=False)
 class MathSensor(Sensor):
     """Math sensor, add multiple registers."""
 
-    factors: Tuple[float, ...] = attr.field(default=None, converter=ensure_tuple)
+    factors: tuple[float, ...] = attr.field(default=None, converter=ensure_tuple)
     no_negative: bool = attr.field(default=False)
     absolute: bool = attr.field(default=False)
 
-    def update_value(self) -> None:
-        """Update the value."""
-        self.value = int_round(
-            sum(signed(i) * s for i, s in zip(self.reg_value, self.factors))
-        )
-        if self.absolute and not isinstance(self.value, str) and self.value < 0:
-            self.value = -self.value
-        if self.no_negative and not isinstance(self.value, str) and self.value < 0:
-            self.value = 0
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Calculate the math value."""
+        val = int_round(sum(signed(i) * s for i, s in zip(regs, self.factors)))
+        if self.absolute and val < 0:
+            val = -val
+        if self.no_negative and val < 0:
+            val = 0
+        return val
 
     def __attrs_post_init__(self) -> None:
         """Ensure correct parameters."""
-        assert len(self.reg_address) == len(self.factors)
+        assert len(self.address) == len(self.factors)
 
 
-def group_sensors(
-    sensors: Sequence[Sensor], allow_gap: int = 3, max_group_size: int = 60
-) -> Generator[list[int], None, None]:
-    """Group sensor registers into blocks for reading."""
-    if not sensors:
-        return
-    regs = {r for s in sensors for r in s.reg_address}
-    group: List[int] = []
-    adr0 = 0
-    for adr1 in sorted(regs):
-        if group and (adr1 - adr0 > allow_gap or len(group) >= max_group_size):
-            yield group
-            group = []
-        adr0 = adr1
-        group.append(adr1)
-    if group:
-        yield group
-
-
+@attr.define(slots=True, eq=False)
 class TempSensor(Sensor):
     """Offset by 100 for temperature."""
 
-    def update_value(self) -> None:
-        """Offset by 100 for temperature."""
-        val: Union[int, float] = self.reg_value[0]
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the temperature (offset by 100)."""
         try:
-            _LOGGER.debug(str(val))
-            self.value = int_round((float(val) * abs(self.factor)) - 100)  # type: ignore
+            val = regs[0]
+            return int_round((float(val) * abs(self.factor)) - 100)  # type: ignore
         except (TypeError, ValueError) as err:
-            self.value = 0
             _LOGGER.error("Could not decode temperature: %s", err)
+        return None
 
 
+@attr.define(slots=True, eq=False)
 class SDStatusSensor(Sensor):
     """SD card status."""
 
-    def update_value(self) -> None:
-        """SD card status."""
-        self.value = {
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the SD card status."""
+        return {
             1000: "fault",
             2000: "ok",
-        }.get(self.reg_value[0]) or f"unknown {self.reg_value[0]}"
+        }.get(regs[0]) or f"unknown {regs[0]}"
 
 
+@attr.define(slots=True, eq=False)
 class InverterStateSensor(Sensor):
     """Inverter status."""
 
-    def update_value(self) -> None:
-        """Inverter status."""
-        if self.reg_value[0] == 2:
-            self.value = "ok"
-        else:
-            self.value = f"unknown {self.reg_value[0]}"
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the inverter status."""
+        if regs[0] == 2:
+            return "ok"
+        return f"unknown {regs[0]}"
 
 
+@attr.define(slots=True, eq=False)
 class SerialSensor(Sensor):
-    """Decode Inverter serial number."""
+    """Decode the inverter serial number."""
 
-    def update_value(self) -> None:
-        """Decode Inverter serial number."""
-        self.value = ""
-        res = ""
-        for b16 in self.reg_value:
-            res += chr(b16 >> 8)
-            res += chr(b16 & 0xFF)
-        self.value = res
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the inverter serial number."""
+        val = ""
+        for b16 in regs:
+            val += chr(b16 >> 8)
+            val += chr(b16 & 0xFF)
+        return val
 
 
+@attr.define(slots=True, eq=False)
 class FaultSensor(Sensor):
     """Decode Inverter faults."""
 
-    def update_value(self) -> None:
+    def reg_to_value(self, regs: RegType) -> ValType:
         """Decode Inverter faults."""
         faults = {
             13: "Working mode change",
@@ -184,11 +149,11 @@ class FaultSensor(Sensor):
         }
         err = []
         off = 0
-        for b16 in self.reg_value:
+        for b16 in regs:
             for bit in range(16):
                 msk = 1 << bit
                 if msk & b16:
                     msg = f"F{bit+off+1:02} " + faults.get(off + msk, "")
                     err.append(msg.strip())
             off += 16
-        self.value = ", ".join(err)
+        return ", ".join(err)

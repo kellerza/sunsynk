@@ -1,7 +1,6 @@
 """Sunsynk sensor tests."""
 import logging
 from typing import Sequence
-from unittest.mock import Mock
 
 import pytest
 
@@ -14,18 +13,43 @@ from sunsynk.sensors import (
     Sensor,
     SerialSensor,
     TempSensor,
-    group_sensors,
 )
-from sunsynk.sunsynk import register_map, update_sensors
+from sunsynk.state import group_sensors
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def test_sen():
-    a = []
-    s = Sensor(0, "S 1").append_to(a)
-    assert a[0] is s
+    s = Sensor(0, "S 1")
+    a = [s]
+    assert a[0] == s
     assert s.id == "s_1"
+
+    # Test __hash__
+    s2 = Sensor(0, "S 2")
+    ss = {s, s}
+    assert len(ss) == 1
+    ss = {s, s2}
+    assert len(ss) == 2
+
+    # Test eq
+    s22 = Sensor(0, "S 2")
+    assert s != s2
+    assert s22 == s2
+    with pytest.raises(TypeError):
+        assert s == 0
+
+
+def test_sensor_hash():
+    ss = {Sensor(0, "S 1"), Sensor(0, "S 1")}
+    assert len(ss) == 1
+    ss = {Sensor(0, "S 1"), Sensor(0, "S 2")}
+    assert len(ss) == 2
+
+    s = Sensor(0, "S 1")
+    m = MathSensor((0, 1), "math1", factors=(1, 1))
+    ss = {s, m}
+    assert len(ss) == 2
 
 
 def test_group() -> None:
@@ -77,7 +101,7 @@ def test_ids() -> None:
     for name, sen in ALL_SENSORS.items():
         assert name == sen.id
 
-        if sen.factor and sen.factor < 0 and len(sen.reg_address) > 1:
+        if sen.factor and sen.factor < 0 and len(sen.address) > 1:
             assert False, "only single signed supported"
 
         if sen.id in DEPRECATED:
@@ -90,15 +114,15 @@ def test_ids() -> None:
 
 def test_other_sensors() -> None:
     s = TempSensor(1, "", "", 0.1)
-    assert s.reg_to_value(1000) == 0
+    assert s.reg_to_value((1000,)) == 0
 
     s = SDStatusSensor(1, "", "")
-    assert s.reg_to_value(1000) == "fault"
-    assert s.reg_to_value(1) == "unknown 1"
+    assert s.reg_to_value((1000,)) == "fault"
+    assert s.reg_to_value((1,)) == "unknown 1"
 
     s = InverterStateSensor(1, "", "")
-    assert s.reg_to_value(2) == "ok"
-    assert s.reg_to_value(1) == "unknown 1"
+    assert s.reg_to_value((2,)) == "ok"
+    assert s.reg_to_value((1,)) == "unknown 1"
 
 
 def test_math() -> None:
@@ -130,15 +154,16 @@ def test_update_func() -> None:
     assert s.reg_to_value(regs) == "AH78"
 
 
-def test_update_float(caplog) -> None:
-    s = TempSensor(60, "two", factor=0.1)
-    rmap = register_map(60, [1001])
-    update_sensors([s], rmap)
-    assert s.value == 0.1
+# def test_update_float(caplog) -> None:
+#     s = TempSensor(60, "two", factor=0.1)
+#     rmap = register_map(60, [1001])
+#     update_sensors([s], rmap)
 
-    s.reg_value = (None,)
-    s.update_value()
-    assert "Could not decode" in caplog.text
+#     assert s.value == 0.1
+
+#     s.reg_value = (None,)
+#     s.update_value()
+#     assert "Could not decode" in caplog.text
 
 
 def test_decode_fault() -> None:
@@ -162,20 +187,3 @@ def test_dep() -> None:
 
     ctl = ALL_SENSORS["grid_ct_power"]
     assert ctl.id not in DEPRECATED
-
-
-def test_on_changed() -> None:
-    s = Sensor(1, "", "")
-    handler = Mock()
-    s.on_change = handler
-
-    s.value = 5
-    handler.assert_called_once()
-
-    handler.reset_mock()
-    s.reg_to_value(10)
-    handler.assert_called_once()
-
-    handler.reset_mock()
-    s.reg_to_value(10)
-    handler.assert_not_called()

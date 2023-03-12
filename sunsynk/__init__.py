@@ -1,7 +1,14 @@
 """Sunsynk library."""
-# pylint: disable=unused-import
-# flake8: noqa
-from .sensors import Sensor, group_sensors
-from .sunsynk import Sunsynk, update_sensors
+from typing import Final
 
-VERSION = "0.2.10"
+# flake8: noqa
+from .sensors import Sensor  # pylint: disable=unused-import
+from .sunsynk import Sunsynk  # pylint: disable=unused-import
+
+VERSION = "0.3.0"
+
+CELSIUS: Final = "°C"
+KWH: Final = "kWh"
+AMPS: Final = "A"
+VOLT: Final = "V"
+WATT: Final = "W"

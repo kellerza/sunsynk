@@ -1,6 +1,5 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
-from typing import Dict, Final, List
-
+from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
 from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, TimeRWSensor
 from sunsynk.sensors import (
     FaultSensor,
@@ -12,14 +11,8 @@ from sunsynk.sensors import (
     TempSensor,
 )
 
-CELSIUS: Final = "°C"
-KWH: Final = "kWh"
-AMPS: Final = "A"
-VOLT: Final = "V"
-WATT: Final = "W"
-
-_SENSORS: List[Sensor] = []
-DEPRECATED: Dict[str, Sensor] = {}
+_SENSORS: list[Sensor] = []
+DEPRECATED: dict[str, Sensor] = {}
 
 ##########
 # Battery
@@ -126,13 +119,15 @@ _SENSORS += (
 # General
 ##########
 RATED_POWER = Sensor((16, 17), "Rated power", WATT, 0.1)
+SERIAL = SerialSensor((3, 4, 5, 6, 7), "Serial")
 _SENSORS.append(RATED_POWER)
 _SENSORS += (
+    RATED_POWER,
+    SERIAL,
     Sensor(0, "Device Type"),
     FaultSensor((103, 104, 105, 106), "Fault"),
     InverterStateSensor(59, "Overall state"),
     SDStatusSensor(92, "SD Status", ""),  # type: ignore
-    SerialSensor((3, 4, 5, 6, 7), "Serial"),
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
@@ -339,12 +334,12 @@ _SENSORS.append(
 #############
 # Deprecated
 #############
-ALL_SENSORS: Dict[str, Sensor] = {s.id: s for s in _SENSORS}
+ALL_SENSORS: dict[str, Sensor] = {s.id: s for s in _SENSORS}
 
 
 def _deprecated() -> None:
     """Populate the deprecated sensors."""
-    dep_map: Dict[str, Sensor] = {
+    dep_map: dict[str, Sensor] = {
         "aux_power": Sensor(166, "AUX load", WATT, -1),
         "battery_temperature": TempSensor(182, "Temp Battery", CELSIUS, 0.1),
         "dc_transformer_temperature": TempSensor(

@@ -361,7 +361,7 @@ async def read_sensors(
         _LOGGER.error("Read Error%s: %s", msg, err)
         READ_ERRORS += 1
         if READ_ERRORS > 3:
-            raise Exception(f"Multiple Modbus read errors: {err}") from err
+            raise IOError(f"Multiple Modbus read errors: {err}") from err
 
     if retry_single:
         _LOGGER.info("Retrying individual sensors: %s", [s.name for s in SENSORS])
@@ -412,7 +412,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
 
     powr = float(5000)
     try:
-        powr = float(RATED_POWER.value)  # type:ignore
+        powr = float(RATED_POWER.value)  # type:ignore pylint: disable=no-member
     except (ValueError, TypeError):
         pass
 
@@ -432,7 +432,9 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
             old_reg_value = sensor.reg_value
             if not sensor.update_reg_value(value):
                 continue
-            await SUNSYNK.write_sensor(sensor, msg=f"[old {old_reg_value}]")
+            await SUNSYNK.write_sensor(  # pylint: disable=no-value-for-parameter
+                sensor, msg=f"[old {old_reg_value}]"
+            )
             await read_sensors([sensor], msg=sensor.name)
             await publish_sensors([filt], force=True)
 

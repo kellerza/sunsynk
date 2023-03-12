@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
-      - uses: psf/black@stable
+      - uses: psf/black@23.1.0
         with:
           options: "--check"
           src: "."
@@ -64,6 +64,8 @@ jobs:
               - 'hass-addon-sunsynk/**'
             addondev:
               - 'hass-addon-sunsynk-dev/**'
+            addonmulti:
+              - 'hass-addon-sunsynk-multi/**'
       - if: steps.changes.outputs.addon == 'true'
         name: Run pylint on the HASS addon
         run: pylint hass-addon-sunsynk
