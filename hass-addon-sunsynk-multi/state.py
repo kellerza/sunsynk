@@ -99,11 +99,11 @@ class State:  # pylint: disable=too-few-public-methods
         #     return _handler
 
         if self.hidden:
-            raise Exception(f"Do not create hidden entities! {self}")
+            raise ValueError(f"Do not create hidden entities! {self}")
         if self.sensor is None:
-            raise Exception(f"Cannot create entity if no sensor specified! {self}")
+            raise ValueError(f"Cannot create entity if no sensor specified! {self}")
         if dev is None:
-            raise Exception(f"No device specified for create_entiry! {self}")
+            raise ValueError(f"No device specified for create_entity! {self}")
         if isinstance(dev, Entity):
             dev = dev.device
 
@@ -168,7 +168,7 @@ class TimeoutState(State):
     def create_entity(self, dev: Union[Device, Entity, None]) -> Entity:
         """MQTT entities for stats."""
         if dev is None:
-            raise Exception(f"No device specified for create_entiry! {self}")
+            raise ValueError(f"No device specified for create_entity! {self}")
         if isinstance(dev, Entity):
             dev = dev.device
 

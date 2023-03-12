@@ -224,7 +224,7 @@ async def read_sensors(
         READ_ERRORS += 1
         await asyncio.sleep(0.02 * READ_ERRORS)
         if READ_ERRORS > 3:
-            raise Exception(f"Multiple Modbus read errors: {err}") from err
+            raise IOError(f"Multiple Modbus read errors: {err}") from err
 
     if retry_single:
         _LOGGER.info("Retrying individual sensors: %s", [s.id for s in sensors])
