@@ -3,6 +3,8 @@ www/
 __pycache__/
 *.py[cod]
 *$py.class
+.local.yaml
+.DS_Store
 
 # C extensions
 *.so
