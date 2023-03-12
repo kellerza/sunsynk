@@ -5,7 +5,7 @@ from typing import Final
 from .sensors import Sensor  # pylint: disable=unused-import
 from .sunsynk import Sunsynk  # pylint: disable=unused-import
 
-VERSION = "0.2.10"
+VERSION = "0.3.0"
 
 CELSIUS: Final = "°C"
 KWH: Final = "kWh"
