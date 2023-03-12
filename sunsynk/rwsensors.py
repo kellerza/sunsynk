@@ -111,8 +111,37 @@ class SelectRWSensor(RWSensor):
 
 
 @attr.define(slots=True)
-class SwitchRWSensor(SelectRWSensor):
+class SwitchRWSensor(RWSensor):
     """Sensor with a set of options to switch from."""
+
+    options: dict[int, str] = attr.field(default={})
+    _values_map: dict[str, int] = {}
+
+    def __attrs_post_init__(self) -> None:
+        """Ensure correct parameters."""
+        self._values_map = {v: k for k, v in self.options.items()}
+
+    def available_values(self) -> list[str]:
+        """Get the available values for this sensor."""
+        return list(self.options.values())
+
+    def value_to_reg(
+        self, value: ValType, resolve: Callable[[Sensor, ValType], ValType]
+    ) -> RegType:
+        """Get the reg value from a display value, or the current reg value if out of range."""
+        res = self._values_map.get(str(value))
+        if res is not None:
+            return (res,)
+        _LOGGER.warning("Unknown %s", value)
+        current = resolve(self, None)
+        return self.value_to_reg(current, None)  # type:ignore
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the register."""
+        if regs[0] in self.options:
+            return self.options[regs[0]]
+        _LOGGER.warning("%s: Unknown register value %s", self.id, regs[0])
+        return None
 
 
 @attr.define(slots=True, eq=False)
