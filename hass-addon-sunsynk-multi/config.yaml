@@ -46,7 +46,7 @@ schema:
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
-      MODBUS_ID: int(1,10)
+      MODBUS_ID: int
       PORT: str?
       DEVICE: device(subsystem=tty)?
   SENSORS:
