@@ -1,6 +1,6 @@
 ---
 name: Sunsynk Inverter Add-on (multi)
-version: 2023.01.19-0.2.9
+version: 2023.03.19a-0.3.1
 slug: hass-addon-sunsynk-multi
 description: Add-on for the Sunsynk Inverter
 startup: services
@@ -24,8 +24,8 @@ options:
     - SERIAL_NR: "007"
       HA_PREFIX: SS
       MODBUS_ID: 1
-      PORT: ""
-      DEVICE: ""
+      PORT: "tcp://homeassistant.local:502"
+  SENSOR_DEFINITIONS: single-phase
   SENSORS:
     - total_pv_energy
     - total_battery_charge
@@ -33,6 +33,7 @@ options:
     - total_grid_export
     - total_grid_import
     - battery_soc
+  SENSORS_FIRST_INVERTER: []
   MANUFACTURER: Sunsynk
   READ_SENSORS_BATCH_SIZE: 60
   NUMBER_ENTITY_MODE: "auto"
@@ -41,21 +42,25 @@ options:
   MQTT_USERNAME: hass
   MQTT_PASSWORD: ""
   DEBUG: 0
+  DEBUG_DEVICE: "/dev/ttyAMA0"
 schema:
-  DRIVER: str?
+  DRIVER: str
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
-      MODBUS_ID: int
-      PORT: str?
-      DEVICE: device(subsystem=tty)?
+      MODBUS_ID: int(1,10)
+      PORT: str
+  SENSOR_DEFINITIONS: list(single-phase|three-phase)
   SENSORS:
     - str
-  READ_SENSORS_BATCH_SIZE: int?
-  MANUFACTURER: str(5,)
-  NUMBER_ENTITY_MODE: list(auto|box|slider)?
+  SENSORS_FIRST_INVERTER:
+    - str
+  MANUFACTURER: str
+  READ_SENSORS_BATCH_SIZE: int(1,100)
+  NUMBER_ENTITY_MODE: list(auto|box|slider)
   MQTT_HOST: str
   MQTT_PORT: port
   MQTT_USERNAME: str
   MQTT_PASSWORD: password
-  DEBUG: int
+  DEBUG: int(0,5)
+  DEBUG_DEVICE: device(subsystem=tty)

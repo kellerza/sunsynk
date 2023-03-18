@@ -40,9 +40,12 @@ class Sunsynk:
         regs = sensor.value_to_reg(value, self.state.get)
         # if bitmask we should READ the register first!!!
         if sensor.bitmask:
+            _LOGGER.debug("0 - %s", regs)
+            regs = sensor.reg(*regs, msg=f"while setting value = {value}")
+            _LOGGER.debug("1 - %s", regs)
             val1 = regs[0]
-            regs = sensor.check_bitmask(value, regs)
             r_r = await self.read_holding_registers(sensor.address[0], 1)
+            _LOGGER.debug("r_r - %s", r_r)
             val0 = r_r[0]
             regs0 = patch_bitmask(val0, val1, sensor.bitmask)
             regs = (regs0,) + regs[1:]

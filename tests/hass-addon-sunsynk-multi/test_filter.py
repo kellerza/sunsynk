@@ -6,7 +6,7 @@ from typing import Any, Callable, List
 
 import pytest
 
-from sunsynk.definitions import ALL_SENSORS
+from sunsynk.definitions import SENSORS
 from sunsynk.rwsensors import RWSensor
 from tests.conftest import import_module
 
@@ -169,11 +169,11 @@ def test_rr(filters):
 
 
 def test_suggest(filters):
-    assert filters.suggested_filter(ALL_SENSORS["temp_environment"]) == "avg"
-    assert filters.suggested_filter(ALL_SENSORS["day_battery_charge"]) == "last"
-    assert filters.suggested_filter(ALL_SENSORS["grid_load"]) == "step"
-    assert filters.suggested_filter(ALL_SENSORS["sd_status"]) == "last"
+    assert filters.suggested_filter(SENSORS.all["environment_temperature"]) == "avg"
+    assert filters.suggested_filter(SENSORS.all["day_battery_charge"]) == "last"
+    # assert filters.suggested_filter(SENSORS.all["grid_ct_load"]) == "step"
+    assert filters.suggested_filter(SENSORS.all["sd_status"]) == "last"
 
-    rw_sensors = [s for s in ALL_SENSORS.values() if isinstance(s, RWSensor)]
+    rw_sensors = [s for s in SENSORS.all.values() if isinstance(s, RWSensor)]
     for s in rw_sensors:
         assert filters.suggested_filter(s) == "round_robin"

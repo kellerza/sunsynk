@@ -107,6 +107,35 @@ async def test_ss_write_sensor(
 
 @pytest.mark.asyncio
 @patch("sunsynk.Sunsynk.read_holding_registers")
+@patch("sunsynk.Sunsynk.write_register")
+async def test_ss_write_sensor_bm(
+    wreg: MagicMock, rhr: MagicMock, state: InverterState, caplog
+):
+    ss = Sunsynk()
+    ss.state = state
+
+    sen = NumberRWSensor((1,), "s1", bitmask=0x10)
+    state.track(sen)
+    state.update({1: 0xFF})
+    assert state.registers == {1: 0xFF}
+
+    assert sen.value_to_reg(0x10, state.get) == (0x10,)
+    assert "outside" not in caplog.text
+
+    rhr.return_value = [0xF8]  # write will perform a read!
+    await ss.write_sensor(sen, 0x10)
+    assert "outside" not in caplog.text
+    assert state.registers == {1: 0xF8}
+    wreg.assert_called_once()
+    assert wreg.call_args == call(address=1, value=0xF8)
+
+    await ss.write_sensor(sen, 0x00)
+    assert state.registers == {1: 0xE8}
+    assert "outside" not in caplog.text
+
+
+@pytest.mark.asyncio
+@patch("sunsynk.Sunsynk.read_holding_registers")
 async def test_ss_read_sensors(rhr: MagicMock, state: InverterState):
     ss = Sunsynk()
     ss.state = state

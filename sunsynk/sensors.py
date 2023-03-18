@@ -1,5 +1,8 @@
 """Sensor classes represent modbus registers for an inverter."""
+from __future__ import annotations
+
 import logging
+from typing import Union
 
 import attr
 
@@ -25,7 +28,7 @@ class Sensor:
     name: str = attr.field()
     unit: str = attr.field(default="")
     factor: float = attr.field(default=1)
-    bitmask: int = 0
+    bitmask: int = attr.field(default=0)
 
     @property
     def id(self) -> str:  # pylint: disable=invalid-name
@@ -34,6 +37,7 @@ class Sensor:
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
+        regs = self.masked(regs)
         val: NumType = regs[0]
         if len(regs) == 2:
             val += regs[1] << 16
@@ -42,6 +46,12 @@ class Sensor:
         val = int_round(val * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
+
+    def masked(self, regs: RegType) -> RegType:
+        """Return the masked reg."""
+        if self.bitmask:
+            return tuple(r & self.bitmask for r in regs)
+        return regs
 
     def __hash__(self) -> int:
         """Hash the sensor id."""
@@ -52,6 +62,36 @@ class Sensor:
         if not isinstance(other, Sensor):
             raise TypeError
         return self.id == other.id
+
+
+@attr.define(slots=True)
+class SensorDefinitions:
+    """Definitions."""
+
+    all: dict[str, Sensor] = attr.field(factory=dict)
+    deprecated: dict[str, Sensor] = attr.field(factory=dict)
+
+    @property
+    def serial(self) -> Sensor:
+        """Get the serial sensor."""
+        return self.all["serial"]
+
+    @property
+    def rated_power(self) -> Sensor:
+        """Get the rated power sensor."""
+        return self.all["rated_power"]
+
+    def __add__(
+        self, item: Union[Sensor, tuple[Sensor, ...], list[Sensor]]
+    ) -> SensorDefinitions:
+        """Add new sensors."""
+        if isinstance(item, Sensor):
+            self.all[item.id] = item
+            return self
+        if isinstance(item, (tuple, list)):
+            for itm in item:
+                self.all[itm.id] = itm
+        return self
 
 
 @attr.define(slots=True, eq=False)

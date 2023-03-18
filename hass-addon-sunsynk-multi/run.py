@@ -9,27 +9,23 @@ from collections import defaultdict
 from typing import Iterable, OrderedDict
 
 from filter import RROBIN, Filter, getfilter, suggested_filter
+from helpers import import_mysensors
 from mqtt import MQTT, Device
 from options import OPT, init_options
 from state import SENSOR_PREFIX, SENSOR_WRITE_QUEUE, SS, SS_TOPIC, State, TimeoutState
 
-from sunsynk.definitions import (
-    ALL_SENSORS,
-    DEPRECATED,
-    RATED_POWER,
-    SERIAL,
-    WATT,
-    MathSensor,
-)
+from sunsynk.definitions import SENSORS as DEFS1
+from sunsynk.definitions3ph import SENSORS as DEFS3
 from sunsynk.helpers import ValType, slug
 from sunsynk.rwsensors import RWSensor
+from sunsynk.sensors import SensorDefinitions
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(":")
-
+DEFS: SensorDefinitions = SensorDefinitions()
 
 HASS_DISCOVERY_INFO_UPDATE_QUEUE: set[Sensor] = set()
-STARTUP_SENSORS: set[Sensor] = {RATED_POWER, SERIAL}
+STARTUP_SENSORS: set[Sensor] = set()
 STATES: dict[str, State] = {}
 
 
@@ -61,7 +57,7 @@ async def hass_discover_sensors(
     )
     if mqtt_id != serial:
         dev.name += f" {mqtt_id}"
-    SENSOR_PREFIX[mqtt_id] = OPT.sensor_prefix
+    SENSOR_PREFIX[mqtt_id] = OPT.inverters[0].ha_prefix
     ents = [s.create_entity(dev) for s in STATES.values() if not s.hidden]
     await MQTT.connect(OPT)
     await MQTT.publish_discovery_info(entities=ents)
@@ -124,7 +120,7 @@ def setup_driver() -> None:
 
     for opt in OPT.inverters:
         kwargs: OrderedDict = {  # type:ignore
-            "port": opt.port if opt.port else port_prefix + opt.device,
+            "port": opt.port if opt.port else port_prefix + OPT.debug_device,
             "server_id": opt.modbus_id,
             "timeout": OPT.timeout,
             "read_sensors_batch_size": OPT.read_sensors_batch_size,
@@ -140,14 +136,40 @@ def setup_driver() -> None:
 def setup_sensors() -> None:
     """Setup the sensors."""
     # pylint: disable=too-many-branches
+
+    if OPT.sensor_definitions == "three-phase":
+        _LOGGER.info("Using three phase sensor definitions.")
+        DEFS.all = DEFS3.all
+        DEFS.deprecated = DEFS3.deprecated
+    else:
+        _LOGGER.info("Using Single phase sensor definitions.")
+        DEFS.all = DEFS1.all
+        DEFS.deprecated = DEFS1.deprecated
+
     sens: dict[str, Filter] = {}
     msg: dict[str, list[str]] = defaultdict(list)
 
-    # Add test sensors
-    ALL_SENSORS.update((s.id, s) for s in TEST_SENSORS)
+    # Add custom sensors
+    mysensors = import_mysensors()
+    if mysensors:
+        DEFS.all.update(mysensors)
 
-    for ssen in STARTUP_SENSORS:
+    for ssen in (DEFS.rated_power, DEFS.serial):
+        STARTUP_SENSORS.add(ssen)
         SS[0].state.track(ssen)
+
+    deprecated = [
+        f"Replace {s} with {DEFS.deprecated[s].id}"
+        for s in OPT.sensors
+        if s in DEFS.deprecated
+    ]
+    if deprecated:
+        _LOGGER.fatal(
+            "Your config includes deprecated sensors. Please use the new names: %s",
+            "\n".join(deprecated),
+        )
+
+    added_hidden = []
 
     for sensor_def in OPT.sensors:
         name, _, fstr = sensor_def.partition(":")
@@ -156,12 +178,10 @@ def setup_sensors() -> None:
             _LOGGER.warning("Sensor %s only allowed once", name)
             continue
 
-        sen = ALL_SENSORS.get(name)
+        sen = DEFS.all.get(name)
         if not isinstance(sen, Sensor):
             log_bold(f"Unknown sensor in config: {sensor_def}")
             continue
-        if sen.id in DEPRECATED:
-            log_bold(f"Sensor {sen.id} deprecated, rather use {DEPRECATED[sen.id].id}")
         if not fstr:
             fstr = suggested_filter(sen)
             msg[f"*{fstr}"].append(name)  # type: ignore
@@ -178,7 +198,7 @@ def setup_sensors() -> None:
         if not isinstance(sen, RWSensor):
             continue
         for dep in sen.dependencies:
-            if dep in (RATED_POWER, SERIAL):  # These sensors never change
+            if dep in (DEFS.rated_power, DEFS.serial):  # These sensors never change
                 continue
             if sen not in SENSOR_DEPENDANTS[dep]:
                 SENSOR_DEPENDANTS[dep].append(sen)
@@ -190,17 +210,22 @@ def setup_sensors() -> None:
             msg[f"*{fstr}"].append(dep.id)  # type: ignore
             filt = getfilter(fstr, sensor=dep)
             STATES[dep.id] = State(sensor=dep, hidden=True, filter=filt)
-            _LOGGER.info("Added hidden sensor %s as other sensors depend on it", dep.id)
+            added_hidden.append(dep.id)
+    _LOGGER.info(
+        "Added hidden sensors as other sensors depend on it: %s",
+        ", ".join(added_hidden),
+    )
 
-    for nme, val in msg.items():
-        _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
+    if OPT.debug > 0:
+        for nme, val in msg.items():
+            _LOGGER.info("Filter %s used for %s", nme, ", ".join(sorted(val)))
 
 
 def log_bold(msg: str) -> None:
     """Log a message."""
-    _LOGGER.info("#" * 60)
-    _LOGGER.info(f"{msg:^60}".rstrip())
-    _LOGGER.info("#" * 60)
+    _LOGGER.critical("#" * 60)
+    _LOGGER.critical(f"{msg:^60}".rstrip())
+    _LOGGER.critical("#" * 60)
 
 
 READ_ERRORS = 0
@@ -246,6 +271,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     # pylint: disable=too-many-statements
     loop.set_debug(OPT.debug > 0)
 
+    _LOGGER.info("Connecting to %s", SS[0].port)
     try:
         await SS[0].connect()
     except ConnectionError:
@@ -267,15 +293,15 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
         await asyncio.sleep(30)
         return
 
-    log_bold(f"Inverter serial number '{SS[0].state[SERIAL]}'")
+    log_bold(f"Inverter serial number '{SS[0].state[DEFS.serial]}'")
 
-    if OPT.inverters[0].get_serial() != SS[0].state[SERIAL]:
+    if OPT.inverters[0].get_serial() != SS[0].state[DEFS.serial]:
         log_bold("SS[0].ID should be set to the serial number of your Inverter!")
         return
 
     powr = float(5000)
     try:
-        powr = float(SS[0].state[RATED_POWER])  # type:ignore
+        powr = float(SS[0].state[DEFS.rated_power])  # type:ignore
     except (ValueError, TypeError):
         pass
 
@@ -284,7 +310,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     MQTT.availability_topic = f"{SS_TOPIC}/{mqtt_id}/availability"
     await hass_discover_sensors(
         mqtt_id=mqtt_id,
-        serial=str(SS[0].state[SERIAL]),
+        serial=str(SS[0].state[DEFS.serial]),
         rated_power=powr,
     )
 
@@ -336,17 +362,6 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
             return
         if HASS_DISCOVERY_INFO_UPDATE_QUEUE:
             await hass_update_discovery_info()
-
-
-TEST_SENSORS = (
-    MathSensor(
-        (175, 167, 166), "Essential abs power", WATT, factors=(1, 1, -1), absolute=True
-    ),
-    # https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
-    MathSensor(
-        (175, 169, 166), "Essential l2 power", WATT, factors=(1, 1, -1), absolute=True
-    ),
-)
 
 
 if __name__ == "__main__":

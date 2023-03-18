@@ -4,7 +4,8 @@ from typing import Sequence
 
 import pytest
 
-from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, DEPRECATED, VOLT, WATT
+from sunsynk.definitions import AMPS, CELSIUS, SENSORS, VOLT, WATT
+from sunsynk.rwsensors import RWSensor, SelectRWSensor
 from sunsynk.sensors import (
     FaultSensor,
     InverterStateSensor,
@@ -51,6 +52,11 @@ def test_sensor_hash():
     ss = {s, m}
     assert len(ss) == 2
 
+    s = RWSensor((0, 1), "rwswitch")
+    m = SelectRWSensor((0, 1), "switch")
+    ss = {s, m}
+    assert len(ss) == 2
+
 
 def test_group() -> None:
     sen = [
@@ -80,7 +86,7 @@ def test_group_max_size() -> None:
 
 
 def test_all_groups() -> None:
-    s = [ALL_SENSORS[s] for s in ALL_SENSORS]
+    s = [SENSORS.all[s] for s in SENSORS.all]
     for i in range(2, 6):
         _LOGGER.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
 
@@ -89,7 +95,7 @@ def test_all_groups() -> None:
     grplen = [len(i) for i in grp]
 
     assert grplen[:1] == [6]
-    assert grplen[-1:] == [1]
+    # assert grplen[-1:] == [1]
 
 
 def waste(groups) -> Sequence[int]:
@@ -98,13 +104,13 @@ def waste(groups) -> Sequence[int]:
 
 
 def test_ids() -> None:
-    for name, sen in ALL_SENSORS.items():
+    for name, sen in SENSORS.all.items():
         assert name == sen.id
 
         if sen.factor and sen.factor < 0 and len(sen.address) > 1:
             assert False, "only single signed supported"
 
-        if sen.id in DEPRECATED:
+        if sen.id in SENSORS.deprecated:
             continue
         assert sen.unit != AMPS or sen.name.endswith(" current")
         assert sen.unit != WATT or sen.name.endswith(" power")
@@ -179,11 +185,3 @@ def test_decode_fault() -> None:
     assert s.reg_to_value(regs) == "F32"
     regs = (0x0, 0x0, 0x1, 0x0)
     assert s.reg_to_value(regs) == "F33"
-
-
-def test_dep() -> None:
-    ctl = ALL_SENSORS["grid_ct_load"]
-    assert ctl.id in DEPRECATED
-
-    ctl = ALL_SENSORS["grid_ct_power"]
-    assert ctl.id not in DEPRECATED

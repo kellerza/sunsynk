@@ -1,6 +1,6 @@
 @echo off
 rem CALL :copy2 hass-addon-sunsynk,\\192.168.1.7\addons\hass-addon-sunsynk\
-CALL :copy2 hass-addon-sunsynk-dev,\\192.168.1.8\addons\hass-addon-sunsynk-dev\
+CALL :copy2 hass-addon-sunsynk-multi,\\192.168.1.8\addons\hass-addon-sunsynk-multi\
 rem xcopy /Y hass-addon-mbusd \\192.168.1.7\addons\hass-addon-mbusd\
 
 EXIT /B %ERRORLEVEL%

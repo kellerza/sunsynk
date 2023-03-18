@@ -22,10 +22,9 @@ def test_bitmask(caplog, state) -> None:
     s = NumberRWSensor(1, "", min=1, max=10, bitmask=0x1)
 
     state.track(s)
-
     assert state[s] is None
-    state.update({1: 1})
 
+    state.update({1: 1})
     assert state[s] == 1
     assert "outside" not in caplog.text
 
@@ -33,10 +32,29 @@ def test_bitmask(caplog, state) -> None:
 
     val = 3
     reg = s.value_to_reg(val, state.get)
-    reg = s.check_bitmask(val, reg)
+    reg = s.reg(*reg, msg=f"value was {val}")
 
     assert reg == (1,)
     assert "outside" in caplog.text
+
+
+def test_bitmask2(caplog, state) -> None:
+    s = SelectRWSensor(1, "", switch=(0, 4), bitmask=0x4)
+    state.track(s)
+
+    assert state[s] is None
+    state.update({1: 0x1})
+
+    assert state[s] == "OFF"
+    assert "outside" not in caplog.text
+
+    state.update({1: 0x14})
+    assert state[s] == "ON"
+
+    val = "OFF"
+    reg = s.value_to_reg(val, state.get)
+    reg = s.reg(*reg, msg=f"value was {val}")
+    assert reg == (0,)
 
 
 def test_number_rw(state) -> None:

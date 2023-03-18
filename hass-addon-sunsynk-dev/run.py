@@ -304,7 +304,7 @@ def setup_sensors() -> None:
         sens[sen.id] = filt
 
         if isinstance(sen, (NumberRWSensor, TimeRWSensor)):
-            for dep in sen.dependencies():
+            for dep in sen.dependencies:
                 sens_dependants[dep.id].append(sen)
 
     for sen_id, deps in sens_dependants.items():

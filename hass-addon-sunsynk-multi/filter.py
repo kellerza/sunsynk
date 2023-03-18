@@ -6,7 +6,7 @@ from typing import Any, List, Sequence
 import attr
 from options import OPT
 
-from sunsynk.definitions import ALL_SENSORS, AMPS, CELSIUS, KWH, VOLT, WATT, Sensor
+from sunsynk.definitions import AMPS, CELSIUS, KWH, SENSORS, VOLT, WATT, Sensor
 from sunsynk.helpers import ValType
 from sunsynk.rwsensors import RWSensor
 
@@ -209,7 +209,7 @@ def suggested_filter(sensor: Sensor) -> str:
         "sd_status": "last",
         "serial": "round_robin",
     }
-    assert all(s in ALL_SENSORS for s in f_id)
+    assert all(s in SENSORS.all for s in f_id)
 
     f_unit = {
         AMPS: "step",

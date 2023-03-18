@@ -87,7 +87,7 @@ jobs:
       - name: Run mypy
         continue-on-error: true
         run: |
-          mypy --install-types --non-interactive sunsynk/ hass-addon-sunsynk/
+          mypy --install-types --non-interactive sunsynk/ hass-addon-sunsynk-multi/
 
   pydocstyle:
     name: Check pydocstyle

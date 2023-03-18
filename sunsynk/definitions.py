@@ -7,17 +7,17 @@ from sunsynk.sensors import (
     MathSensor,
     SDStatusSensor,
     Sensor,
+    SensorDefinitions,
     SerialSensor,
     TempSensor,
 )
 
-_SENSORS: list[Sensor] = []
-DEPRECATED: dict[str, Sensor] = {}
+SENSORS = SensorDefinitions()
 
 ##########
 # Battery
 ##########
-_SENSORS += (
+SENSORS += (
     TempSensor(182, "Battery temperature", CELSIUS, 0.1),
     Sensor(183, "Battery voltage", VOLT, 0.01),
     Sensor(184, "Battery SOC", "%"),
@@ -28,7 +28,7 @@ _SENSORS += (
 #################
 # Inverter Power
 #################
-_SENSORS += (
+SENSORS += (
     Sensor(175, "Inverter power", WATT, -1),
     Sensor(154, "Inverter voltage", VOLT, 0.1),
     Sensor(193, "Inverter frequency", "Hz", 0.01),
@@ -37,7 +37,7 @@ _SENSORS += (
 #############
 # Grid Power
 #############
-_SENSORS += (
+SENSORS += (
     Sensor(79, "Grid frequency", "Hz", 0.01),
     Sensor(169, "Grid power", WATT, -1),  # L1(167) + L2(168)
     Sensor(167, "Grid LD power", WATT, -1),  # L1 seems to be LD
@@ -51,7 +51,7 @@ _SENSORS += (
 #############
 # Load Power
 #############
-_SENSORS += (
+SENSORS += (
     Sensor(178, "Load power", WATT, -1),  # L1(176) + L2(177)
     Sensor(176, "Load L1 power", WATT, -1),
     Sensor(177, "Load L2 power", WATT, -1),
@@ -60,7 +60,7 @@ _SENSORS += (
 ################
 # Solar Power 1
 ################
-_SENSORS += (
+SENSORS += (
     Sensor(186, "PV1 power", WATT, -1),
     Sensor(109, "PV1 voltage", VOLT, 0.1),
     Sensor(110, "PV1 current", AMPS, 0.1),
@@ -69,7 +69,7 @@ _SENSORS += (
 ################
 # Solar Power 2
 ################
-_SENSORS += (
+SENSORS += (
     Sensor(187, "PV2 power", WATT, -1),
     Sensor(111, "PV2 voltage", VOLT, 0.1),
     Sensor(112, "PV2 current", AMPS, 0.1),
@@ -78,7 +78,7 @@ _SENSORS += (
 ###################
 # Power on Outputs
 ###################
-_SENSORS += (
+SENSORS += (
     Sensor(166, "AUX power", WATT, -1),
     # https://github.com/kellerza/sunsynk/issues/75
     #  https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
@@ -94,7 +94,7 @@ _SENSORS += (
 ###################
 # Energy
 ###################
-_SENSORS += (
+SENSORS += (
     Sensor(60, "Day Active Energy", KWH, -0.1),
     Sensor(70, "Day Battery Charge", KWH, 0.1),
     Sensor(71, "Day Battery discharge", KWH, 0.1),
@@ -124,11 +124,9 @@ _SENSORS += (
 # General
 ##########
 RATED_POWER = Sensor((16, 17), "Rated power", WATT, 0.1)
-SERIAL = SerialSensor((3, 4, 5, 6, 7), "Serial")
-_SENSORS.append(RATED_POWER)
-_SENSORS += (
+SENSORS += (
     RATED_POWER,
-    SERIAL,
+    SerialSensor((3, 4, 5, 6, 7), "Serial"),
     Sensor(0, "Device Type"),
     FaultSensor((103, 104, 105, 106), "Fault"),
     InverterStateSensor(59, "Overall state"),
@@ -141,7 +139,7 @@ _SENSORS += (
 ###########
 # Settings
 ###########
-_SENSORS += (
+SENSORS += (
     Sensor(200, "Control Mode"),
     Sensor(232, "Grid Charge enabled", "", -1),
     Sensor(312, "Battery charging voltage", VOLT, 0.01),
@@ -192,7 +190,7 @@ BATTERY_LOW_VOLTAGE = NumberRWSensor(
 BATTERY_SHUTDOWN_VOLTAGE.max = BATTERY_LOW_VOLTAGE
 BATTERY_RESTART_VOLTAGE.min = BATTERY_LOW_VOLTAGE
 
-_SENSORS += (
+SENSORS += (
     BATTERY_EQUALIZATION_VOLTAGE,
     BATTERY_ABSORPTION_VOLTAGE,
     BATTERY_FLOAT_VOLTAGE,
@@ -207,16 +205,16 @@ _SENSORS += (
 #################
 # System program
 #################
-_SENSORS.append(
-    SelectRWSensor(243, "Priority Mode", options={0: "Battery first", 1: "Load first"})
+SENSORS += SelectRWSensor(
+    243, "Priority Mode", options={0: "Battery first", 1: "Load first"}
 )
-_SENSORS.append(
-    SelectRWSensor(
-        244,
-        "Load Limit",
-        options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
-    )
+
+SENSORS += SelectRWSensor(
+    244,
+    "Load Limit",
+    options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
 )
+
 PROG1_TIME = TimeRWSensor(250, "Prog1 Time")
 PROG2_TIME = TimeRWSensor(251, "Prog2 Time", min=PROG1_TIME)
 PROG3_TIME = TimeRWSensor(252, "Prog3 Time", min=PROG2_TIME)
@@ -244,7 +242,7 @@ PROG_MODE_OPTIONS = {
     16: "Charge",
 }
 
-PROGRAM = (
+SENSORS += (
     PROG1_TIME,
     PROG2_TIME,
     PROG3_TIME,
@@ -276,8 +274,7 @@ PROGRAM = (
     SelectRWSensor(278, "Prog5 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
     SelectRWSensor(279, "Prog6 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
 )
-_SENSORS.extend(PROGRAM)
-PROG_VOLT = (
+SENSORS += (
     NumberRWSensor(
         262,
         "Prog1 voltage",
@@ -327,19 +324,17 @@ PROG_VOLT = (
         max=BATTERY_FLOAT_VOLTAGE,
     ),
 )
-_SENSORS.extend(PROG_VOLT)
 
 #############
 # Inverter settings
 #############
-_SENSORS.append(
-    NumberRWSensor(230, "Grid Charge Battery current", AMPS, min=0, max=185)
-)
+SENSORS += NumberRWSensor(230, "Grid Charge Battery current", AMPS, min=0, max=185)
+SENSORS += NumberRWSensor(210, "Battery Max Charge current", AMPS, min=0, max=185)
+SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max=185)
 
 #############
 # Deprecated
 #############
-ALL_SENSORS: dict[str, Sensor] = {s.id: s for s in _SENSORS}
 
 
 def _deprecated() -> None:
@@ -374,8 +369,7 @@ def _deprecated() -> None:
     }
 
     for newname, sen in dep_map.items():
-        DEPRECATED[sen.id] = ALL_SENSORS[newname]
-        ALL_SENSORS[sen.id] = sen
+        SENSORS.deprecated[sen.id] = SENSORS.all[newname]
 
 
 _deprecated()

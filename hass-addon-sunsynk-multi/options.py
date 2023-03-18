@@ -17,7 +17,6 @@ class InverterOptions:
 
     # pylint: disable=too-few-public-methods
     port: str = ""
-    device: str = ""
     serial_nr: str = ""
     modbus_id: int = 0
     ha_prefix: str = ""
@@ -49,16 +48,15 @@ class Options:
     mqtt_password: str = ""
     number_entity_mode: str = "auto"
     inverters: list[InverterOptions] = []
+    sensor_definitions: str = "single-phase"
     sensors: list[str] = []
+    sensors_first_inverter: list[str] = []
     read_sensors_batch_size: int = 60
-    sensor_prefix: str = ""
     timeout: int = 10
     debug: int = 1
-    port: str = ""
-    device: str = ""
-    modbus_server_id: int = 1
     driver: str = "umodbus"
     manufacturer: str = "Sunsynk"
+    debug_device: str = ""
 
     def update(self, json: dict) -> None:
         """Update options."""
