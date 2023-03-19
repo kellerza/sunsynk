@@ -42,5 +42,4 @@
     "docs/.vitepress/**/*.vue",
     "docs/.vitepress/build_sitemap.ts"
   ],
-
 }
