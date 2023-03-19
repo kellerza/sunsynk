@@ -8,6 +8,10 @@ on:
       - "www/**"
       - ".github/workflows/deploy.yml"
 
+defaults:
+  run:
+    working-directory: www
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -22,8 +26,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: cd www
-      - run: ls
       - run: npm ci
       - run: npm run docs:build
       - name: Deploy
