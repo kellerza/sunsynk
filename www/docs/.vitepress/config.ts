@@ -3,6 +3,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   lang: "en-US",
   title: "sunsynk",
+  base: "/sunsynk/",
   description: "Take control of your inverter.",
   lastUpdated: true,
   cleanUrls: true,
