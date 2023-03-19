@@ -95,7 +95,6 @@ export default defineConfig({
           { text: "Addon options", link: "/reference/multi-options" },
           { text: "Modifiers", link: "/reference/sensor-modifiers" },
           { text: "Sensors", link: "/reference/definitions" },
-          { text: "Sensors - 3PH", link: "/reference/definitions3ph" },
           { text: "Custom sensors", link: "/reference/mysensors" },
         ],
       },

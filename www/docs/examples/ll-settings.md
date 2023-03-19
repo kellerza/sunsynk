@@ -2,6 +2,7 @@
 
 Below is an example Lovelace card to show the System mode in the frontend
 
+::: Details
 ```yaml
 type: vertical-stack
 cards:
@@ -84,3 +85,4 @@ cards:
         needle: false
         name: ' '
 ```
+:::

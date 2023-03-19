@@ -12,7 +12,11 @@ The `READ_SENSOR_BATCH_SIZE` option allows you to customize how many registers m
 
 ## Inverters
 
-The `INVERTERS` option contains a list of inverters - **currently only a single one is supported!**
+The `INVERTERS` option contains a list of inverters
+
+::: warning
+Currently only a single inverter is supported!
+:::
 
 The following options are required per inverter:
 

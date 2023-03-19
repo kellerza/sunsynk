@@ -2,6 +2,7 @@
 
 The Lovelace configuration for the Power Distribution Card is shown below. You can install the Power Distribution Card through HACS
 
+::: details
 ```yaml
 type: custom:power-distribution-card
 title: ''
@@ -99,3 +100,4 @@ center:
       name: SOC
 animation: slide
 ```
+:::

@@ -3,7 +3,7 @@
 ## Sensor modifiers - Min/Max/Now/Average/Step
 
 Sensors fields can be modified by adding a modifier to the end of the field name.
-Without any modifier, a [default modifier](https://github.com/kellerza/sunsynk/blob/main/hass-addon-sunsynk/filter.py#L135) will be added based on the field name.
+Without any modifier, a [default modifier](https://github.com/kellerza/sunsynk/blob/main/hass-addon-sunsynk/filter.py#L192) will be added based on the field name.
 
 
 
