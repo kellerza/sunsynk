@@ -1,6 +1,6 @@
 ---
 name: Sunsynk Inverter Add-on (multi)
-version: 2023.03.19a-0.3.1
+version: 2023.03.19c-0.3.1
 slug: hass-addon-sunsynk-multi
 description: Add-on for the Sunsynk Inverter
 startup: services

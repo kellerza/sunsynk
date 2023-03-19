@@ -33,4 +33,9 @@ def import_mysensors() -> Optional[dict[str, any]]:
     if not sensors:
         _LOGGER.error("No SENSORS variable found in mysensors.py")
         return None
-    return getattr(sensors, "all", None)
+    all: dict[str, any] = getattr(sensors, "all", {})
+    if all:
+        _LOGGER.info("  custom sensors: %s", ", ".join(all))
+    else:
+        _LOGGER.warning("  no custom sensors")
+    return all

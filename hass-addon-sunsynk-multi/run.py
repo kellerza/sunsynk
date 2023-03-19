@@ -210,7 +210,8 @@ def setup_sensors() -> None:
             msg[f"*{fstr}"].append(dep.id)  # type: ignore
             filt = getfilter(fstr, sensor=dep)
             STATES[dep.id] = State(sensor=dep, hidden=True, filter=filt)
-            added_hidden.append(dep.id)
+            if dep.id not in OPT.sensors:
+                added_hidden.append(dep.id)
     _LOGGER.info(
         "Added hidden sensors as other sensors depend on it: %s",
         ", ".join(added_hidden),
@@ -223,9 +224,9 @@ def setup_sensors() -> None:
 
 def log_bold(msg: str) -> None:
     """Log a message."""
-    _LOGGER.critical("#" * 60)
-    _LOGGER.critical(f"{msg:^60}".rstrip())
-    _LOGGER.critical("#" * 60)
+    _LOGGER.info("#" * 60)
+    _LOGGER.info(f"{msg:^60}".rstrip())
+    _LOGGER.info("#" * 60)
 
 
 READ_ERRORS = 0
