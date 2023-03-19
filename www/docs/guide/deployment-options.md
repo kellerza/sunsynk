@@ -11,7 +11,7 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
 
 2. A Modbus TCP to RTU/serial gateway
 
-   This can be another Raspberry Pi, even an old one, running the gateway software, like [mbusd](./hass-addon-mbusd/README.md).
+   This can be another Raspberry Pi, even an old one, running the gateway software, like [mbusd](./mbusd).
 
    You can also use a commercial Modbus gateway, like the USR-W630
 
