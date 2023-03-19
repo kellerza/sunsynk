@@ -29,3 +29,12 @@ Once you have a file, you will see it in your addon's startup log:
 2023-03-19 16:25:00,156 INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
 2023-03-19 16:25:00,158 INFO      custom sensors: my_custom_sensor
 ```
+
+## Using the sensor
+
+Once the sensor is available, you can add it to your configuration:
+
+```
+SENSORS:
+ - my_custom_sensor
+```

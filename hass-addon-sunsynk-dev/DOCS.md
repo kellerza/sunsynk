@@ -1,5 +1,7 @@
 # Configuration
 
+[https://kellerza.github.io/sunsynk](https://kellerza.github.io/sunsynk/)
+
 ## Parameters
 
 - `PORT`, `DEVICE` & `DRIVER`
