@@ -112,7 +112,7 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: "https://github.com/kellerza/sunsynk/edit/main/docs/:path",
+      pattern: "https://github.com/kellerza/sunsynk/edit/main/www/docs/:path",
       text: "Edit this page on GitHub",
     },
 
