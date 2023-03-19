@@ -3,7 +3,7 @@
 The sensor definition includes the modbus register number (or several registers), the name of the sensor, the unit and other optional parameters. For example:
 
 
-```
+```python
 Sensor(183, "Battery voltage", VOLT, 0.01),
 Sensor(184, "Battery SOC", "%"),
 ```

@@ -102,8 +102,8 @@ export default defineConfig({
         text: "Examples",
         items: [
           { text: "Overview", link: "/examples/overview" },
-          { text: "LL Power", link: "/examples/ll-power" },
-          { text: "LL Settings", link: "/examples/ll-settings" },
+          { text: "Lovelace", link: "/examples/lovelace" },
+          { text: "Settings", link: "/examples/lovelace-settings" },
           { text: "Automations", link: "/examples/a-mode" },
           { text: "Templates", link: "/examples/templates" },
         ],
