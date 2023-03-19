@@ -2,7 +2,7 @@
 
 You can view sensor values under Home Assistant using the "Developer Tools" -> Templates tab.
 
-```jinja
+```yaml
 Essentials:     {{ states("sensor.ss_essential_power") }} W
 Non-Essentials: {{ states("sensor.ss_non_essential_power") }} W
 Grid CT:        {{ states("sensor.ss_grid_ct_power") }} W
