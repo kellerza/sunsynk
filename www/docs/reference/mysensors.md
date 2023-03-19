@@ -2,7 +2,7 @@
 
 You can add custom sensors by creating a sensors definition file called in `/share/hass-addon-sunsynk/mysensors.py`
 
-The `/share/` folder can be accessed through the Samba addon in Home Assistant. You can create the hass-addon-sunsynk folder & the mysensors.py file
+The `/share/` folder can be accessed through the Samba addon in Home Assistant. You can create the `hass-addon-sunsynk` folder & the `mysensors.py` file
 
 This is a Python file and follows the same logic as the definitions.py & definitions3p.py. It exposes a single `SENSORS` global variable to which you can add the individual sensor definitions.
 
