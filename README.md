@@ -8,16 +8,10 @@ This code was developed on a Sunsynk 5.5 kWh.
 
 > DISCLAIMER: Use at your own risk! Especially when writing any settings.
 
-## Sunsynk Python Library
+## Documentation
 
-[![PyPI version](https://badge.fury.io/py/sunsynk.svg)](https://pypi.org/project/sunsynk/)
-[![codecov](https://codecov.io/gh/kellerza/sunsynk/branch/main/graph/badge.svg?token=ILKRC5UTXI)](https://codecov.io/gh/kellerza/sunsynk)
+Refer to [https://kellerza.github.io/sunsynk/](https://kellerza.github.io/sunsynk/)
 
-The Python library is available through pip:
-
-```bash
-pip install sunsynk
-```
 
 ## Home Assistant Sunsynk Add-On
 
@@ -41,177 +35,13 @@ Below an example of the HomeAssistant Energy management dashboard using sensors 
 ![HASS Energy management](https://github.com/kellerza/sunsynk/raw/main/images/energy.png)
 
 
-## Deployment options
+## Sunsynk Python Library
 
-If the Inverter is close to your server/SBC running Home Assistant, you can use the standard deployment option, else you can extend the RS485 over Ethernet via a gateway or even MQTT
+[![PyPI version](https://badge.fury.io/py/sunsynk.svg)](https://pypi.org/project/sunsynk/)
+[![codecov](https://codecov.io/gh/kellerza/sunsynk/branch/main/graph/badge.svg?token=ILKRC5UTXI)](https://codecov.io/gh/kellerza/sunsynk)
 
-1. Standard
+The Python library is available through pip:
 
-   The Sunsynk Add-on runs on the Home Assistant OS, reads the Inverter's Modbus registers over RS-485, and publishes sensor values to the MQTT server.
-   The architecture is shown below:
-
-   ![Deployment Option](https://github.com/kellerza/sunsynk/raw/main/images/deploy.png)
-
-2. A Modbus TCP to RTU/serial gateway
-
-   This can be another Raspberry Pi, even an old one, running the gateway software, like [mbusd](./hass-addon-mbusd/README.md).
-
-   You can also use a commercial Modbus gateway, like the USR-W630
-
-   ![Deployment Option Gateway](https://github.com/kellerza/sunsynk/raw/main/images/deploy-gw.png)
-
-3. Extend with an MQTT gateway
-
-   This remote option runs the Sunsynk Addon close to the Inverter, and then sends MQTT messages over your network toward the MQTT server (typically on the same server as Home Assistant)
-
-   ![Deployment Option MQTT](https://github.com/kellerza/sunsynk/raw/main/images/deploy-mqtt.png)
-
-
-## Connect to your Inverter with RS485
-RS485 requires a twisted pair, this works with CAT5 network cable and RJ-45 connectors.
-
-If the RJ-45 connector on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring), you can use the pinout in the following table.
-
-| RJ45 Pin<br>(inverter side) | Wire Color<br>(when using T568A) | RS485<br>pins |
-| :-------------------------: | :------------------------------: | :-----------: |
-|              1              |           Green-White            |     B/D-      |
-|              2              |              Green               |     A/D+      |
-|              3              |           Orange-White           |      GND      |
-
-### USB-to-RS485 adaptors
-
-1. Wave USB-to-RS485 [example](https://www.robotics.org.za/W17286)
-
-   This is my preferred adaptor. It includes a GND and lightning/ESD protection, TVS diodes and a resettable fuse.
-
-   Wave also has a RS485-to-Ethernet module. (not tested)
-
-   <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-wave-rs485.jpg" width="55%">
-
-1. USB-to-RS485 adaptor with cable [example](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
-
-   Includes a GND and TVS diode and USB self recovery options.
-
-   <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-rs485-cable.jpg" width="55%">
-
-Other tested adaptors
-- USB-to-RS485 3 Pin adaptor [example](https://www.robotics.org.za/RS485-3P)
-
-  Includes a GND and TVS diode and USB self recovery options.
-
-
-- 2-Wire USB-to-RS485 [example](https://www.robotics.org.za/RS485-MINI)
-
-  This is the adaptor I started with. It works, but does not include a GND, so your success might vary.
-
-  <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-rs485-rj45.png" width="35%">
-
-### RS485 gateways
-
-1. USR-W630 Wifi-to-RS485
-
-   This is a tested Wifi-to-RS485 gateway, which also includes a GND.
-
-   Requires `READ_SENSORS_BATCH_SIZE` set to 8 or less
-
-2. HF5142B  Modbus/serial to ethernet (4x RS232/485/422 to 4x E-Ports)
-
-   ![settings](https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142.png)
-
-   This gateway was tested with the Deye 8k EU Hybrid inverter. The following serial settings were used:
-
-   <img src="https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142-settings.png" width="80%" alt="settings">
-
-## Fault finding
-
-If you fail to get a reply from the inverter, please check the following
-
-### (a) Only a single connection to the serial port
-
-Ensure you only have a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon version.
-
-If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503 )
-
-### (b) Check the Modbus Server ID
-
-Ensure the Modbus server ID (`MODBUS_SERVER_ID` config setting) setting matches the configured **Modbus SN** value of the inverter
-
-View/update the Modbus server ID on your inverter under "Advanced Settings" / "Multi-Inverter"
-
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/modbus_sn.png" width="80%">
-
-### (c) Reducing timeouts
-
-If you get many timeouts, or if the addon does not read all your sensors on startup (i.e. you see **Retrying individual sensors** in the log), you can try the following:
-
-- Set `READ_SENSORS_BATCH_SIZE` to a smaller value, i.e. 8
-- The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote device.
-
-The hardware and cabling also has a big impact:
-
-- Use a RJ45 converter with a GROUND pin. Ensure the ground is connected.
-- Ensure the data line is on a twisted pair
-- Re-crimp your RJ45 connector
-- Use a good quality solid CAT5e/CAT6 cable
-- Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking
-  - It could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal platic RJ45 connector on the inverter side.
-  - While fault finding use as short as possible cable, completely outside any sprague/trunking etc.
-
-### (d) Check line voltage / termination resistor
-
-If your RS485 adapter has a termination resistor (typically 120 ohms), try removing it.
-
-To check, disconnect the adapter and use a multimeter to measure the resistance between A & B.
-
-The d.c. voltage between A/B on the sunsynk RS485 connection should idle around 4-5v with nothing connected,
-but this may drop to around 0.5v with the 120 ohm load.
-
-RS485 devices are typically multi-drop with a termination resistor on the first and last devices.
-However, the RS485 BMS port may only be intended to connect to a single device.
-
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg">
-
-
-## Tested Inverters
-
-There are several inverters that are rebranded Deye inverters, so you might have success with other inverter brands as well, please add your inverter by editing this file and creating a Pull Request if you are successful.
-
-| Inverter Model | Battery           | Version  | User          | Port(s)                  |
-| -------------- | ----------------- | -------- | ------------- | ------------------------ |
-| Sunsynk 3.6kW  | Sunsynk SSLB1     | beta/all | @reedy        | BMS485 (top left)        |
-| Sunsynk 5.5kW  | Hubble AM-2       | beta/all | @kellerza     | BMS485 (top left)        |
-| Sunsynk 8.8kW  | BSL 8.2 kWH       | 0.0.8    | @dirkackerman | RS485 (1 in image below) |
-| Deye  8kW      | Pylontech US3000C | 0.1.3dev | @Kladrie      | RS485 (top left)         |
-| Turbo-E   5kW  | DIY with JKBMS    | 0.1.4    | @agtconf      | BMS485 (top left)        |
-### Sunsynk 3.6kW Inverter
-
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-3-6kw.png" width="80%">
-
-### Sunsynk 5.5kW Inverter
-Tested with: USB-to-RS485 adaptor sourced from Banggood, very similar to [this](https://www.robotics.org.za/RS485-MINI?search=rs485).
-
-NOTE: RJ-45 port marked **RS485** (bottom right) does not work.
-
-### Sunsynk 8.8kW Inverter
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-8kw.png" width="80%">
-
-
-Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
-
-### Deye 8kW Inverter
-
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-deye-8kw.png" width="80%">
-
-RS485 is the blue line - top left, as with the Sunsynk inverters. Yellow is the CAN-comms with the Pylontech batteries
-
-### Turbo-Energy 5kW Inverter
-Tested with: USB-to-RS485 adaptor sourced from Aliexpress, very similar to [this](https://www.robotics.org.za/RS485-3P).
-
-
-## Credits
-
-Information in the Power forum was especially helpful to get this up and running, see [this thread](https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/). Special Kudos to Bloubul7, @jacauc and Sc00bs. The Node-RED flows can be found [here](https://github.com/jacauc/SunSynk-NodeRed)
-
-@Ivan-L added the writable sensors.
-
-@kababook & @archi for the 3-phase definitions.
+```bash
+pip install sunsynk
+```
