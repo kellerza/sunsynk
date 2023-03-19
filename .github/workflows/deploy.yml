@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: 16
       - run: cd www
+      - run: ls
       - run: npm ci
       - run: npm run docs:build
       - name: Deploy
