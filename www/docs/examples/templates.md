@@ -2,7 +2,7 @@
 
 You can view sensor values under Home Assistant using the "Developer Tools" -> Templates tab.
 
-::: details
+::: details Template details
 ```yaml
 Essentials:     {{ states("sensor.ss_essential_power") }} W
 Non-Essentials: {{ states("sensor.ss_non_essential_power") }} W
@@ -38,7 +38,9 @@ PV1
 ```
 :::
 
-# ESP integration (Eskon se Push)
+## ESP API integration
+
+ESP (EskomSePush) allows you to fetch the loadshedding schedules in South Africa through an API.
 
 Get your API token and area [here](https://eskomsepush.gumroad.com/l/api) and add your api token & area to your secrets `/config/secrets.yaml`:
 ```yaml
@@ -49,7 +51,7 @@ esp_area: jhbcitypower2-2-xxxxxx
 The configuration can easily be added using HASS configuraition modules
 
 
-::: details esp.yaml
+::: details esp.yaml config module
 Add the following to `/config/modules/esp.yaml`
 
 ```yaml
@@ -147,8 +149,9 @@ binary_sensor:
 ```
 :::
 
-::: Lovelace info
-Paste the following card into Lovelace
+::: details Lovelace config
+
+Add a custom card to Lovelace and use the following yaml
 ```yaml
 type: vertical-stack
 cards:
