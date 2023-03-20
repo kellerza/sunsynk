@@ -72,7 +72,7 @@ rest:
           - schedule
 
 sensor:
-  #Eskom se push sensor
+  #EskomSePush sensor
   - platform: rest
     name: EskomSePushAllowance
     resource: "https://developer.sepush.co.za/business/2.0/api_allowance"

@@ -125,9 +125,9 @@ export default defineConfig({
     },
 
     algolia: {
-      appId: "",
-      apiKey: "",
-      indexName: "",
+      appId: "ZZ2YT4M4EY",
+      apiKey: "3fda4c9bd770052e9e3ebeb213af2a82",
+      indexName: "sunsynk",
     },
   },
 });

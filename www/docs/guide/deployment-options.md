@@ -24,7 +24,7 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
    ![Deployment Option MQTT](https://github.com/kellerza/sunsynk/raw/main/images/deploy-mqtt.png)
 
 
-## Connect to your Inverter with RS485
+## RS485 wiring
 RS485 requires a twisted pair, this works with CAT5 network cable and RJ-45 connectors.
 
 If the RJ-45 connector on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring), you can use the pinout in the following table.
@@ -35,17 +35,17 @@ If the RJ-45 connector on the inverter side is crimped according to [T568A](http
 |              2              |              Green               |     A/D+      |
 |              3              |           Orange-White           |      GND      |
 
-### USB-to-RS485 adaptors
+## USB-to-RS485 adaptors
 
 1. Wave USB-to-RS485 [example](https://www.robotics.org.za/W17286)
 
    This is my preferred adaptor. It includes a GND and lightning/ESD protection, TVS diodes and a resettable fuse.
 
-   Wave also has a RS485-to-Ethernet module. (not tested)
+   Wave also has a RS485-to-Ethernet module. (which does not work!)
 
    <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-wave-rs485.jpg" width="55%">
 
-1. USB-to-RS485 adaptor with cable [example](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
+2. USB-to-RS485 adaptor with cable [example](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
    Includes a GND and TVS diode and USB self recovery options.
 
@@ -63,7 +63,7 @@ Other tested adaptors
 
   <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-rs485-rj45.png" width="35%">
 
-### RS485 gateways
+## RS485 gateways
 
 1. USR-W630 Wifi-to-RS485
 
