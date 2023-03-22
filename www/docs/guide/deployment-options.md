@@ -27,13 +27,13 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
 ## RS485 wiring
 RS485 requires a twisted pair, this works with CAT5 network cable and RJ-45 connectors.
 
-If the RJ-45 connector on the inverter side is crimped according to [T568A](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring), you can use the pinout in the following table.
+If the RJ-45 connector on the inverter side is crimped according to [T568A/T568B](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring), you can use the pinout in the following table. If the two outermost colors you see on the connector are brown and green, it is probably T568A; if they are brown and orange, it is probably T568B.
 
-| RJ45 Pin<br>(inverter side) | Wire Color<br>(when using T568A) | RS485<br>pins |
-| :-------------------------: | :------------------------------: | :-----------: |
-|              1              |           Green-White            |     B/D-      |
-|              2              |              Green               |     A/D+      |
-|              3              |           Orange-White           |      GND      |
+| RJ45 Pin<br>(inverter side) | Wire Color<br>(when using T568A) | Wire Color<br>(when using T568B) | RS485<br>pins |
+| :-------------------------: | :------------------------------: | :------------------------------: | :-----------: |
+|              1              |           Green-White            |           Orange-White           |     B/D-      |
+|              2              |              Green               |              Orange              |     A/D+      |
+|              3              |           Orange-White           |           Green-White            |      GND      |
 
 ## USB-to-RS485 adaptors
 
