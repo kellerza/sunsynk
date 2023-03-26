@@ -1,5 +1,9 @@
 # Changelog
 
+## **2023.03.19b-0.3.1**
+
+- Fixed MQTT reconnect logic #94
+
 ## **2023.03.19-0.3.1**
 
 - Initial release of the multi addon

@@ -162,7 +162,6 @@ class MQTTClient:
     def __init__(self) -> None:
         """Init MQTT Client."""
         self._client = Client()
-        self._client.on_connect = _mqtt_on_connect
 
     async def connect(
         self,
@@ -175,6 +174,9 @@ class MQTTClient:
     ) -> None:
         """Connect to MQTT server specified as attributes of the options."""
         if not self._client.is_connected():
+            # Disconnect so that we trigger "Connection Successful" on re-connect
+            await self.disconnect()
+            self._client.on_connect = _mqtt_on_connect
             username = getattr(options, "mqtt_username", username)
             password = getattr(options, "mqtt_password", password)
             host = getattr(options, "mqtt_host", host)
@@ -199,6 +201,11 @@ class MQTTClient:
             # publish online (Last will sets offline on disconnect)
             if self.availability_topic:
                 await self.publish(self.availability_topic, "online", retain=True)
+            # Ensure we subscribe all existing change handlers (after a reconnect)
+            if self.topic_on_change:
+                _LOGGER.debug("Re-subscribe to %s", list(self.topic_on_change.keys()))
+                for topic in self.topic_on_change:
+                    self._client.subscribe(topic)
 
     async def disconnect(self) -> None:
         """Stop the MQTT client."""
