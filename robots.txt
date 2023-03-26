@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://github.io/kellerza/sunsynk/sitemap.xml
+Sitemap: https://kellerza.github.io-sunsynk/sitemap.xml
