@@ -108,7 +108,7 @@ def setup_driver() -> None:
     if OPT.driver == "pymodbus":
         from sunsynk.pysunsynk import pySunsynk
 
-        factory = pySunsynk  # type:ignore
+        factory = pySunsynk
     elif OPT.driver == "umodbus":
         from sunsynk.usunsynk import uSunsynk
 
@@ -244,7 +244,7 @@ async def read_sensors(
     except asyncio.TimeoutError:
         pass
     except Exception as err:  # pylint:disable=broad-except
-        _LOGGER.error("Read Error%s: %s", msg, err)
+        _LOGGER.error("Read Error%s: %s: %s", msg, type(err), err)
         if OPT.debug > 2:
             traceback.print_exc()
         READ_ERRORS += 1
