@@ -1,3 +1,4 @@
+"""Addon helpers."""
 import logging
 import os
 import sys
@@ -33,9 +34,9 @@ def import_mysensors() -> Optional[dict[str, any]]:
     if not sensors:
         _LOGGER.error("No SENSORS variable found in mysensors.py")
         return None
-    all: dict[str, any] = getattr(sensors, "all", {})
-    if all:
-        _LOGGER.info("  custom sensors: %s", ", ".join(all))
+    res: dict[str, any] = getattr(sensors, "all", {})
+    if res:
+        _LOGGER.info("  custom sensors: %s", ", ".join(res))
     else:
         _LOGGER.warning("  no custom sensors")
-    return all
+    return res

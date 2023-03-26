@@ -10,7 +10,7 @@ from paho.mqtt.client import Client, MQTTMessage  # type: ignore
 
 _LOGGER = logging.getLogger(__name__)
 
-# pylint: disable=too-few-public-methods, invalid-name, too-many-instance-attributes
+# pylint: disable=too-few-public-methods, too-many-instance-attributes
 
 
 @attr.define
@@ -32,7 +32,7 @@ class Device:
         assert self.identifiers  # Must at least have 1 identifier
 
     @property
-    def id(self) -> str:
+    def id(self) -> str:  # pylint: disable=invalid-name
         """The device identifier."""
         return str(self.identifiers[0])
 
@@ -173,39 +173,43 @@ class MQTTClient:
         port: int = 1883,
     ) -> None:
         """Connect to MQTT server specified as attributes of the options."""
-        if not self._client.is_connected():
-            # Disconnect so that we trigger "Connection Successful" on re-connect
-            await self.disconnect()
-            self._client.on_connect = _mqtt_on_connect
-            username = getattr(options, "mqtt_username", username)
-            password = getattr(options, "mqtt_password", password)
-            host = getattr(options, "mqtt_host", host)
-            port = getattr(options, "mqtt_port", port)
-            self._client.username_pw_set(username=username, password=password)
+        if self._client.is_connected():
+            return
+        # Disconnect so that we trigger "Connection Successful" on re-connect
+        await self.disconnect()
+        self._client.on_connect = _mqtt_on_connect
 
-            if self.availability_topic:
-                self._client.will_set(self.availability_topic, "offline", retain=True)
+        username = getattr(options, "mqtt_username", username)
+        password = getattr(options, "mqtt_password", password)
+        host = getattr(options, "mqtt_host", host)
+        port = getattr(options, "mqtt_port", port)
+        self._client.username_pw_set(username=username, password=password)
 
-            _LOGGER.info("MQTT: Connecting to %s@%s:%s", username, host, port)
-            self._client.connect_async(host=host, port=port)
-            self._client.loop_start()
+        if self.availability_topic:
+            self._client.will_set(self.availability_topic, "offline", retain=True)
 
-            retry = 10
-            while retry and not self._client.is_connected():
-                await asyncio.sleep(0.5)
-                retry -= 0
-            if not retry:
-                raise ConnectionError(
-                    f"MQTT: Could not connect to {username}@{host}:{port}"
-                )
-            # publish online (Last will sets offline on disconnect)
-            if self.availability_topic:
-                await self.publish(self.availability_topic, "online", retain=True)
-            # Ensure we subscribe all existing change handlers (after a reconnect)
-            if self.topic_on_change:
-                _LOGGER.debug("Re-subscribe to %s", list(self.topic_on_change.keys()))
-                for topic in self.topic_on_change:
-                    self._client.subscribe(topic)
+        _LOGGER.info("MQTT: Connecting to %s@%s:%s", username, host, port)
+        self._client.connect_async(host=host, port=port)
+        self._client.loop_start()
+
+        retry = 10
+        while retry and not self._client.is_connected():
+            await asyncio.sleep(0.5)
+            retry -= 0
+        if not retry:
+            raise ConnectionError(
+                f"MQTT: Could not connect to {username}@{host}:{port}"
+            )
+        # publish online (Last will sets offline on disconnect)
+        if self.availability_topic:
+            await self.publish(self.availability_topic, "online", retain=True)
+        # Ensure we subscribe all existing change handlers (after a reconnect)
+        if self.topic_on_change:
+            _LOGGER.debug(
+                "MQTT: Re-subscribe to %s", ", ".join(self.topic_on_change.keys())
+            )
+            for topic in self.topic_on_change:
+                self._client.subscribe(topic)
 
     async def disconnect(self) -> None:
         """Stop the MQTT client."""
@@ -225,7 +229,9 @@ class MQTTClient:
             qos = 0
         if retain:
             qos = 1
-        _LOGGER.debug("PUBLISH %s%s %s, %s", qos, "R" if retain else "", topic, payload)
+        _LOGGER.debug(
+            "MQTT: Publish %s%s %s, %s", qos, "R" if retain else "", topic, payload
+        )
         await asyncio.get_running_loop().run_in_executor(
             None, self._client.publish, topic, payload, qos, bool(retain)
         )
@@ -246,7 +252,7 @@ class MQTTClient:
         task_remove = None
         if remove_entities:
             _LOGGER.debug(
-                "Remove entities %s", [e.name if e else str(e) for e in entities]
+                "MQTT: Remove entities %s", [e.name if e else str(e) for e in entities]
             )
             task_remove = asyncio.create_task(
                 self.remove_discovery_info(
@@ -258,7 +264,7 @@ class MQTTClient:
         for ent in entities:
             if self.availability_topic and not ent.availability:
                 ent.availability = [Availability(topic=self.availability_topic)]
-            _LOGGER.debug("publish %s", ent.topic)
+            _LOGGER.debug("MQTT: Publish %s", ent.topic)
             await self.publish(ent.topic, payload=dumps(ent.asdict), retain=True)
 
         await asyncio.sleep(0.01)
@@ -276,10 +282,10 @@ class MQTTClient:
                 return
             topic = str(message.topic)
             device = topic.split("/")[-3]
-            _LOGGER.debug("Rx retained msg: topic=%s -- device=%s", topic, device)
+            _LOGGER.debug("MQTT: Rx retained msg: topic=%s -- device=%s", topic, device)
             if device not in device_ids or topic in keep_topics:
                 return
-            _LOGGER.info("Removing HASS MQTT discovery info %s", topic)
+            _LOGGER.info("MQTT: Removing HASS MQTT discovery info %s", topic)
             # Not in the event loop, execute directly
             client.publish(topic=topic, payload=None, qos=1, retain=True)
 

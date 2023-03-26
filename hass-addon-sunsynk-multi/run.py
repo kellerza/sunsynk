@@ -135,7 +135,7 @@ def setup_driver() -> None:
 
 def setup_sensors() -> None:
     """Setup the sensors."""
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches, too-many-statements
 
     if OPT.sensor_definitions == "three-phase":
         _LOGGER.info("Using three phase sensor definitions.")
