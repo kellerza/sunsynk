@@ -1,6 +1,6 @@
 # Sunsynk Inverter Add-on - deprecated
 
-## Rateher use the **multi** addon
+## Rather use the **multi** addon
 
 An add-on to read Sunsynk Inverter Values and push them to Home Assistant through MQTT.
 
