@@ -2,7 +2,10 @@
 
 Below is an example Lovelace card to show the System mode in the frontend
 
-::: details
+
+![settings](../images/system_settings.png)
+
+::: details Lovelace yaml
 ```yaml
 type: vertical-stack
 cards:

@@ -5,17 +5,15 @@ from typing import Sequence
 from urllib.parse import urlparse
 
 import attr
-from pymodbus.client.asynchronous.async_io import (  # type: ignore
-    AsyncioModbusSerialClient,
+from pymodbus.client.asynchronous import schedulers
+from pymodbus.client.asynchronous.async_io import (  # AsyncioModbusSerialClient,
     AsyncioModbusTcpClient,
     ModbusClientProtocol,
 )
-
-# from pymodbus.client.asynchronous import schedulers  # type: ignore
-from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient  # type: ignore
+from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient
 from serial.serialutil import STOPBITS_ONE
 
-from sunsynk.sunsynk import Sunsynk  # type: ignore
+from sunsynk.sunsynk import Sunsynk
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,26 +39,26 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             # Cannot run from a coroutine currently
             # https://github.com/riptideio/pymodbus/pull/658/files#r718775308
 
-            # msc = AsyncModbusSerialClient(
-            #     schedulers.ASYNC_IO,
-            #     port=self.port,
-            #     baudrate=self.baudrate,
-            #     method="rtu",
-            #     stopbits=STOPBITS_ONE,
-            #     bytesize=8,
-            # )
-            # loop, client = msc  # pylint: disable=unpacking-non-sequence
-
-            # Alternative interim...
-            client = AsyncioModbusSerialClient(
+            msc = AsyncModbusSerialClient(
+                schedulers.ASYNC_IO,
                 port=self.port,
-                protocol_class=ModbusClientProtocol,
-                framer=AsyncModbusSerialClient._framer(method="rtu"),
-                loop=asyncio.get_running_loop(),
                 baudrate=self.baudrate,
+                method="rtu",
                 stopbits=STOPBITS_ONE,
                 bytesize=8,
             )
+            loop, client = msc  # pylint: disable=unpacking-non-sequence
+
+            # Alternative interim...
+            # client = AsyncioModbusSerialClient(
+            #     port=self.port,
+            #     protocol_class=ModbusClientProtocol,
+            #     framer=AsyncModbusSerialClient._framer(method="rtu"),
+            #     loop=asyncio.get_running_loop(),
+            #     baudrate=self.baudrate,
+            #     stopbits=STOPBITS_ONE,
+            #     bytesize=8,
+            # )
         else:
             client = AsyncioModbusTcpClient(
                 host=url.hostname,

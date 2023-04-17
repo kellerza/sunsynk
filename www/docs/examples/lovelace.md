@@ -2,6 +2,8 @@
 
 The Lovelace configuration for the Power Distribution Card is shown below. You can install the Power Distribution Card through HACS
 
+![Power distribution](../images/power_dist.png)
+
 ::: details
 ```yaml
 type: custom:power-distribution-card
