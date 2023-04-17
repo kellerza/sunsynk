@@ -5,16 +5,15 @@ from typing import Any, Optional, OrderedDict, Union
 
 import attr
 from filter import Filter
-from mqtt import (
-    MQTT,
+from mqtt_entity import (
     Device,
     Entity,
+    MQTTClient,
     NumberEntity,
     SelectEntity,
     SensorEntity,
-    hass_default_rw_icon,
-    hass_device_class,
 )
+from mqtt_entity.helpers import hass_default_rw_icon, hass_device_class
 from options import OPT
 
 from sunsynk.helpers import ValType
@@ -32,6 +31,7 @@ SENSOR_PREFIX: dict[str, str] = {}
 SS_TOPIC = "SUNSYNK/status"
 _LOGGER = logging.getLogger(__name__)
 SS: list[Sunsynk] = []
+MQTT = MQTTClient()
 
 
 def tostr(val: Any) -> str:

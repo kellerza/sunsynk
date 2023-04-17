@@ -1,9 +1,40 @@
 # System settings card
 
-Below is an example Lovelace card to show the System mode in the frontend
+Below you can find two examples Lovelace cards to show, and allow editing, of the System mode in the frontend
 
+## Example #1
 
-![settings](../images/system_settings.png)
+This card shows the system values and can be edited by clicking on individual settings.
+
+![settings](../images/system_settings.webp)
+
+::: details Required sensors
+The following sensors are required in the addon configuration.
+
+```yaml
+SENSORS:
+  - load_limit
+  - prog1_capacity
+  - prog1_charge
+  - prog1_time
+  - prog2_capacity
+  - prog2_charge
+  - prog2_time
+  - prog3_capacity
+  - prog3_charge
+  - prog3_time
+  - prog4_capacity
+  - prog4_charge
+  - prog4_time
+  - prog5_capacity
+  - prog5_charge
+  - prog5_time
+  - prog6_capacity
+  - prog6_charge
+  - prog6_time
+```
+:::
+
 
 ::: details Lovelace yaml
 ```yaml
@@ -91,9 +122,13 @@ cards:
 :::
 
 
+## Example #2
+
 Another example of a panel to control the Turbo Energy inverter system work mode from Home Assistant
 
-::: details
+This panel is editable directly from the frontend and includes sensors `prog1_mode`...`prog6_mode`
+
+::: details Lovelace yaml
 ```yaml
   - theme: Backend-selected
     title: Bateria

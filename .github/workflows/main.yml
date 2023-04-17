@@ -48,11 +48,9 @@ jobs:
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install Requirements
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements_test.txt
+        run: python -m pip install --upgrade pip
       - name: Install local sunsynk package
-        run: pip install -e .[pymodbus,umodbus]
+        run: pip install -e .[pymodbus,umodbus,tests]
       - name: Run Pylint
         run: |
           pylint sunsynk
@@ -82,8 +80,7 @@ jobs:
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install Requirements
-        run: |
-          pip install mypy .
+        run: pip install mypy .
       - name: Run mypy
         continue-on-error: true
         run: |
@@ -98,8 +95,7 @@ jobs:
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install Requirements
-        run: |
-          pip install pydocstyle
+        run: pip install pydocstyle
       - name: Run pydocstyle
         run: |
           pydocstyle
@@ -124,11 +120,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Requirements
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements_test.txt
+        run: python -m pip install --upgrade pip
       - name: Install local sunsynk package
-        run: pip install -e .[pymodbus,umodbus]
+        run: pip install -e .[pymodbus,umodbus,tests]
       - name: Run tests and generate coverage report
         run: |
           pytest --cov=./sunsynk --cov-report=xml -- tests/sunsynk

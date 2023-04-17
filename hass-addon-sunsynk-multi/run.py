@@ -10,9 +10,17 @@ from typing import Iterable, OrderedDict
 
 from filter import RROBIN, Filter, getfilter, suggested_filter
 from helpers import import_mysensors
-from mqtt import MQTT, Device
+from mqtt_entity import Device
 from options import OPT, init_options
-from state import SENSOR_PREFIX, SENSOR_WRITE_QUEUE, SS, SS_TOPIC, State, TimeoutState
+from state import (
+    MQTT,
+    SENSOR_PREFIX,
+    SENSOR_WRITE_QUEUE,
+    SS,
+    SS_TOPIC,
+    State,
+    TimeoutState,
+)
 
 from sunsynk.definitions import SENSORS as DEFS1
 from sunsynk.definitions3ph import SENSORS as DEFS3
@@ -23,6 +31,7 @@ from sunsynk.sunsynk import Sensor, Sunsynk
 
 _LOGGER = logging.getLogger(":")
 DEFS: SensorDefinitions = SensorDefinitions()
+
 
 HASS_DISCOVERY_INFO_UPDATE_QUEUE: set[Sensor] = set()
 STARTUP_SENSORS: set[Sensor] = set()
@@ -212,10 +221,11 @@ def setup_sensors() -> None:
             STATES[dep.id] = State(sensor=dep, hidden=True, filter=filt)
             if dep.id not in OPT.sensors:
                 added_hidden.append(dep.id)
-    _LOGGER.info(
-        "Added hidden sensors as other sensors depend on it: %s",
-        ", ".join(added_hidden),
-    )
+    if added_hidden:
+        _LOGGER.info(
+            "Added hidden sensors as other sensors depend on it: %s",
+            ", ".join(added_hidden),
+        )
 
     if OPT.debug > 0:
         for nme, val in msg.items():
