@@ -16,12 +16,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # - uses: dorny/paths-filter@v2
-      #   id: changes
-      #   with:
-      #     filters: |
-      #       www:
-      #         - www/**
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -31,7 +25,5 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          # deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          # external_repository: labctl/labctl
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: www/docs/.vitepress/dist
