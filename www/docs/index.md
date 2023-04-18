@@ -9,7 +9,10 @@ hero:
     alt: sunsynk
   actions:
     - theme: brand
-      text: Getting Started
+      text: Overview
+      link: /guide/overview
+    - theme: alt
+      text: Installation
       link: /guide/getting-started
     - theme: alt
       text: Addon Options

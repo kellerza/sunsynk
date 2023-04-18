@@ -5,3 +5,13 @@
     --vp-home-hero-name-color:
   }
 */
+:root {
+--vp-c-green: #0d6efd;
+--vp-c-green-light: #6cb2eb;
+--vp-c-green-lighter: #aed2f1;
+--vp-c-green-dark: #0c4b9b;
+--vp-c-green-darker: #03254c;
+--vp-c-green-dimm-1: rgba(13, 110, 253, 0.05);
+--vp-c-green-dimm-2: rgba(13, 110, 253, 0.2);
+--vp-c-green-dimm-3: rgba(13, 110, 253, 0.5);
+}

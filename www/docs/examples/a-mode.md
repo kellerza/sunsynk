@@ -92,6 +92,7 @@ SENSORS:
 ```
 
 ::: details Automations
+Automation 1
 ```yaml
 alias: SS Load Limit Essentials
 trigger:
@@ -107,6 +108,7 @@ action:
 mode: single
 ```
 
+Automation 2
 ```yaml
 alias: SS Load Limit Zero Export
 trigger:
@@ -120,5 +122,43 @@ action:
     target:
       entity_id: select.ss_load_limit
 mode: single
+```
+:::
+
+
+## Detecting power failures / Load shedding
+
+This can be achieved with any of the following sensors
+
+- `Grid connected status`
+- `Grid frequency` drops below a certain value
+- `Grid voltage` drops below a certain value
+
+The example automation below creates a binary_sensor from the grid frequency and sends out notification on power failure and the duration of the failure (with some sane back-offs). It serves as a reminder that load shadding is a reality.
+
+:: details Configuration package (yaml)
+Place this file in `/config/packages/alert.yaml` and enable configuration for the `packages` folder (refer to the HA docs [here](https://www.home-assistant.io/docs/configuration/packages/#create-a-packages-folder))
+
+```yaml
+template:
+  binary_sensor:
+    - name: Load shedding
+      state: "{{ states('sensor.ss_grid_frequency') | default (50) | int(0) < 40  }}"
+
+alert:
+  load_shed:
+    name: "Load shedding"
+    message: "The power is off for - {{ relative_time(states.binary_sensor.load_shedding.last_changed) }}"
+    done_message: "The power is back on"
+    entity_id: binary_sensor.load_shedding
+    repeat:
+      - 2
+      - 30
+      - 60
+      - 120
+    can_acknowledge: true  # Optional, default is true
+    skip_first: true  # Optional, false is the default
+    notifiers:
+      - mobile_app_johann_iphone
 ```
 :::

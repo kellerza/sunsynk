@@ -66,8 +66,8 @@ export default defineConfig({
         text: "Guide",
         items: [
           {
-            text: "Introduction",
-            link: "/guide/intro",
+            text: "Overview",
+            link: "/guide/overview",
             items: [
               {
                 text: "Tested Inverters",
@@ -102,8 +102,12 @@ export default defineConfig({
         text: "Examples",
         items: [
           { text: "Overview", link: "/examples/overview" },
-          { text: "Lovelace", link: "/examples/lovelace" },
-          { text: "Settings", link: "/examples/lovelace-settings" },
+          { text: "Lovelace",
+            link: "/examples/lovelace",
+            items: [
+              { text: "Settings", link: "/examples/lovelace-settings" },
+            ],
+          },
           { text: "Automations", link: "/examples/a-mode" },
           { text: "Templates", link: "/examples/templates" },
         ],
@@ -128,6 +132,11 @@ export default defineConfig({
       appId: "ZZ2YT4M4EY",
       apiKey: "3fda4c9bd770052e9e3ebeb213af2a82",
       indexName: "sunsynk",
+    },
+  },
+  markdown: {
+    config: md => {
+      md.use(require('markdown-it-imsize'))
     },
   },
 });

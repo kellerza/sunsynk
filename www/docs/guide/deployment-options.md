@@ -41,15 +41,15 @@ If the RJ-45 connector on the inverter side is crimped according to [T568A/T568B
 
    This is my preferred adaptor. It includes a GND and lightning/ESD protection, TVS diodes and a resettable fuse.
 
-   Wave also has a RS485-to-Ethernet module. (which does not work!)
+   ![Wave](../images/usb-wave-rs485.webp =360x360)
 
-   <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-wave-rs485.jpg" width="55%">
+   Wave also has a RS485-to-Ethernet module. (which does not work!)
 
 2. USB-to-RS485 adaptor with cable [example](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
    Includes a GND and TVS diode and USB self recovery options.
 
-   <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-rs485-cable.jpg" width="55%">
+   ![Cable](../images/usb-rs485-cable.webp =360x360)
 
 Other tested adaptors
 - USB-to-RS485 3 Pin adaptor [example](https://www.robotics.org.za/RS485-3P)
@@ -60,8 +60,7 @@ Other tested adaptors
 - 2-Wire USB-to-RS485 [example](https://www.robotics.org.za/RS485-MINI)
 
   This is the adaptor I started with. It works, but does not include a GND, so your success might vary.
-
-  <img src="https://github.com/kellerza/sunsynk/raw/main/images/usb-rs485-rj45.png" width="35%">
+  ![2-wire](../images/usb-rs485-rj45.webp =250x250)
 
 ## RS485 gateways
 
@@ -73,8 +72,8 @@ Other tested adaptors
 
 2. HF5142B  Modbus/serial to ethernet (4x RS232/485/422 to 4x E-Ports)
 
-   ![settings](https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142.png)
+   ![gateway](../images/eth-hf5142.webp)
 
    This gateway was tested with the Deye 8k EU Hybrid inverter. The following serial settings were used:
 
-   <img src="https://github.com/kellerza/sunsynk/raw/main/images/eth-hf5142-settings.png" width="80%" alt="settings">
+   ![settings](../images/eth-hf5142-settings.webp =400x400)
