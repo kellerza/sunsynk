@@ -5,13 +5,12 @@ from typing import Sequence
 from urllib.parse import urlparse
 
 import attr
-from pymodbus.client.asynchronous import schedulers
-from pymodbus.client.asynchronous.async_io import (  # AsyncioModbusSerialClient,
-    AsyncioModbusTcpClient,
-    ModbusClientProtocol,
+from pymodbus import version
+from pymodbus.client import (
+    AsyncModbusSerialClient,
+    AsyncModbusTcpClient,
+    ModbusBaseClient,
 )
-from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient
-from serial.serialutil import STOPBITS_ONE
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -23,7 +22,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
     """Sunsync Modbus class."""
 
     port: str = attr.ib(default="/dev/tty0")
-    client: ModbusClientProtocol = attr.ib(default=None)
+    client: ModbusBaseClient = attr.ib(default=None)
 
     async def connect(self) -> None:
         """Connect.
@@ -31,23 +30,23 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
         https://pymodbus.readthedocs.io/en/latest/source/example/async_asyncio_serial_client.html
 
         """
-        # pylint: disable=protected-access
-        url = urlparse(f"//{self.port}")
-        client = None
+        if self.client and self.client.async_connected:
+            return
+        url = urlparse(f"{self.port}")
 
         if not url.netloc:
             # Cannot run from a coroutine currently
             # https://github.com/riptideio/pymodbus/pull/658/files#r718775308
+            _LOGGER.debug("Port: %s pymodbus %s", self.port, version.short())
 
-            msc = AsyncModbusSerialClient(
-                schedulers.ASYNC_IO,
+            self.client = AsyncModbusSerialClient(
                 port=self.port,
                 baudrate=self.baudrate,
-                method="rtu",
-                stopbits=STOPBITS_ONE,
+                # method="rtu",
+                stopbits=1,
                 bytesize=8,
             )
-            loop, client = msc  # pylint: disable=unpacking-non-sequence
+            # _loop, client = msc  # pylint: disable=unpacking-non-sequence
 
             # Alternative interim...
             # client = AsyncioModbusSerialClient(
@@ -60,32 +59,33 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             #     bytesize=8,
             # )
         else:
-            client = AsyncioModbusTcpClient(
+            _LOGGER.debug(
+                "Host: %s : %s pymodbus %s", url.hostname, url.port, version.short()
+            )
+            self.client = AsyncModbusTcpClient(
                 host=url.hostname,
                 port=url.port or 502,
-                protocol_class=ModbusClientProtocol,
-                loop=asyncio.get_running_loop(),
+                # protocol_class=ModbusClientProtocol,
+                # loop=asyncio.get_running_loop(),
             )
 
-        await client.connect()
+        await self.client.connect()
 
-        if (hasattr(client, "connected") and not client.connected) or (
-            hasattr(client, "_connected") and not client._connected
-        ):
+        if not self.client.async_connected:
             raise ConnectionError
 
-        try:
-            client.protocol._timeout = self.timeout
-        except AttributeError as err:
-            _LOGGER.warning("%s", err)
+        # try:
+        #     client.protocol._timeout = self.timeout
+        # except AttributeError as err:
+        #     _LOGGER.warning("%s", err)
 
-        self.client = client.protocol
+        # self.client = client. .protocol
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
             w_r = await self.client.write_registers(
-                address=address, values=(value,), unit=self.server_id
+                address=address, values=(value,), slave=self.server_id
             )
             if w_r.function_code < 0x80:  # test that we are not an error
                 return True
@@ -98,7 +98,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read a holding register."""
         res = await self.client.read_holding_registers(
-            start, length, unit=self.server_id
+            address=start, count=length, slave=self.server_id
         )
         if res.function_code >= 0x80:  # test that we are not an error
             raise Exception(  # pylint: disable=broad-exception-raised

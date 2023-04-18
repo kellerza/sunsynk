@@ -70,3 +70,55 @@ action:
 mode: single
 ```
 :::
+
+## Load Limit
+
+Ideally you do not want to discharge your batteries into non-essential loads like the geyser or heat pumps.
+
+With **Load Limit** you can change the power export behavior from your inverter. The power from your inverter is a combination of PV and battery.
+
+The options are:
+- **Essentials** - only supply power to the essentials (after the inverter)
+- **Allow Export** - allow export to the grid. This can feed power to the non-essential loads and places no limit to feeding back into the grid.
+- **Zero Export** - allow feed back to the grid side, or non-essentials. In addition it uses the Inverter's CT to limit power fed back toward the utility grid.
+
+This automation sets `load_limit` for daytime & night-time behavior:
+- During the day, the inverter (PV & battery) can supply excess power to the non-essentials. No/zero export is allowed, since we cannot sell power to the grid.
+- During the evening, the inverter (PV & battery) should only supply power to the Essentials. All non-essentials can use the utility grid if available.
+
+```yaml
+SENSORS:
+  - load_limit
+```
+
+::: details Automations
+```yaml
+alias: SS Load Limit Essentials
+trigger:
+  - platform: time
+    at: "18:30:00"
+condition: []
+action:
+  - service: select.select_option
+    data:
+      option: Essentials
+    target:
+      entity_id: select.ss_load_limit
+mode: single
+```
+
+```yaml
+alias: SS Load Limit Zero Export
+trigger:
+  - platform: time
+    at: "07:00:00"
+condition: []
+action:
+  - service: select.select_option
+    data:
+      option: Zero Export
+    target:
+      entity_id: select.ss_load_limit
+mode: single
+```
+:::
