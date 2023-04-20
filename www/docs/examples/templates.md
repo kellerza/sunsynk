@@ -48,7 +48,7 @@ esp_key: 069FXXXX-1A7FXXXX-AF06XXXX-6C2EXXXX
 esp_area: jhbcitypower2-2-xxxxxx
 ```
 
-The configuration can easily be added using HASS configuraition modules
+The sensors can be added using [config packages](https://kellerza.github.io/sunsynk/examples/overview#config-packages)
 
 ::: details Config package - `/config/packages/esp.yaml`
 
