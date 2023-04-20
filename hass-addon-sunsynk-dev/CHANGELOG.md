@@ -1,5 +1,8 @@
 # Changelog
 
+## **2023.01.19b-0.2.9**
+ - Dependency bug
+
 ## **2023.01.19-0.2.9**
 
 - Python sunsynk module 0.2.9:

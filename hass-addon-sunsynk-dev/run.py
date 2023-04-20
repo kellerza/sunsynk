@@ -304,8 +304,11 @@ def setup_sensors() -> None:
         sens[sen.id] = filt
 
         if isinstance(sen, (NumberRWSensor, TimeRWSensor)):
-            for dep in sen.dependencies:
-                sens_dependants[dep.id].append(sen)
+            try:
+                for dep in sen.dependencies():
+                    sens_dependants[dep.id].append(sen)
+            except TypeError as err:
+                _LOGGER.warning(str(err))
 
     for sen_id, deps in sens_dependants.items():
         if sen_id not in ALL_SENSORS:
