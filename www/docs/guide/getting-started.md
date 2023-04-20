@@ -17,7 +17,7 @@
 
 ### mbusd gateway
 
-An mbusd TCP to RTU gateway
+An mbusd TCP to RTU gateway. See more [here](./mbusd)
 
 ### Sunsynk Inverter Add-on (multi)
 

@@ -9,8 +9,6 @@ This card shows the system values and can be edited by clicking on individual se
 ![settings](../images/system_settings.webp)
 
 ::: details Required sensors
-The following sensors are required in the addon configuration.
-
 ```yaml
 SENSORS:
   - load_limit
@@ -126,7 +124,7 @@ cards:
 
 Another example of a panel to control the Turbo Energy inverter system work mode from Home Assistant
 
-This panel is editable directly from the frontend and includes sensors `prog1_mode`...`prog6_mode`
+This panel is editable directly from the frontend and includes sensors `prog1_mode` to `prog6_mode`
 
 ::: details Lovelace yaml
 ```yaml

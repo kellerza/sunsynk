@@ -1,8 +1,8 @@
-# Templates
+# Home Assistant Templates
 
 You can view sensor values under Home Assistant using the "Developer Tools" -> Templates tab.
 
-::: details Template details
+::: details Example template
 ```yaml
 Essentials:     {{ states("sensor.ss_essential_power") }} W
 Non-Essentials: {{ states("sensor.ss_non_essential_power") }} W
@@ -48,7 +48,7 @@ esp_key: 069FXXXX-1A7FXXXX-AF06XXXX-6C2EXXXX
 esp_area: jhbcitypower2-2-xxxxxx
 ```
 
-The sensors can be added using [config packages](https://kellerza.github.io/sunsynk/examples/overview#config-packages)
+The sensors can be added using [config packages](./overview#config-packages)
 
 ::: details Config package - `/config/packages/esp.yaml`
 
