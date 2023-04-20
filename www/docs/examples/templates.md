@@ -50,9 +50,7 @@ esp_area: jhbcitypower2-2-xxxxxx
 
 The configuration can easily be added using HASS configuraition modules
 
-
-::: details esp.yaml config module
-Add the following to `/config/modules/esp.yaml`
+::: details Config package - `/config/packages/esp.yaml`
 
 ```yaml
 rest:

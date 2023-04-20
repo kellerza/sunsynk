@@ -136,8 +136,7 @@ This can be achieved with any of the following sensors
 
 The example automation below creates a binary_sensor from the grid frequency and sends out notification on power failure and the duration of the failure (with some sane back-offs). It serves as a reminder that load shadding is a reality.
 
-:: details Configuration package (yaml)
-Place this file in `/config/packages/alert.yaml` and enable configuration for the `packages` folder (refer to the HA docs [here](https://www.home-assistant.io/docs/configuration/packages/#create-a-packages-folder))
+::: details Config package - `/config/packages/alert.yaml`
 
 ```yaml
 template:
