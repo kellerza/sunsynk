@@ -64,13 +64,15 @@ jobs:
               - 'hass-addon-sunsynk-dev/**'
             addonmulti:
               - 'hass-addon-sunsynk-multi/**'
-      - if: steps.changes.outputs.addon == 'true'
-        name: Run pylint on the HASS addon
-        run: pylint hass-addon-sunsynk
-      - if: steps.changes.outputs.addondev == 'true'
-        name: Run pylint on the dev HASS addon
-        run: pylint hass-addon-sunsynk-dev
-
+      # - if: steps.changes.outputs.addon == 'true'
+      #   name: Run pylint on the HASS addon
+      #   run: pylint hass-addon-sunsynk
+      # - if: steps.changes.outputs.addondev == 'true'
+      #   name: Run pylint on the dev HASS addon
+      #   run: pylint hass-addon-sunsynk-dev
+      - if: steps.changes.outputs.addonmulti == 'true'
+        name: Run pylint on the MULTI HASS addon
+        run: pylint hass-addon-sunsynk-multi
   mypy:
     name: Check mypy
     runs-on: ubuntu-latest

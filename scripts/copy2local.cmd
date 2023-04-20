@@ -13,7 +13,8 @@ xcopy /Y README.md %~2\sunsynk\
 xcopy /Y sunsynk %~2\sunsynk\sunsynk\
 echo # Modify Dockerfile
 cp %~1\Dockerfile Dockerfile.tmp
-sed -i 's/ sunsynk\S*==[0-9.]*$//' Dockerfile.tmp
+sed -i '/    sunsynk/d'  Dockerfile.tmp
+cat Dockerfile.tmp | grep sunsynk
 sed -i 's/# RUN pip3 install -e/RUN pip3 install -e/' Dockerfile.tmp
 xcopy /Y Dockerfile.tmp %~2\Dockerfile
 rm Dockerfile.tmp

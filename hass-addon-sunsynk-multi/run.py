@@ -285,8 +285,8 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     _LOGGER.info("Connecting to %s", SS[0].port)
     try:
         await SS[0].connect()
-    except ConnectionError:
-        log_bold(f"Could not connect to {SS[0].port}")
+    except ConnectionError as exc:
+        log_bold(f"Could not connect to {SS[0].port}: %s", exc)
         _LOGGER.critical(TERM)
         await asyncio.sleep(30)
         return

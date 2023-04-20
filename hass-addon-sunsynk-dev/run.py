@@ -383,6 +383,8 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     # pylint: disable=too-many-statements
     loop.set_debug(OPT.debug > 0)
 
+    log_bold("Please use the MULTI version of the addon")
+
     try:
         await SUNSYNK.connect()
     except ConnectionError:
