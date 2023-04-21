@@ -1,9 +1,5 @@
 # Changelog
 
-## **2023.04.20b-0.3.2**
-
-- bugfix
-
 ## **2023.04.20-0.3.2**
 
 - If you have a Serial, either try pymodbus serial or use mbusd
@@ -17,6 +13,9 @@
   - Serial is currently not working
 
 - paho-mqtt 1.6.1
+
+- **2023.04.20b-0.3.2**  - bugfix log
+
 
 ## **2023.04.17-0.3.1**
 
