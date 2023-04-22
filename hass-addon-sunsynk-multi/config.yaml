@@ -1,8 +1,8 @@
 ---
-name: Sunsynk Inverter Add-on (multi)
-version: 2023.04.20b-0.3.2
+name: Sunsynk/Deye Inverter Add-on (multi)
+version: 2023.04.22-0.3.3
 slug: hass-addon-sunsynk-multi
-description: Add-on for the Sunsynk Inverter
+description: Add-on for a Sunsynk/Deye branded Inverter
 startup: services
 boot: auto
 url: "https://github.com/kellerza/sunsynk"
@@ -44,11 +44,11 @@ options:
   DEBUG: 0
   DEBUG_DEVICE: "/dev/ttyAMA0"
 schema:
-  DRIVER: str
+  DRIVER: list(pymodbus|umodbus)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
-      MODBUS_ID: int(1,10)
+      MODBUS_ID: int(1,16)
       PORT: str
   SENSOR_DEFINITIONS: list(single-phase|three-phase)
   SENSORS:

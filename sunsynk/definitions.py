@@ -1,6 +1,11 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, TimeRWSensor
+from sunsynk.rwsensors import (
+    NumberRWSensor,
+    SelectRWSensor,
+    SystemTimeRWSensor,
+    TimeRWSensor,
+)
 from sunsynk.sensors import (
     FaultSensor,
     InverterStateSensor,
@@ -135,6 +140,7 @@ SENSORS += (
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
     Sensor(194, "Grid Connected Status"),
+    SystemTimeRWSensor((22, 23, 24), "Date Time", unit=""),
 )
 ###########
 # Settings

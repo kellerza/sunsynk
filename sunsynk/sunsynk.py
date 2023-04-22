@@ -3,7 +3,7 @@ import asyncio
 import logging
 from typing import Iterable, Sequence
 
-import attr
+import attrs
 
 from sunsynk.helpers import patch_bitmask
 from sunsynk.rwsensors import RWSensor
@@ -13,16 +13,16 @@ from sunsynk.state import InverterState, group_sensors, register_map
 _LOGGER = logging.getLogger(__name__)
 
 
-@attr.define
+@attrs.define
 class Sunsynk:
     """Sunsync Modbus class."""
 
-    state: InverterState = attr.field(factory=InverterState)
-    port: str = attr.ib(default="/dev/tty0")
-    baudrate: int = attr.ib(default=9600)
-    server_id: int = attr.ib(default=1)
-    timeout: int = attr.ib(default=10)
-    read_sensors_batch_size: int = attr.field(default=60)
+    state: InverterState = attrs.field(factory=InverterState)
+    port: str = attrs.field(default="/dev/tty0")
+    baudrate: int = attrs.field(default=9600)
+    server_id: int = attrs.field(default=1)
+    timeout: int = attrs.field(default=10)
+    read_sensors_batch_size: int = attrs.field(default=60)
     timeouts: int = 0
 
     async def connect(self) -> None:

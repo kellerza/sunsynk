@@ -1,47 +1,41 @@
 """Addon options."""
+# pylint: disable=too-few-public-methods
 from __future__ import annotations
 
 import logging
 from json import loads
 from pathlib import Path
 
-import attr
+import attrs
 import yaml
 
 _LOGGER = logging.getLogger(__name__)
 
 
-@attr.define(slots=True)
+@attrs.define(slots=True)
 class InverterOptions:
     """Options for an inverter."""
 
-    # pylint: disable=too-few-public-methods
     port: str = ""
-    serial_nr: str = ""
-    modbus_id: int = 0
+    modbus_id: int = ""
     ha_prefix: str = ""
+    serial_nr: str = ""
+    mqtt_id: str = ""
 
     @classmethod
     def factory(cls, opt: dict) -> InverterOptions:
         """Create a class from the options."""
-        opt2 = {k.lower(): v for k, v in opt.items()}
-        return InverterOptions(**opt2)
-
-    def get_serial(self) -> str:
-        """Get the serial number."""
-        return self.serial_nr.partition(":")[0]
-
-    def get_mqttid(self) -> str:
-        """Get the MQTT serial number."""
-        part = self.serial_nr.partition(":")
-        return part[2] if part[2] else part[0]
+        serial, _, mid = opt.pop("SERIAL_NR", "").partition(":")
+        kwargs = {k.lower(): v for k, v in opt.items()}
+        kwargs["serial_nr"] = serial
+        kwargs["mqtt_id"] = mid or serial
+        return InverterOptions(**kwargs)
 
 
-@attr.define(slots=True)
+@attrs.define(slots=True)
 class Options:
     """HASS Addon Options."""
 
-    # pylint: disable=too-few-public-methods
     mqtt_host: str = ""
     mqtt_port: int = 0
     mqtt_username: str = ""

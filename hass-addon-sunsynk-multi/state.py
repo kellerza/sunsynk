@@ -1,15 +1,16 @@
 """State of a sensor & entity."""
 import logging
 from math import modf
-from typing import Any, Optional, OrderedDict, Union
+from typing import Any, Optional, Union
 
-import attr
+import attrs
 from filter import Filter
 from mqtt_entity import (
     Device,
     Entity,
     MQTTClient,
     NumberEntity,
+    RWEntity,
     SelectEntity,
     SensorEntity,
 )
@@ -26,12 +27,15 @@ from sunsynk.rwsensors import (
 )
 from sunsynk.sunsynk import Sensor, Sunsynk
 
-# sensor prefix per device id
 SENSOR_PREFIX: dict[str, str] = {}
+"""Sensor prefix per mqtt device id."""
+
 SS_TOPIC = "SUNSYNK/status"
 _LOGGER = logging.getLogger(__name__)
 SS: list[Sunsynk] = []
+"""An array of the Sunsynk instances."""
 MQTT = MQTTClient()
+"""The MQTTClient instance."""
 
 
 def tostr(val: Any) -> str:
@@ -45,15 +49,15 @@ def tostr(val: Any) -> str:
     return f"{val:.3f}".rstrip("0")
 
 
-@attr.define(slots=True)
+@attrs.define(slots=True)
 class State:  # pylint: disable=too-few-public-methods
     """State of a sensor / entity."""
 
-    filter: Optional[Filter] = attr.field()
-    sensor: Optional[Sensor] = attr.field()
-    entity: Optional[Entity] = attr.field(default=None)
+    filter: Optional[Filter] = attrs.field()
+    sensor: Optional[Sensor] = attrs.field()
+    entity: Optional[Entity] = attrs.field(default=None)
     "The entity will be None if hidden."
-    hidden: bool = attr.field(default=False)
+    hidden: bool = attrs.field(default=False)
     "Hide state from HA."
 
     _last: ValType = None
@@ -91,8 +95,7 @@ class State:  # pylint: disable=too-few-public-methods
         return f"{nme}:{self.filter._filter.__name__}"  # pylint: disable=no-member,protected-access
 
     def create_entity(self, dev: Union[Device, Entity, None]) -> Entity:
-        """Create HASS entities out of an existing list of filters"""
-
+        """Create HASS entities out of an existing list of filters."""
         # def create_on_change_handler(sensor: RWSensor, value_func: Callable) -> Callable:
         #     def _handler(value: Any) -> None:
 
@@ -109,10 +112,23 @@ class State:  # pylint: disable=too-few-public-methods
 
         sensor = self.sensor
 
-        state_topic = f"{SS_TOPIC}/{OPT.inverters[0].serial_nr}/{sensor.id}"
+        # get the serial from the dev_id
+        serial_nr = dev.id
+        try:
+            assert serial_nr == OPT.inverters[0].serial_nr
+        except IndexError as err:
+            _LOGGER.warning("Inverter does not exist. dev.id=%s - %s", serial_nr, err)
+        except AssertionError:
+            _LOGGER.error(
+                "Serial number = %s does not match %s",
+                serial_nr,
+                OPT.inverters[0].serial_nr,
+            )
+
+        state_topic = f"{SS_TOPIC}/{serial_nr}/{sensor.id}"
         command_topic = f"{state_topic}_set"
 
-        ent: OrderedDict = {  # type:ignore
+        ent = {  # type:ignore
             "device": dev,
             "name": f"{SENSOR_PREFIX[dev.id]} {sensor.name}".strip(),
             "state_topic": state_topic,
@@ -120,46 +136,49 @@ class State:  # pylint: disable=too-few-public-methods
             "unit_of_measurement": sensor.unit,
         }
 
-        if isinstance(sensor, RWSensor):
-            ent["entity_category"] = "config"
-            ent["icon"] = hass_default_rw_icon(unit=sensor.unit)
-        else:
+        if not isinstance(sensor, RWSensor):
             ent["device_class"] = hass_device_class(unit=sensor.unit)
+            self.entity = SensorEntity(**ent)
+            return self.entity
+
+        ent.update(
+            {
+                "entity_category": "config",
+                "icon": hass_default_rw_icon(unit=sensor.unit),
+                "command_topic": command_topic,
+                "on_change": lambda v: SENSOR_WRITE_QUEUE.update({sensor: v}),
+            }
+        )
 
         if isinstance(sensor, NumberRWSensor):
             self.entity = NumberEntity(
                 **ent,
-                command_topic=command_topic,
                 min=resolve_num(SS[0].state.get, sensor.min, 0),
                 max=resolve_num(SS[0].state.get, sensor.max, 100),
                 mode=OPT.number_entity_mode,
-                on_change=lambda v: SENSOR_WRITE_QUEUE.update({sensor: float(v)}),
                 step=0.1 if sensor.factor < 1 else 1,
             )
 
         elif isinstance(sensor, SelectRWSensor):
             self.entity = SelectEntity(
                 **ent,
-                command_topic=command_topic,
                 options=sensor.available_values(),
-                on_change=lambda v: SENSOR_WRITE_QUEUE.update({sensor: str(v)}),
             )
 
         elif isinstance(sensor, TimeRWSensor):
             ent["icon"] = "mdi:clock"
             self.entity = SelectEntity(
                 **ent,
-                command_topic=command_topic,
                 options=sensor.available_values(15, SS[0].state.get),
-                on_change=lambda v: SENSOR_WRITE_QUEUE.update({sensor: str(v)}),
             )
 
         else:
-            self.entity = SensorEntity(**ent)
+            RWEntity._path = "text"  # pylint: disable=protected-access
+            self.entity = RWEntity(**ent)
         return self.entity
 
 
-@attr.define(slots=True)
+@attrs.define(slots=True)
 class TimeoutState(State):
     """Entity definition for the timeout sensor."""
 
@@ -183,3 +202,9 @@ class TimeoutState(State):
 
 
 SENSOR_WRITE_QUEUE: dict[Sensor, Union[str, int, float]] = {}
+
+
+class TextEntity(RWEntity):
+    """New text field."""
+
+    _path = "text"

@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Union
 
-import attr
+import attrs
 
 from sunsynk.helpers import (
     NumType,
@@ -19,16 +19,16 @@ from sunsynk.helpers import (
 _LOGGER = logging.getLogger(__name__)
 
 
-@attr.define(slots=True)
+@attrs.define(slots=True)
 class Sensor:
     """Sunsynk sensor."""
 
     # pylint: disable=too-many-instance-attributes
-    address: RegType = attr.field(converter=ensure_tuple)
-    name: str = attr.field()
-    unit: str = attr.field(default="")
-    factor: float = attr.field(default=1)
-    bitmask: int = attr.field(default=0)
+    address: RegType = attrs.field(converter=ensure_tuple)
+    name: str = attrs.field()
+    unit: str = attrs.field(default="")
+    factor: float = attrs.field(default=1)
+    bitmask: int = attrs.field(default=0)
 
     @property
     def id(self) -> str:  # pylint: disable=invalid-name
@@ -64,12 +64,12 @@ class Sensor:
         return self.id == other.id
 
 
-@attr.define(slots=True)
+@attrs.define(slots=True)
 class SensorDefinitions:
     """Definitions."""
 
-    all: dict[str, Sensor] = attr.field(factory=dict)
-    deprecated: dict[str, Sensor] = attr.field(factory=dict)
+    all: dict[str, Sensor] = attrs.field(factory=dict)
+    deprecated: dict[str, Sensor] = attrs.field(factory=dict)
 
     @property
     def serial(self) -> Sensor:
@@ -94,13 +94,13 @@ class SensorDefinitions:
         return self
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class MathSensor(Sensor):
     """Math sensor, add multiple registers."""
 
-    factors: tuple[float, ...] = attr.field(default=None, converter=ensure_tuple)
-    no_negative: bool = attr.field(default=False)
-    absolute: bool = attr.field(default=False)
+    factors: tuple[float, ...] = attrs.field(default=None, converter=ensure_tuple)
+    no_negative: bool = attrs.field(default=False)
+    absolute: bool = attrs.field(default=False)
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Calculate the math value."""
@@ -116,7 +116,7 @@ class MathSensor(Sensor):
         assert len(self.address) == len(self.factors)
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class TempSensor(Sensor):
     """Offset by 100 for temperature."""
 
@@ -130,7 +130,7 @@ class TempSensor(Sensor):
         return None
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class SDStatusSensor(Sensor):
     """SD card status."""
 
@@ -142,7 +142,7 @@ class SDStatusSensor(Sensor):
         }.get(regs[0]) or f"unknown {regs[0]}"
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class InverterStateSensor(Sensor):
     """Inverter status."""
 
@@ -153,7 +153,7 @@ class InverterStateSensor(Sensor):
         return f"unknown {regs[0]}"
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class SerialSensor(Sensor):
     """Decode the inverter serial number."""
 
@@ -166,7 +166,7 @@ class SerialSensor(Sensor):
         return val
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class FaultSensor(Sensor):
     """Decode Inverter faults."""
 

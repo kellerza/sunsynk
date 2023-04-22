@@ -6,12 +6,12 @@ import sys
 import traceback
 from asyncio.events import AbstractEventLoop
 from collections import defaultdict
-from typing import Iterable, OrderedDict
+from typing import Iterable
 
 from filter import RROBIN, Filter, getfilter, suggested_filter
 from helpers import import_mysensors
 from mqtt_entity import Device
-from options import OPT, init_options
+from options import OPT, InverterOptions, init_options
 from state import (
     MQTT,
     SENSOR_PREFIX,
@@ -55,39 +55,40 @@ async def publish_sensors(states: Iterable[State], *, force: bool = False) -> No
 
 
 async def hass_discover_sensors(
-    *, mqtt_id: str, serial: str, rated_power: float
-) -> None:
+    *, iopt: InverterOptions, ss: Sunsynk, rated_power: float
+) -> bool:
     """Discover all sensors."""
+    # Ensure the read serial is the same as the configured one
+    if iopt.serial_nr != (sser := str(ss.state[DEFS.serial])):
+        _LOGGER.error(
+            "Serial number from device (%s) does not match configuration (%s). SKIP",
+            sser,
+            iopt.serial,
+        )
+        return False
+
     dev = Device(
-        identifiers=[mqtt_id],
-        name=f"{OPT.manufacturer} Inverter {serial}",
-        model=f"{int(rated_power/1000)}kW Inverter {serial}",
+        identifiers=[iopt.mqtt_id],
+        name=f"{OPT.manufacturer} Inverter {iopt.serial_nr}",
+        model=f"{int(rated_power/1000)}kW Inverter {iopt.serial_nr}",
         manufacturer=OPT.manufacturer,
     )
-    if mqtt_id != serial:
-        dev.name += f" {mqtt_id}"
-    SENSOR_PREFIX[mqtt_id] = OPT.inverters[0].ha_prefix
+    if iopt.mqtt_id != iopt.serial_nr:
+        dev.name += f" {iopt.mqtt_id}"
+    SENSOR_PREFIX[iopt.mqtt_id] = OPT.inverters[0].ha_prefix
     ents = [s.create_entity(dev) for s in STATES.values() if not s.hidden]
     await MQTT.connect(OPT)
     await MQTT.publish_discovery_info(entities=ents)
+    return True
 
 
 async def hass_update_discovery_info() -> None:
-    """Update discovery info for existing sensors"""
+    """Update discovery info for existing sensors."""
     states = [STATES[n.id] for n in HASS_DISCOVERY_INFO_UPDATE_QUEUE]
     HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
     ents = [s.create_entity(s.entity) for s in states if not s.hidden]
     await MQTT.connect(OPT)
     await MQTT.publish_discovery_info(entities=ents, remove_entities=False)
-
-
-# def enqueue_hass_discovery_info_update(sen: Sensor, deps: list[Sensor]) -> None:
-#     """Add a sensor's dependants to the HASS discovery info update queue."""
-#     ids = sorted(s.id for s in deps)
-#     _LOGGER.debug(
-#         "%s changed: Enqueue discovery info updates for %s", sen.name, ", ".join(ids)
-#     )
-#     HASS_DISCOVERY_INFO_UPDATE_QUEUE.update(ids)
 
 
 SENSOR_DEPENDANTS: dict[Sensor, list[Sensor]] = defaultdict(list)
@@ -117,23 +118,24 @@ def setup_driver() -> None:
     if OPT.driver == "pymodbus":
         from sunsynk.pysunsynk import pySunsynk
 
-        factory = pySunsynk
+        factory: Sunsynk = pySunsynk
     elif OPT.driver == "umodbus":
         from sunsynk.usunsynk import uSunsynk
 
-        factory = uSunsynk  # type:ignore
+        factory: Sunsynk = uSunsynk
         port_prefix = "serial://"
     else:
         _LOGGER.critical("Invalid DRIVER: %s. Expected umodbus, pymodbus", OPT.driver)
         sys.exit(-1)
 
     for opt in OPT.inverters:
-        kwargs: OrderedDict = {  # type:ignore
+        kwargs = {
             "port": opt.port if opt.port else port_prefix + OPT.debug_device,
             "server_id": opt.modbus_id,
             "timeout": OPT.timeout,
             "read_sensors_batch_size": OPT.read_sensors_batch_size,
         }
+        _LOGGER.debug("%s driver options: %s", OPT.driver, kwargs)
         suns = factory(**kwargs)
         suns.state.onchange = sensor_updates
 
@@ -159,7 +161,11 @@ def setup_sensors() -> None:
     msg: dict[str, list[str]] = defaultdict(list)
 
     # Add custom sensors
-    mysensors = import_mysensors()
+    try:
+        mysensors = import_mysensors()
+    except ImportError:
+        log_bold("Unable to import import mysensors.py")
+        traceback.print_exc()
     if mysensors:
         DEFS.all.update(mysensors)
 
@@ -306,7 +312,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
 
     log_bold(f"Inverter serial number '{SS[0].state[DEFS.serial]}'")
 
-    if OPT.inverters[0].get_serial() != SS[0].state[DEFS.serial]:
+    if OPT.inverters[0].serial_nr != SS[0].state[DEFS.serial]:
         log_bold("SS[0].ID should be set to the serial number of your Inverter!")
         return
 
@@ -316,14 +322,11 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     except (ValueError, TypeError):
         pass
 
-    # Start MQTT
-    mqtt_id = OPT.inverters[0].get_mqttid()
+    # Start MQTT - availability will always use
+    mqtt_id = OPT.inverters[0].serial_nr
     MQTT.availability_topic = f"{SS_TOPIC}/{mqtt_id}/availability"
-    await hass_discover_sensors(
-        mqtt_id=mqtt_id,
-        serial=str(SS[0].state[DEFS.serial]),
-        rated_power=powr,
-    )
+    for iopt, sus in zip(OPT.inverters, SS):
+        await hass_discover_sensors(iopt=iopt, ss=sus, rated_power=powr)
 
     # Read all & publish immediately
     await asyncio.sleep(0.01)
@@ -333,8 +336,7 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
     await publish_sensors(STATES.values(), force=True)
 
     async def write_sensors() -> None:
-        """Flush any pending sensor writes"""
-
+        """Flush any pending sensor writes."""
         while SENSOR_WRITE_QUEUE:
             sensor, value = SENSOR_WRITE_QUEUE.popitem()
             if not isinstance(sensor, RWSensor):

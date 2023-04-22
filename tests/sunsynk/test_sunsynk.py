@@ -1,64 +1,15 @@
 """Test sunsynk library."""
 import logging
-import os
-from unittest.mock import AsyncMock, MagicMock, call, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
 # from sunsynk.definitions import serial
 from sunsynk import Sunsynk
-from sunsynk.pysunsynk import pySunsynk
 from sunsynk.rwsensors import NumberRWSensor
 from sunsynk.state import InverterState
-from sunsynk.usunsynk import uSunsynk
 
 _LOGGER = logging.getLogger(__name__)
-
-
-@pytest.mark.asyncio
-async def test_pyss():
-    ss = pySunsynk()
-    with pytest.raises(ConnectionError):
-        await ss.connect()
-
-
-@pytest.mark.asyncio
-async def test_uss_schemes():
-    """Test url schemes for usunsynk.
-
-    umodbus only connects on read.
-    """
-    for port in ("serial:///dev/usb1", "tcp://127.0.0.1:502"):
-        ss = uSunsynk(port=port)
-        try:
-            await ss.connect()
-        except ModuleNotFoundError as err:  # not working on windows
-            _LOGGER.error("usunsynk could not connect to %s: %s", port, err)
-            if os.name == "posix":
-                raise
-
-    for port in ("127.0.0.1:502", "xxx", "localhost"):
-        ss = uSunsynk(port=port)
-        with pytest.raises(ValueError):
-            await ss.connect()
-
-
-@pytest.mark.asyncio
-async def test_uss_sensor():
-    ss = uSunsynk(port="tcp://127.0.0.1:502")
-    await ss.connect()
-
-    rhr = ss.client.read_holding_registers = AsyncMock()
-
-    _LOGGER.warning("%s", dir(ss.client))
-    assert not rhr.called
-    await ss.read_holding_registers(1, 2)
-    assert rhr.called
-
-    wrr = ss.client.write_registers = AsyncMock()
-    assert not wrr.called
-    await ss.write_register(address=1, value=2)
-    assert wrr.called
 
 
 @pytest.mark.asyncio

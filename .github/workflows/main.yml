@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-python@v3
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
-      - uses: psf/black@23.1.0
+      - uses: psf/black@23.3.0
         with:
           options: "--check"
           src: "."
@@ -52,27 +52,8 @@ jobs:
       - name: Install local sunsynk package
         run: pip install -e .[pymodbus,umodbus,tests]
       - name: Run Pylint
-        run: |
-          pylint sunsynk hass-addon-sunsynk-multi
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            addon:
-              - 'hass-addon-sunsynk/**'
-            addondev:
-              - 'hass-addon-sunsynk-dev/**'
-            addonmulti:
-              - 'hass-addon-sunsynk-multi/**'
-      # - if: steps.changes.outputs.addon == 'true'
-      #   name: Run pylint on the HASS addon
-      #   run: pylint hass-addon-sunsynk
-      # - if: steps.changes.outputs.addondev == 'true'
-      #   name: Run pylint on the dev HASS addon
-      #   run: pylint hass-addon-sunsynk-dev
-      - if: steps.changes.outputs.addonmulti == 'true'
-        name: Run pylint on the MULTI HASS addon
-        run: pylint hass-addon-sunsynk-multi
+        run: pylint sunsynk hass-addon-sunsynk-multi
+
   mypy:
     name: Check mypy
     runs-on: ubuntu-latest
@@ -85,8 +66,7 @@ jobs:
         run: pip install mypy .
       - name: Run mypy
         continue-on-error: true
-        run: |
-          mypy --install-types --non-interactive sunsynk/ hass-addon-sunsynk-multi/
+        run: mypy --install-types --non-interactive sunsynk/ hass-addon-sunsynk-multi/
 
   pydocstyle:
     name: Check pydocstyle
@@ -99,8 +79,7 @@ jobs:
       - name: Install Requirements
         run: pip install pydocstyle
       - name: Run pydocstyle
-        run: |
-          pydocstyle
+        run: pydocstyle sunsynk hass-addon-sunsynk-multi
 
   pytest:
     name: Run tests Python ${{ matrix.python-version }}
@@ -126,20 +105,7 @@ jobs:
       - name: Install local sunsynk package
         run: pip install -e .[pymodbus,umodbus,tests]
       - name: Run tests and generate coverage report
-        run: |
-          pytest --cov=./sunsynk --cov-report=xml -- tests/sunsynk
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            addon:
-              - 'hass-addon-sunsynk/**'
-            addondev:
-              - 'hass-addon-sunsynk-dev/**'
-      - if: steps.changes.outputs.addon == 'true'
-        run: pytest -- tests/hass-addon-sunsynk
-      - if: steps.changes.outputs.addondev == 'true'
-        run: pytest -- tests/hass-addon-sunsynk-dev
+        run: pytest --cov=./sunsynk --cov-report=xml -- tests/sunsynk tests/hass-addon-sunsynk-multi/
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -160,19 +126,9 @@ jobs:
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install pypa/build
-        run: >-
-          python -m
-          pip install
-          build
-          --user
+        run: python -m pip install build --user
       - name: Build a binary wheel and a source tarball
-        run: >-
-          python -m
-          build
-          --sdist
-          --wheel
-          --outdir dist/
-          .
+        run: python -m build --sdist --wheel --outdir dist/ .
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:

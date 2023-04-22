@@ -4,7 +4,7 @@ import logging
 from typing import Sequence
 from urllib import parse
 
-import attr
+import attrs
 from async_modbus import AsyncClient, modbus_for_url
 from connio import SERIAL_SCHEMES, SOCKET_SCHEMES
 
@@ -13,11 +13,11 @@ from sunsynk.sunsynk import Sunsynk
 _LOGGER = logging.getLogger(__name__)
 
 
-@attr.define
+@attrs.define
 class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
     """Sunsynk class using umodbus."""
 
-    client: AsyncClient = attr.field(default=None)
+    client: AsyncClient = None
 
     async def connect(self) -> None:
         """Connect."""

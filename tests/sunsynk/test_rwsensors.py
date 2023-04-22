@@ -8,6 +8,7 @@ from sunsynk.rwsensors import (
     RWSensor,
     SelectRWSensor,
     Sensor,
+    SwitchRWSensor,
     TimeRWSensor,
 )
 
@@ -39,7 +40,7 @@ def test_bitmask(caplog, state) -> None:
 
 
 def test_bitmask2(caplog, state) -> None:
-    s = SelectRWSensor(1, "", switch=(0, 4), bitmask=0x4)
+    s = SwitchRWSensor(1, "", on=4, bitmask=0x4)
     state.track(s)
 
     assert state[s] is None

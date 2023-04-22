@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import logging
+import re
 from typing import Callable, Generator, Optional, Union
 
-import attr
+import attrs
 
 from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num
 from sunsynk.sensors import Sensor
@@ -13,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 ResolveType = Optional[Callable[[Sensor, ValType], ValType]]
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class RWSensor(Sensor):
     """Read & write sensor."""
 
@@ -52,12 +53,12 @@ class RWSensor(Sensor):
         return []
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class NumberRWSensor(RWSensor):
     """Numeric sensor which can be read and written."""
 
-    min: int | float | Sensor = attr.field(default=0)
-    max: int | float | Sensor = attr.field(default=100)
+    min: int | float | Sensor = attrs.field(default=0)
+    max: int | float | Sensor = attrs.field(default=100)
 
     @property
     def dependencies(self) -> list[Sensor]:
@@ -66,11 +67,10 @@ class NumberRWSensor(RWSensor):
 
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value, or the current reg value if out of range."""
-        if value is None or isinstance(value, str):
-            raise TypeError
+        fval = float(value)  # type:ignore
         minv = resolve_num(resolve, self.min, 0)
         maxv = resolve_num(resolve, self.max, 100)
-        val = int(max(minv, min(maxv, value / abs(self.factor))))
+        val = int(max(minv, min(maxv, fval / abs(self.factor))))
         if len(self.address) == 1:
             return self.reg(val)
         if len(self.address) == 2:
@@ -78,19 +78,19 @@ class NumberRWSensor(RWSensor):
         raise NotImplementedError
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class SelectRWSensor(RWSensor):
     """Sensor with a set of options to select from."""
 
-    options: dict[int, str] = attr.field(factory=dict)
-    switch: Optional[tuple] = attr.field(default=None)
+    options: dict[int, str] = attrs.field(factory=dict)
+    # switch: Optional[tuple[int, int]] = attrs.field(default=None)
 
-    def __attrs_post_init__(self) -> None:
-        """Ensure correct parameters."""
-        if self.switch:
-            assert self.options == {}
-            assert len(self.switch) == 2
-            self.options = {self.switch[0]: "OFF", self.switch[1]: "ON"}
+    # def __attrs_post_init__(self) -> None:
+    #     """Ensure correct parameters."""
+    #     if self.switch:
+    #         assert not self.options
+    #         assert len(self.switch) == 2
+    #         self.options = {self.switch[0]: "OFF", self.switch[1]: "ON"}
 
     def available_values(self) -> list[str]:
         """Get the available values for this sensor."""
@@ -115,12 +115,63 @@ class SelectRWSensor(RWSensor):
         return res
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
+class SwitchRWSensor(SelectRWSensor):
+    """Sensor with a set of options to select from."""
+
+    on: int = attrs.field(default=1)  # pylint: disable=invalid-name
+    off: int = attrs.field(default=0)
+
+    def __attrs_post_init__(self) -> None:
+        """Ensure correct parameters."""
+        assert not self.options
+        assert self.on != self.off
+        self.options = {self.off: "OFF", self.on: "ON"}
+
+
+@attrs.define(slots=True, eq=False)
+class SystemTimeRWSensor(RWSensor):
+    """Read & write time sensor."""
+
+    _path = "text"
+
+    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+        """Get the reg value from a display value."""
+        # pylint: disable=invalid-name
+        redt = re.compile(r"(2\d{3})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})")
+        match = redt.fullmatch(str(value).strip())
+        if not match:
+            raise ValueError("Invalid datetime {value}")
+        y, m, d = int(match.group(1)) - 2000, int(match.group(2)), int(match.group(3))
+        h, mn, s = int(match.group(4)), int(match.group(5)), int(match.group(6))
+        regs = (
+            (y << 8) + m,
+            (d << 8) + h,
+            (mn << 8) + s,
+        )
+        msg = f"{y}-{m:02}-{d:02} {h}:{mn:02}:{s:02} ==> {regs}"
+        assert len(regs) == len(self.address)
+        _LOGGER.debug(msg)
+        return regs
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the register."""
+        # pylint: disable=invalid-name
+        y = ((regs[0] & 0xFF00) >> 8) + 2000
+        m = regs[0] & 0xFF
+        d = (regs[1] & 0xFF00) >> 8
+        h = regs[1] & 0xFF
+        mn = (regs[2] & 0xFF00) >> 8
+        s = regs[2] & 0xFF
+        return f"{y}-{m:02}-{d:02} {h}:{mn:02}:{s:02}"
+
+
+@attrs.define(slots=True, eq=False)
 class TimeRWSensor(RWSensor):
     """Extract the time."""
 
-    min: TimeRWSensor = attr.field(default=None)
-    max: TimeRWSensor = attr.field(default=None)
+    min: TimeRWSensor = attrs.field(default=None)
+    max: TimeRWSensor = attrs.field(default=None)
 
     def available_values(
         self, step_minutes: int, resolve: Callable[[Sensor, ValType], ValType]

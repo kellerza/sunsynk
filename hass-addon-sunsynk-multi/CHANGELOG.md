@@ -1,5 +1,15 @@
 # Changelog
 
+## **2023.04.22-0.3.3**
+
+- sunsynk 0.3.3
+  - Update pysunsynk driver
+  - Added date sensor (MQTT text entity)
+  - Improve test coverage
+  - Changed switch entity
+
+- Multi-Addon
+
 ## **2023.04.20-0.3.2**
 
 - If you have a Serial, either try pymodbus serial or use mbusd

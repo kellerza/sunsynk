@@ -1,7 +1,12 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
 # pylint: disable=duplicate-code
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, TimeRWSensor
+from sunsynk.rwsensors import (
+    NumberRWSensor,
+    SelectRWSensor,
+    SwitchRWSensor,
+    TimeRWSensor,
+)
 from sunsynk.sensors import (
     FaultSensor,
     InverterStateSensor,
@@ -159,9 +164,9 @@ SENSORS += (
 ###########
 SENSORS += (
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=210),
-    SelectRWSensor(130, "Grid Charge enabled", switch=(0, 1)),
-    SelectRWSensor(146, "Use Timer", switch=(0, 255)),
-    SelectRWSensor(145, "Solar Export", switch=(0, 1)),
+    SwitchRWSensor(130, "Grid Charge enabled"),
+    SwitchRWSensor(146, "Use Timer", on=255),
+    SwitchRWSensor(145, "Solar Export"),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
     NumberRWSensor(108, "Battery Max Charge current", AMPS, max=210),
     NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=210),

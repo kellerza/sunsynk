@@ -40,23 +40,42 @@ The following options are required per inverter:
 
   The port for RS485 communications, which can be either:
 
-    - A tcp:// port of a Modbus TCP server. Example:
+    - A tcp port of a Modbus TCP server. Example:
       ```yaml
-      PORT: tcp://homeassistant.local:502
+      INVERTERS:
+        - PORT: tcp://homeassistant.local:502
       ```
 
-      This repository contains a mbusd TCP gateway add-on that can be used for this purpose.
+      ::: tip
+      This repository contains a [mbusd](../guide/mbusd) TCP gateway add-on that can be used for this purpose.
 
-    - A serial:// port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_
+      If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
+      :::
+
+    - A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
+
+      ::: tip
+      only umodbus requires the `serial://` prefix
+      :::
 
       Example:
       ```yaml
-      PORT: serial:///dev/ttyUSB0
+      DRIVER: pymodbus
+      INVERTERS:
+        - PORT: /dev/ttyUSB0
+      ```
+      or
+      ```yaml
+      DRIVER: umodbus
+      INVERTERS:
+        - PORT: serial:///dev/ttyUSB0
       ```
 
-      *In order to assist with the name of your USB device, you can get a list of the current devices by inspecting the `DEBUG_DEVICE` options (located at the bottom of you config)*
+    - An empty string: `PORT = ""`
 
-    - A RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
+      The serial port under `DEBUG_DEVICE` will be used (located at the bottom of you config)*
+
+    - umodbus support an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
 
 
 ## Sensors

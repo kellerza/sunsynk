@@ -3,7 +3,7 @@ import logging
 from statistics import mean
 from typing import Any, List, Sequence
 
-import attr
+import attrs
 from options import OPT
 
 from sunsynk.definitions import AMPS, CELSIUS, KWH, SENSORS, VOLT, WATT, Sensor
@@ -15,17 +15,17 @@ _LOGGER = logging.getLogger(__name__)
 # disable=no-member https://stackoverflow.com/questions/47972143/using-attr-with-pylint
 
 
-@attr.define
+@attrs.define
 class Filter:
     """Main filter class."""
 
-    interval: int = attr.field(default=60)
-    _i: int = attr.field(default=0)
-    values: List[Any] = attr.field(default=None)
-    samples: int = attr.field(default=1)
-    _filter: Any = attr.field(default=mean)
-    # sensor: Any = attr.field(default=None)
-    sensor_name: str = attr.field(default="")
+    interval: int = attrs.field(default=60)
+    _i: int = attrs.field(default=0)
+    values: List[Any] = attrs.field(default=None)
+    samples: int = attrs.field(default=1)
+    _filter: Any = attrs.field(default=mean)
+    # sensor: Any = attrs.field(default=None)
+    sensor_name: str = attrs.field(default="")
 
     def should_update(self) -> bool:
         """Should we update this sensor."""
@@ -75,11 +75,11 @@ class Filter:
         return value
 
 
-@attr.define
+@attrs.define
 class SCFilter(Filter):
     """Significant change filter."""
 
-    threshold: int = attr.field(default=50)
+    threshold: int = attrs.field(default=50)
 
     def update(self, value: ValType) -> ValType:
         """Add value."""
@@ -100,14 +100,14 @@ class SCFilter(Filter):
         return res
 
 
-@attr.define(slots=True)
+@attrs.define(slots=True)
 class RRobinState:
     """Round Robin settings."""
 
     # pylint: disable=too-few-public-methods
-    active: List[Filter] = attr.field(factory=list)
-    list: List[Filter] = attr.field(factory=list)
-    idx: int = attr.field(default=-1)
+    active: List[Filter] = attrs.field(factory=list)
+    list: List[Filter] = attrs.field(factory=list)
+    idx: int = attrs.field(default=-1)
 
     def tick(self) -> None:
         """Cycle over entries in the RR list."""
@@ -124,7 +124,7 @@ class RRobinState:
 RROBIN = RRobinState()
 
 
-@attr.define
+@attrs.define
 class RoundRobinFilter(Filter):
     """Round Robin Filter."""
 

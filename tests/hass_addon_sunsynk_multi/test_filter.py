@@ -1,29 +1,13 @@
-"""Optionally test filters."""
+"""Optionally test filter."""
 import logging
 from itertools import repeat
-from pathlib import Path
-from typing import Any, Callable, List
-
-import pytest
+from typing import Any, List
 
 from sunsynk.definitions import SENSORS
 from sunsynk.rwsensors import RWSensor
-from tests.conftest import import_module
+from tests.hass_addon_sunsynk_multi import filter
 
 _LOGGER = logging.getLogger(__name__)
-
-
-@pytest.fixture
-def mod_folder() -> str:
-    """Return the folder from __init__."""
-    init = import_module("__init__", Path(__file__).parent)
-    return init.MOD_FOLDER
-
-
-@pytest.fixture
-def filters(mod_folder) -> Callable:
-    """Import & return the getfilter function."""
-    return import_module("filter", mod_folder)
 
 
 def assert_sequence(fut, updates: List[Any], counts=None):
@@ -64,16 +48,16 @@ def add_intervals(count, val0, *vals):
         yield val
 
 
-def test_last(filters):
+def test_last():
     """Last filter."""
-    fut = filters.getfilter("last", None)
+    fut = filter.getfilter("last", None)
 
     assert_sequence(fut, add_intervals(59, *[(55, 55), (44, 44), (43, 43)]))
 
 
-def test_min(filters):
+def test_min():
     """Min filter."""
-    fut = filters.getfilter("min", None)
+    fut = filter.getfilter("min", None)
 
     sq0 = (50, 50)
     sq1 = [44, 100, 100, 100, 100, (100, 44)]
@@ -84,9 +68,9 @@ def test_min(filters):
     assert fut.should_update() is False
 
 
-def test_mean(filters):
+def test_mean():
     """Mean filter."""
-    fut = filters.getfilter("mean", None)
+    fut = filter.getfilter("mean", None)
 
     assert_sequence(
         fut,
@@ -107,21 +91,21 @@ def test_mean(filters):
     )
 
 
-def test_step(filters):
+def test_step():
     """Step filter."""
-    fut = filters.getfilter("", None)
+    fut = filter.getfilter("", None)
     assert_sequence(
         fut,
         [(20, 20), 20, 20, 20, (120, 120), 140, 140],
     )
 
-    fut = filters.getfilter("step:100", None)
+    fut = filter.getfilter("step:100", None)
     assert_sequence(
         fut,
         [(90, 90)] + [90] * 58 + [(90, 90)],
     )
 
-    fut = filters.getfilter("step:100", None)
+    fut = filter.getfilter("step:100", None)
     sq0 = [(10, 10)]
     sq0 += [21] * 58 + [(50, 21.3)]
     sq0 += [(150, 150), (20, 20)]
@@ -133,22 +117,22 @@ def test_step(filters):
     assert_sequence(fut, sq0)
 
 
-def test_step_text(filters):
+def test_step_text():
     """Step filter."""
-    fut = filters.getfilter("step", None)
+    fut = filter.getfilter("step", None)
     assert_sequence(
         fut,
         [("a", "a"), ("b", "b")],
     )
 
 
-def test_rr(filters):
+def test_rr():
     """Test round robin."""
-    RROBIN = filters.RROBIN
+    RROBIN = filter.RROBIN
     RROBIN.tick()
 
-    sen = [filters.Sensor(1, "a"), filters.Sensor(2, "b"), filters.Sensor(3, "c")]
-    fil = [filters.getfilter("round_robin", s) for s in sen]
+    sen = [filter.Sensor(1, "a"), filter.Sensor(2, "b"), filter.Sensor(3, "c")]
+    fil = [filter.getfilter("round_robin", s) for s in sen]
 
     for idx in range(2):
         assert fil[idx].sensor_name is sen[idx].name
@@ -168,12 +152,12 @@ def test_rr(filters):
     assert [f.should_update() for f in fil] == [True, False, False]
 
 
-def test_suggest(filters):
-    assert filters.suggested_filter(SENSORS.all["environment_temperature"]) == "avg"
-    assert filters.suggested_filter(SENSORS.all["day_battery_charge"]) == "last"
-    # assert filters.suggested_filter(SENSORS.all["grid_ct_load"]) == "step"
-    assert filters.suggested_filter(SENSORS.all["sd_status"]) == "last"
+def test_suggest():
+    assert filter.suggested_filter(SENSORS.all["environment_temperature"]) == "avg"
+    assert filter.suggested_filter(SENSORS.all["day_battery_charge"]) == "last"
+    # assert filter.suggested_filter(SENSORS.all["grid_ct_load"]) == "step"
+    assert filter.suggested_filter(SENSORS.all["sd_status"]) == "last"
 
     rw_sensors = [s for s in SENSORS.all.values() if isinstance(s, RWSensor)]
     for s in rw_sensors:
-        assert filters.suggested_filter(s) == "round_robin"
+        assert filter.suggested_filter(s) == "round_robin"

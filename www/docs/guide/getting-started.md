@@ -23,7 +23,11 @@ An mbusd TCP to RTU gateway. See more [here](./mbusd)
 
 The recommended version of the addon, supporting multiple sensor definitions and ready for multiple inverters
 
-** Multiple inverters can be specified in the config, but not working yet
+::: warning
+Multiple inverters can be specified in the config, but not working yet.
+
+See [this](https://github.com/kellerza/sunsynk/issues/39) issue if you want to contribute.
+:::
 
 ### Sunsynk Inverter Add-on (dev)
 
@@ -31,9 +35,17 @@ The developer version of the addon - not being updated
 
 Full support for writable sensors
 
+::: danger
+This is an older version of the addon and does not suport all the features & sensors mentioned on this website
+:::
+
+
 ### Sunsynk Inverter Add-on
 
 The original addon - not being updated
 
 Limited support for writable sensors
 
+::: danger
+This is an older version of the addon and does not suport all the features & sensors mentioned on this website
+:::
