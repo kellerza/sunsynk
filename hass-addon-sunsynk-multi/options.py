@@ -17,7 +17,7 @@ class InverterOptions:
     """Options for an inverter."""
 
     port: str = ""
-    modbus_id: int = ""
+    modbus_id: int = 0
     ha_prefix: str = ""
     serial_nr: str = ""
     mqtt_id: str = ""
@@ -26,9 +26,11 @@ class InverterOptions:
     def factory(cls, opt: dict) -> InverterOptions:
         """Create a class from the options."""
         serial, _, mid = opt.pop("SERIAL_NR", "").partition(":")
+        modbus_id = int(opt.pop("MODBUS_ID"))
         kwargs = {k.lower(): v for k, v in opt.items()}
         kwargs["serial_nr"] = serial
         kwargs["mqtt_id"] = mid or serial
+        kwargs["modbus_id"] = modbus_id
         return InverterOptions(**kwargs)
 
 

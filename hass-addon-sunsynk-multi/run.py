@@ -63,7 +63,7 @@ async def hass_discover_sensors(
         _LOGGER.error(
             "Serial number from device (%s) does not match configuration (%s). SKIP",
             sser,
-            iopt.serial,
+            iopt.serial_nr,
         )
         return False
 
@@ -118,11 +118,11 @@ def setup_driver() -> None:
     if OPT.driver == "pymodbus":
         from sunsynk.pysunsynk import pySunsynk
 
-        factory: Sunsynk = pySunsynk
+        factory = pySunsynk
     elif OPT.driver == "umodbus":
         from sunsynk.usunsynk import uSunsynk
 
-        factory: Sunsynk = uSunsynk
+        factory = uSunsynk
         port_prefix = "serial://"
     else:
         _LOGGER.critical("Invalid DRIVER: %s. Expected umodbus, pymodbus", OPT.driver)

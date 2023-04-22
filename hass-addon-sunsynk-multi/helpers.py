@@ -5,12 +5,12 @@ import sys
 from importlib import import_module as _import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Optional
+from typing import Any, Optional
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def import_module(mod_name, folder: str) -> ModuleType:
+def import_module(mod_name: str, folder: str) -> ModuleType:
     """import_module."""
     here = Path(os.getcwd()) / folder
     sys.path.insert(0, str(here))
@@ -34,7 +34,7 @@ def import_mysensors() -> Optional[dict[str, any]]:
     if not sensors:
         _LOGGER.error("No SENSORS variable found in mysensors.py")
         return None
-    res: dict[str, any] = getattr(sensors, "all", {})
+    res: dict[str, Any] = getattr(sensors, "all", {})
     if res:
         _LOGGER.info("  custom sensors: %s", ", ".join(res))
     else:
