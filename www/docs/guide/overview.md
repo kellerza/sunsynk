@@ -36,6 +36,7 @@ While a wired setup is more work, the addon reads several sensors each second an
 ## Sunsynk Python Library
 
 [![PyPI version](https://badge.fury.io/py/sunsynk.svg)](https://pypi.org/project/sunsynk/)
+[![codecov](https://codecov.io/gh/kellerza/sunsynk/branch/main/graph/badge.svg?token=ILKRC5UTXI)](https://codecov.io/gh/kellerza/sunsynk)
 
 This addon uses the Python sunsynk library. The Python library is available through pip: `pip install sunsynk`
 
