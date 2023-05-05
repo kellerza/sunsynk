@@ -1,6 +1,9 @@
 """Test helpers."""
+import pytest
+
 from sunsynk.helpers import (
     SSTime,
+    as_num,
     ensure_tuple,
     int_round,
     patch_bitmask,
@@ -10,10 +13,15 @@ from sunsynk.helpers import (
 from sunsynk.sensors import Sensor
 
 
-def test_int_round() -> None:
-    res1 = int_round(1.0)
-    assert isinstance(res1, int)
-    assert res1 == 1
+def test_as_num(caplog) -> None:
+    assert as_num(None) == 0
+    assert as_num(1.0) == 1.0
+    assert as_num(1) == 1
+    assert as_num("1") == 1
+    assert as_num("1.5") == 1.5
+    caplog.clear()
+    assert as_num("1.0x") == 0
+    assert "could not convert string to float: '1.0x'" in caplog.text
 
 
 def test_ensure_tuple() -> None:
@@ -21,6 +29,12 @@ def test_ensure_tuple() -> None:
     assert ensure_tuple((1,)) == (1,)
     assert ensure_tuple((1, 5)) == (1, 5)
     assert ensure_tuple("a") == ("a",)
+
+
+def test_int_round() -> None:
+    res1 = int_round(1.0)
+    assert isinstance(res1, int)
+    assert res1 == 1
 
 
 def test_signed() -> None:
@@ -96,3 +110,12 @@ def test_math() -> None:
     ):
         result = simple_eval(expr)
         assert result == res
+
+    with pytest.raises(ValueError):
+        simple_eval("1+2+x")
+
+    with pytest.raises(ValueError):
+        simple_eval("1+2+abs(-1)", allow=[])
+
+    with pytest.raises(ValueError):
+        simple_eval("1+2+xyz(-1)", allow=["xyz"])

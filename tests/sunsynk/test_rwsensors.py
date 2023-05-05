@@ -103,6 +103,10 @@ def test_number_rw(state) -> None:
     assert long.reg_to_value(reg55) == res55
     assert long.value_to_reg(res55, state.get) == reg55
 
+    with pytest.raises(NotImplementedError):
+        s.address = tuple()
+        s.value_to_reg(123, state.get)
+
 
 def test_select_rw(caplog, state) -> None:
     s = SelectRWSensor(1, "", options={1: "one", 2: "two"})
@@ -133,6 +137,9 @@ def test_systemtime_rw(state) -> None:
     res = s.value_to_reg(tim, state.get)
     assert res == (5891, 268, 8760)
     assert s.reg_to_value(res) == tim
+
+    with pytest.raises(ValueError):
+        s.value_to_reg("2023-03-01 12:34", state.get)
 
 
 def test_time_rw(state) -> None:

@@ -139,7 +139,9 @@ def simple_eval(expr: str, allow: Optional[list[str]] = None) -> Union[float, in
     """Evaluate a simple algebraic expression."""
     # pylint: disable=raise-missing-from
     exp2 = expr
-    for alw in allow or ["abs", "pow"]:
+    if allow is None:
+        allow = ["abs", "pow"]
+    for alw in allow:
         exp2 = exp2.replace(alw, "")
     # ensure it is a fairly simple expression
     try:
@@ -149,5 +151,5 @@ def simple_eval(expr: str, allow: Optional[list[str]] = None) -> Union[float, in
 
     try:
         return eval(expr)  # pylint: disable=eval-used
-    except SyntaxError:
+    except (SyntaxError, NameError):
         raise ValueError(f"Malformed expression: {expr}")
