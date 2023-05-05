@@ -1,5 +1,14 @@
 # Changelog
 
+## **2023.05.05-0.3.4**
+
+- sunsynk 0.3.4
+  - Improve test coverage
+
+- Multi-Addon
+  - multiple inverters beta release (`SENSORS_FIRST_INVERTER` not yet supported)
+  - Improve test coverage
+
 ## **2023.04.22-0.3.3**
 
 - sunsynk 0.3.3

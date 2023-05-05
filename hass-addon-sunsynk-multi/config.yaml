@@ -1,6 +1,6 @@
 ---
 name: Sunsynk/Deye Inverter Add-on (multi)
-version: 2023.04.22-0.3.3
+version: 2023.05.05-0.3.4
 slug: hass-addon-sunsynk-multi
 description: Add-on for a Sunsynk/Deye branded Inverter
 startup: services

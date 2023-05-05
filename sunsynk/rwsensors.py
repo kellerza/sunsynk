@@ -133,8 +133,6 @@ class SwitchRWSensor(SelectRWSensor):
 class SystemTimeRWSensor(RWSensor):
     """Read & write time sensor."""
 
-    _path = "text"
-
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
         # pylint: disable=invalid-name

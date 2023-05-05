@@ -1,5 +1,6 @@
 """States."""
 import logging
+from unittest.mock import Mock
 
 import pytest
 from mqtt_entity import Device, Entity
@@ -21,9 +22,14 @@ def mqdev() -> Device:
 def test_create_entity(mqdev):
     """Create entity."""
     # Create the state
+    inv = Mock()
+    inv.state = {}
+    state.STATE.append(state.AllStates(inv=inv, state=[], opt={}))
+
     st = state.State(
         filter=filter.Filter(),
         sensor=filter.Sensor(1, "one", "W"),
+        istate=0,
     )
 
     # The name is a combination of the sensor name & filter
@@ -47,9 +53,15 @@ def test_create_entity2(mqdev):
     # Create the state
     nme = "the energy"
     slugn = slug(nme)
+
+    inv = Mock()
+    inv.state = {}
+    state.STATE.append(state.AllStates(inv=inv, state=[], opt={}))
+
     st = state.State(
         filter=filter.Filter(),
         sensor=filter.Sensor(1, nme, "kWh"),
+        istate=0,
     )
 
     # Create the mqtt entity

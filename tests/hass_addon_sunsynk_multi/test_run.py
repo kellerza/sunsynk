@@ -20,8 +20,7 @@ def run() -> ModuleType:
 
 def test_run(run):
     """Test Run."""
-    assert not run.STATES
-    assert not run.OPT.mqtt_host
+    assert not run.STATE
 
 
 def test_versions(run):

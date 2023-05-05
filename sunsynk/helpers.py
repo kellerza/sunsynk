@@ -1,6 +1,8 @@
 """Helper functions."""
 import logging
-from math import modf
+import math
+import re
+import sys
 from typing import Any, Optional, Tuple, Union
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,7 +26,7 @@ def int_round(val: NumType) -> NumType:
     if not isinstance(val, float):
         return val
     val = round(val, 2)
-    if modf(val)[0] == 0:
+    if math.modf(val)[0] == 0:
         return int(val)
     return val
 
@@ -107,3 +109,45 @@ class SSTime:
 def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
     """Combine bitmask values."""
     return (patch & bitmask) + (value & (0xFFFF - bitmask))
+
+
+# Kept outside simple_eval() just for performance
+_RE_SIMPLE_EVAL = re.compile(rb"d([\x00-\xFF]+)S\x00")
+
+
+def _simple_eval(expr: str) -> Union[float, int]:
+    """Simple eval function allowing only constant results."""
+    # pylint: disable=raise-missing-from
+    try:
+        cde = compile(expr, "userinput", "eval")
+    except SyntaxError:
+        raise ValueError("Malformed expression")
+    mch = _RE_SIMPLE_EVAL.fullmatch(cde.co_code)
+    if not mch:
+        raise ValueError(f"Not a simple algebraic expression: {cde.co_code!r}")
+    try:
+        if mch:
+            return cde.co_consts[int.from_bytes(mch.group(1), sys.byteorder)]
+        return cde.co_consts[int.from_bytes(cde.co_code, sys.byteorder)]
+    except IndexError:
+        raise ValueError(
+            "Not a simple algebraic expression, result needs to be constant"
+        )
+
+
+def simple_eval(expr: str, allow: Optional[list[str]] = None) -> Union[float, int]:
+    """Evaluate a simple algebraic expression."""
+    # pylint: disable=raise-missing-from
+    exp2 = expr
+    for alw in allow or ["abs", "pow"]:
+        exp2 = exp2.replace(alw, "")
+    # ensure it is a fairly simple expression
+    try:
+        _simple_eval(exp2)
+    except ValueError as err:
+        raise ValueError(f"{err}: {expr}") from err
+
+    try:
+        return eval(expr)  # pylint: disable=eval-used
+    except SyntaxError:
+        raise ValueError(f"Malformed expression: {expr}")

@@ -9,6 +9,7 @@ from sunsynk.rwsensors import (
     SelectRWSensor,
     Sensor,
     SwitchRWSensor,
+    SystemTimeRWSensor,
     TimeRWSensor,
 )
 
@@ -122,6 +123,16 @@ def test_select_rw(caplog, state) -> None:
     assert s.value_to_reg("five", state.get) == (2,)
     assert caplog.records[-1].message == "Unknown five"
     assert caplog.records[-1].levelname == "WARNING"
+
+
+def test_systemtime_rw(state) -> None:
+    s = SystemTimeRWSensor((1, 2, 3), "Time")
+    state.track(s)
+
+    tim = "2023-03-01 12:34:56"
+    res = s.value_to_reg(tim, state.get)
+    assert res == (5891, 268, 8760)
+    assert s.reg_to_value(res) == tim
 
 
 def test_time_rw(state) -> None:

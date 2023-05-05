@@ -208,6 +208,7 @@ def suggested_filter(sensor: Sensor) -> str:
         "overall_state": "last",
         "sd_status": "last",
         "serial": "round_robin",
+        "date_time": "round_robin",
     }
     assert all(s in SENSORS.all for s in f_id)
 

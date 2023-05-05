@@ -17,6 +17,13 @@ repos:
     rev: v2.2.4
     hooks:
       - id: codespell
+        files: "sunsynk/.*.py"
+        args:
+          - -L
+          - HASS,hass,Hass
+          - --skip
+          - "package-lock.json,*.map,www/docs/.vitepress/cache/*"
+      - id: codespell
         files: "hass-addon-sunsynk-multi/.*.py"
         args:
           - -L
@@ -28,7 +35,10 @@ repos:
     hooks:
       - id: mypy
         files: "^(sunsynk|hass-addon-multi)/"
-        exclude: "sunsynk/async_modbus.py"
+        additional_dependencies:
+          ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
+      - id: mypy
+        files: "hass-addon-multi/.*.py"
         additional_dependencies:
           ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
   - repo: https://github.com/pycqa/pydocstyle

@@ -60,7 +60,7 @@ class Sensor:
     def __eq__(self, other: object) -> bool:
         """Sensor equality is based on the ID only."""
         if not isinstance(other, Sensor):
-            raise TypeError
+            raise TypeError(str(type(other)))
         return self.id == other.id
 
 

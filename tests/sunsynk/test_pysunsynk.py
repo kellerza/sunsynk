@@ -113,13 +113,13 @@ async def test_ss_tcp_write(
 
 @pytest.mark.asyncio
 @patch("sunsynk.pysunsynk.AsyncModbusSerialClient", async_connected=PropertyMock)
-async def test_ss_serial(ser: MagicMock, state: InverterState):
+async def test_ss_serial(serialc: MagicMock, state: InverterState):
     ss = pySunsynk(port="/dev/tty0")
     ss.state = state
 
-    ser.side_effect = TypeError
+    serialc.side_effect = TypeError
     with pytest.raises(TypeError):
         await ss.connect()
 
-    ser.side_effect = None
+    serialc.side_effect = None
     await ss.connect()
