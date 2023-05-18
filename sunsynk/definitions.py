@@ -89,14 +89,14 @@ SENSORS += (
     Sensor(166, "AUX power", WATT, -1),
     # Essential power
     # - https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
-    # Essential old power
+    # Essential 1 power
     # - dev & normal version, see https://github.com/kellerza/sunsynk/issues/134
-    # Essential abs power
+    # Essential 2 power
     # - early-2023 see https://github.com/kellerza/sunsynk/issues/75
     MathSensor((175, 169, 166), "Essential power", WATT, factors=(1, 1, -1)),
-    MathSensor((175, 167, 166), "Essential old power", WATT, factors=(1, 1, -1)),
+    MathSensor((175, 167, 166), "Essential 1 power", WATT, factors=(1, 1, -1)),
     MathSensor(
-        (175, 169, 166), "Essential abs power", WATT, factors=(1, 1, -1), absolute=True
+        (175, 169, 166), "Essential 2 power", WATT, factors=(1, 1, -1), absolute=True
     ),
     MathSensor(
         (172, 167), "Non-Essential power", WATT, factors=(1, -1), no_negative=True
