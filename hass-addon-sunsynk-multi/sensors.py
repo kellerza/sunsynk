@@ -73,7 +73,7 @@ class SensorOptions:
                 _LOGGER.error(
                     "Your config includes deprecated sensors. Replace %s with %s",
                     name,
-                    self.defs.deprecated[name].id,
+                    self.defs.deprecated[name],
                 )
                 continue
 

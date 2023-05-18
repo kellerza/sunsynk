@@ -3,10 +3,12 @@ from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
+    SwitchRWSensor,
     SystemTimeRWSensor,
     TimeRWSensor,
 )
 from sunsynk.sensors import (
+    BinarySensor,
     FaultSensor,
     InverterStateSensor,
     MathSensor,
@@ -17,7 +19,7 @@ from sunsynk.sensors import (
     TempSensor,
 )
 
-SENSORS = SensorDefinitions()
+SENSORS: SensorDefinitions = SensorDefinitions()
 
 ##########
 # Battery
@@ -30,18 +32,19 @@ SENSORS += (
     Sensor(191, "Battery current", AMPS, -0.01),
 )
 
-#################
-# Inverter Power
-#################
+###########
+# Inverter
+###########
 SENSORS += (
     Sensor(175, "Inverter power", WATT, -1),
     Sensor(154, "Inverter voltage", VOLT, 0.1),
+    Sensor(164, "Inverter current", AMPS, 0.01),
     Sensor(193, "Inverter frequency", "Hz", 0.01),
 )
 
-#############
-# Grid Power
-#############
+#######
+# Grid
+#######
 SENSORS += (
     Sensor(79, "Grid frequency", "Hz", 0.01),
     Sensor(169, "Grid power", WATT, -1),  # L1(167) + L2(168)
@@ -51,29 +54,28 @@ SENSORS += (
     MathSensor((160, 161), "Grid current", AMPS, factors=(0.01, 0.01)),
     Sensor(172, "Grid CT power", WATT, -1),
 )
-# LD power?
 
-#############
-# Load Power
-#############
+#######
+# Load
+#######
 SENSORS += (
     Sensor(178, "Load power", WATT, -1),  # L1(176) + L2(177)
     Sensor(176, "Load L1 power", WATT, -1),
     Sensor(177, "Load L2 power", WATT, -1),
 )
 
-################
-# Solar Power 1
-################
+#############
+# Solar PV 1
+#############
 SENSORS += (
     Sensor(186, "PV1 power", WATT, -1),
     Sensor(109, "PV1 voltage", VOLT, 0.1),
     Sensor(110, "PV1 current", AMPS, 0.1),
 )
 
-################
-# Solar Power 2
-################
+#############
+# Solar PV 2
+#############
 SENSORS += (
     Sensor(187, "PV2 power", WATT, -1),
     Sensor(111, "PV2 voltage", VOLT, 0.1),
@@ -85,31 +87,34 @@ SENSORS += (
 ###################
 SENSORS += (
     Sensor(166, "AUX power", WATT, -1),
-    # https://github.com/kellerza/sunsynk/issues/75
-    #  https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
+    # Essential power
+    # - https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
+    # Essential old power
+    # - dev & normal version, see https://github.com/kellerza/sunsynk/issues/134
+    # Essential abs power
+    # - early-2023 see https://github.com/kellerza/sunsynk/issues/75
+    MathSensor((175, 169, 166), "Essential power", WATT, factors=(1, 1, -1)),
+    MathSensor((175, 167, 166), "Essential old power", WATT, factors=(1, 1, -1)),
     MathSensor(
-        (175, 169, 166), "Essential power", WATT, factors=(1, 1, -1), absolute=True
+        (175, 169, 166), "Essential abs power", WATT, factors=(1, 1, -1), absolute=True
     ),
-    # MathSensor((175, 167, 166), "Essential power", WATT, factors=(1, 1, -1)),
     MathSensor(
         (172, 167), "Non-Essential power", WATT, factors=(1, -1), no_negative=True
     ),
 )
 
-###################
+#########
 # Energy
-###################
+#########
 SENSORS += (
     Sensor(60, "Day Active Energy", KWH, -0.1),
     Sensor(70, "Day Battery Charge", KWH, 0.1),
     Sensor(71, "Day Battery Discharge", KWH, 0.1),
-    Sensor(77, "Day Grid Export", KWH, 0.1),
     Sensor(76, "Day Grid Import", KWH, 0.1),
-    # Sensor(200, "Day Load Power", KWH, 0.01),
+    Sensor(77, "Day Grid Export", KWH, 0.1),
     Sensor(84, "Day Load Energy", KWH, 0.1),
     Sensor(108, "Day PV Energy", KWH, 0.1),
     Sensor(61, "Day Reactive Energy", "kVarh", -0.1),
-    # Sensor((201, 202), "History Load Power", KWH, 0.1),
     Sensor(67, "Month Grid Energy", KWH, 0.1),
     Sensor(66, "Month Load Energy", KWH, 0.1),
     Sensor(65, "Month PV Energy", KWH, 0.1),
@@ -139,7 +144,8 @@ SENSORS += (
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
-    Sensor(194, "Grid Connected Status"),
+    Sensor(194, "Grid Connected Status"),  # Remove in the future?
+    BinarySensor(194, "Grid Connected"),
     SystemTimeRWSensor((22, 23, 24), "Date Time", unit=""),
 )
 ###########
@@ -148,6 +154,9 @@ SENSORS += (
 SENSORS += (
     Sensor(200, "Control Mode"),
     Sensor(232, "Grid Charge enabled", "", -1),
+    SelectRWSensor(
+        235, "Generator input", "", options={0: "Disable", 1: "Output", 2: "Input"}
+    ),
     Sensor(312, "Battery charging voltage", VOLT, 0.01),
     Sensor(603, "Bat1 SOC", "%"),
     Sensor(611, "Bat1 Cycle"),
@@ -204,14 +213,14 @@ SENSORS += (
 #################
 # System program
 #################
-SENSORS += SelectRWSensor(
-    243, "Priority Mode", options={0: "Battery first", 1: "Load first"}
-)
-
-SENSORS += SelectRWSensor(
-    244,
-    "Load Limit",
-    options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
+SENSORS += (
+    SelectRWSensor(243, "Priority Mode", options={0: "Battery first", 1: "Load first"}),
+    SelectRWSensor(
+        244,
+        "Load Limit",
+        options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
+    ),
+    SwitchRWSensor(248, "Use Timer", on=1, bitmask=1),
 )
 
 PROG1_TIME = TimeRWSensor(250, "Prog1 Time")
@@ -305,39 +314,31 @@ SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max
 #############
 # Deprecated
 #############
-def _deprecated() -> None:
-    """Populate the deprecated sensors."""
-    dep_map: dict[str, Sensor] = {
-        "aux_power": Sensor(166, "AUX load", WATT, -1),
-        "battery_temperature": TempSensor(182, "Temp Battery", CELSIUS, 0.1),
-        "dc_transformer_temperature": TempSensor(
-            90, "Temp DC transformer", CELSIUS, 0.1
-        ),
-        "environment_temperature": TempSensor(95, "Temp Environment", CELSIUS, 0.1),
-        "grid_charge_battery_current": Sensor(230, "Battery Grid Charge", AMPS, -1),
-        "grid_ct_power": Sensor(172, "Grid CT load", WATT, -1),
-        "grid_l2_power": Sensor(168, "Grid L2 load", WATT, -1),
-        "grid_ld_power": Sensor(167, "Grid L1 load", WATT, -1),
-        "grid_power": Sensor(169, "Grid load", WATT, -1),
-        "inverter_power": Sensor(175, "Inverter Output", WATT, -1),
-        "radiator_temperature": TempSensor(91, "Temp Radiator", CELSIUS, 0.1),
-        "day_active_energy": Sensor(60, "Day Active Power", KWH, -0.1),
-        "day_reactive_energy": Sensor(61, "Day Reactive Power", "kVarh", -0.1),
-        "total_active_energy": Sensor((63, 64), "Total Active Power", KWH, 0.1),
-        "month_pv_energy": Sensor(65, "Month PV Power", KWH),
-        "month_load_energy": Sensor(66, "Month Load Power", KWH),
-        "month_grid_energy": Sensor(67, "Month Grid Power", KWH),
-        "year_pv_energy": Sensor((68, 69), "Year PV Power", KWH, 0.1),
-        "day_load_energy": Sensor(84, "Day Load Power", KWH, 0.1),
-        "total_load_energy": Sensor((85, 86), "Total Load Power", KWH, 0.1),
-        "year_load_energy": Sensor((87, 88), "Year Load Power", KWH, 0.1),
-        "total_pv_energy": Sensor((96, 97), "Total PV Power", KWH, 0.1),
-        "battery_equalization_voltage": Sensor(201, "Equalization voltage", VOLT, 0.01),
-        "battery_absorption_voltage": Sensor(202, "Absorption voltage", VOLT, 0.01),
+SENSORS.deprecated.update(
+    {
+        "aux_load": "aux_power",
+        "temp_battery": "battery_temperature",
+        "temp_dc_transformer": "dc_transformer_temperature",
+        "temp_environment": "environment_temperature",
+        "battery_grid_charge": "grid_charge_battery_current",
+        "grid_ct_load": "grid_ct_power",
+        "grid_l1_load": "grid_ld_power",
+        "grid_l2_load": "grid_l2_power",
+        "grid_load": "grid_power",
+        "inverter_output": "inverter_power",
+        "temp_radiator": "radiator_temperature",
+        "day_active_power": "day_active_energy",
+        "day_reactive_power": "day_reactive_energy",
+        "total_active_power": "total_active_energy",
+        "month_pv_power": "month_pv_energy",
+        "month_load_power": "month_load_energy",
+        "month_grid_power": "month_grid_energy",
+        "year_pv_power": "year_pv_energy",
+        "day_load_power": "day_load_energy",
+        "total_load_power": "total_load_energy",
+        "year_load_power": "year_load_energy",
+        "total_pv_power": "total_pv_energy",
+        "equalization_voltage": "battery_equalization_voltage",
+        "absorption_voltage": "battery_absorption_voltage",
     }
-
-    for newname, sen in dep_map.items():
-        SENSORS.deprecated[sen.id] = SENSORS.all[newname]
-
-
-_deprecated()
+)

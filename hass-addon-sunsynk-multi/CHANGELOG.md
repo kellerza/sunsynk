@@ -1,5 +1,21 @@
 # Changelog
 
+## **2023.05.18-0.3.5**
+
+- sunsynk 0.3.5
+  - Reworked 1ph essentials sensor - refer to definitions.py
+       Essential power
+       - https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
+       Essential old power
+       - dev & normal version, see https://github.com/kellerza/sunsynk/issues/134
+       Essential abs power
+       - early-2023 see https://github.com/kellerza/sunsynk/issues/75
+
+  - Additional sensors to support all the options in @slipx's power flow card
+    - Inverter Current
+    - Generator Input (235) - this might explain the difference on the essentials sensor value...
+    - Use Timer - see https://github.com/kellerza/sunsynk/discussions/137
+
 ## **2023.05.05-0.3.4**
 
 - sunsynk 0.3.4

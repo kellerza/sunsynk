@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Union
+from typing import Optional, Union
 
 import attrs
 
@@ -19,7 +19,7 @@ from sunsynk.helpers import (
 _LOGGER = logging.getLogger(__name__)
 
 
-@attrs.define(slots=True)
+@attrs.define(slots=True, eq=False)
 class Sensor:
     """Sunsynk sensor."""
 
@@ -64,12 +64,30 @@ class Sensor:
         return self.id == other.id
 
 
+@attrs.define(slots=True, eq=False)
+class BinarySensor(Sensor):
+    """Binary sensor."""
+
+    off: Optional[int] = attrs.field(default=None)
+    on: Optional[int] = attrs.field(default=None)  # pylint: disable=invalid-name
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Reg to value for binary."""
+        res = super().reg_to_value(regs)
+        if self.on is not None:
+            return res == self.on
+        if self.off is not None:
+            return res != self.off
+        return bool(res)
+
+
 @attrs.define(slots=True)
 class SensorDefinitions:
     """Definitions."""
 
     all: dict[str, Sensor] = attrs.field(factory=dict)
-    deprecated: dict[str, Sensor] = attrs.field(factory=dict)
+    deprecated: dict[str, str] = attrs.field(factory=dict)
+    """map of 'old_name': 'new_name'"""
 
     @property
     def serial(self) -> Sensor:

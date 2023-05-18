@@ -5,8 +5,8 @@ from typing import Sequence
 import pytest
 
 from sunsynk.definitions import AMPS, CELSIUS, SENSORS, VOLT, WATT
-from sunsynk.rwsensors import RWSensor, SelectRWSensor
 from sunsynk.sensors import (
+    BinarySensor,
     FaultSensor,
     InverterStateSensor,
     MathSensor,
@@ -18,6 +18,26 @@ from sunsynk.sensors import (
 from sunsynk.state import group_sensors
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def test_binary_sensor() -> None:
+    b = BinarySensor(111, "B 1")
+    assert b.reg_to_value((0,)) is False
+    assert b.reg_to_value((1,)) is True
+    assert b.reg_to_value((2,)) is True
+    assert b.reg_to_value((255,)) is True
+
+    b = BinarySensor(111, "B 1", on=1)
+    assert b.reg_to_value((0,)) is False
+    assert b.reg_to_value((1,)) is True
+    assert b.reg_to_value((2,)) is False
+    assert b.reg_to_value((255,)) is False
+
+    b = BinarySensor(111, "B 1", off=2)
+    assert b.reg_to_value((0,)) is True
+    assert b.reg_to_value((1,)) is True
+    assert b.reg_to_value((2,)) is False
+    assert b.reg_to_value((255,)) is True
 
 
 def test_sen():
@@ -49,13 +69,9 @@ def test_sensor_hash():
 
     s = Sensor(0, "S 1")
     m = MathSensor((0, 1), "math1", factors=(1, 1))
-    ss = {s, m}
-    assert len(ss) == 2
-
-    s = RWSensor((0, 1), "rwswitch")
-    m = SelectRWSensor((0, 1), "switch")
-    ss = {s, m}
-    assert len(ss) == 2
+    b = BinarySensor((0,), "b1")
+    ss = {s, m, b}
+    assert len(ss) == 3
 
 
 def test_group() -> None:
@@ -107,8 +123,12 @@ def test_ids() -> None:
     for name, sen in SENSORS.all.items():
         assert name == sen.id
 
-        if sen.factor and sen.factor < 0 and len(sen.address) > 1:
-            assert False, "only single signed supported"
+        try:
+            if sen.factor and sen.factor < 0 and len(sen.address) > 1:
+                assert False, "only single signed supported"
+        except TypeError:
+            _LOGGER.error("Sensor %s, factor=%s", name, sen.factor)
+            raise
 
         if sen.id in SENSORS.deprecated:
             continue
@@ -161,7 +181,7 @@ def test_update_func() -> None:
 
 
 # def test_update_float(caplog) -> None:
-#     s = TempSensor(60, "two", factor=0.1)
+#     s = TempSensor(60, "two", factors=0.1)
 #     rmap = register_map(60, [1001])
 #     update_sensors([s], rmap)
 

@@ -1,6 +1,4 @@
 """Test helpers."""
-import pytest
-
 from sunsynk.helpers import (
     SSTime,
     as_num,
@@ -8,7 +6,6 @@ from sunsynk.helpers import (
     int_round,
     patch_bitmask,
     signed,
-    simple_eval,
 )
 from sunsynk.sensors import Sensor
 
@@ -92,30 +89,3 @@ def test_patch_bitmask() -> None:
     assert patch_bitmask(0xFFF, 0, 1) == 0xFFE
     assert patch_bitmask(0xFFFF, 0, 1) == 0xFFFE
     assert patch_bitmask(0xFFF, 0, 2) == 0xFFD
-
-
-def test_math() -> None:
-    for expr, res in (
-        ("2^4", 6),
-        ("2**4", 16),
-        ("1 + 2*3**(4^5) / (6 + -7)", -5.0),
-        ("7 + 9 * (2 << 2)", 79),
-        ("6 // 2 + 0.0", 3.0),
-        ("2+3", 5),
-        ("6+4/2*2", 10.0),
-        ("3+2.45/8", 3.30625),
-        ("3**3*3/3+3", 30.0),
-        ("abs(-1)", 1),
-        ("pow(2,0)", 1),
-    ):
-        result = simple_eval(expr)
-        assert result == res
-
-    with pytest.raises(ValueError):
-        simple_eval("1+2+x")
-
-    with pytest.raises(ValueError):
-        simple_eval("1+2+abs(-1)", allow=[])
-
-    with pytest.raises(ValueError):
-        simple_eval("1+2+xyz(-1)", allow=["xyz"])

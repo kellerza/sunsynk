@@ -6,6 +6,7 @@ from typing import Any, Callable, Optional, Union
 import attrs
 from filter import Filter
 from mqtt_entity import (
+    BinarySensorEntity,
     Device,
     Entity,
     MQTTClient,
@@ -25,6 +26,7 @@ from sunsynk.rwsensors import (
     TimeRWSensor,
     resolve_num,
 )
+from sunsynk.sensors import BinarySensor
 from sunsynk.sunsynk import Sensor, Sunsynk
 
 SENSOR_PREFIX: dict[str, str] = {}
@@ -133,7 +135,10 @@ class State:  # pylint: disable=too-few-public-methods
 
         if not isinstance(sensor, RWSensor):
             ent["device_class"] = hass_device_class(unit=sensor.unit)
-            self.entity = SensorEntity(**ent)
+            if isinstance(sensor, BinarySensor):
+                self.entity = BinarySensorEntity(**ent)
+            else:
+                self.entity = SensorEntity(**ent)
             return self.entity
 
         ent.update(

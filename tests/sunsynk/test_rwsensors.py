@@ -217,3 +217,15 @@ def test_time_rw(state) -> None:
 def test_bad_sensor(caplog) -> None:
     NumberRWSensor((60, 1), "two", factor=0.1, bitmask=1)
     assert "single register" in caplog.text
+
+
+def test_sensor_hash():
+    ss = {Sensor(0, "S 1"), Sensor(0, "S 1")}
+    assert len(ss) == 1
+    ss = {Sensor(0, "S 1"), Sensor(0, "S 2")}
+    assert len(ss) == 2
+
+    s = RWSensor((0, 1), "rwswitch")
+    m = SelectRWSensor((0, 1), "switch")
+    ss = {s, m}
+    assert len(ss) == 2
