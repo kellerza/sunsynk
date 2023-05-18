@@ -20,7 +20,7 @@ SENSORS:
   - non_essential_power
   - grid_ct_power
 
-  - system_timer
+  - use_timer
   - priority_mode
   - grid_voltage
   - grid_frequency
@@ -36,7 +36,7 @@ SENSORS:
   - day_grid_import
   - day_grid_export
   - day_load_energy
-  - aux_output_power
+  - aux_power
   - day_pv_energy
   - pv1_voltage
   - pv1_current
@@ -71,10 +71,10 @@ grid:
   colour: '#5490c2'
   no_grid_colour: '#a40013'
   show_daily_buy: 'yes'
-  show_daily_sell: 'no'
+  show_daily_sell: 'yes'
   show_nonessential: 'yes'
 entities:
-  use_timer_248: switch.ss_system_timer
+  use_timer_248: switch.ss_use_timer
   priority_load_243: select.ss_priority_mode
   inverter_grid_voltage_154: sensor.ss_grid_voltage
   inverter_load_freq_192: sensor.ss_grid_frequency
