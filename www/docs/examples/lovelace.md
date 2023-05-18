@@ -4,11 +4,11 @@ Thsis page contains a coupe of frontend examples to represent the power flow of 
 
 ## Sunsynk Power Flow Card
 
+The Sunsynk Power Flow card can be installed by adding a custom Lovelace repository to HACS: https://github.com/slipx06/sunsynk-power-flow-card or clicking this button:
+
+[![Open your Home Assistant instance and open slipx's repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=sunsynk-power-flow-card&category=plugin&owner=slipx06)
+
 ![Power Flow Card](../images/power-flow.webp =500x600)
-
-The Sunsynk Power Flow card can be installed by adding [slipx's repository](https://github.com/slipx06/sunsynk-power-flow-card) to your HACS, or clicking on:
-
-[![Open your Home Assistant instance and open slipx's repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=sunsynk-power-flow-card&category=Lovelace&owner=slipx06)
 
 ::: details Required sensors
 ```yaml
