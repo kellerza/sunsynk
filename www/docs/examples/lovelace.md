@@ -4,7 +4,7 @@ Thsis page contains a coupe of frontend examples to represent the power flow of 
 
 ## Sunsynk Power Flow Card
 
-![Power Flow Card](../images/power-flow.webp)
+![Power Flow Card](../images/power-flow.webp =500x600)
 
 The Sunsynk Power Flow card can be installed by adding [slipx's repository](https://github.com/slipx06/sunsynk-power-flow-card) to your HACS, or clicking on:
 
