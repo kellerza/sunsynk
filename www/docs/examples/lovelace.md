@@ -21,12 +21,12 @@ SENSORS:
   - grid_ct_power
 
   - use_timer
-  - priority_mode
+  - priority_load
   - grid_voltage
   - grid_frequency
   - inverter_current
   - inverter_power
-  - grid_connected_status
+  - grid_connected
   - overall_state
   - day_battery_charge
   - day_battery_discharge
@@ -49,6 +49,7 @@ type: custom:sunsynk-power-flow-card
 cardstyle: full
 panel_mode: 'no'
 show_solar: 'yes'
+large_font: 'yes'
 inverter:
   modern: 'yes'
   colour: '#959595'
@@ -70,17 +71,17 @@ load:
 grid:
   colour: '#5490c2'
   no_grid_colour: '#a40013'
-  show_daily_buy: 'yes'
-  show_daily_sell: 'yes'
+  show_daily_buy: 'no'
+  show_daily_sell: 'no'
   show_nonessential: 'yes'
 entities:
   use_timer_248: switch.ss_use_timer
-  priority_load_243: select.ss_priority_mode
+  priority_load_243: switch.ss_priority_load
   inverter_grid_voltage_154: sensor.ss_grid_voltage
   inverter_load_freq_192: sensor.ss_grid_frequency
   inverter_out_164: sensor.ss_inverter_current
   inverter_out_175: sensor.ss_inverter_power
-  grid_status_194: sensor.ss_grid_connected_status
+  grid_status_194: binary_sensor.ss_grid_connected
   inverter_status_59: sensor.ss_overall_state
   batchargeday_70: sensor.ss_day_battery_charge
   batdischargeday_71: sensor.ss_day_battery_discharge

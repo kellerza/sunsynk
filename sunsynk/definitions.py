@@ -214,13 +214,14 @@ SENSORS += (
 # System program
 #################
 SENSORS += (
-    SelectRWSensor(243, "Priority Mode", options={0: "Battery first", 1: "Load first"}),
+    # 0: "Battery first", 1: "Load first"
+    SwitchRWSensor(243, "Priority Load"),
     SelectRWSensor(
         244,
         "Load Limit",
         options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
     ),
-    SwitchRWSensor(248, "Use Timer", on=1, bitmask=1),
+    SwitchRWSensor(248, "Use Timer", bitmask=1),
 )
 
 PROG1_TIME = TimeRWSensor(250, "Prog1 Time")
@@ -316,29 +317,30 @@ SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max
 #############
 SENSORS.deprecated.update(
     {
+        "absorption_voltage": "battery_absorption_voltage",
         "aux_load": "aux_power",
-        "temp_battery": "battery_temperature",
-        "temp_dc_transformer": "dc_transformer_temperature",
-        "temp_environment": "environment_temperature",
         "battery_grid_charge": "grid_charge_battery_current",
+        "day_active_power": "day_active_energy",
+        "day_load_power": "day_load_energy",
+        "day_reactive_power": "day_reactive_energy",
+        "equalization_voltage": "battery_equalization_voltage",
         "grid_ct_load": "grid_ct_power",
         "grid_l1_load": "grid_ld_power",
         "grid_l2_load": "grid_l2_power",
         "grid_load": "grid_power",
         "inverter_output": "inverter_power",
-        "temp_radiator": "radiator_temperature",
-        "day_active_power": "day_active_energy",
-        "day_reactive_power": "day_reactive_energy",
-        "total_active_power": "total_active_energy",
-        "month_pv_power": "month_pv_energy",
-        "month_load_power": "month_load_energy",
         "month_grid_power": "month_grid_energy",
-        "year_pv_power": "year_pv_energy",
-        "day_load_power": "day_load_energy",
+        "month_load_power": "month_load_energy",
+        "month_pv_power": "month_pv_energy",
+        "priority_mode": "priority_load",
+        "temp_battery": "battery_temperature",
+        "temp_dc_transformer": "dc_transformer_temperature",
+        "temp_environment": "environment_temperature",
+        "temp_radiator": "radiator_temperature",
+        "total_active_power": "total_active_energy",
         "total_load_power": "total_load_energy",
-        "year_load_power": "year_load_energy",
         "total_pv_power": "total_pv_energy",
-        "equalization_voltage": "battery_equalization_voltage",
-        "absorption_voltage": "battery_absorption_voltage",
+        "year_load_power": "year_load_energy",
+        "year_pv_power": "year_pv_energy",
     }
 )

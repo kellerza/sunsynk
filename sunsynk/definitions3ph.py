@@ -250,9 +250,7 @@ SENSORS += (
 # System program
 #################
 
-SENSORS += SelectRWSensor(
-    141, "Priority Mode", options={0: "Battery first", 1: "Load first"}
-)
+SENSORS += SwitchRWSensor(141, "Priority Load")
 
 SENSORS += SelectRWSensor(
     142,
@@ -381,4 +379,11 @@ SENSORS += (
         min=BATTERY_LOW_VOLTAGE,
         max=BATTERY_FLOAT_VOLTAGE,
     ),
+)
+
+
+SENSORS.deprecated.update(
+    {
+        "priority_mode": "priority_load",
+    }
 )

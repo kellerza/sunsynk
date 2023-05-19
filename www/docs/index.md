@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: Sunsynk Home Assistant Addon
+  name: Deye/Sunsynk Home Assistant Addon
   tagline: Take control of your inverter.
   image:
     src: /labctl-r.svg

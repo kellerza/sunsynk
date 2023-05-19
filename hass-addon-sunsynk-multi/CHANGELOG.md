@@ -1,5 +1,13 @@
 # Changelog
 
+## **2023.05.19-0.3.6**
+
+- sunsynk 0.3.6
+  - priority_mode -> priority_load (as a switch)
+
+- Multi Addon
+  - Fixed switches & binary_sensors (selects will change to HASS switches)
+
 ## **2023.05.18-0.3.5**
 
 - sunsynk 0.3.5

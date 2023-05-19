@@ -1,7 +1,6 @@
 """State of a sensor & entity."""
 import logging
-from math import modf
-from typing import Any, Callable, Optional, Union
+from typing import Callable, Optional, Union
 
 import attrs
 from filter import Filter
@@ -14,8 +13,10 @@ from mqtt_entity import (
     RWEntity,
     SelectEntity,
     SensorEntity,
+    SwitchEntity,
 )
 from mqtt_entity.helpers import hass_default_rw_icon, hass_device_class
+from mqtt_entity.utils import tostr
 from options import OPT, InverterOptions
 
 from sunsynk.helpers import ValType
@@ -23,6 +24,7 @@ from sunsynk.rwsensors import (
     NumberRWSensor,
     RWSensor,
     SelectRWSensor,
+    SwitchRWSensor,
     TimeRWSensor,
     resolve_num,
 )
@@ -37,17 +39,6 @@ _LOGGER = logging.getLogger(__name__)
 """An array of the Sunsynk driver instances."""
 MQTT = MQTTClient()
 """The MQTTClient instance."""
-
-
-def tostr(val: Any) -> str:
-    """Convert a value to a string with maximum 3 decimal places."""
-    if val is None:
-        return ""
-    if not isinstance(val, float):
-        return str(val)
-    if modf(val)[0] == 0:
-        return str(int(val))
-    return f"{val:.3f}".rstrip("0")
 
 
 @attrs.define(slots=True)
@@ -160,6 +151,9 @@ class State:  # pylint: disable=too-few-public-methods
                 mode=OPT.number_entity_mode,
                 step=0.1 if sensor.factor < 1 else 1,
             )
+
+        elif isinstance(sensor, SwitchRWSensor):
+            self.entity = SwitchEntity(**ent)
 
         elif isinstance(sensor, SelectRWSensor):
             self.entity = SelectEntity(

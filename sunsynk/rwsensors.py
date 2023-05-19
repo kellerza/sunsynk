@@ -6,6 +6,7 @@ import re
 from typing import Callable, Generator, Optional, Union
 
 import attrs
+from mqtt_entity.utils import BOOL_OFF, BOOL_ON
 
 from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num
 from sunsynk.sensors import Sensor
@@ -117,16 +118,18 @@ class SelectRWSensor(RWSensor):
 
 @attrs.define(slots=True, eq=False)
 class SwitchRWSensor(SelectRWSensor):
-    """Sensor with a set of options to select from."""
+    """Switch Sensor."""
 
     on: int = attrs.field(default=1)  # pylint: disable=invalid-name
+    """The register value representing ON."""
     off: int = attrs.field(default=0)
+    """The register value representing OFF."""
 
     def __attrs_post_init__(self) -> None:
         """Ensure correct parameters."""
         assert not self.options
         assert self.on != self.off
-        self.options = {self.off: "OFF", self.on: "ON"}
+        self.options = {self.off: BOOL_OFF, self.on: BOOL_ON}
 
 
 @attrs.define(slots=True, eq=False)
