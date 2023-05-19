@@ -4,7 +4,7 @@ FROM ${BUILD_FROM}
 RUN pip3 install --no-cache-dir --disable-pip-version-check \
     paho-mqtt==1.6.1 \
     mqtt-entity==0.0.3 \
-    sunsynk[pymodbus,umodbus]==0.3.5 \
+    sunsynk[pymodbus,umodbus]==0.3.6 \
     pyyaml==5.4.1
     #pyserial-asyncio \
 
