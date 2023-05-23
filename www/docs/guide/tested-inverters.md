@@ -23,7 +23,8 @@ The Ecco inverters have a combined RS485 and CAN-BUS port. If your battery is al
 [SolarAssistant have a helpful page](https://solar-assistant.io/help/deye/2_in_1_bms_port) that explains the wiring of the port and the splitter required.
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-ecco-3-6kw.png" width="80%">
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-ecco-3-6kw-485can.png" width="80%">
+
+[Closer view of the RS485/CAN port](https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-ecco-3-6kw-485can.png)
 
 ### Sunsynk 5.5kW Inverter
 Tested with: USB-to-RS485 adaptor sourced from Banggood, very similar to [this](https://www.robotics.org.za/RS485-MINI?search=rs485).
