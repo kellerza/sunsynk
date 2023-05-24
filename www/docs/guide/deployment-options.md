@@ -69,8 +69,14 @@ Other tested adaptors
    This is a tested Wifi-to-RS485 gateway, which also includes a GND.
 
    Requires `READ_SENSORS_BATCH_SIZE` set to 8 or less
+ 
+2. USR-W610 Wifi-to-RS485
 
-2. HF5142B  Modbus/serial to ethernet (4x RS232/485/422 to 4x E-Ports)
+   This is a tested Wifi-to-RS485 gateway. Usually significantly cheaper than the W630, however it does not include a GND.
+
+   Requires `READ_SENSORS_BATCH_SIZE` set to 8 or less
+
+3. HF5142B  Modbus/serial to ethernet (4x RS232/485/422 to 4x E-Ports)
 
    ![gateway](../images/eth-hf5142.webp)
 
