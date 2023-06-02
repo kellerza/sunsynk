@@ -16,12 +16,12 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
 
     client: PySolarmanV5Async = None
 
-    async def connect(self, dongleSerialNumber) -> None:
+    async def connect(self) -> None:
         """Connect."""
         url = urlparse(f"{self.port}")
         self.client = PySolarmanV5Async(
             address=url.hostname
-            ,serial=dongleSerialNumber
+            ,serial=self.serial_nr
             ,port=url.port
             ,mb_slave_id=self.server_id
             ,auto_reconnect=False

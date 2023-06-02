@@ -114,6 +114,11 @@ def setup_driver() -> None:
 
         factory = uSunsynk
         port_prefix = "serial://"
+    elif OPT.driver == "solarman":
+        from sunsynk.solarmansunsynk import SolarmanSunsynk
+
+        factory = SolarmanSunsynk
+        port_prefix = "tcp://"
     else:
         _LOGGER.critical("Invalid DRIVER: %s. Expected umodbus, pymodbus", OPT.driver)
         sys.exit(-1)
@@ -126,6 +131,7 @@ def setup_driver() -> None:
             "server_id": opt.modbus_id,
             "timeout": OPT.timeout,
             "read_sensors_batch_size": OPT.read_sensors_batch_size,
+            "serial_nr": opt.serial_nr,
         }
         _LOGGER.debug("%s driver options: %s", OPT.driver, kwargs)
         suns = factory(**kwargs)

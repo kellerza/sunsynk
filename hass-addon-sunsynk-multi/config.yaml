@@ -44,7 +44,7 @@ options:
   DEBUG: 0
   DEBUG_DEVICE: "/dev/ttyAMA0"
 schema:
-  DRIVER: list(pymodbus|umodbus)
+  DRIVER: list(pymodbus|umodbus|solarman)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
