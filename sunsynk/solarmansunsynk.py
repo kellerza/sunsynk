@@ -29,7 +29,7 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
             ,socket_timeout=self.timeout)        
 
     async def write_register(self, *, address: int, value: int) -> bool:
-        """Write to a register - Sunsynk supports modbus function 0x10."""        
+        """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
             await self.connect()
             await self.client.write_holding_register(address=address, value=value)
