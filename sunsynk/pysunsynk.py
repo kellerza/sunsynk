@@ -29,6 +29,8 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
         url = urlparse(f"{self.port}")
         if url.hostname:
             host, port = url.hostname, url.port or 502
+
+            # Framer from the URL scheme
             opt: dict[str, Any] = {}
             if url.scheme == "serial-tcp":
                 opt = {"framer": ModbusRtuFramer}
