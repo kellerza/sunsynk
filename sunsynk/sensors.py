@@ -55,7 +55,7 @@ class Sensor:
 
     def __hash__(self) -> int:
         """Hash the sensor id."""
-        return hash(self.id)
+        return hash((self.address, self.name))
 
     def __eq__(self, other: object) -> bool:
         """Sensor equality is based on the ID only."""

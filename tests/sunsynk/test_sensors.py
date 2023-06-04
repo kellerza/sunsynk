@@ -15,17 +15,29 @@ from sunsynk.sensors import (
     SerialSensor,
     TempSensor,
 )
-from sunsynk.state import group_sensors
+from sunsynk.state import InverterState, group_sensors
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def test_binary_sensor() -> None:
-    b = BinarySensor(111, "B 1")
+def test_binary_sensor(state: InverterState) -> None:
+    a = Sensor(194, "Grid Connected Status")  # Remove in the future?
+    b = BinarySensor(194, "Grid Connected")
+    state.track(a)
+    state.track(b)
+    # b = BinarySensor(111, "B 1")
     assert b.reg_to_value((0,)) is False
     assert b.reg_to_value((1,)) is True
     assert b.reg_to_value((2,)) is True
     assert b.reg_to_value((255,)) is True
+
+    state.update({194: 2})
+    assert a.__hash__() != b.__hash__()
+    assert state.get(a) == 2
+    assert state.get(b) is True
+
+    state.update({194: 0})
+    assert state[b] is False
 
     b = BinarySensor(111, "B 1", on=1)
     assert b.reg_to_value((0,)) is False

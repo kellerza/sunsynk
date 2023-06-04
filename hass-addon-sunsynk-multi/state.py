@@ -3,7 +3,6 @@ import logging
 from typing import Callable, Optional, Union
 
 import attrs
-from filter import Filter
 from mqtt_entity import (
     BinarySensorEntity,
     Device,
@@ -45,7 +44,6 @@ MQTT = MQTTClient()
 class State:  # pylint: disable=too-few-public-methods
     """State of a sensor / entity."""
 
-    filter: Optional[Filter] = attrs.field()
     sensor: Optional[Sensor] = attrs.field()
     istate: int = attrs.field()
     entity: Optional[Entity] = attrs.field(default=None)
@@ -78,38 +76,22 @@ class State:  # pylint: disable=too-few-public-methods
 
     @property
     def name(self) -> str:
-        """Return the name of the sensor and filter."""
-        nme = self.sensor.name if self.sensor else ""
-        # nme = getattr(self.sensor, "name", str(self.sensor))
-        # if isinstance(self, SCFilter):
-        #     nme += ":step"
-        if not self.filter:
-            return nme
-        return f"{nme}:{self.filter._filter.__name__}"  # pylint: disable=no-member,protected-access
+        """Return the name of the sensor."""
+        return self.sensor.name
 
     @property
     def get_state(self) -> Callable:
         """Get the inverter state."""
         return STATE[self.istate].inv.state.get
 
-    def create_entity(self, dev: Union[Device, Entity, None]) -> Entity:
-        """Create HASS entities out of an existing list of filters.
-
-        get_state = SS[0].state.get
-        """
-        # def create_on_change_handler(sensor: RWSensor, value_func: Callable) -> Callable:
-        #     def _handler(value: Any) -> None:
-
-        #     return _handler
-
+    def create_entity(self, dev: Device) -> Entity:
+        """Create HASS entity."""
         if self.hidden:
             raise ValueError(f"Do not create hidden entities! {self}")
         if self.sensor is None:
             raise ValueError(f"Cannot create entity if no sensor specified! {self}")
         if dev is None:
             raise ValueError(f"No device specified for create_entity! {self}")
-        if isinstance(dev, Entity):
-            dev = dev.device
 
         sensor = self.sensor
 

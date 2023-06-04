@@ -4,7 +4,6 @@ import traceback
 from collections import defaultdict
 
 import attrs
-from filter import suggested_filter
 from helpers import import_mysensors
 from options import OPT
 
@@ -86,8 +85,8 @@ class SensorOptions:
                 _LOGGER.error("Unknown sensor in config: %s", sensor_def)
                 continue
 
-            if not fstr:
-                fstr = suggested_filter(sen)
+            # if not fstr:
+            #    fstr = suggested_filter(sen)
 
             self.filter_str[name] = fstr
             self.sensors[name] = sen

@@ -1,13 +1,12 @@
 """Register state."""
 import logging
-
-# from collections.abc import KeysView
+from collections import defaultdict
 from typing import Callable, Generator, Iterable, Iterator, Optional, Sequence
 
 import attr
 
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import Sensor, ValType
+from sunsynk.sensors import NumType, Sensor, ValType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +20,10 @@ class InverterState:
     onchange: Optional[Callable[[Sensor, ValType, ValType], None]] = attr.field(
         default=None
     )
+    history: dict[Sensor, list[NumType]] = attr.field(
+        init=False, factory=lambda: defaultdict(list)
+    )
+    """Historic values for numeric types."""
 
     def __getitem__(self, sensor: Sensor) -> ValType:
         """Get the current value of a sensor."""
@@ -67,6 +70,9 @@ class InverterState:
             if oldv != newv:
                 self.values[sen] = newv
                 changed[sen] = (newv, oldv)
+            if not isinstance(sen, RWSensor) and isinstance(newv, (int, float)):
+                # Non RW and numeric, keep a history
+                self.history[sen].append(newv)
 
         self.registers.update(new_regs)
 
@@ -74,6 +80,22 @@ class InverterState:
             return
         for sen, (new, old) in changed.items():
             self.onchange(sen, new, old)
+
+    def history_done(self) -> None:
+        """Flush the history."""
+        self.history.clear()
+
+    def history_significant_change(self) -> bool:
+        """Check if there has been a significant change in the history."""
+        changes: dict[Sensor, NumType] = {}
+        for sen, hist in self.history.items():
+            if len(hist) < 2:
+                continue
+            if abs(hist[-1] - hist[-2]) > 10:
+                changes[sen] = hist[-1]
+                hist.clear()
+                hist.append(changes[sen])
+        return changes
 
 
 def group_sensors(

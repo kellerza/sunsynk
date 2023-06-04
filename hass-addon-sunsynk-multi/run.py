@@ -7,7 +7,6 @@ import traceback
 from asyncio.events import AbstractEventLoop
 from typing import Iterable
 
-from filter import RROBIN, Filter, getfilter
 from mqtt_entity import Device
 from options import OPT, init_options
 from sensors import SOPT
@@ -40,10 +39,10 @@ async def publish_sensors(
         if state.hidden or state.sensor is None:
             continue
         val = ast.inv.state[state.sensor]
-        if isinstance(state.filter, Filter):
-            val = state.filter.update(val)
-            if force and val is None:
-                val = ast.inv.state[state.sensor]
+        # if isinstance(state.filter, Filter):
+        #     val = state.filter.update(val)
+        #     if force and val is None:
+        #         val = ast.inv.state[state.sensor]
         await state.publish(val)
 
     # statistics
@@ -157,18 +156,14 @@ def setup_sensors() -> None:
         for name, sen in SOPT.sensors.items():
             ast.inv.state.track(sen)
 
-            fil = getfilter(SOPT.filter_str[name], sensor=sen)
             ast.state[sen.id] = State(
                 sensor=sen,
-                filter=fil,
                 retain=isinstance(sen, RWSensor),
                 hidden=not SOPT.visible.get(name),
                 istate=istate,
             )
 
-        ast.state["to"] = TimeoutState(
-            entity=None, filter=None, sensor=None, istate=istate
-        )
+        ast.state["to"] = TimeoutState(entity=None, sensor=None, istate=istate)
 
 
 def log_bold(msg: str) -> None:
@@ -292,7 +287,6 @@ async def main(loop: AbstractEventLoop) -> None:  # noqa
 
     async def poll_sensors() -> None:
         """Poll sensors."""
-        RROBIN.tick()
         for ast in STATE:
             states: list[State] = []
             # 1. collect sensors to read
