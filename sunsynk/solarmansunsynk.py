@@ -31,7 +31,7 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
-            await self.connect()
+            await self.client.connect()
             await self.client.write_holding_register(address=address, value=value)
             return True            
         except asyncio.TimeoutError:
@@ -45,7 +45,7 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:        
         """Read a holding register."""        
         try:
-            await self.connect()
+            await self.client.connect()
             return await self.client.read_holding_registers(start, length)
         except asyncio.TimeoutError:
             raise IOError(f"failed to read register {start}")

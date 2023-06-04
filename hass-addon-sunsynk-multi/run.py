@@ -120,7 +120,7 @@ def setup_driver() -> None:
         factory = SolarmanSunsynk
         port_prefix = "tcp://"
     else:
-        _LOGGER.critical("Invalid DRIVER: %s. Expected umodbus, pymodbus", OPT.driver)
+        _LOGGER.critical("Invalid DRIVER: %s. Expected umodbus, pymodbus, solarman", OPT.driver)
         sys.exit(-1)
 
     STATE.clear()
