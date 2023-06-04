@@ -1,7 +1,7 @@
 """Sunsync Modbus interface."""
 import asyncio
 import logging
-from typing import Sequence
+from typing import Any, Sequence
 from urllib.parse import urlparse
 
 import attrs
@@ -11,6 +11,7 @@ from pymodbus.client import (
     AsyncModbusTcpClient,
     ModbusBaseClient,
 )
+from pymodbus.transaction import ModbusRtuFramer
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -28,8 +29,16 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
         url = urlparse(f"{self.port}")
         if url.hostname:
             host, port = url.hostname, url.port or 502
-            _LOGGER.info("PyModbus %s TCP: %s:%s", version.short(), host, port)
-            return AsyncModbusTcpClient(host=host, port=port)
+            opt: dict[str, Any] = {}  # type:ignore
+            if url.scheme == "serial-tcp":
+                opt = {"framer": ModbusRtuFramer}
+            elif url.scheme != "tcp":  # default ModbusSocketFramer
+                _LOGGER.error("Unknown scheme %s", url.scheme)
+
+            _LOGGER.info(
+                "PyModbus %s %s: %s:%s", version.short(), url.scheme, host, port
+            )
+            return AsyncModbusTcpClient(host=host, port=port, **opt)
 
         _LOGGER.info("PyModbus %s Serial: %s", version.short(), self.port)
         return AsyncModbusSerialClient(
