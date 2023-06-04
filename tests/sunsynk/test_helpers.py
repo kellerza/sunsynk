@@ -36,14 +36,18 @@ def test_int_round() -> None:
 
 def test_signed() -> None:
     assert signed(0x7FFF) == 0x7FFF
-    assert signed(0xFFFF) == 0
+    assert signed(0xFFFF) == -1
+    assert signed(0) == 0
+    assert signed(32767) == 32767
+    assert signed(32768) == -32768
 
 
 def test_signeds() -> None:
     """Signed sensors have a -1 factor"""
     s = Sensor(1, "", "", factor=-1)
     assert s.reg_to_value((1,)) == 1
-    assert s.reg_to_value((0xFFFE,)) == -1
+    assert s.reg_to_value((0xFFFE,)) == -2
+    assert s.reg_to_value((0xFFBA,)) == -70
 
     s = Sensor(1, "", "", factor=1)
     assert s.reg_to_value((1,)) == 1
