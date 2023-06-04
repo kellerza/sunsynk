@@ -90,6 +90,10 @@ def test_number_rw(state) -> None:
     assert s.value_to_reg(500, state.get) == (300,)
     assert s.value_to_reg(-1, state.get) == (1,)
 
+    # writing negative values (when allowed by min)
+    s.min = -10
+    assert s.value_to_reg(-1, state.get) == (65535,)
+
     s = NumberRWSensor(1, "s2", factor=0.01)
     state.track(s)
 
