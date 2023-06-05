@@ -1,9 +1,10 @@
 """PyModbus."""
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
+import asyncio
+from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
 
 import pytest
 
-from sunsynk.pysunsynk import pySunsynk
+from sunsynk.pysunsynk import ModbusRtuFramer, pySunsynk
 from sunsynk.state import InverterState
 
 
@@ -12,6 +13,21 @@ async def test_pyss():
     ss = pySunsynk()
     with pytest.raises(ConnectionError):
         await ss.connect()
+
+    ss.client = None
+    with pytest.raises(NotImplementedError):
+        ss.port = "xcp://localhost:10"
+        await ss.connect()
+
+    with patch("sunsynk.pysunsynk.AsyncModbusTcpClient") as client:
+        client.return_value = MagicMock()
+        ss.port = "serial-tcp://localhost:10"
+        assert client.call_args_list == []
+        await ss.connect()
+        assert client.call_args_list == [
+            call(host="localhost", port=10, framer=ModbusRtuFramer)
+        ]
+        assert ss.client is not None
 
 
 P_ASYNC_CONNECTED = "sunsynk.pysunsynk.AsyncModbusTcpClient.async_connected"
@@ -92,6 +108,7 @@ async def test_ss_tcp_write(
     _connect: AsyncMock,
     async_connect: PropertyMock,
     state: InverterState,
+    caplog,
 ):
     ss = pySunsynk(port="tcp://1.1.1.1")
     ss.state = state
@@ -107,8 +124,18 @@ async def test_ss_tcp_write(
 
     # some error during read
     wrr.function_code = 0x100
+    assert "failed" not in caplog.text
     res = await ss.write_register(address=1, value=1)
     assert res is False
+    assert "failed" in caplog.text
+
+    # Timeout
+    write_registers.return_value = None
+    write_registers.side_effect = asyncio.TimeoutError
+    assert "timeout writing" not in caplog.text
+    res = await ss.write_register(address=1, value=1)
+    assert res is False
+    assert "timeout writing" in caplog.text
 
 
 @pytest.mark.asyncio

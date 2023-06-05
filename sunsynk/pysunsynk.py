@@ -1,7 +1,7 @@
 """Sunsync Modbus interface."""
 import asyncio
 import logging
-from typing import Sequence
+from typing import Any, Sequence
 from urllib.parse import urlparse
 
 import attrs
@@ -11,6 +11,7 @@ from pymodbus.client import (
     AsyncModbusTcpClient,
     ModbusBaseClient,
 )
+from pymodbus.transaction import ModbusRtuFramer
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -28,8 +29,20 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
         url = urlparse(f"{self.port}")
         if url.hostname:
             host, port = url.hostname, url.port or 502
-            _LOGGER.info("PyModbus %s TCP: %s:%s", version.short(), host, port)
-            return AsyncModbusTcpClient(host=host, port=port)
+
+            # Framer from the URL scheme
+            opt: dict[str, Any] = {}
+            if url.scheme == "serial-tcp":
+                opt = {"framer": ModbusRtuFramer}
+            elif url.scheme != "tcp":  # default ModbusSocketFramer
+                raise NotImplementedError(
+                    "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
+                )
+
+            _LOGGER.info(
+                "PyModbus %s %s: %s:%s", version.short(), url.scheme, host, port
+            )
+            return AsyncModbusTcpClient(host=host, port=port, **opt)
 
         _LOGGER.info("PyModbus %s Serial: %s", version.short(), self.port)
         return AsyncModbusSerialClient(
@@ -61,7 +74,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             if res.function_code < 0x80:  # test that we are not an error
                 return True
             _LOGGER.error("failed to write register %s=%s", address, value)
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, TimeoutError):
             _LOGGER.error("timeout writing register %s=%s", address, value)
         self.timeouts += 1
         return False
