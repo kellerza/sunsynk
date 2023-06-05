@@ -74,7 +74,7 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             if res.function_code < 0x80:  # test that we are not an error
                 return True
             _LOGGER.error("failed to write register %s=%s", address, value)
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, TimeoutError):
             _LOGGER.error("timeout writing register %s=%s", address, value)
         self.timeouts += 1
         return False

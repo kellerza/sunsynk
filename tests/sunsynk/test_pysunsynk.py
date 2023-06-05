@@ -1,4 +1,5 @@
 """PyModbus."""
+import asyncio
 from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
 
 import pytest
@@ -129,7 +130,8 @@ async def test_ss_tcp_write(
     assert "failed" in caplog.text
 
     # Timeout
-    write_registers.side_effect = TimeoutError
+    write_registers.return_value = None
+    write_registers.side_effect = asyncio.TimeoutError
     assert "timeout writing" not in caplog.text
     res = await ss.write_register(address=1, value=1)
     assert res is False
