@@ -35,7 +35,9 @@ class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
             if url.scheme == "serial-tcp":
                 opt = {"framer": ModbusRtuFramer}
             elif url.scheme != "tcp":  # default ModbusSocketFramer
-                _LOGGER.error("Unknown scheme %s", url.scheme)
+                raise NotImplementedError(
+                    "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
+                )
 
             _LOGGER.info(
                 "PyModbus %s %s: %s:%s", version.short(), url.scheme, host, port
