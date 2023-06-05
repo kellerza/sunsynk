@@ -73,6 +73,8 @@ class NumberRWSensor(RWSensor):
         maxv = resolve_num(resolve, self.max, 100)
         val = int(max(minv, min(maxv, fval / abs(self.factor))))
         if len(self.address) == 1:
+            if val < 0:
+                val = 0x10000 + val
             return self.reg(val)
         if len(self.address) == 2:
             return self.reg(val & 0xFFFF, int(val >> 16))
