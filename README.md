@@ -36,3 +36,19 @@ Below an example of the HomeAssistant Energy management dashboard using sensors 
 [![codecov](https://codecov.io/gh/kellerza/sunsynk/branch/main/graph/badge.svg?token=ILKRC5UTXI)](https://codecov.io/gh/kellerza/sunsynk)
 
 The Python library is available through pip: `pip install sunsynk`
+
+## Run locally using docker compose
+
+### Sunsynk Multi
+* Copy options.json.template to options.json and make changes to options.json to match your setup.
+* Build the image `BUILD_FROM=homeassistant/amd64-base-python:3.9 docker compose build sunsynk-multi`
+* Run the container `docker compose up -d sunsynk-multi`
+* See the container logs `docker compose logs -f sunsynk-multi`
+
+### Mbusd
+* Edit docker-compose.yaml changing the values under `environment` to match your configuration
+* Build the image `BUILD_FROM=homeassistant/amd64-base-python:3.9 docker compose build mbusd`
+* Run the container `docker compose up mbusd`
+* View container logs `docker compose logs -f mbusd`
+
+Note: the options.json will use the port address `tcp://mbusd:502` to refer to this mbusd container. 

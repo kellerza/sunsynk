@@ -1,0 +1,24 @@
+services:
+  sunsynk-multi:
+    restart: unless-stopped
+    build:
+      context: hass-addon-sunsynk-multi
+      dockerfile: Dockerfile
+      args:
+        BUILD_FROM: ${BUILD_FROM}
+    volumes:
+      - ${PWD}/options.json:/data/options.json
+
+  mbusd:
+    restart: unless-stopped
+    build:
+      context: hass-addon-mbusd
+      dockerfile: Dockerfile
+      args:
+        BUILD_FROM: ${BUILD_FROM}
+    environment:
+      DEVICE: /dev/ttyUSB0
+      BAUDRATE: 9600
+      MODE: 8N1
+      LOGLEVEL: 2
+      TIMEOUT: 5
