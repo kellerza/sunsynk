@@ -1,5 +1,5 @@
 # private config
-options.json
+options.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

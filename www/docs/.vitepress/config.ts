@@ -84,6 +84,7 @@ export default defineConfig({
                 link: "/guide/deployment-options",
               },
               { text: "Fault Finding", link: "/guide/fault-finding" },
+              { text: "Standalone Deployment", link: "/guide/standalone-deployment" },
             ],
           },
           { text: "Energy Management", link: "/guide/energy-management" },
