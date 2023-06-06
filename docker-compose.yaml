@@ -11,11 +11,14 @@ services:
 
   mbusd:
     restart: unless-stopped
+    privileged: true
     build:
       context: hass-addon-mbusd
       dockerfile: Dockerfile
       args:
         BUILD_FROM: ${BUILD_FROM}
+    volumes:
+      - /dev/ttyRS485:/dev/ttyUSB0
     environment:
       DEVICE: /dev/ttyUSB0
       BAUDRATE: 9600

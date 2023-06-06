@@ -39,14 +39,23 @@ The Python library is available through pip: `pip install sunsynk`
 
 ## Run locally using docker compose
 
+In these example commands we prefix the `docker-compose build` commands with the 
+environment variable definition `BUILD_FROM=homeassistant/amd64-base-python:3.9`, 
+which specifies which base image is used. For a Raspberry Pi you would need to 
+use `BUILD_FROM=homeassistant/armhf-base-python:3.9`.
+A list of available base images can be found in 
+`hass-addon-sunsynk-multi/build.yaml` and `hass-addon-mbusd/build.yaml`.
+Use the one that is most appropriate for your host computer.
+
 ### Sunsynk Multi
-* Copy options.json.template to options.json and make changes to options.json to match your setup.
+* Copy `options.json.template` to `options.json` and make changes to `options.json` to match your setup. Use `"PORT": "tcp://mbusd:502"` for the inverter port if you want to use the `mbusd` included in this docker compose stack. 
 * Build the image `BUILD_FROM=homeassistant/amd64-base-python:3.9 docker compose build sunsynk-multi`
 * Run the container `docker compose up -d sunsynk-multi`
 * See the container logs `docker compose logs -f sunsynk-multi`
 
 ### Mbusd
-* Edit docker-compose.yaml changing the values under `environment` to match your configuration
+* Edit `docker-compose.yaml` changing the values under `environment` to match your configuration, leaving the device set to `/dev/ttyUSB0` as we mount the correct port to this location in the next step.
+* Under `volumes` change `/dev/ttyRS485` to the RS485 port of your host computer.
 * Build the image `BUILD_FROM=homeassistant/amd64-base-python:3.9 docker compose build mbusd`
 * Run the container `docker compose up mbusd`
 * View container logs `docker compose logs -f mbusd`
