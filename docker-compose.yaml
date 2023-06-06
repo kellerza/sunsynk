@@ -7,7 +7,7 @@ services:
       args:
         BUILD_FROM: ${BUILD_FROM}
     volumes:
-      - ${PWD}/options.json:/data/options.json
+      - ${PWD}/options.yaml:/usr/src/.local.yaml
 
   mbusd:
     restart: unless-stopped
