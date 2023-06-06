@@ -1,0 +1,4 @@
+paho-mqtt
+mqtt-entity
+sunsynk[pymodbus,umodbus]
+pyyaml
