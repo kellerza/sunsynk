@@ -1,0 +1,30 @@
+{
+  "DRIVER": "umodbus",
+  "INVERTERS": [
+    {
+      "SERIAL_NR": "007",
+      "HA_PREFIX": "SS",
+      "MODBUS_ID": 1,
+      "PORT": "tcp://mbusd:502"
+    }
+  ],
+  "SENSOR_DEFINITIONS": "single-phase",
+  "SENSORS": [
+    "total_pv_energy",
+    "total_battery_charge",
+    "total_battery_discharge",
+    "total_grid_export",
+    "total_grid_import",
+    "battery_soc"
+  ],
+  "SENSORS_FIRST_INVERTER": [],
+  "MANUFACTURER": "Sunsynk",
+  "READ_SENSORS_BATCH_SIZE": 60,
+  "NUMBER_ENTITY_MODE": "auto",
+  "MQTT_HOST": "core-mosquitto",
+  "MQTT_PORT": 1883,
+  "MQTT_USERNAME": "hass",
+  "MQTT_PASSWORD": "",
+  "DEBUG": 0,
+  "DEBUG_DEVICE": "/dev/ttyAMA0"
+}
