@@ -25,6 +25,7 @@ class Sunsynk:
     read_sensors_batch_size: int = attrs.field(default=60)
     timeouts: int = 0
     serial_nr: str = attrs.field(default="0000000000")
+    allow_gap: int = 1
 
     async def connect(self) -> None:
         """Connect."""
@@ -80,7 +81,9 @@ class Sunsynk:
 
         new_regs: dict[int, int] = {}
         for grp in group_sensors(
-            sensors, allow_gap=1, max_group_size=self.read_sensors_batch_size
+            sensors,
+            allow_gap=self.allow_gap,
+            max_group_size=self.read_sensors_batch_size,
         ):
             glen = grp[-1] - grp[0] + 1
             try:

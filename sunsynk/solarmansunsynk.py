@@ -24,6 +24,7 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
     async def connect(self) -> None:
         """Connect."""
         url = urlparse(f"{self.port}")
+        self.allow_gap = 10
         self.client = PySolarmanV5Async(
             address=url.hostname,
             serial=int(self.serial_nr),
@@ -47,18 +48,16 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read a holding register."""
+        _LOGGER.info("I'm alive")
         try:
             return await self.client.read_holding_registers(start, length)
         except Exception:
-            _LOGGER.error("frame error reading registers starting at: %s", start)
             for attempt in range(retry_attempts):
                 try:
                     return await self.client.read_holding_registers(start, length)
                 except Exception as e:
-                    _LOGGER.info("Attempt: %s", attempt)
-                    _LOGGER.error("Caught error: %s", e)
-                    await asyncio.sleep(10)
+                    _LOGGER.error("Caught error(%s): %s", attempt, e)
+                    await asyncio.sleep(2)
                     continue
             else:
-                return []
-                # raise IOError(f"failed to read register {start}")
+                raise IOError(f"failed to read register {start}")
