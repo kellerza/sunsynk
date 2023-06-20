@@ -32,7 +32,7 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
             mb_slave_id=self.server_id,
             auto_reconnect=True,
             verbose=False,
-            socket_timeout=60,
+            socket_timeout=self.timeout * 2,
         )
         await self.client.connect()
 
