@@ -5,7 +5,7 @@ from typing import Sequence
 from urllib.parse import urlparse
 
 import attrs
-from pysolarmanv5 import PySolarmanV5Async
+from pysolarmanv5 import PySolarmanV5Async, V5FrameError
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -48,16 +48,17 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read a holding register."""
-        _LOGGER.info("I'm alive")
         try:
             return await self.client.read_holding_registers(start, length)
         except Exception:
             for attempt in range(retry_attempts):
                 try:
                     return await self.client.read_holding_registers(start, length)
+                except V5FrameError as e:
+                    _LOGGER.info("Frame error retry attempt(%s): %s", attempt, e)
                 except Exception as e:
-                    _LOGGER.error("Caught error(%s): %s", attempt, e)
-                    await asyncio.sleep(2)
-                    continue
+                    _LOGGER.error("Error retry attempt(%s): %s", attempt, e)
+                await asyncio.sleep(2)
+                continue
             else:
-                raise IOError(f"failed to read register {start}")
+                raise IOError(f"Failed to read register {start}")
