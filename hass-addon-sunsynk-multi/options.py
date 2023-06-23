@@ -20,13 +20,18 @@ class InverterOptions:
     modbus_id: int = 0
     ha_prefix: str = ""
     serial_nr: str = ""
+    dongle_serial_number: str = ""
 
     @classmethod
     def factory(cls, opt: dict) -> InverterOptions:
         """Create a class from the options."""
         modbus_id = int(opt.pop("MODBUS_ID"))
+        dongle_serial_number = opt.pop("DONGLE_SERIAL_NUMBER")
+
         iopt = InverterOptions(**{k.lower(): v for k, v in opt.items()})
         iopt.modbus_id = modbus_id
+        iopt.dongle_serial_number = dongle_serial_number
+
         if "_" in iopt.serial_nr:
             _LOGGER.warning(
                 "The serial number contains an underscore '_' - used for testing"

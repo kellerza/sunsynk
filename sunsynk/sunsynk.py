@@ -1,6 +1,7 @@
 """Sunsync Modbus interface."""
 import asyncio
 import logging
+import time
 from typing import Iterable, Sequence
 
 import attrs
@@ -24,7 +25,7 @@ class Sunsynk:
     timeout: int = attrs.field(default=10)
     read_sensors_batch_size: int = attrs.field(default=60)
     timeouts: int = 0
-    serial_nr: str = attrs.field(default="0000000000")
+    dongle_serial_number: int = attrs.field(default=0)
     allow_gap: int = 1
 
     async def connect(self) -> None:
@@ -87,8 +88,16 @@ class Sunsynk:
         ):
             glen = grp[-1] - grp[0] + 1
             try:
+                s = time.perf_counter()
                 r_r = await asyncio.wait_for(
                     self.read_holding_registers(grp[0], glen), timeout=self.timeout + 1
+                )
+                elapsed = time.perf_counter() - s
+                _LOGGER.info(
+                    "Time taken to fetch %s registers starting at %s : %ss",
+                    glen,
+                    grp[0],
+                    "{:.2f}".format(elapsed),
                 )
             except asyncio.TimeoutError:
                 _LOGGER.error("timeout reading register %s (%s)", grp[0], glen)
