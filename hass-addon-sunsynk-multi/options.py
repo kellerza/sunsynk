@@ -74,7 +74,7 @@ OPT = Options()
 def init_options() -> None:
     """Initialize the options & logger."""
     logging.basicConfig(
-        format="%(asctime)s %(levelname)-7s %(name)s %(message)s", level=logging.DEBUG
+        format="%(asctime)s %(levelname)-7s %(message)s", level=logging.INFO, force=True
     )
 
     hassosf = Path("/data/options.json")
@@ -91,9 +91,9 @@ def init_options() -> None:
         if localf.exists():
             OPT.update(yaml.safe_load(localf.read_text()))
 
-    if OPT.debug < 2:
+    if OPT.debug != 0:
         logging.basicConfig(
-            format="%(asctime)s %(levelname)-7s %(message)s",
-            level=logging.INFO,
+            format="%(asctime)s %(levelname)-7s %(name)s %(message)s",
+            level=logging.DEBUG,
             force=True,
         )

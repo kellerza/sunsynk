@@ -93,7 +93,7 @@ class Sunsynk:
                     self.read_holding_registers(grp[0], glen), timeout=self.timeout + 1
                 )
                 elapsed = time.perf_counter() - s
-                _LOGGER.info(
+                _LOGGER.debug(
                     "Time taken to fetch %s registers starting at %s : %ss",
                     glen,
                     grp[0],
