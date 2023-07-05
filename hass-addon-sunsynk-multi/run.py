@@ -133,8 +133,11 @@ def setup_driver() -> None:
             "server_id": opt.modbus_id,
             "timeout": OPT.timeout,
             "read_sensors_batch_size": OPT.read_sensors_batch_size,
-            "dongle_serial_number": opt.dongle_serial_number,
         }
+
+        if OPT.driver == "solarman":
+            kwargs.update({"dongle_serial_number": opt.dongle_serial_number})
+
         _LOGGER.debug("%s driver options: %s", OPT.driver, kwargs)
         suns = factory(**kwargs)
         suns.state.onchange = sensor_updates

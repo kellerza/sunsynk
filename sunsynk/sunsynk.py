@@ -25,7 +25,6 @@ class Sunsynk:
     timeout: int = attrs.field(default=10)
     read_sensors_batch_size: int = attrs.field(default=60)
     timeouts: int = 0
-    dongle_serial_number: int = attrs.field(default=0)
     allow_gap: int = 1
 
     async def connect(self) -> None:
