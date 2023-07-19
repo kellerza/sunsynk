@@ -1,5 +1,13 @@
 # Changelog
 
+## **2023.07.19-0.3.7**
+
+- sunsynk 0.3.7
+  - bugfix writing numeric sensors
+
+- Multi & Dev Addon
+  - Update to pyyaml 6.0.1
+
 ## **2023.05.19-0.3.6**
 
 - sunsynk 0.3.6
@@ -12,17 +20,20 @@
 
 - sunsynk 0.3.5
   - Reworked 1ph essentials sensor - refer to definitions.py
-       Essential power
-       - https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
-       Essential 1 power
-       - dev & normal version, see https://github.com/kellerza/sunsynk/issues/134
-       Essential 2 power
-       - early-2023 see https://github.com/kellerza/sunsynk/issues/75
+
+    Essential power
+    - <https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591>
+
+    Essential 1 power
+    - dev & normal version, see <https://github.com/kellerza/sunsynk/issues/134>
+
+    Essential 2 power
+    - early-2023 see <https://github.com/kellerza/sunsynk/issues/75>
 
   - Additional sensors to support all the options in @slipx's power flow card
     - Inverter Current
     - Generator Input (235) - this might explain the difference on the essentials sensor value...
-    - Use Timer - see https://github.com/kellerza/sunsynk/discussions/137
+    - Use Timer - see <https://github.com/kellerza/sunsynk/discussions/137>
 
 ## **2023.05.05-0.3.4**
 
@@ -59,7 +70,6 @@
 
 - **2023.04.20b-0.3.2**  - bugfix log
 
-
 ## **2023.04.17-0.3.1**
 
 - split out mqtt_entity
@@ -74,4 +84,3 @@
 - It only supports a single inverter today
 - Select between single-phase & three-phase sensor definitions
 - Supports custom sensors in /share/hass-addon-sunsynk/mysensors.py
-

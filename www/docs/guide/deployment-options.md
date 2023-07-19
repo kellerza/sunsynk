@@ -23,6 +23,14 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
 
    ![Deployment Option MQTT](https://github.com/kellerza/sunsynk/raw/main/images/deploy-mqtt.png)
 
+4. Standalone in Docker
+
+   This runs the addon on its own in a docker container, without depending on Home Assistant
+
+   Read more [here](./standalone-deployment).
+
+   ![Deployment Option Standalone](https://github.com/kellerza/sunsynk/raw/main/images/deploy-standalone.png)
+
 
 ## RS485 wiring
 RS485 requires a twisted pair, this works with CAT5 network cable and RJ-45 connectors.
