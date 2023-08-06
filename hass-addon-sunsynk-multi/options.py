@@ -26,13 +26,8 @@ class InverterOptions:
     def factory(cls, opt: dict) -> InverterOptions:
         """Create a class from the options."""
         modbus_id = int(opt.pop("MODBUS_ID"))
-
-        if "DONGLE_SERIAL_NUMBER" in opt:
-            dongle_serial_number = opt.pop("DONGLE_SERIAL_NUMBER")
-
         iopt = InverterOptions(**{k.lower(): v for k, v in opt.items()})
         iopt.modbus_id = modbus_id
-        iopt.dongle_serial_number = dongle_serial_number
 
         if "_" in iopt.serial_nr:
             _LOGGER.warning(
