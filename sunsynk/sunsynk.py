@@ -87,16 +87,16 @@ class Sunsynk:
         ):
             glen = grp[-1] - grp[0] + 1
             try:
-                s = time.perf_counter()
+                perf = time.perf_counter()
                 r_r = await asyncio.wait_for(
                     self.read_holding_registers(grp[0], glen), timeout=self.timeout + 1
                 )
-                elapsed = time.perf_counter() - s
+                perf = time.perf_counter() - perf
                 _LOGGER.debug(
                     "Time taken to fetch %s registers starting at %s : %ss",
                     glen,
                     grp[0],
-                    "{:.2f}".format(elapsed),
+                    f"{perf:.2f}",
                 )
             except asyncio.TimeoutError:
                 _LOGGER.error("timeout reading register %s (%s)", grp[0], glen)

@@ -1,4 +1,5 @@
 """Sunsynk lib using PySolarman."""
+# pylint: disable=duplicate-code
 import asyncio
 import logging
 from typing import Sequence
@@ -12,7 +13,7 @@ from sunsynk.sunsynk import Sunsynk
 _LOGGER = logging.getLogger(__name__)
 
 
-retry_attempts = 5
+RETRY_ATTEMPTS = 5
 
 
 @attrs.define
@@ -40,7 +41,7 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
-            await self.client.write_holding_register(address=address, value=value)
+            await self.client.write_holding_register(address, value)
             return True
         except asyncio.TimeoutError:
             _LOGGER.error("timeout writing register %s=%s", address, value)
@@ -51,15 +52,14 @@ class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
         """Read a holding register."""
         try:
             return await self.client.read_holding_registers(start, length)
-        except Exception:
-            for attempt in range(retry_attempts):
+        except Exception as exc:  # pylint: disable=broad-except
+            for attempt in range(RETRY_ATTEMPTS):
                 try:
                     return await self.client.read_holding_registers(start, length)
-                except V5FrameError as e:
-                    _LOGGER.info("Frame error retry attempt(%s): %s", attempt, e)
-                except Exception as e:
-                    _LOGGER.error("Error retry attempt(%s): %s", attempt, e)
+                except V5FrameError as err:
+                    _LOGGER.info("Frame error retry attempt(%s): %s", attempt, err)
+                except Exception as err:  # pylint: disable=broad-except
+                    _LOGGER.error("Error retry attempt(%s): %s", attempt, err)
                 await asyncio.sleep(2)
                 continue
-            else:
-                raise IOError(f"Failed to read register {start}")
+            raise IOError(f"Failed to read register {start}") from exc
