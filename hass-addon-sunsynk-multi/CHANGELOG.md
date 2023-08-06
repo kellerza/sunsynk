@@ -1,5 +1,9 @@
 # Changelog
 
+## **2023.08.06-0.4.0**
+
+- Added the pysolarman driver
+
 ## **2023.07.19-0.3.7**
 
 - sunsynk 0.3.7

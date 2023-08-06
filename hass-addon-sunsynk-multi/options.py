@@ -20,6 +20,7 @@ class InverterOptions:
     modbus_id: int = 0
     ha_prefix: str = ""
     serial_nr: str = ""
+    dongle_serial_number: str = ""
 
     @classmethod
     def factory(cls, opt: dict) -> InverterOptions:
@@ -27,6 +28,7 @@ class InverterOptions:
         modbus_id = int(opt.pop("MODBUS_ID"))
         iopt = InverterOptions(**{k.lower(): v for k, v in opt.items()})
         iopt.modbus_id = modbus_id
+
         if "_" in iopt.serial_nr:
             _LOGGER.warning(
                 "The serial number contains an underscore '_' - used for testing"
@@ -69,7 +71,7 @@ OPT = Options()
 def init_options() -> None:
     """Initialize the options & logger."""
     logging.basicConfig(
-        format="%(asctime)s %(levelname)-7s %(name)s %(message)s", level=logging.DEBUG
+        format="%(asctime)s %(levelname)-7s %(message)s", level=logging.INFO, force=True
     )
 
     hassosf = Path("/data/options.json")
@@ -86,9 +88,9 @@ def init_options() -> None:
         if localf.exists():
             OPT.update(yaml.safe_load(localf.read_text()))
 
-    if OPT.debug < 2:
+    if OPT.debug != 0:
         logging.basicConfig(
-            format="%(asctime)s %(levelname)-7s %(message)s",
-            level=logging.INFO,
+            format="%(asctime)s %(levelname)-7s %(name)s %(message)s",
+            level=logging.DEBUG,
             force=True,
         )

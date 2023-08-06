@@ -1,6 +1,6 @@
 ---
 name: Sunsynk/Deye Inverter Add-on (multi)
-version: 2023.07.19-0.3.7
+version: 2023.08.06-0.4.0
 slug: hass-addon-sunsynk-multi
 description: Add-on for a Sunsynk/Deye branded Inverter
 startup: services
@@ -24,6 +24,7 @@ options:
     - SERIAL_NR: "007"
       HA_PREFIX: SS
       MODBUS_ID: 1
+      DONGLE_SERIAL_NUMBER: "0"
       PORT: "tcp://homeassistant.local:502"
   SENSOR_DEFINITIONS: single-phase
   SENSORS:
@@ -44,11 +45,12 @@ options:
   DEBUG: 0
   DEBUG_DEVICE: "/dev/ttyAMA0"
 schema:
-  DRIVER: list(pymodbus|umodbus)
+  DRIVER: list(pymodbus|umodbus|solarman)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
       MODBUS_ID: int(1,16)
+      DONGLE_SERIAL_NUMBER: str?
       PORT: str
   SENSOR_DEFINITIONS: list(single-phase|three-phase)
   SENSORS:
