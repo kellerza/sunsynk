@@ -2,7 +2,7 @@
 import asyncio
 import logging
 import time
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, TypedDict
 
 import attrs
 
@@ -24,8 +24,8 @@ class Sunsynk:
     server_id: int = attrs.field(default=1)
     timeout: int = attrs.field(default=10)
     read_sensors_batch_size: int = attrs.field(default=60)
+    allow_gap: int = attrs.field(default=10)
     timeouts: int = 0
-    allow_gap: int = 1
 
     async def connect(self) -> None:
         """Connect."""
@@ -125,3 +125,13 @@ class Sunsynk:
             )
 
         self.state.update(new_regs)
+
+
+class SunsynkInitParameters(TypedDict):
+    """Sunsynk typing parameters."""
+
+    port: str
+    server_id: int
+    timeout: int
+    read_sensors_batch_size: int
+    allow_gap: int

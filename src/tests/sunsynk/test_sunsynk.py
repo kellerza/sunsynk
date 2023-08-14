@@ -9,10 +9,12 @@ from sunsynk import Sunsynk
 from sunsynk.rwsensors import NumberRWSensor
 from sunsynk.state import InverterState
 
+# All test coroutines will be treated as marked.
+pytestmark = pytest.mark.asyncio
+
 _LOGGER = logging.getLogger(__name__)
 
 
-@pytest.mark.asyncio
 async def test_ss_NotImplemented():
     ss = Sunsynk()
     with pytest.raises(NotImplementedError):
@@ -23,7 +25,6 @@ async def test_ss_NotImplemented():
         await ss.read_holding_registers(1, 1)
 
 
-@pytest.mark.asyncio
 @patch("sunsynk.Sunsynk.read_holding_registers")
 @patch("sunsynk.Sunsynk.write_register")
 async def test_ss_write_sensor(
@@ -56,7 +57,6 @@ async def test_ss_write_sensor(
     assert "outside" in caplog.text
 
 
-@pytest.mark.asyncio
 @patch("sunsynk.Sunsynk.read_holding_registers")
 @patch("sunsynk.Sunsynk.write_register")
 async def test_ss_write_sensor_bm(
@@ -85,7 +85,6 @@ async def test_ss_write_sensor_bm(
     assert "outside" not in caplog.text
 
 
-@pytest.mark.asyncio
 @patch("sunsynk.Sunsynk.read_holding_registers")
 async def test_ss_read_sensors(rhr: MagicMock, state: InverterState):
     ss = Sunsynk()

@@ -6,7 +6,7 @@ from typing import Sequence
 from urllib.parse import urlparse
 
 import attrs
-from pysolarmanv5 import PySolarmanV5Async, V5FrameError
+from pysolarmanv5 import PySolarmanV5Async, V5FrameError  # type: ignore
 
 from sunsynk.sunsynk import Sunsynk
 

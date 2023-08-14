@@ -106,7 +106,7 @@ jobs:
       - name: Install local sunsynk package
         run: pip install -e .[pymodbus,umodbus,tests]
       - name: Run tests and generate coverage report
-        run: pytest --cov=./sunsynk --cov-report=xml -- tests/sunsynk tests/hass_addon_sunsynk_multi/
+        run: pytest --cov=./sunsynk --cov-report=xml src
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:

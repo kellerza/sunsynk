@@ -1,4 +1,4 @@
-include LICENSE README.md
+include LICENSE README.md py.typed
 graft sunsynk
 graft tests
 recursive-exclude * *.py[co]

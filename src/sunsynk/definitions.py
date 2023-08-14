@@ -144,10 +144,11 @@ SENSORS += (
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
-    Sensor(194, "Grid Connected Status"),  # Remove in the future?
+    # Sensor(194, "Grid Connected Status"),  # Remove in the future?
     BinarySensor(194, "Grid Connected"),
     SystemTimeRWSensor((22, 23, 24), "Date Time", unit=""),
 )
+
 ###########
 # Settings
 ###########
@@ -317,6 +318,7 @@ SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max
 #############
 SENSORS.deprecated.update(
     {
+        "grid_connected_status": "grid_connected",
         "absorption_voltage": "battery_absorption_voltage",
         "aux_load": "aux_power",
         "battery_grid_charge": "grid_charge_battery_current",

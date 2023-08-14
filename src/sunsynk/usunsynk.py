@@ -5,8 +5,8 @@ from typing import Sequence
 from urllib import parse
 
 import attrs
-from async_modbus import AsyncClient, modbus_for_url
-from connio import SERIAL_SCHEMES, SOCKET_SCHEMES
+from async_modbus import AsyncClient, modbus_for_url  # type: ignore
+from connio import SERIAL_SCHEMES, SOCKET_SCHEMES  # type: ignore
 
 from sunsynk.sunsynk import Sunsynk
 

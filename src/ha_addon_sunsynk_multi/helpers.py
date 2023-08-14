@@ -21,7 +21,7 @@ def import_module(mod_name: str, folder: str) -> ModuleType:
         sys.path.pop(0)
 
 
-def import_mysensors() -> Optional[dict[str, any]]:
+def import_mysensors() -> Optional[dict[str, Any]]:
     """Import my sensors."""
     root = "/share/hass-addon-sunsynk/"
     modn = "mysensors"
