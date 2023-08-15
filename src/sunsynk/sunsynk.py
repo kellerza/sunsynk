@@ -18,6 +18,8 @@ _LOGGER = logging.getLogger(__name__)
 class Sunsynk:
     """Sunsync Modbus class."""
 
+    # pylint: disable=too-many-instance-attributes
+
     state: InverterState = attrs.field(factory=InverterState)
     port: str = attrs.field(default="/dev/tty0")
     baudrate: int = attrs.field(default=9600)
