@@ -158,6 +158,7 @@ SENSOR_GROUPS = {
         "grid_voltage",
         "inverter_current",
         "inverter_power",
+        "load_frequency",
         "non_essential_power",
         "overall_state",
         "priority_load",

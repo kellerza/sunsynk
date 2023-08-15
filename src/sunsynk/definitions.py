@@ -62,6 +62,7 @@ SENSORS += (
     Sensor(178, "Load power", WATT, -1),  # L1(176) + L2(177)
     Sensor(176, "Load L1 power", WATT, -1),
     Sensor(177, "Load L2 power", WATT, -1),
+    Sensor(192, "Load frequency", "Hz", 0.01),
 )
 
 #############
