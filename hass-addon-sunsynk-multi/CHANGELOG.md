@@ -2,7 +2,7 @@
 
 ## **2023.08.15-0.5.0**
 
-See https://github.com/kellerza/sunsynk/pull/168
+See <https://github.com/kellerza/sunsynk/pull/168>
 
 ## **2023.08.06-0.4.0**
 

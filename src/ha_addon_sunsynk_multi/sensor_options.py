@@ -205,7 +205,7 @@ def get_sensors(
             yield from get_sensors(
                 target=target, names=SENSOR_GROUPS[name], warn_once=False
             )
-            return
+            continue
 
         # Warn on deprecated
         if name in DEFS.deprecated:
@@ -214,15 +214,15 @@ def get_sensors(
                 name,
                 DEFS.deprecated[name],
             )
-            return
+            continue
 
         if name in [t.name for t in target] and warn_once:
             _LOGGER.warning("Sensor %s only allowed once", name)
-            return
+            continue
 
         sen = DEFS.all.get(name)
         if not isinstance(sen, Sensor):
             _LOGGER.error("Unknown sensor specified: %s", name)
-            return
+            continue
 
         yield sen

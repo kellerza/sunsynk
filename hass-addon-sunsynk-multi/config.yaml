@@ -72,10 +72,10 @@ schema:
   SCHEDULES:
     - KEY: str
       READ_EVERY: int(1,3600)
-      REPORT_EVERY: int(1,3600)
+      REPORT_EVERY: int(2,3600)
       CHANGE_ANY: bool
-      CHANGE_SIGNIFICANT: int(1,3600)
-      CHANGE_SIGNIFICANT_PERCENT: int(1,100)
+      CHANGE_SIGNIFICANT: int(0,3600)
+      CHANGE_SIGNIFICANT_PERCENT: int(0,500)
   NUMBER_ENTITY_MODE: list(auto|box|slider)
   MQTT_HOST: str
   MQTT_PORT: port

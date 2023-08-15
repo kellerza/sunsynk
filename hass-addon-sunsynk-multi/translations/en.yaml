@@ -1,14 +1,10 @@
 configuration:
-  driver:
+  DRIVER:
     name: Inverter Driver
     description: The inverter driver.
   INVERTERS:
-    - SERIAL_NR:
-        name: Inverter Config
-        description: The inverter config.
-    - HA_PREFIX:
-        name: Inverter Config - ha prefix
-        description: The inverter config.
+    name: Inverter setup
+    description: The inverter setup.
   SENSOR_DEFINITIONS:
     name: Sensor definitions
-    description: The Sensor definitions.
+    description: Supports `single-phase` or `three-phase`
