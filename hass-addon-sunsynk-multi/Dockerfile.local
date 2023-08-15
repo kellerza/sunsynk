@@ -2,7 +2,7 @@ ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 RUN pip3 install --no-cache-dir --disable-pip-version-check \
-    # sunsynk[pymodbus,umodbus]==0.4.0 \
+    # sunsynk[pymodbus,umodbus]==0.5.0 \
     mqtt-entity==0.0.4 \
     pysolarmanv5==3.0.0 \
     pyyaml==6.0.1
