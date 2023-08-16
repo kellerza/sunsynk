@@ -50,7 +50,7 @@ jobs:
       - name: Install Requirements
         run: python -m pip install --upgrade pip
       - name: Install local sunsynk package
-        run: pip install -e .[pymodbus,umodbus,tests]
+        run: pip install -e .[pymodbus,umodbus,solarman,tests]
       - name: Run Pylint
         run: pylint src
 
@@ -103,7 +103,7 @@ jobs:
       - name: Install Requirements
         run: python -m pip install --upgrade pip
       - name: Install local sunsynk package
-        run: pip install -e .[pymodbus,umodbus,tests]
+        run: pip install -e .[pymodbus,umodbus,solarman,tests]
       - name: Run tests and generate coverage report
         run: pytest --cov=./sunsynk --cov-report=xml src
       - name: Upload coverage to Codecov
