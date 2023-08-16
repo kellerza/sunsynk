@@ -1,7 +1,7 @@
 """Register state."""
 import logging
 from collections import defaultdict
-from typing import Callable, Generator, Iterable, Iterator, Optional, Sequence
+from typing import Callable, Generator, Iterable, Iterator, Optional, Sequence, cast
 
 import attr
 
@@ -81,7 +81,7 @@ class InverterState:
                 and sen not in self.historynn
             )
             if numeric:
-                self.history[sen].append(newv)
+                self.history[sen].append(cast(NumType, newv))
             else:
                 if not self.historynn[sen]:
                     self.historynn[sen].append(None)

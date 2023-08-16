@@ -3,7 +3,7 @@ import logging
 from unittest.mock import Mock
 
 import pytest
-from mqtt_entity import Device, Entity
+from mqtt_entity import Device, Entity  # type: ignore
 
 from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter, InverterOptions
 from ha_addon_sunsynk_multi.a_sensor import ASensor
@@ -30,7 +30,7 @@ def ist() -> AInverter:
     return AInverter(inv=inv, opt=InverterOptions(ha_prefix="ss1"), ss={})
 
 
-def test_create_entity(mqdev, ist):
+def test_create_entity(mqdev: Device, ist: AInverter) -> None:
     """Create entity."""
     STATE.append(ist)
 
@@ -41,7 +41,7 @@ def test_create_entity(mqdev, ist):
     assert st.name == "one"
 
     # Create the mqtt entity
-    ent: Entity = st.create_entity(mqdev, ist=ist)
+    ent: Entity = st.create_entity(dev=mqdev, ist=ist)
     entd: dict = ent.asdict
     assert entd == {
         "device": {"identifiers": ["888"]},
@@ -54,7 +54,7 @@ def test_create_entity(mqdev, ist):
     }
 
 
-def test_create_entity2(mqdev, ist):
+def test_create_entity2(mqdev: Device, ist: AInverter) -> None:
     """Create entity."""
     # Create the state
     nme = "the energy"

@@ -12,11 +12,12 @@ from sunsynk.rwsensors import (
     SystemTimeRWSensor,
     TimeRWSensor,
 )
+from sunsynk.state import InverterState
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def test_bitmask(caplog, state) -> None:
+def test_bitmask(caplog: pytest.LogCaptureFixture, state: InverterState) -> None:
     s = RWSensor(1, "", bitmask=0x1)
     with pytest.raises(NotImplementedError):
         s.value_to_reg(None, state.get)
@@ -40,7 +41,7 @@ def test_bitmask(caplog, state) -> None:
     assert "outside" in caplog.text
 
 
-def test_bitmask2(caplog, state) -> None:
+def test_bitmask2(caplog: pytest.LogCaptureFixture, state: InverterState) -> None:
     s = SwitchRWSensor(1, "", on=4, bitmask=0x4)
     state.track(s)
 
@@ -59,7 +60,7 @@ def test_bitmask2(caplog, state) -> None:
     assert reg == (0,)
 
 
-def test_number_rw(state) -> None:
+def test_number_rw(state: InverterState) -> None:
     s = NumberRWSensor(1, "s1", min=1, max=10, factor=1)
 
     assert s.dependencies == []
@@ -112,7 +113,7 @@ def test_number_rw(state) -> None:
         s.value_to_reg(123, state.get)
 
 
-def test_select_rw(caplog, state) -> None:
+def test_select_rw(caplog: pytest.LogCaptureFixture, state: InverterState) -> None:
     s = SelectRWSensor(1, "", options={1: "one", 2: "two"})
 
     assert s.reg_to_value((2,)) == "two"
@@ -133,7 +134,7 @@ def test_select_rw(caplog, state) -> None:
     assert caplog.records[-1].levelname == "WARNING"
 
 
-def test_systemtime_rw(state) -> None:
+def test_systemtime_rw(state: InverterState) -> None:
     s = SystemTimeRWSensor((1, 2, 3), "Time")
     state.track(s)
 
@@ -146,7 +147,7 @@ def test_systemtime_rw(state) -> None:
         s.value_to_reg("2023-03-01 12:34", state.get)
 
 
-def test_time_rw(state) -> None:
+def test_time_rw(state: InverterState) -> None:
     s = TimeRWSensor(60, "two", factor=0.1)
     state.track(s)
 
@@ -218,12 +219,12 @@ def test_time_rw(state) -> None:
 #     assert s.value == 1
 
 
-def test_bad_sensor(caplog) -> None:
+def test_bad_sensor(caplog: pytest.LogCaptureFixture) -> None:
     NumberRWSensor((60, 1), "two", factor=0.1, bitmask=1)
     assert "single register" in caplog.text
 
 
-def test_sensor_hash():
+def test_sensor_hash() -> None:
     ss = {Sensor(0, "S 1"), Sensor(0, "S 1")}
     assert len(ss) == 1
     ss = {Sensor(0, "S 1"), Sensor(0, "S 2")}

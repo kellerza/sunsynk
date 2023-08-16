@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 @attrs.define
-class uSunsynk(Sunsynk):  # pylint: disable=invalid-name
+class USunsynk(Sunsynk):
     """Sunsynk class using umodbus."""
 
     client: AsyncClient = None

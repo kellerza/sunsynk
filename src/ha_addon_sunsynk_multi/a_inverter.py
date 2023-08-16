@@ -20,11 +20,9 @@ _LOGGER = logging.getLogger(__name__)
 class AInverter:
     """Addon Inverter state (per inverter)."""
 
-    # pylint: disable=too-few-public-methods
-
     inv: Sunsynk = attrs.field()
     opt: InverterOptions = attrs.field()
-    ss: dict[str, ASensor] = attrs.field(factory=dict)  # pylint: disable=invalid-name
+    ss: dict[str, ASensor] = attrs.field(factory=dict)
     """Sensor states."""
 
     read_errors: int = attrs.field(default=0)

@@ -8,13 +8,13 @@ from ha_addon_sunsynk_multi.timer_schedule import Schedule
 pytestmark = pytest.mark.asyncio
 
 
-async def test_timer():
+async def test_timer() -> None:
     """Test the timer."""
     cbs: list[Callback] = []
 
     a = False
 
-    async def run1(s: int):
+    async def run1(s: int) -> None:
         nonlocal a
         a = True
 
@@ -27,7 +27,7 @@ async def test_timer():
     assert a
 
 
-async def test_schedule():
+async def test_schedule() -> None:
     """Test the schedule."""
     s = Schedule(key="x", change_any=True)
     # no history = change

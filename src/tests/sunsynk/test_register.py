@@ -1,4 +1,7 @@
-from unittest.mock import call
+"""Register."""
+# type: ignore
+from typing import cast
+from unittest.mock import MagicMock, call
 
 from sunsynk.rwsensors import NumberRWSensor, Sensor
 from sunsynk.state import InverterState
@@ -6,7 +9,7 @@ from sunsynk.state import InverterState
 
 def test_on_changed(state: InverterState) -> None:
     """Test update and on_change."""
-    onchange = state.onchange
+    onchange = cast(MagicMock, state.onchange)
 
     s1 = NumberRWSensor((1,), "S1", min=1, max=50)
     state.track(s1)

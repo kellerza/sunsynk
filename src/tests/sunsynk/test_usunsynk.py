@@ -6,19 +6,19 @@ from unittest.mock import AsyncMock
 import pytest
 
 # from sunsynk.definitions import serial
-from sunsynk.usunsynk import uSunsynk
+from sunsynk.usunsynk import USunsynk
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @pytest.mark.asyncio
-async def test_uss_schemes():
+async def test_uss_schemes() -> None:
     """Test url schemes for usunsynk.
 
     umodbus only connects on read.
     """
     for port in ("serial:///dev/usb1", "tcp://127.0.0.1:502"):
-        ss = uSunsynk(port=port)
+        ss = USunsynk(port=port)
         try:
             await ss.connect()
         except ModuleNotFoundError as err:  # not working on windows
@@ -27,14 +27,14 @@ async def test_uss_schemes():
                 raise
 
     for port in ("127.0.0.1:502", "xxx", "localhost"):
-        ss = uSunsynk(port=port)
+        ss = USunsynk(port=port)
         with pytest.raises(ValueError):
             await ss.connect()
 
 
 @pytest.mark.asyncio
-async def test_uss_sensor():
-    ss = uSunsynk(port="tcp://127.0.0.1:502")
+async def test_uss_sensor() -> None:
+    ss = USunsynk(port="tcp://127.0.0.1:502")
     await ss.connect()
 
     rhr = ss.client.read_holding_registers = AsyncMock()

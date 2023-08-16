@@ -1,4 +1,6 @@
 """Test helpers."""
+import pytest
+
 from sunsynk.helpers import (
     SSTime,
     as_num,
@@ -10,7 +12,7 @@ from sunsynk.helpers import (
 from sunsynk.sensors import Sensor
 
 
-def test_as_num(caplog) -> None:
+def test_as_num(caplog: pytest.LogCaptureFixture) -> None:
     assert as_num(None) == 0
     assert as_num(1.0) == 1.0
     assert as_num(1) == 1

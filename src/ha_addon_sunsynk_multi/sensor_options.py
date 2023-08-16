@@ -1,7 +1,6 @@
 """Parse sensors from options."""
 import logging
 import traceback
-from itertools import chain
 from typing import Generator, Iterable
 
 import attrs
@@ -25,14 +24,14 @@ DEFS = SensorDefinitions()
 class SensorOption:
     """Options for a sensor."""
 
-    # pylint: disable=too-few-public-methods
-
     sensor: Sensor = attrs.field()
     schedule: Schedule = attrs.field(init=False)
     visible: bool = attrs.field(default=True)
     startup: bool = attrs.field(default=False)
     affects: set[Sensor] = attrs.field(factory=set)
     """Affect sensors due to dependencies."""
+    first: bool = attrs.field(default=False)
+    """Only on the first inverter."""
 
     def __hash__(self) -> int:
         """Hash the sensor id."""
@@ -44,8 +43,6 @@ class SensorOptions(dict[Sensor, SensorOption]):
     """A list of sensors from the configuration."""
 
     startup: set[Sensor] = attrs.field(factory=set)
-    first: dict[Sensor, SensorOption] = attrs.field(factory=dict)
-    # pylint: disable=too-few-public-methods
 
     def init_sensors(self) -> None:
         """Parse options and get the various sensor lists."""
@@ -60,9 +57,9 @@ class SensorOptions(dict[Sensor, SensorOption]):
             self[sen] = SensorOption(sensor=sen, visible=True)
 
         # Add 1st inverter sensors
-        for sen in get_sensors(target=self.first, names=OPT.sensors_first_inverter):
+        for sen in get_sensors(target=self, names=OPT.sensors_first_inverter):
             if sen not in self:
-                self.first[sen] = SensorOption(sensor=sen, visible=True)
+                self[sen] = SensorOption(sensor=sen, visible=True, first=True)
 
         # Handle RW sensor deps
         for sopt in list(self.values()):
@@ -72,28 +69,13 @@ class SensorOptions(dict[Sensor, SensorOption]):
                     if dep not in self:
                         self[dep] = SensorOption(sensor=dep)
                     self[dep].affects.add(sopt.sensor)
-        # Handle RW sensor deps
-        for sopt in list(self.first.values()):
-            if isinstance(sopt.sensor, RWSensor):
-                for dep in sopt.sensor.dependencies:
-                    self.startup.add(dep)
-                    sopt1 = self.get(dep, self.first.get(dep, None))
-                    if not sopt1:
-                        self.first[dep] = sopt1 = SensorOption(sensor=dep)
-                    sopt1.affects.add(sopt.sensor)
 
         # assign schedules
         for sopt in self.values():
             sopt.schedule = get_schedule(sopt.sensor, SCHEDULES)
-        for sopt in self.first.values():
-            sopt.schedule = get_schedule(sopt.sensor, SCHEDULES)
 
         # Info if we have hidden sensors
-        if hidden := [
-            s.sensor.name
-            for s in chain(self.values(), self.first.values())
-            if not s.visible
-        ]:
+        if hidden := [s.sensor.name for s in self.values() if not s.visible]:
             _LOGGER.info(
                 "Added hidden sensors as other sensors depend on it: %s",
                 ", ".join(hidden),

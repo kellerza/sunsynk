@@ -8,7 +8,7 @@ ADDON_PATH = "hass-addon-sunsynk-multi"
 _LOGGER = logging.getLogger(__name__)
 
 
-def test_versions():
+def test_versions() -> None:
     """Test versions.
 
     config.json - contains the HASS addon version
@@ -37,7 +37,7 @@ def test_versions():
     assert v_setup == v_config
 
 
-def _get_version(filename, regex):
+def _get_version(filename: str, regex: str) -> str:
     txt = Path(filename).read_text()
     res = re.compile(regex).search(txt)
     assert res, f"version not found in {filename}"

@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 @attrs.define
-class pySunsynk(Sunsynk):  # pylint: disable=invalid-name
+class PySunsynk(Sunsynk):
     """Sunsync Modbus class."""
 
     client: ModbusBaseClient = None  # type:ignore

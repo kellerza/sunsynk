@@ -26,11 +26,11 @@ async def main_loop(loop: AbstractEventLoop) -> None:  # noqa
         Callback(name="discovery_info", every=5, callback=callback_discovery_info)
     )
 
-    for ist in STATE:
+    for idx, ist in enumerate(STATE):
         try:
             await ist.connect()
             await ist.hass_discover_sensors()
-            CALLBACKS.append(build_callback_schedule(ist=ist))
+            CALLBACKS.append(build_callback_schedule(ist=ist, first=idx == 0))
         except (ConnectionError, ValueError) as err:
             ist.log_bold(str(err))
             _LOGGER.critical(
@@ -44,6 +44,7 @@ async def main_loop(loop: AbstractEventLoop) -> None:  # noqa
 
 
 def main() -> None:
+    """Main."""
     init_options()
     init_driver(OPT)
     init_schedules(OPT.schedules)
@@ -51,9 +52,9 @@ def main() -> None:
     for ist in STATE:
         ist.init_sensors()
 
-    LOOP = asyncio.get_event_loop_policy().get_event_loop()
-    LOOP.run_until_complete(main_loop(LOOP))
-    LOOP.close()
+    loop = asyncio.get_event_loop_policy().get_event_loop()
+    loop.run_until_complete(main_loop(loop))
+    loop.close()
 
 
 if __name__ == "__main__":

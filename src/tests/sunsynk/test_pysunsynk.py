@@ -4,17 +4,17 @@ from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
 
 import pytest
 
-from sunsynk.pysunsynk import ModbusRtuFramer, pySunsynk
+from sunsynk.pysunsynk import ModbusRtuFramer, PySunsynk
 from sunsynk.state import InverterState
 
 
 @pytest.mark.asyncio
-async def test_pyss():
-    ss = pySunsynk()
+async def test_pyss() -> None:
+    ss = PySunsynk()
     with pytest.raises(ConnectionError):
         await ss.connect()
 
-    ss.client = None
+    ss.client = None  # type: ignore
     with pytest.raises(NotImplementedError):
         ss.port = "xcp://localhost:10"
         await ss.connect()
@@ -43,8 +43,8 @@ async def test_ss_tcp_connect(
     connect: AsyncMock,
     async_connect: PropertyMock,
     state: InverterState,
-):
-    ss = pySunsynk(port="tcp://1.1.1.1")
+) -> None:
+    ss = PySunsynk(port="tcp://1.1.1.1")
     ss.state = state
 
     # Connect raises an exception
@@ -75,8 +75,8 @@ async def test_ss_tcp_read(
     _connect: AsyncMock,
     async_connect: PropertyMock,
     state: InverterState,
-):
-    ss = pySunsynk(port="tcp://1.1.1.1")
+) -> None:
+    ss = PySunsynk(port="tcp://1.1.1.1")
     ss.state = state
 
     # Ensure we can read
@@ -108,9 +108,9 @@ async def test_ss_tcp_write(
     _connect: AsyncMock,
     async_connect: PropertyMock,
     state: InverterState,
-    caplog,
-):
-    ss = pySunsynk(port="tcp://1.1.1.1")
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    ss = PySunsynk(port="tcp://1.1.1.1")
     ss.state = state
 
     # Ensure we can write
@@ -140,8 +140,8 @@ async def test_ss_tcp_write(
 
 @pytest.mark.asyncio
 @patch("sunsynk.pysunsynk.AsyncModbusSerialClient", async_connected=PropertyMock)
-async def test_ss_serial(serialc: MagicMock, state: InverterState):
-    ss = pySunsynk(port="/dev/tty0")
+async def test_ss_serial(serialc: MagicMock, state: InverterState) -> None:
+    ss = PySunsynk(port="/dev/tty0")
     ss.state = state
 
     serialc.side_effect = TypeError

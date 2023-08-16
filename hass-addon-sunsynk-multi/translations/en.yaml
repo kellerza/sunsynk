@@ -1,10 +1,23 @@
 configuration:
   DRIVER:
     name: Inverter Driver
-    description: The inverter driver.
+    description: "
+      The inverter driver to use.
+
+      *pymodbus* is recommended when connected via a RS485/TCP adapter.
+
+      With *solarman* you have to reduce the frequency that you read (see schedules)"
   INVERTERS:
-    name: Inverter setup
-    description: The inverter setup.
+    name: Inverters
+    description: '
+      Add one item per inverter.
+
+      HA_PREFIX should be unique for each inverter.
+
+      If PORT is a blank string "" the selected DEBUG_DEVICE will be used.
+
+      Only the solarman driver requires the DONGLE_SERIAL_NUMBER.
+      '
   SENSOR_DEFINITIONS:
     name: Sensor definitions
-    description: Supports `single-phase` or `three-phase`
+    description: ""

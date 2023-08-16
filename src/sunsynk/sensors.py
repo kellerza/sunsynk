@@ -31,7 +31,7 @@ class Sensor:
     bitmask: int = attrs.field(default=0)
 
     @property
-    def id(self) -> str:  # pylint: disable=invalid-name
+    def id(self) -> str:
         """Get the sensor ID."""
         return slug(self.name)
 
@@ -69,7 +69,7 @@ class BinarySensor(Sensor):
     """Binary sensor."""
 
     off: Optional[int] = attrs.field(default=None)
-    on: Optional[int] = attrs.field(default=None)  # pylint: disable=invalid-name
+    on: Optional[int] = attrs.field(default=None)
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Reg to value for binary."""

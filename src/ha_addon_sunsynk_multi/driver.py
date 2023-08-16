@@ -54,13 +54,13 @@ def init_driver(opt: Options) -> None:
     port_prefix = ""
 
     if opt.driver == "pymodbus":
-        from sunsynk.pysunsynk import pySunsynk
+        from sunsynk.pysunsynk import PySunsynk
 
-        factory = pySunsynk
+        factory = PySunsynk
     elif opt.driver == "umodbus":
-        from sunsynk.usunsynk import uSunsynk
+        from sunsynk.usunsynk import USunsynk
 
-        factory = uSunsynk
+        factory = USunsynk
         port_prefix = "serial://"
     elif opt.driver == "solarman":
         from sunsynk.solarmansunsynk import SolarmanSunsynk

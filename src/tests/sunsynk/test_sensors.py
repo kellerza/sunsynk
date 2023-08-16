@@ -1,6 +1,6 @@
 """Sunsynk sensor tests."""
 import logging
-from typing import Sequence
+from typing import Iterable, Sequence
 
 import pytest
 
@@ -52,7 +52,7 @@ def test_binary_sensor(state: InverterState) -> None:
     assert b.reg_to_value((255,)) is True
 
 
-def test_sen():
+def test_sen() -> None:
     s = Sensor(0, "S 1")
     a = [s]
     assert a[0] == s
@@ -73,7 +73,7 @@ def test_sen():
         assert s == 0
 
 
-def test_sensor_hash():
+def test_sensor_hash() -> None:
     ss = {Sensor(0, "S 1"), Sensor(0, "S 1")}
     assert len(ss) == 1
     ss = {Sensor(0, "S 1"), Sensor(0, "S 2")}
@@ -96,7 +96,7 @@ def test_group() -> None:
     g = list(group_sensors(sen))
     assert g == [[10, 11, 12], [20]]
 
-    assert len(list(group_sensors(None))) == 0
+    assert len(list(group_sensors(None))) == 0  # type: ignore
 
 
 def test_group_max_size() -> None:
@@ -126,7 +126,7 @@ def test_all_groups() -> None:
     # assert grplen[-1:] == [1]
 
 
-def waste(groups) -> Sequence[int]:
+def waste(groups: Iterable[list[int]]) -> Sequence[int]:
     """Calculate amount of unused registers in this grouping."""
     return [sum(b - a for a, b in zip(g[:-1], g[1:])) for g in groups]
 
@@ -151,7 +151,7 @@ def test_ids() -> None:
 
 
 def test_other_sensors() -> None:
-    s = TempSensor(1, "", "", 0.1)
+    s: Sensor = TempSensor(1, "", "", 0.1)
     assert s.reg_to_value((1000,)) == 0
 
     s = SDStatusSensor(1, "", "")

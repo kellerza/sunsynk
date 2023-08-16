@@ -18,27 +18,28 @@ _LOGGER = logging.getLogger(__name__)
 class SensorRun:
     """Sensor run schedule."""
 
-    # pylint: disable=too-few-public-methods
-
     next_run: int = attrs.field(default=0)
     sensors: set[SensorOption] = attrs.field(factory=set)
 
 
-def build_callback_schedule(ist: AInverter) -> Callback:
+def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
     """Build schedules."""
     read_s: dict[int, SensorRun] = defaultdict(SensorRun)
     report_s: dict[int, SensorRun] = defaultdict(SensorRun)
 
     for sopt in SOPT.values():
-        # if not sen.visible:
-        #     continue
+        if not first and sopt.first:
+            continue
         if sopt.schedule.read_every:
             read_s[sopt.schedule.read_every].sensors.add(sopt)
+        if not sopt.visible:
+            continue
         if sopt.schedule.report_every:
             report_s[sopt.schedule.report_every].sensors.add(sopt)
 
     async def callback_sensor(seconds: int) -> None:
         """read or write sensors"""
+        # pylint: disable=too-many-branches
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
         # add all read items

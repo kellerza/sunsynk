@@ -3,6 +3,7 @@ import sys
 from importlib import import_module as _import_module
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import pytest
 
@@ -13,7 +14,7 @@ import pytest
 MARKERS = ("mqtt",)
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser: Any) -> None:
     """Support command line marks."""
     for mrk in MARKERS:
         parser.addoption(
@@ -21,13 +22,13 @@ def pytest_addoption(parser):
         )
 
 
-def pytest_configure(config):
+def pytest_configure(config: Any) -> None:
     """Enable configuration."""
     for mrk in MARKERS:
         config.addinivalue_line("markers", f"{mrk}: include the {mrk} tests")
 
 
-def pytest_collection_modifyitems(config, items):
+def pytest_collection_modifyitems(config: Any, items: list) -> None:
     for mrk in MARKERS:
         if not config.getoption(f"--{mrk}"):
             skip_mrk = pytest.mark.skip(reason=f"need --{mrk} option to run")
@@ -36,7 +37,7 @@ def pytest_collection_modifyitems(config, items):
                     item.add_marker(skip_mrk)
 
 
-def import_module(mod_name, folder: str) -> ModuleType:
+def import_module(mod_name: str, folder: str) -> ModuleType:
     """import_module."""
     here = Path(os.getcwd()) / folder
     sys.path.insert(0, str(here))

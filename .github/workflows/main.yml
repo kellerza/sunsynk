@@ -52,7 +52,7 @@ jobs:
       - name: Install local sunsynk package
         run: pip install -e .[pymodbus,umodbus,tests]
       - name: Run Pylint
-        run: pylint sunsynk hass-addon-sunsynk-multi
+        run: pylint src
 
   mypy:
     name: Check mypy
@@ -66,7 +66,7 @@ jobs:
         run: pip install mypy .
       - name: Run mypy
         continue-on-error: true
-        run: mypy --install-types --non-interactive sunsynk/ hass-addon-sunsynk-multi/
+        run: mypy --install-types --non-interactive src/
 
   pydocstyle:
     name: Check pydocstyle

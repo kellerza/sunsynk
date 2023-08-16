@@ -15,7 +15,7 @@ pytestmark = pytest.mark.asyncio
 _LOGGER = logging.getLogger(__name__)
 
 
-async def test_ss_NotImplemented():
+async def test_ss_NotImplemented() -> None:
     ss = Sunsynk()
     with pytest.raises(NotImplementedError):
         await ss.connect()
@@ -28,8 +28,11 @@ async def test_ss_NotImplemented():
 @patch("sunsynk.Sunsynk.read_holding_registers")
 @patch("sunsynk.Sunsynk.write_register")
 async def test_ss_write_sensor(
-    wreg: MagicMock, rhr: MagicMock, state: InverterState, caplog
-):
+    wreg: MagicMock,
+    rhr: MagicMock,
+    state: InverterState,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     ss = Sunsynk()
     ss.state = state
 
@@ -60,8 +63,11 @@ async def test_ss_write_sensor(
 @patch("sunsynk.Sunsynk.read_holding_registers")
 @patch("sunsynk.Sunsynk.write_register")
 async def test_ss_write_sensor_bm(
-    wreg: MagicMock, rhr: MagicMock, state: InverterState, caplog
-):
+    wreg: MagicMock,
+    rhr: MagicMock,
+    state: InverterState,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     ss = Sunsynk()
     ss.state = state
 
@@ -86,7 +92,7 @@ async def test_ss_write_sensor_bm(
 
 
 @patch("sunsynk.Sunsynk.read_holding_registers")
-async def test_ss_read_sensors(rhr: MagicMock, state: InverterState):
+async def test_ss_read_sensors(rhr: MagicMock, state: InverterState) -> None:
     ss = Sunsynk()
     ss.state = state
     sen = NumberRWSensor((1,), "", min=1, max=10)

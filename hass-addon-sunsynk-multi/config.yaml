@@ -29,13 +29,10 @@ options:
       PORT: "tcp://homeassistant.local:502"
   SENSOR_DEFINITIONS: single-phase
   SENSORS:
-    - total_pv_energy
-    - total_battery_charge
-    - total_battery_discharge
-    - total_grid_export
-    - total_grid_import
-    - battery_soc
-  SENSORS_FIRST_INVERTER: []
+    - energy_management
+    - power_flow_card
+  SENSORS_FIRST_INVERTER:
+    - settings
   MANUFACTURER: Sunsynk
   READ_ALLOW_GAP: 5
   READ_SENSORS_BATCH_SIZE: 60

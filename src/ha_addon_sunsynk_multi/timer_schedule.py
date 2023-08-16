@@ -18,8 +18,6 @@ SCH_NO_UNIT = "no_unit"
 class Schedule:
     """A schehdule."""
 
-    # pylint: disable=too-few-public-methods
-
     key: str = attrs.field(default="", converter=slug, on_setattr=attrs.setters.convert)
     """Key can be: the sensor name, class (i.e. RWSensor) and unit."""
 
@@ -102,6 +100,7 @@ SCHEDULES = {
 
 
 def init_schedules(schedules: list[Schedule]) -> None:
+    """Initialize the schedules."""
     updated: set[str] = set()
 
     for sch in schedules:

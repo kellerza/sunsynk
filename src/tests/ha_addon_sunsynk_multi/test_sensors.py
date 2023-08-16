@@ -6,7 +6,7 @@ from ha_addon_sunsynk_multi.sensor_options import OPT, SOPT
 _LOGGER = logging.getLogger(__name__)
 
 
-def test_opt1():
+def test_opt1() -> None:
     """Sesnors."""
     SOPT.init_sensors()
     assert sorted(s.id for s in SOPT.startup) == ["rated_power", "serial"]

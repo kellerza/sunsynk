@@ -1,5 +1,4 @@
 """Addon options."""
-# pylint: disable=too-few-public-methods
 from __future__ import annotations
 
 import logging
@@ -98,7 +97,7 @@ def init_options() -> None:
     else:
         _LOGGER.info("Local test mode")
         localf = Path(".local.yaml").resolve(True)
-        opt = yaml.safe_load(localf.read_text())
+        opt = yaml.safe_load(localf.read_text(encoding="utf-8"))
 
     unmarshal(OPT, opt)
 

@@ -17,7 +17,7 @@ RETRY_ATTEMPTS = 5
 
 
 @attrs.define
-class SolarmanSunsynk(Sunsynk):  # pylint: disable=invalid-name
+class SolarmanSunsynk(Sunsynk):
     """Sunsynk class using PySolarmanV5."""
 
     client: PySolarmanV5Async = None

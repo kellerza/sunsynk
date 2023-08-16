@@ -47,7 +47,7 @@ MQTT = MQTTClient()
 
 
 @attrs.define(slots=True)
-class ASensor:  # pylint: disable=too-few-public-methods
+class ASensor:
     """Addon Sensor state & entity."""
 
     opt: SensorOption = attrs.field()
@@ -99,6 +99,7 @@ class ASensor:  # pylint: disable=too-few-public-methods
         self, dev: Union[Device, Entity, None], *, ist: AInverter
     ) -> Entity:
         """Create HASS entity."""
+        # pylint: disable=too-many-branches
         if self.hidden:
             raise ValueError(f"Do not create hidden entities! {self}")
         if self.opt.sensor is None:
@@ -153,26 +154,29 @@ class ASensor:  # pylint: disable=too-few-public-methods
                 mode=OPT.number_entity_mode,
                 step=0.1 if sensor.factor < 1 else 1,
             )
+            return self.entity
 
-        elif isinstance(sensor, SwitchRWSensor):
+        if isinstance(sensor, SwitchRWSensor):
             self.entity = SwitchEntity(**ent)
+            return self.entity
 
-        elif isinstance(sensor, SelectRWSensor):
+        if isinstance(sensor, SelectRWSensor):
             self.entity = SelectEntity(
                 **ent,
                 options=sensor.available_values(),
             )
+            return self.entity
 
-        elif isinstance(sensor, TimeRWSensor):
+        if isinstance(sensor, TimeRWSensor):
             ent["icon"] = "mdi:clock"
             self.entity = SelectEntity(
                 **ent,
                 options=sensor.available_values(15, ist.get_state),
             )
+            return self.entity
 
-        else:
-            RWEntity._path = "text"  # pylint: disable=protected-access
-            self.entity = RWEntity(**ent)
+        RWEntity._path = "text"  # pylint: disable=protected-access
+        self.entity = RWEntity(**ent)
         return self.entity
 
 
