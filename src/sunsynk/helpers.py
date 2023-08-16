@@ -100,8 +100,11 @@ class SSTime:
     @str_value.setter
     def str_value(self, value: str) -> None:
         """Parse a string in hh:mm format."""
-        (hours, _, minutes) = value.partition(":")
-        self.minutes = int(hours) * 60 + int(minutes)
+        try:
+            (hours, _, minutes) = value.partition(":")
+            self.minutes = int(hours) * 60 + int(minutes)
+        except ValueError:
+            _LOGGER.warning("Invalid time string: %s (expected hh:mm)", value)
 
 
 def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
