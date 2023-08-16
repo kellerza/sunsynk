@@ -64,8 +64,8 @@ async def run_callbacks(callbacks: list[Callback]) -> None:
             if cb.cbstat_slip:
                 cb.cbstat_slip.append(slip_s)
 
-            cb_call = cb.callback(now)
-            if cb_call is None:  # Not a generator function!
+            if not cb.coroutinecb:
+                cb.callback(now)
                 cb.next_run = now + cb.every
                 continue
 
@@ -75,7 +75,7 @@ async def run_callbacks(callbacks: list[Callback]) -> None:
                 continue
 
             cb.next_run = now + cb.every
-            cb.task = asyncio.create_task(cb.wrap_callback(cb_call))
+            cb.task = asyncio.create_task(cb.wrap_callback(cb.callback(now)))
 
 
 CALLBACKS: list[Callback] = []
