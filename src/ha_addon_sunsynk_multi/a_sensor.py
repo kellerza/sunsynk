@@ -78,7 +78,7 @@ class ASensor:
     async def publish(self, val: ValType) -> None:
         """Set the value through MQTT."""
         if self.entity is None:
-            _LOGGER.error("no entity %s", self.opt.sensor)
+            _LOGGER.error("no entity %s", self.name)
             return
         if val is None or (self._last == val and self.retain):
             return

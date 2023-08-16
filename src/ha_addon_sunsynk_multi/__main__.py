@@ -30,7 +30,8 @@ async def main_loop(loop: AbstractEventLoop) -> None:  # noqa
         try:
             await ist.connect()
             await ist.hass_discover_sensors()
-            CALLBACKS.append(build_callback_schedule(ist=ist, first=idx == 0))
+            ist.cb = build_callback_schedule(ist=ist, first=idx == 0)
+            CALLBACKS.append(ist.cb)
         except (ConnectionError, ValueError) as err:
             ist.log_bold(str(err))
             _LOGGER.critical(

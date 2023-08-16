@@ -30,7 +30,7 @@ async def test_pyss() -> None:
         assert ss.client is not None
 
 
-P_ASYNC_CONNECTED = "sunsynk.pysunsynk.AsyncModbusTcpClient.async_connected"
+P_ASYNC_CONNECTED = "sunsynk.pysunsynk.AsyncModbusTcpClient.connected"
 P_CONNECT = "sunsynk.pysunsynk.AsyncModbusTcpClient.connect"
 P_READ_HR = "sunsynk.pysunsynk.AsyncModbusTcpClient.read_holding_registers"
 P_WRITE_REGS = "sunsynk.pysunsynk.AsyncModbusTcpClient.write_registers"
@@ -63,7 +63,7 @@ async def test_ss_tcp_connect(
     async_connect.side_effect = [0, 1, 888]
     connect.side_effect = None
     await ss.connect()
-    assert ss.client.async_connected == 888
+    assert ss.client.connected == 888
 
 
 @pytest.mark.asyncio

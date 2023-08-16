@@ -5,7 +5,7 @@ from typing import Any, Sequence
 from urllib.parse import urlparse
 
 import attrs
-from pymodbus import version
+from pymodbus import __version__ as version
 from pymodbus.client import (
     AsyncModbusSerialClient,
     AsyncModbusTcpClient,
@@ -39,12 +39,10 @@ class PySunsynk(Sunsynk):
                     "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
                 )
 
-            _LOGGER.info(
-                "PyModbus %s %s: %s:%s", version.short(), url.scheme, host, port
-            )
+            _LOGGER.info("PyModbus %s %s: %s:%s", version, url.scheme, host, port)
             return AsyncModbusTcpClient(host=host, port=port, **opt)
 
-        _LOGGER.info("PyModbus %s Serial: %s", version.short(), self.port)
+        _LOGGER.info("PyModbus %s Serial: %s", version, self.port)
         return AsyncModbusSerialClient(
             port=self.port,
             baudrate=self.baudrate,
@@ -58,10 +56,10 @@ class PySunsynk(Sunsynk):
         if not self.client:
             self.client = self._new_client()
 
-        if not self.client.async_connected:
+        if not self.client.connected:
             await self.client.connect()
 
-        if not self.client.async_connected:
+        if not self.client.connected:
             raise ConnectionError
 
     async def write_register(self, *, address: int, value: int) -> bool:

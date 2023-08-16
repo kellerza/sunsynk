@@ -2,14 +2,18 @@
 import asyncio
 import logging
 import traceback
-from typing import Callable, Iterable, Union
+from typing import Callable, Iterable, Optional, Union
 
 import attrs
-from mqtt_entity import Device  # type: ignore[import]
+from mqtt_entity import Device, SensorEntity  # type: ignore[import]
+from mqtt_entity.helpers import set_attributes  # type: ignore[import]
+from mqtt_entity.utils import tostr  # type: ignore[import]
 
-from ha_addon_sunsynk_multi.a_sensor import MQTT, ASensor, TimeoutState
+from ha_addon_sunsynk_multi.a_sensor import MQTT, SS_TOPIC, ASensor
 from ha_addon_sunsynk_multi.options import OPT, InverterOptions
-from ha_addon_sunsynk_multi.sensor_options import DEFS, SOPT, SensorOption
+from ha_addon_sunsynk_multi.sensor_options import DEFS, SOPT
+from ha_addon_sunsynk_multi.timer_callback import Callback
+from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sunsynk import Sensor, Sunsynk
 
@@ -20,15 +24,22 @@ _LOGGER = logging.getLogger(__name__)
 class AInverter:
     """Addon Inverter state (per inverter)."""
 
+    # pylint:disable=too-many-instance-attributes
+
     inv: Sunsynk = attrs.field()
     opt: InverterOptions = attrs.field()
     ss: dict[str, ASensor] = attrs.field(factory=dict)
     """Sensor states."""
 
-    read_errors: int = attrs.field(default=0)
+    read_errors: int = attrs.field(default=0, init=False)
 
     write_queue: dict[Sensor, Union[str, int, float]] = attrs.field(factory=dict)
     """Write queue for RWSensors."""
+
+    # Reporting stats
+    entity_timeout: SensorEntity = attrs.field(init=False)
+    entity_cbstats: SensorEntity = attrs.field(init=False)
+    cb: Callback = attrs.field(init=False)
 
     @property
     def get_state(self) -> Callable:
@@ -133,13 +144,13 @@ class AInverter:
         ents = [
             s.create_entity(dev, ist=self) for s in self.ss.values() if not s.hidden
         ]
+        ents.extend(self.create_stats_entities(dev))
         await MQTT.connect(OPT)
         await MQTT.publish_discovery_info(entities=ents)
         return True
 
     def init_sensors(self) -> None:
         """Initialize the sensors."""
-
         # Track startup sensors
         for sen in SOPT.startup:
             self.inv.state.track(sen)
@@ -150,13 +161,81 @@ class AInverter:
             self.inv.state.track(sen)
             self.ss[sen.id] = ASensor(opt=sopt, retain=isinstance(sen, RWSensor))
 
-        self.ss["timeout"] = TimeoutState(
-            entity=None, opt=SensorOption(sensor=DEF_TIMEOUT, visible=True)
+    def create_stats_entities(self, dev: Device) -> list[SensorEntity]:
+        """Create entities."""
+        name = "timeout"
+        self.entity_timeout = SensorEntity(
+            name="RS485 timeout",
+            unique_id=f"{dev.id}_{name}",
+            state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
+            entity_category="config",
+            device=dev,
+            discovery_extra={
+                "object_id": slug(f"{self.opt.ha_prefix} {name}".strip()),
+            },
         )
-        # , istate=istate)
+        name = "cb_stats"
+        self.entity_cbstats = SensorEntity(
+            name="Callback stats",
+            unique_id=f"{dev.id}_{name}",
+            state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
+            json_attributes_topic=f"{SS_TOPIC}/{dev.id}/{name}_attr",
+            entity_category="config",
+            device=dev,
+            discovery_extra={
+                "object_id": slug(f"{self.opt.ha_prefix} {name}".strip()),
+            },
+        )
+        return [self.entity_cbstats, self.entity_timeout]
+
+    async def publish_stats(self) -> None:
+        """Publish stats."""
+        await MQTT.connect(OPT)
+        await MQTT.publish(
+            topic=self.entity_timeout.state_topic,
+            payload=tostr(self.inv.timeouts),
+            retain=False,
+        )
+
+        # calc cbstats
+        attr = stats(
+            alist=self.cb.cbstat_time,
+            compare=self.cb.every,
+            keys={"len0": "call_count", "len": "longcall_count", "avg": "longcall_avg"},
+        )
+        attr2 = stats(
+            alist=self.cb.cbstat_slip,
+            compare=0,
+            keys={"len0": "call_count2", "len": "slip_count", "avg": "slip_avg"},
+        )
+        attr.update(attr2)
+        if attr.get("call_count") == attr.get("call_count2"):
+            attr.pop("call_count2")
+
+        val = attr.pop("longcall_avg", 0)
+
+        await MQTT.publish(
+            topic=self.entity_cbstats.state_topic,
+            payload=tostr(val),
+            retain=False,
+        )
+        await set_attributes(attr, entity=self.entity_cbstats, client=MQTT)
 
 
 STATE: list[AInverter] = []
 
 
-DEF_TIMEOUT = Sensor((), "timeout")
+def stats(
+    *, alist: Optional[list[int] | list[float]], compare: int, keys: dict[str, str]
+) -> dict[str, int | float]:
+    """Calculate state for a series."""
+    if alist is None:
+        return {}
+    while len(alist) > 100:
+        alist.pop(0)
+    subset = [t for t in alist if t > compare]
+    return {
+        keys.get("len0", "_len0"): len(alist),
+        keys.get("len", "_len"): len(subset),
+        keys.get("avg", "_avg"): sum(subset) / len(subset) if subset else 0,
+    }

@@ -100,4 +100,6 @@ def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
         name=f"read {ist.opt.ha_prefix}",
         every=1,
         callback=callback_sensor,
+        cbstat_time=[],  # Keep record of the execution time
+        cbstat_slip=[],
     )

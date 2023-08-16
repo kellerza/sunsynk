@@ -16,9 +16,10 @@ xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt src %~2\sunsynk\src\
 echo # Modify Dockerfile
 cp %~1\Dockerfile %~1\Dockerfile.local
 rem Comment out installing sunsynk from pypi
-sed -i 's/    sunsynk/    # sunsynk/'  %~1\Dockerfile.local
+sed -i 's/RUN pip3/# RUN pip3/' %~1\Dockerfile.local
 rem Uncomment local test commands
-sed -i 's/#! //' %~1\Dockerfile.local
+sed -i -E 's/#! (# )?//' %~1\Dockerfile.local
+rem sed -i 's/#! //' %~1\Dockerfile.local
 xcopy /Y %~1\Dockerfile.local %~2\Dockerfile
 
 
