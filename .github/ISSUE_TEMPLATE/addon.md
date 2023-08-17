@@ -19,14 +19,24 @@ A clear and concise description of what you expected to happen.
 
 ### Your environment
 
-- Home Assistant version: 2022.2.x
+- Home Assistant version: 2023.8.x
 - Addon version:
 - Inverter make: Sunsynk/Deye/Sol-Ark/...
 - Inverter Model: \_\_
 - Inverter Firmware: \_\_
 
+### You configuration
+
+```yaml
+
+paste config in the block surrounded by 3x backticks
+
+```
+
 ### Logs
 
 ```txt
+
 paste logs in 3x backticks...
+
 ```
