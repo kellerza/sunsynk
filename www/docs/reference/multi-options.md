@@ -2,7 +2,7 @@
 
 ## Driver
 
-The `DRIVER` can be **umodbus** or **pymodbus**.
+The `DRIVER` can be **umodbus** or **pymodbus** or **solarman**.
 
 The `READ_SENSOR_BATCH_SIZE` option allows you to customize how many registers may be read in a single request. Devices like the USR only allows 8 registers to be read. When using mbusd this can be much higher.
 
@@ -12,10 +12,6 @@ The `READ_ALLOW_GAP` option allows you to set the amount of gap between requeste
 
 The `INVERTERS` option contains a list of inverters
 
-::: warning
-Currently only a single inverter is supported!
-:::
-
 The following options are required per inverter:
 
 - `SERIAL_NR`
@@ -24,7 +20,11 @@ The following options are required per inverter:
 
   The add-on will not run if the expected/configured serial number is not found.
 
-  > This must be a string. So if your serial is a number only surround it with quotes `'1000'`
+  ::: tip
+
+  This must be a string. So if your serial is a number only surround it with quotes `'1000'`
+
+  :::
 
 - `HA_PREFIX`
 
@@ -34,50 +34,62 @@ The following options are required per inverter:
 
   The Modbus Server ID is a number typically 1. Might be different in multi-inverter setups.
 
+- `DONGLE_SERIAL_NUMBER`
+
+  Only required for the **solarman** driver.
+
 - `PORT`
 
-  The port for RS485 communications, which can be either:
+  The port used for communications. Format depends on the driver. See [Port](#port)
 
-  - A tcp port of a Modbus TCP server. Example:
+### Port
 
-      ```yaml
-      INVERTERS:
-        - PORT: tcp://homeassistant.local:502
-      ```
+The port for RS485 communications, which can be either:
 
-      ::: tip
-      This repository contains a [mbusd](../guide/mbusd) TCP gateway add-on that can be used for this purpose.
+- A `tcp://` port toward a Modbus TCP gateway. Either mbusd or one of the hardware options
 
-      If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
-      :::
+  ```yaml
+  INVERTERS:
+    - PORT: tcp://homeassistant.local:502
+  ```
 
-  - A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
+  A `serial-tcp://` port is also suported and can be used depending on your gateway.
 
-      ::: tip
-      only umodbus requires the `serial://` prefix
-      :::
+  ::: tip
+  This repository contains a [mbusd](../guide/mbusd) TCP gateway add-on that can be used for this purpose.
 
-      Example:
+  If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
+  :::
 
-      ```yaml
-      DRIVER: pymodbus
-      INVERTERS:
-        - PORT: /dev/ttyUSB0
-      ```
+- A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
 
-      or
+  ```yaml
+  DRIVER: pymodbus
+  INVERTERS:
+    - PORT: /dev/ttyUSB0
+  ```
 
-      ```yaml
-      DRIVER: umodbus
-      INVERTERS:
-        - PORT: serial:///dev/ttyUSB0
-      ```
+  ::: tip
+  umodbus requires a `serial://` prefix
 
-    - An empty string: `PORT = ""`
+  ```yaml
+  DRIVER: umodbus
+  INVERTERS:
+    - PORT: serial:///dev/ttyUSB0
+  ```
 
-      The serial port under `DEBUG_DEVICE` will be used (located at the bottom of you config)*
+    :::
 
-    - umodbus support an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
+- For the first inverter in the list, you can use an empty string
+
+  ```yaml
+  INVERTERS:
+    - PORT: ""
+  ```
+
+  The serial port under `DEBUG_DEVICE` will be used (located at the bottom of you config)*
+
+- umodbus support an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
 
 ## Sensors
 
@@ -92,6 +104,8 @@ The `SENSORS_FIRST_INVERTER` accepts a list of sensors that will only be applied
 Refer to [Schedules](./schedules)
 
 ## Home Assistant Discovery options
+
+The per-inverter `HA_PREFIX` will be used for the Device (the Inverter) name and the prefix to all the entity Ids in Home Assistant
 
 The `MANUFACTURER` option allows you to rename the inverter manufacturer that will be displayed on the Home Assistant device. It does not have to be Sunsynk ;-)
 

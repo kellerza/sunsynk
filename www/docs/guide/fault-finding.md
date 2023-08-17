@@ -7,7 +7,7 @@ The addon follows the following process:
 
     If this read is successful, it will display the serial number
 
-    ````txt
+    ```txt
     INFO    ############################################################
     INFO                Inverter serial number '*1234'
     INFO    ############################################################
