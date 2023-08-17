@@ -12,7 +12,7 @@ DISCLAIMER: Use at your own risk! Especially when writing any settings.
 
 An add-on to receive Sunsynk Inverter Values and push them to Home Assistant through MQTT.
 
-It supports Home Assistant auto-discovery for the sensors and modifiers on reading intervals.
+It supports Home Assistant auto-discovery for the sensors and flexible scheduling when to read and when to report.
 
 ![HASS Energy management](https://github.com/kellerza/sunsynk/raw/main/images/energy.png)
 
@@ -21,14 +21,16 @@ For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to 
 ## Alternatives
 
 There are several alternative ways to access your inverter data. These include:
+
 - ESP32
 - Node-RED
 - Solar Assistant (a commercial application)
 
 I have posted [why](https://powerforum.co.za/topic/16136-home-assistant-inverter-integration-options/?do=findComment&comment=146782) I believe this addon is the easiest and most flexible way to do this:
+
 - Reconfigure your inverter settings with the Home Assistant UI (dropdowns & sliders) or automations
 - Automatic updates in HASS & maintained by a couple of community members
-- Data filters to reduce the number of updates & writes to low-cost SD cards, but still have 1 or 2 second automation response to big changes in load
+- Data filters to reduce the number of updates & writes to low-cost SD cards, but still have 1 or 2 second automation response to big changes in load **Now based on schedules**
 - Various options to connect to the inverter wireless or wired (preferred, since it updates every second)
 
 While a wired setup is more work, the addon reads several sensors each second and personally I would rather do this over a wired gateway/cable.

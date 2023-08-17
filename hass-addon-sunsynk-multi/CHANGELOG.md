@@ -1,5 +1,13 @@
 # Changelog
 
+## **2023.08.15-0.5.0**
+
+**Read the PR text & docs BEFORE you upgrade!**
+
+Please read the description here: <https://github.com/kellerza/sunsynk/pull/168>
+
+Especially if you use sensor modifiers. See <https://kellerza.github.io/sunsynk/reference/schedules>
+
 ## **2023.08.06-0.4.0**
 
 - Added the pysolarman driver

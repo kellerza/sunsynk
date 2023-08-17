@@ -10,14 +10,17 @@ echo # Copy '%~1' to '%~2'
 xcopy /Y %~1 %~2
 xcopy /Y setup.* %~2\sunsynk\
 xcopy /Y README.md %~2\sunsynk\
-xcopy /Y sunsynk %~2\sunsynk\sunsynk\
+xcopy /Y /S %~1\rootfs %~2\rootfs\
+xcopy /Y /S %~1\translations %~2\translations\
+xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt src %~2\sunsynk\src\
 echo # Modify Dockerfile
-cp %~1\Dockerfile Dockerfile.tmp
-sed -i '/    sunsynk/d'  Dockerfile.tmp
-cat Dockerfile.tmp | grep sunsynk
-sed -i 's/# RUN pip3 install -e/RUN pip3 install -e/' Dockerfile.tmp
-xcopy /Y Dockerfile.tmp %~2\Dockerfile
-rm Dockerfile.tmp
+cp %~1\Dockerfile %~1\Dockerfile.local
+rem Comment out installing sunsynk from pypi
+sed -i 's/RUN pip3/# RUN pip3/' %~1\Dockerfile.local
+rem Uncomment local test commands
+sed -i -E 's/#! (# )?//' %~1\Dockerfile.local
+rem sed -i 's/#! //' %~1\Dockerfile.local
+xcopy /Y %~1\Dockerfile.local %~2\Dockerfile
 
 
 cp %~1\config.yaml config.tmp

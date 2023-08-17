@@ -1,18 +1,13 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-RUN pip3 install --no-cache-dir --disable-pip-version-check \
-    sunsynk[pymodbus,umodbus]==0.4.0 \
-    mqtt-entity==0.0.3 \
-    pysolarmanv5==3.0.0 \
-    pyyaml==6.0.1
+RUN pip3 install sunsynk[pymodbus,umodbus,solarman]==0.5.0 --no-cache-dir --disable-pip-version-check
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY . ./
+# Install sunsynk from local source
+#! COPY sunsynk sunsynk
+#! RUN pip3 install -e sunsynk[pymodbus,umodbus,solarman] --no-cache-dir --disable-pip-version-check
 
-# local test - install sunsynk
-# RUN pip3 install -e sunsynk[pymodbus,umodbus]
+COPY rootfs /
 
-#CMD ["tail", "-f", "/dev/null"]
-CMD ["./run.py"]
+#! RUN chmod a+x /etc/services.d/sunsynk/run
+#! RUN chmod a+x /etc/services.d/sunsynk/finish

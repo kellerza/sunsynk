@@ -1,0 +1,8 @@
+#!/command/execlineb -P
+# ==============================================================================
+# Start the example service
+# s6-overlay docs: https://github.com/just-containers/s6-overlay
+# Addon example: https://github.com/home-assistant/addons-example
+# ==============================================================================
+
+python3 -m ha_addon_sunsynk_multi
