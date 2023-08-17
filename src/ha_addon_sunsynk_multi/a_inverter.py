@@ -2,7 +2,7 @@
 import asyncio
 import logging
 import traceback
-from typing import Callable, Iterable, Optional, Union
+from typing import Callable, Iterable, Union
 
 import attrs
 from mqtt_entity import Device, SensorEntity  # type: ignore[import]
@@ -188,7 +188,7 @@ class AInverter:
         )
         return [self.entity_cbstats, self.entity_timeout]
 
-    async def publish_stats(self) -> None:
+    async def publish_stats(self, period: int) -> None:
         """Publish stats."""
         await MQTT.connect(OPT)
         await MQTT.publish(
@@ -197,45 +197,40 @@ class AInverter:
             retain=False,
         )
 
-        # calc cbstats
-        attr = stats(
-            alist=self.cb.cbstat_time,
-            compare=self.cb.every,
-            keys={"len0": "call_count", "len": "longcall_count", "avg": "longcall_avg"},
-        )
-        attr2 = stats(
-            alist=self.cb.cbstat_slip,
-            compare=0,
-            keys={"len0": "call_count2", "len": "slip_count", "avg": "slip_avg"},
-        )
-        attr.update(attr2)
-        if attr.get("call_count") == attr.get("call_count2"):
-            attr.pop("call_count2")
-
-        val = attr.pop("longcall_avg", 0)
-
+        # calc stats
+        lc_avg, lc_i = stats(self.cb.stat_time, include=lambda x: x > self.cb.every)
+        slip_a, slip_i = stats(self.cb.stat_slip)
+        attr = {
+            "period": f"{period}s",
+            "long_calls": lc_i,
+            "long_calls_avg": f"{lc_avg}s",
+            "slips": slip_i,
+            "slips_avg": f"{slip_a}s",
+            "busy": self.cb.stat_busy,
+        }
         await MQTT.publish(
             topic=self.entity_cbstats.state_topic,
-            payload=tostr(val),
+            payload=tostr(len(self.cb.stat_time)),
             retain=False,
         )
         await set_attributes(attr, entity=self.entity_cbstats, client=MQTT)
+
+        self.cb.stat_busy = 0
+        self.cb.stat_time.clear()
+        self.cb.stat_slip.clear()
 
 
 STATE: list[AInverter] = []
 
 
 def stats(
-    *, alist: Optional[list[int] | list[float]], compare: int, keys: dict[str, str]
-) -> dict[str, int | float]:
-    """Calculate state for a series."""
-    if alist is None:
-        return {}
-    while len(alist) > 100:
-        alist.pop(0)
-    subset = [t for t in alist if t > compare]
-    return {
-        keys.get("len0", "_len0"): len(alist),
-        keys.get("len", "_len"): len(subset),
-        keys.get("avg", "_avg"): sum(subset) / len(subset) if subset else 0,
-    }
+    samples: list[int] | list[float],
+    *,
+    include: Callable[[int | float], bool] = bool,
+) -> tuple[str, str]:
+    """Calculate average for the samples."""
+    subset = [t for t in samples if include(t)]
+    ssinfo = f"{len(subset)}/{len(samples)}"
+    if subset:
+        return (f"{sum(subset) / len(subset):.2f}", ssinfo)
+    return ("0", ssinfo)

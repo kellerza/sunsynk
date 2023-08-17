@@ -24,27 +24,24 @@ class Callback:
 
     task: Optional[asyncio.Task] = attrs.field(default=None, init=False)
     next_run: int = attrs.field(default=0, init=False)
-    coroutinecb = attrs.field(init=False)
     """Next run in seconds."""
 
-    cbstat_time: Optional[list[float]] = attrs.field(default=None)
+    keep_stats: bool = attrs.field(default=False)
+    stat_time: list[float] = attrs.field(factory=list)
     """Execution time history."""
-    cbstat_slip: Optional[list[int]] = attrs.field(default=None)
+    stat_slip: list[int] = attrs.field(factory=list)
     """Seconds that execution slipped."""
-    cbstat_busy: int = attrs.field(default=0)
+    stat_busy: int = attrs.field(default=0)
     """Number of times the callback was still busy."""
-
-    def __attrs_post_init__(self) -> None:
-        self.coroutinecb = asyncio.iscoroutinefunction(self.callback)
 
     async def wrap_callback(self, cb_call: Awaitable[None]) -> None:
         """Catch unhandled exceptions."""
         try:
             t_0 = time.perf_counter()
             await cb_call
-            if self.cbstat_time is not None:
+            if self.keep_stats:
                 t_1 = time.perf_counter()
-                self.cbstat_time.append(t_1 - t_0)
+                self.stat_time.append(t_1 - t_0)
         except Exception as exc:  # pylint: disable=broad-except
             _LOGGER.error("Exception in %s: %s", self.name, exc)
 
@@ -61,17 +58,17 @@ async def run_callbacks(callbacks: list[Callback]) -> None:
             if not (should or slip_s):
                 continue
 
-            if cb.cbstat_slip:
-                cb.cbstat_slip.append(slip_s)
+            if cb.keep_stats:
+                cb.stat_slip.append(slip_s)
 
-            if not cb.coroutinecb:
+            if not asyncio.iscoroutinefunction(cb.callback):
                 cb.callback(now)
                 cb.next_run = now + cb.every
                 continue
 
             # schedule a new run, if the previous is done
             if cb.task and not cb.task.done():
-                cb.cbstat_busy += 1
+                cb.stat_busy += 1
                 continue
 
             cb.next_run = now + cb.every

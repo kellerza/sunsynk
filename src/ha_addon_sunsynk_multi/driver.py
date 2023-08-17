@@ -29,9 +29,9 @@ async def callback_discovery_info(now: int) -> None:
         HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
 
     # Publish statistics
-    if now % 30 == 0:
+    if now % 120 == 0:
         for ist in STATE:
-            await ist.publish_stats()
+            await ist.publish_stats(120)
 
 
 def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
