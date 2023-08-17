@@ -94,7 +94,7 @@ export default defineConfig({
         text: "Reference",
         items: [
           { text: "Addon options", link: "/reference/multi-options" },
-          { text: "Modifiers", link: "/reference/sensor-modifiers" },
+          { text: "Schedules", link: "/reference/schedules" },
           { text: "Sensors", link: "/reference/definitions" },
           { text: "Custom sensors", link: "/reference/mysensors" },
         ],
