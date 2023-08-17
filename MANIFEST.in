@@ -1,4 +1,3 @@
 include LICENSE README.md
-graft sunsynk
-graft tests
+graft src
 recursive-exclude * *.py[co]
