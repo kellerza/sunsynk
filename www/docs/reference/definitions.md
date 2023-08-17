@@ -88,21 +88,27 @@ SENSORS_FIRST_INVERTER:
 ```yaml
 prog1_capacity
 prog1_charge
+prog1_power
 prog1_time
 prog2_capacity
 prog2_charge
+prog2_power
 prog2_time
 prog3_capacity
 prog3_charge
+prog3_power
 prog3_time
 prog4_capacity
 prog4_charge
+prog4_power
 prog4_time
 prog5_capacity
 prog5_charge
+prog5_power
 prog5_time
 prog6_capacity
 prog6_charge
+prog6_power
 prog6_time
 ```
 

@@ -1,7 +1,7 @@
-const sm = require("sitemap-ts");
+import {resolveOptions, generateSitemap} from "sitemap-ts";
 
 function buildEnd() {
-  const opt = sm.resolveOptions({
+  const opt = resolveOptions({
     hostname: "https://kellerza.github.io/",
     basePath: "/sunsynk",
     outDir: "docs/.vitepress/dist",
@@ -9,7 +9,7 @@ function buildEnd() {
     readable: true,
   });
 
-  sm.generateSitemap(opt);
+  generateSitemap(opt);
 }
 
 buildEnd();

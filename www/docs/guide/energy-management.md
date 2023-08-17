@@ -13,7 +13,7 @@ SENSORS:
   - energy_management
 ```
 
-or
+::: details Included sensors
 
 ```yaml
 SENSORS:
@@ -23,6 +23,8 @@ SENSORS:
   - total_battery_charge
   - total_battery_discharge
 ```
+
+:::
 
 Once you included these sensors in your addon configuration, they should be available in Home Assistant and you can add them to the Energy Management configuration by following this link:
 [![Open your Home Assistant instance and show your Energy configuration panel.](https://my.home-assistant.io/badges/config_energy.svg)](https://my.home-assistant.io/redirect/config_energy/)

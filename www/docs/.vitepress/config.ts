@@ -1,4 +1,5 @@
-import { defineConfig } from "vitepress";
+import { defineConfig } from "vitepress"
+import imsize from "markdown-it-imsize"
 
 export default defineConfig({
   lang: "en-US",
@@ -80,8 +81,12 @@ export default defineConfig({
             link: "/guide/getting-started",
             items: [
               {
-                text: "Deployment options",
+                text: "Deployment Options",
                 link: "/guide/deployment-options",
+              },
+              {
+                text: "Adaptors & Wiring",
+                link: "/guide/wiring",
               },
               { text: "Fault Finding", link: "/guide/fault-finding" },
               { text: "Standalone Deployment", link: "/guide/standalone-deployment" },
@@ -103,12 +108,10 @@ export default defineConfig({
         text: "Examples",
         items: [
           { text: "Overview", link: "/examples/overview" },
-          { text: "Lovelace",
+          { text: "Visualize Power",
             link: "/examples/lovelace",
-            items: [
-              { text: "Settings", link: "/examples/lovelace-settings" },
-            ],
           },
+          { text: "Settings", link: "/examples/lovelace-settings" },
           { text: "Automations", link: "/examples/a-mode" },
           { text: "Templates", link: "/examples/templates" },
         ],
@@ -137,7 +140,7 @@ export default defineConfig({
   },
   markdown: {
     config: md => {
-      md.use(require('markdown-it-imsize'))
+      md.use(imsize)
     },
   },
 });

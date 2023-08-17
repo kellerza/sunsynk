@@ -19,23 +19,22 @@ hero:
       link: /reference/multi-options
 
 features:
-- icon: 🌐
+- icon: "📊"
   title: Energy Management
   details: |
     Enable the Home Assistant Energy Management feature with data from your inverter.
-- icon: "{{ }}"
-  title: Visualise Power flow
+- icon: "⚡"
+  title: Visualise Power Flow
   details: |
-    Visualise the immediate power flow in your system
+    Visualise the immediate power flow in your system. Reaction time as fast as 1 second.
 - icon: "⚙️"
   title: Inverter Settings
   details: |
     Update System Mode Settings remotely. Something not possible with the system mode? Automation gives you ultimate control.
-
-- icon: 🎨
+- icon: "🌐"
   title: Any Inverter
   details: |
-    Sunsynk, Deye, Turbo-Energy, single/three-phase. Not a problem. With custom sensors you can integrate any inverter with ModBus.
+    Sunsynk, Deye, Turbo-Energy, single/three-phase. Multiple inverters. RS485 or Solarman. Custom sensors for flexibility.
 
 
 
