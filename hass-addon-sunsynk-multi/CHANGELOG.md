@@ -1,5 +1,9 @@
 # Changelog
 
+## **2023.08.17-0.5.3**
+
+Minor fixes
+
 ## **2023.08.17-0.5.2**
 
 **Read the PR text & docs BEFORE you upgrade!**

@@ -1,15 +1,18 @@
 # Fault finding
 
 The addon follows the following process:
+
 1. Load all your sensor definitions. The logs will show if you use any unknown or deprecated sensors
 2. Read the Inverter's serial number (and rated power)
 
-  If this read is successful, it will display the serial number
-  ```
-  INFO    ############################################################
-  INFO                Inverter serial number '2105x0x0x0'
-  INFO    ############################################################
-  ```
+    If this read is successful, it will display the serial number
+
+    ```log
+    INFO    ############################################################
+    INFO                Inverter serial number '*1234'
+    INFO    ############################################################
+    ```
+
 3. Connect to the MQQT server
 4. Publish the discovery data for Home Assistant, and also remove discovery data if required
 

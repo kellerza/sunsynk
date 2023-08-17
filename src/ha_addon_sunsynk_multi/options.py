@@ -19,12 +19,13 @@ def unmarshal(target: object, json: dict) -> object:
         _LOGGER.error("invalid options %s", json)
     _lst = getattr(target, "_LISTS", {})
     for key, val in json.items():
-        if key.lower() in _lst:
-            newcls = _lst[key.lower()]
+        key = fixkey(key)
+        if key in _lst:
+            newcls = _lst[key]
             newv = [unmarshal(newcls(), item) for item in val]
-            setattr(target, key.lower(), newv)
+            setattr(target, key, newv)
             continue
-        setattr(target, key.lower(), val)
+        setattr(target, key, val)
     return target
 
 
@@ -37,19 +38,6 @@ class InverterOptions:
     ha_prefix: str = ""
     serial_nr: str = ""
     dongle_serial_number: str = ""
-
-    # @classmethod
-    # def factory(cls, opt: dict) -> InverterOptions:
-    #     """Create a class from the options."""
-    #     modbus_id = int(opt.pop("MODBUS_ID"))
-    #     iopt = InverterOptions(**{k.lower(): v for k, v in opt.items()})
-    #     iopt.modbus_id = modbus_id
-
-    #     if "_" in iopt.serial_nr:
-    #         _LOGGER.warning(
-    #             "The serial number contains an underscore '_' - used for testing"
-    #         )
-    #     return iopt
 
 
 @attrs.define(slots=True)
@@ -119,3 +107,16 @@ def init_options() -> None:
 
 #     def filter(self, record):
 #         return any(f.filter(record) for f in self.whitelist)
+
+
+def fixkey(key: str) -> str:
+    """Return the correct lowercase key.
+
+    Replacements for old keys.
+    """
+    replace = {
+        "change_significant": "change_by",
+        "change_significant_percent": "change_percent",
+    }
+    key = key.lower()
+    return replace.get(key.lower(), key)

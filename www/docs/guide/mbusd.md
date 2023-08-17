@@ -6,4 +6,4 @@ That is a TCP-Server which acts as a RTU-Client to get data from Modbus RTU-Serv
 
 When you add the sunsynk hass repository it includes a mbusd addon
 
-https://github.com/kellerza/sunsynk/tree/main/hass-addon-mbusd
+<https://github.com/kellerza/sunsynk/tree/main/hass-addon-mbusd>

@@ -4,11 +4,9 @@
 
 The `DRIVER` can be **umodbus** or **pymodbus**.
 
-The preferred driver is **umodbus** as it is more resilient.
-
-The only reason why **pymodbus** is still available is to test the addon under Windows (it is *not* recommended to run it with pymodbus)
-
 The `READ_SENSOR_BATCH_SIZE` option allows you to customize how many registers may be read in a single request. Devices like the USR only allows 8 registers to be read. When using mbusd this can be much higher.
+
+The `READ_ALLOW_GAP` option allows you to set the amount of gap between requested registers. In some cases it makes more sense to read a couple of additional registers in 1 or two requests, than trying to read exactly what you are looking for in multiple requests.
 
 ## Inverters
 
@@ -40,7 +38,8 @@ The following options are required per inverter:
 
   The port for RS485 communications, which can be either:
 
-    - A tcp port of a Modbus TCP server. Example:
+  - A tcp port of a Modbus TCP server. Example:
+
       ```yaml
       INVERTERS:
         - PORT: tcp://homeassistant.local:502
@@ -52,19 +51,22 @@ The following options are required per inverter:
       If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
       :::
 
-    - A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
+  - A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
 
       ::: tip
       only umodbus requires the `serial://` prefix
       :::
 
       Example:
+
       ```yaml
       DRIVER: pymodbus
       INVERTERS:
         - PORT: /dev/ttyUSB0
       ```
+
       or
+
       ```yaml
       DRIVER: umodbus
       INVERTERS:
@@ -77,14 +79,17 @@ The following options are required per inverter:
 
     - umodbus support an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
 
-
 ## Sensors
 
 The `SENSOR_DEFINITION` option allows you to select between `single-phase` and `three-phase` sensor definitions.
 
 The `SENSORS` accepts a list of sensors to poll. Refer to the [single](./definitions) and [three](./definitions3ph) docs
 
-~~The `SENSORS_FIRST_INVERTER` accepts a list of sensors that will only be applied to the first inverter~~
+The `SENSORS_FIRST_INVERTER` accepts a list of sensors that will only be applied to the first inverter
+
+## Schedules
+
+Refer to [Schedules](./schedules)
 
 ## Home Assistant Discovery options
 

@@ -31,8 +31,8 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
 
    ![Deployment Option Standalone](https://github.com/kellerza/sunsynk/raw/main/images/deploy-standalone.png)
 
-
 ## RS485 wiring
+
 RS485 requires a twisted pair, this works with CAT5 network cable and RJ-45 connectors.
 
 If the RJ-45 connector on the inverter side is crimped according to [T568A/T568B](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring), you can use the pinout in the following table. If the two outermost colors you see on the connector are brown and green, it is probably T568A; if they are brown and orange, it is probably T568B.
@@ -60,10 +60,10 @@ If the RJ-45 connector on the inverter side is crimped according to [T568A/T568B
    ![Cable](../images/usb-rs485-cable.webp =360x360)
 
 Other tested adaptors
+
 - USB-to-RS485 3 Pin adaptor [example](https://www.robotics.org.za/RS485-3P)
 
   Includes a GND and TVS diode and USB self recovery options.
-
 
 - 2-Wire USB-to-RS485 [example](https://www.robotics.org.za/RS485-MINI)
 
@@ -77,7 +77,7 @@ Other tested adaptors
    This is a tested Wifi-to-RS485 gateway, which also includes a GND.
 
    Requires `READ_SENSORS_BATCH_SIZE` set to 8 or less
- 
+
 2. USR-W610 Wifi-to-RS485
 
    This is a tested Wifi-to-RS485 gateway. Usually significantly cheaper than the W630, however it does not include a GND.

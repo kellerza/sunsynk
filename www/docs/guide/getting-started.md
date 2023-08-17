@@ -12,7 +12,6 @@
 
    ![Install Sunsynk Addon](https://github.com/kellerza/sunsynk/raw/main/images/addon-install.png)
 
-
 ## Available addons
 
 ### mbusd gateway
@@ -38,7 +37,6 @@ Full support for writable sensors
 ::: danger
 This is an older version of the addon and does not suport all the features & sensors mentioned on this website
 :::
-
 
 ### Sunsynk Inverter Add-on
 

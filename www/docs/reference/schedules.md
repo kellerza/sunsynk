@@ -31,11 +31,10 @@ A schedule entry is defined with the following fields:
 |----------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | KEY                        | The sensor name, unit or one of the special keys. See [keys](#keys)                                                   |
 | READ_EVERY                 | Read the sensor every x seconds.                                                                                      |
-| READ_ONCE                  | Read the sensor only once. It is not expected to change.                                                              |
 | REPORT_EVERY               | Report the sensor value to MQTT every x seconds.                                                                      |
-| CHANGE_ANY                 | Report the value immediately upon any change. Useful for configuration and text based sensors.                        |
-| CHANGE_SIGNIFICANT         | Report the sensor when there is a significant change. Example. Report power immedialtely when the power changes by x. |
-| CHANGE_SIGNIFICANT_PERCENT | Report when there is an x percent change in the sensor value.                                                         |
+| CHANGE_ANY                 | Report the value immediately upon any change. Useful for configuration and text based sensors. (true/false)                        |
+| CHANGE_BY         | Report the sensor when there is a significant change. Example. Report power immedialtely when the power changes by x. |
+| CHANGE_PERCENT | Report when there is an x percent change in the sensor value.                                                         |
 
 ## Keys
 

@@ -21,18 +21,22 @@ class Schedule:
     key: str = attrs.field(default="", converter=slug, on_setattr=attrs.setters.convert)
     """Key can be: the sensor name, class (i.e. RWSensor) and unit."""
 
-    read_once: bool = attrs.field(default=False)
     read_every: int = attrs.field(default=0)
     report_every: int = attrs.field(default=0)
-    change_significant: float = attrs.field(default=0)
+    change_by: float = attrs.field(default=0)
     """Significant change over last samples."""
-    change_significant_percent: int = attrs.field(default=0)
+    change_percent: int = attrs.field(default=0)
     """Significant change percent over last samples."""
     change_any: bool = attrs.field(default=False)
     """Report any change to the last. Only use the last sample."""
 
     # def __attrs_post_init__(self):
     #     self.key = slug(self.key)
+
+    @property
+    def read_once(self) -> bool:
+        """Read once."""
+        return self.read_every == 0
 
     def significant_change(self, history: list[NumType], last: NumType) -> bool:
         """Check if there is a significant change according to the schedule."""
@@ -42,11 +46,11 @@ class Schedule:
         if not history:
             return False
         avg = sum(history) / len(history)
-        if self.change_significant:
-            if abs(last - avg) >= self.change_significant:
+        if self.change_by:
+            if abs(last - avg) >= self.change_by:
                 return True
-        if self.change_significant_percent:
-            chg = abs(avg * self.change_significant_percent / 100)
+        if self.change_percent:
+            chg = abs(avg * self.change_percent / 100)
             if last > avg + chg or last < avg - chg:
                 return True
         return False
@@ -79,18 +83,12 @@ SCHEDULES = {
     for s in (
         # Specific sensors
         Schedule(key="date_time", read_every=60, report_every=60, change_any=True),
-        Schedule(key="rated_power", read_once=True),
-        Schedule(key="serial", read_once=True),
+        Schedule(key="rated_power", read_every=0),
+        Schedule(key="serial", read_every=0),
         # Configuration (RWSensors) used if no name found
         Schedule(key=SCH_RWSENSOR, read_every=5, report_every=5 * 60, change_any=True),
         # Based on unit
-        Schedule(
-            key=WATT,
-            read_every=5,
-            report_every=60,
-            change_significant=80,  # 80 Watts
-            change_significant_percent=30,
-        ),
+        Schedule(key=WATT, read_every=5, report_every=60, change_by=80),
         Schedule(key=KWH, read_every=5 * 60, report_every=5 * 60),
         # Units present, or not present
         Schedule(key=SCH_ANY_UNIT, read_every=15, report_every=5 * 60),

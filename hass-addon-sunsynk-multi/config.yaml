@@ -1,6 +1,6 @@
 ---
 name: Sunsynk/Deye Inverter Add-on (multi)
-version: 2023.08.17-0.5.2
+version: 2023.08.17-0.5.3
 slug: hass-addon-sunsynk-multi
 description: Add-on for a Sunsynk/Deye branded Inverter
 startup: services
@@ -41,8 +41,8 @@ options:
       READ_EVERY: 5
       REPORT_EVERY: 60
       CHANGE_ANY: false
-      CHANGE_SIGNIFICANT: 80
-      CHANGE_SIGNIFICANT_PERCENT: 0
+      CHANGE_BY: 80
+      CHANGE_PERCENT: 0
   NUMBER_ENTITY_MODE: "auto"
   MQTT_HOST: core-mosquitto
   MQTT_PORT: 1883
@@ -70,9 +70,9 @@ schema:
     - KEY: str
       READ_EVERY: int(1,3600)
       REPORT_EVERY: int(2,3600)
-      CHANGE_ANY: bool
-      CHANGE_SIGNIFICANT: int(0,3600)
-      CHANGE_SIGNIFICANT_PERCENT: int(0,500)
+      CHANGE_ANY: bool?
+      CHANGE_BY: int(0,3600)?
+      CHANGE_PERCENT: int(0,500)?
   NUMBER_ENTITY_MODE: list(auto|box|slider)
   MQTT_HOST: str
   MQTT_PORT: port

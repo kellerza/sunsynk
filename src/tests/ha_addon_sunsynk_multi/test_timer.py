@@ -34,7 +34,7 @@ async def test_schedule() -> None:
     assert s.significant_change([], 12)
     assert s.significant_change([12], 12) is False
 
-    s = Schedule(key="x", change_significant=80)
+    s = Schedule(key="x", change_by=80)
     # lower
     assert s.significant_change([100], 90) is False
     assert s.significant_change([100], 21) is False
@@ -46,7 +46,7 @@ async def test_schedule() -> None:
     # no history = no change
     assert s.significant_change([], 90) is False
 
-    s = Schedule(key="x", change_significant_percent=10)
+    s = Schedule(key="x", change_percent=10)
     assert s.significant_change([100], 91) is False
     assert s.significant_change([100], 109) is False
     assert s.significant_change([100], 120)

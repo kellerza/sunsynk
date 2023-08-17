@@ -27,7 +27,7 @@ SENSORS += Sensor(178, "My Custom Sensor", WATT, -1)
 
 Once you have a file, you will see it in your addon's startup log:
 
-```
+```log
 2023-03-19 16:25:00,156 INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
 2023-03-19 16:25:00,158 INFO      custom sensors: my_custom_sensor
 ```
@@ -36,7 +36,7 @@ Once you have a file, you will see it in your addon's startup log:
 
 Once the sensor is available, you can add it to your configuration:
 
-```
+```yaml
 SENSORS:
  - my_custom_sensor
 ```
@@ -50,6 +50,7 @@ Write is only partially implemented in the example below
 :::
 
 ::: details
+
 ```python
 import attr
 import re
@@ -94,4 +95,5 @@ class SystemTimeRWSensor(RWSensor):
 
 SENSORS += SystemTimeRWSensor((22, 23, 24), "Date", unit="")
 ```
+
 :::

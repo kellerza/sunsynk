@@ -1,0 +1,1 @@
+mypy src & pylint src && pytest src

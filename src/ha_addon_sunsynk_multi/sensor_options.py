@@ -105,6 +105,7 @@ def import_definitions() -> None:
         traceback.print_exc()
     if mysensors:
         DEFS.all.update(mysensors)
+        SENSOR_GROUPS["mysensors"] = list(mysensors)
 
 
 SOPT = SensorOptions()
