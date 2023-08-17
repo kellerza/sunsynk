@@ -101,17 +101,17 @@ class AInverter:
 
         if not await self.read_sensors(sensors=SOPT.startup):
             raise ConnectionError(
-                f"No response on the Modbus interface {self.inv.port}, try checking the "
-                "wiring to the Inverter, the USB-to-RS485 converter, etc"
+                f"No response on the Modbus interface {self.inv.port}, "
+                "see https://kellerza.github.io/sunsynk/guide/fault-finding"
             )
 
         expected_ser = self.opt.serial_nr.replace("_", "")
-        if expected_ser != self.inv.state[DEFS.serial]:
+        actual_ser = str(self.inv.state[DEFS.serial])
+        if expected_ser != actual_ser:
             raise ValueError(
-                f"Serial number mismatch. Expected {expected_ser}, got {self.inv.state[DEFS.serial]}"
+                f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
             )
-
-        self.log_bold(f"Inverter serial number '{self.inv.state[DEFS.serial]}'")
+        self.log_bold(f"Inverter serial number '****{actual_ser[-4:]}'")
 
     @property
     def rated_power(self) -> float:
