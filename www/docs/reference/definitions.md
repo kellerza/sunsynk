@@ -10,7 +10,7 @@ Sensors groups will allow you to add several sensors with a single sensor entry.
 
 ### Energy management
 
-These sensors are mostly related to energy or kWh and required for the Home Assistant [Energy Management](/sunsynk/guide/energy-management)
+These sensors are mostly related to energy or kWh and required for the Home Assistant [Energy Management](../guide/energy-management)
 
 ```yaml
 SENSORS:
@@ -31,7 +31,7 @@ total_pv_energy
 
 ### Power flow card: `power_flow_card`
 
-These are all sensors used by the [Power Flow Card](/sunsynk/examples/lovelace#sunsynk-power-flow-card)
+These are all sensors used by the [Power Flow Card](../examples/lovelace#sunsynk-power-flow-card)
 
 ```yaml
 SENSORS:
@@ -74,7 +74,7 @@ use_timer
 
 ### Settings
 
-Sensors used for changing the System Operating Mode - see [here](/sunsynk/examples/lovelace-settings)
+Sensors used for changing the System Operating Mode - see [here](../examples/lovelace-settings)
 
 These can be under `SENSORS` or `SENSORS_FIRST_INVERTER`
 

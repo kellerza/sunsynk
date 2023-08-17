@@ -27,7 +27,7 @@ SENSORS += Sensor(178, "My Custom Sensor", WATT, -1)
 
 Once you have a file, you will see it in your addon's startup log:
 
-```log
+````txt
 2023-03-19 16:25:00,156 INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
 2023-03-19 16:25:00,158 INFO      custom sensors: my_custom_sensor
 ```
