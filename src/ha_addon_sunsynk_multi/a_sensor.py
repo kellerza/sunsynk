@@ -127,10 +127,7 @@ class ASensor:
         }
 
         if not isinstance(sensor, RWSensor):
-            if sensor.id == "grid_connected":
-                ent["device_class"] = "problem"
-            else:
-                ent["device_class"] = hass_device_class(unit=sensor.unit)
+            ent["device_class"] = hass_device_class(unit=sensor.unit)
             if isinstance(sensor, BinarySensor):
                 self.entity = BinarySensorEntity(**ent)
             else:
