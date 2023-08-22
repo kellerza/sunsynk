@@ -153,7 +153,7 @@ These definitions apply to the single phase inverters. In the Home Assistant add
 SENSOR_DEFINITIONS: single-phase
 ```
 
-These definitions can be viewed online at <https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions.py>
+These definitions can be viewed online at <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions.py>
 
 ## Three Phase Inverter Sensor Definitions
 
@@ -163,4 +163,4 @@ These definitions apply to the three phase inverters. In the Home Assistant addo
 SENSOR_DEFINITIONS: three-phase
 ```
 
-These definitions can be viewed online at <https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions3ph.py>
+These definitions can be viewed online at <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions3ph.py>

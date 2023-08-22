@@ -1,47 +1,31 @@
 """States."""
 import logging
-from unittest.mock import Mock
 
-import pytest
 from mqtt_entity import Device, Entity  # type: ignore
 
-from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter, InverterOptions
+from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter
 from ha_addon_sunsynk_multi.a_sensor import ASensor
 from ha_addon_sunsynk_multi.sensor_options import SensorOption
 from sunsynk.helpers import slug
 from sunsynk.sensors import Sensor
 
+from .conftest import NOSCHEDULE
+
 _LOGGER = logging.getLogger(__name__)
 
 
-@pytest.fixture
-def mqdev() -> Device:
-    """Return an MQTT device and ensure there is a HA prefix for create_entities."""
-    dev = Device(["888"])
-    # SENSOR_PREFIX[dev.id] = "ss1"
-    return dev
-
-
-@pytest.fixture
-def ist() -> AInverter:
-    """Return an MQTT device and ensure there is a HA prefix for create_entities."""
-    inv = Mock()
-    inv.state = {}
-    return AInverter(inv=inv, opt=InverterOptions(ha_prefix="ss1"), ss={})
-
-
-def test_create_entity(mqdev: Device, ist: AInverter) -> None:
+def test_create_entity(mqtt_device: Device, ist: AInverter) -> None:
     """Create entity."""
     STATE.append(ist)
 
     st = ASensor(
-        opt=SensorOption(sensor=Sensor(1, "one", "W")),
+        opt=SensorOption(sensor=Sensor(1, "one", "W"), schedule=NOSCHEDULE),
     )
 
     assert st.name == "one"
 
     # Create the mqtt entity
-    ent: Entity = st.create_entity(dev=mqdev, ist=ist)
+    ent: Entity = st.create_entity(dev=mqtt_device, ist=ist)
     entd: dict = ent.asdict
     assert entd == {
         "device": {"identifiers": ["888"]},
@@ -54,7 +38,7 @@ def test_create_entity(mqdev: Device, ist: AInverter) -> None:
     }
 
 
-def test_create_entity2(mqdev: Device, ist: AInverter) -> None:
+def test_create_entity2(mqtt_device: Device, ist: AInverter) -> None:
     """Create entity."""
     # Create the state
     nme = "the energy"
@@ -62,13 +46,10 @@ def test_create_entity2(mqdev: Device, ist: AInverter) -> None:
 
     STATE.append(ist)
 
-    st = ASensor(
-        opt=SensorOption(sensor=Sensor(1, nme, "kWh")),
-        # istate=0,
-    )
+    st = ASensor(opt=SensorOption(sensor=Sensor(1, nme, "kWh"), schedule=NOSCHEDULE))
 
     # Create the mqtt entity
-    ent: Entity = st.create_entity(mqdev, ist=ist)
+    ent: Entity = st.create_entity(mqtt_device, ist=ist)
     entd: dict = ent.asdict
     assert entd == {
         "device": {"identifiers": ["888"]},

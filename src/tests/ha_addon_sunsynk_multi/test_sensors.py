@@ -7,7 +7,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def test_opt1() -> None:
-    """Sesnors."""
+    """Sensors."""
     SOPT.init_sensors()
     assert sorted(s.id for s in SOPT.startup) == ["rated_power", "serial"]
     assert sorted(s.id for s in SOPT) == []

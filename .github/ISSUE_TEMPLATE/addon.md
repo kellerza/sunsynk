@@ -20,10 +20,16 @@ A clear and concise description of what you expected to happen.
 ### Your environment
 
 - Home Assistant version: 2023.8.x
-- Addon version:
-- Inverter make: Sunsynk/Deye/Sol-Ark/...
-- Inverter Model: \_\_
-- Inverter Firmware: \_\_
+- Addon:
+  - Name: sunsynk-multi
+  - Version: 2023-08-17
+- Inverter:
+  - Make: Sunsynk/Deye/Sol-Ark/...
+  - Model: \_\_
+  - Firmware: \_\_
+- Adaptor details:
+  - RS485/RS232/solarman
+  - RS485/RS232 brand
 
 ### You configuration
 
@@ -35,7 +41,7 @@ paste config in the block surrounded by 3x backticks
 
 ### Logs
 
-```txt
+```logs
 
 paste logs in 3x backticks...
 

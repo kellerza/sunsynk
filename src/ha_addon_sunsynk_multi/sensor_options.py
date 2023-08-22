@@ -25,7 +25,7 @@ class SensorOption:
     """Options for a sensor."""
 
     sensor: Sensor = attrs.field()
-    schedule: Schedule = attrs.field(init=False)
+    schedule: Schedule = attrs.field()
     visible: bool = attrs.field(default=True)
     startup: bool = attrs.field(default=False)
     affects: set[Sensor] = attrs.field(factory=set)
@@ -40,7 +40,7 @@ class SensorOption:
 
 @attrs.define(slots=True)
 class SensorOptions(dict[Sensor, SensorOption]):
-    """A list of sensors from the configuration."""
+    """A dict of sensors from the configuration."""
 
     startup: set[Sensor] = attrs.field(factory=set)
 
@@ -48,18 +48,28 @@ class SensorOptions(dict[Sensor, SensorOption]):
         """Parse options and get the various sensor lists."""
         if not DEFS.all:
             import_definitions()
+        self.clear()
 
         # Add startup sensors
         self.startup = {DEFS.rated_power, DEFS.serial}
 
         # Add sensors fron config
         for sen in get_sensors(target=self, names=OPT.sensors):
-            self[sen] = SensorOption(sensor=sen, visible=True)
+            self[sen] = SensorOption(
+                sensor=sen,
+                schedule=get_schedule(sen, SCHEDULES),
+                visible=True,
+            )
 
         # Add 1st inverter sensors
         for sen in get_sensors(target=self, names=OPT.sensors_first_inverter):
             if sen not in self:
-                self[sen] = SensorOption(sensor=sen, visible=True, first=True)
+                self[sen] = SensorOption(
+                    sensor=sen,
+                    schedule=get_schedule(sen, SCHEDULES),
+                    visible=True,
+                    first=True,
+                )
 
         # Handle RW sensor deps
         for sopt in list(self.values()):
@@ -67,12 +77,11 @@ class SensorOptions(dict[Sensor, SensorOption]):
                 for dep in sopt.sensor.dependencies:
                     self.startup.add(dep)
                     if dep not in self:
-                        self[dep] = SensorOption(sensor=dep)
+                        self[dep] = SensorOption(
+                            sensor=dep,
+                            schedule=get_schedule(dep, SCHEDULES),
+                        )
                     self[dep].affects.add(sopt.sensor)
-
-        # assign schedules
-        for sopt in self.values():
-            sopt.schedule = get_schedule(sopt.sensor, SCHEDULES)
 
         # Info if we have hidden sensors
         if hidden := [s.sensor.name for s in self.values() if not s.visible]:
@@ -109,7 +118,7 @@ def import_definitions() -> None:
 
 
 SOPT = SensorOptions()
-"""All the options related to sensors."""
+"""A dict of all options related to sensors."""
 
 SENSOR_GROUPS = {
     # https://kellerza.github.io/sunsynk/guide/energy-management

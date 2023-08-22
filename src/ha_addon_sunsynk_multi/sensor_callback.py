@@ -2,8 +2,11 @@
 import asyncio
 import logging
 from collections import defaultdict
+from textwrap import wrap
+from typing import Iterable
 
 import attrs
+from prettytable import PrettyTable
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.a_sensor import ASensor, SensorOption
@@ -22,7 +25,7 @@ class SensorRun:
     sensors: set[SensorOption] = attrs.field(factory=set)
 
 
-def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
+def _build_schedules(first: bool) -> tuple[dict[int, SensorRun], dict[int, SensorRun]]:
     """Build schedules."""
     read_s: dict[int, SensorRun] = defaultdict(SensorRun)
     report_s: dict[int, SensorRun] = defaultdict(SensorRun)
@@ -37,6 +40,43 @@ def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
         if sopt.schedule.report_every:
             report_s[sopt.schedule.report_every].sensors.add(sopt)
 
+    _print_table(
+        data=(
+            (e, ", ".join(s.sensor.id for s in r.sensors)) for e, r in read_s.items()
+        ),
+        field_names=["s", "Sensors"],
+        title="Read every" + (" (first)" if first else ""),
+    )
+
+    _print_table(
+        data=(
+            (e, ", ".join(s.sensor.id for s in r.sensors)) for e, r in report_s.items()
+        ),
+        field_names=["s", "Sensors"],
+        title="Report every" + (" (first)" if first else ""),
+    )
+
+    return read_s, report_s
+
+
+def _print_table(
+    data: Iterable[tuple[int, str]], field_names: list[str], title: str
+) -> None:
+    """Print a table."""
+    tab = PrettyTable()
+    tab.field_names = field_names
+    for key, val in sorted(data, key=lambda x: x[0]):
+        wrapped = wrap(str(val) or "", 80) or [""]
+        tab.add_row([key, wrapped[0]])
+        for more in wrapped[1:]:
+            tab.add_row(["", more])
+    _LOGGER.info("%s\n%s", title, tab.get_string())
+
+
+def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
+    """Build the callback schedule."""
+    read_s, report_s = _build_schedules(first)
+
     async def callback_sensor(seconds: int) -> None:
         """read or write sensors"""
         # pylint: disable=too-many-branches
@@ -46,7 +86,7 @@ def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
         for sec, srun in read_s.items():
             if seconds % sec == 0 or srun.next_run < seconds:
                 sensors_to_read.update(s.sensor for s in srun.sensors)
-            srun.next_run = seconds + sec
+                srun.next_run = seconds + sec
         # perform the read
         if sensors_to_read:
             _LOGGER.debug("Read: %s", len(sensors_to_read))
@@ -56,7 +96,6 @@ def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
                 retry_single=False,
             ):
                 sensors_to_publish.update(ist.ss[s.id] for s in sensors_to_read)
-            sensors_to_read.clear()
 
         # Flush pending writes
         while ist.write_queue:

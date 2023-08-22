@@ -1,5 +1,11 @@
 # Changelog
 
+## **2023.08.22-0.5.4**
+
+- Minor change to schedules (might address #172 + test coverage)
+- Better logging of Schedules & selected sensors
+- Update to documentation & links
+
 ## **2023.08.17-0.5.3**
 
 Minor fixes

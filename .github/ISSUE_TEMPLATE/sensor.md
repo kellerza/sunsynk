@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Existing sensor definitions can be found [here](https://github.com/kellerza/sunsynk/blob/main/sunsynk/definitions.py)
+Existing sensor definitions can be found [here](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions.py)
 
 ### You Inverter
 
@@ -21,6 +21,8 @@ Any suggestions on proposed registers is welcome.
 
 ### Logs (if applicable)
 
-```
+```logs
+
 paste logs in 3x backticks...
+
 ```
