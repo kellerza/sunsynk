@@ -11,7 +11,7 @@ from prettytable import PrettyTable
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.a_sensor import ASensor, SensorOption
 from ha_addon_sunsynk_multi.sensor_options import SOPT
-from ha_addon_sunsynk_multi.timer_callback import Callback
+from ha_addon_sunsynk_multi.timer_callback import AsyncCallback
 from sunsynk import RWSensor, Sensor
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,10 +25,11 @@ class SensorRun:
     sensors: set[SensorOption] = attrs.field(factory=set)
 
 
-def _build_schedules(first: bool) -> tuple[dict[int, SensorRun], dict[int, SensorRun]]:
+def _build_schedules(idx: int) -> tuple[dict[int, SensorRun], dict[int, SensorRun]]:
     """Build schedules."""
     read_s: dict[int, SensorRun] = defaultdict(SensorRun)
     report_s: dict[int, SensorRun] = defaultdict(SensorRun)
+    first = idx == 0
 
     for sopt in SOPT.values():
         if not first and sopt.first:
@@ -39,6 +40,9 @@ def _build_schedules(first: bool) -> tuple[dict[int, SensorRun], dict[int, Senso
             continue
         if sopt.schedule.report_every:
             report_s[sopt.schedule.report_every].sensors.add(sopt)
+
+    if idx > 1:
+        return read_s, report_s
 
     _print_table(
         data=(
@@ -73,9 +77,9 @@ def _print_table(
     _LOGGER.info("%s\n%s", title, tab.get_string())
 
 
-def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
+def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
     """Build the callback schedule."""
-    read_s, report_s = _build_schedules(first)
+    read_s, report_s = _build_schedules(idx)
 
     async def callback_sensor(seconds: int) -> None:
         """read or write sensors"""
@@ -102,6 +106,7 @@ def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
             sensor, value = ist.write_queue.popitem()
             if not isinstance(sensor, RWSensor):
                 continue
+            await asyncio.sleep(0.02)
             await ist.inv.write_sensor(sensor, value)
             await ist.read_sensors(sensors=[sensor], msg=sensor.name)
             sensors_to_publish.add(ist.ss[sensor.id])
@@ -135,7 +140,7 @@ def build_callback_schedule(ist: AInverter, first: bool) -> Callback:
         if pub:
             asyncio.create_task(ist.publish_sensors(states=list(pub)))
 
-    return Callback(
+    return AsyncCallback(
         name=f"read {ist.opt.ha_prefix}",
         every=1,
         callback=callback_sensor,

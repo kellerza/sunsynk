@@ -3,10 +3,11 @@ import asyncio
 import logging
 import time
 from math import modf
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable
 
 import attrs
 
+from ha_addon_sunsynk_multi.errors import log_error
 from sunsynk.helpers import slug
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,9 +21,6 @@ class Callback:
     name: str = attrs.field(converter=slug)
     every: int = attrs.field()
     """Run every <every> seconds."""
-    callback: Callable[[int], Awaitable[None]] | Callable[[int], None] = attrs.field()
-
-    task: Optional[asyncio.Task] = attrs.field(default=None, init=False)
     next_run: int = attrs.field(default=0, init=False)
     """Next run in seconds."""
 
@@ -34,6 +32,37 @@ class Callback:
     stat_busy: int = attrs.field(default=0)
     """Number of times the callback was still busy."""
 
+    def call(self, now: int) -> None:
+        """Call the callback."""
+        raise NotImplementedError()
+
+
+@attrs.define(slots=True)
+class SyncCallback(Callback):
+    """A sync callback."""
+
+    callback: Callable[[int], None] = attrs.field(kw_only=True)
+
+    def call(self, now: int) -> None:
+        """Catch unhandled exceptions."""
+        self.next_run = now + self.every
+        try:
+            t_0 = time.perf_counter()
+            self.callback(now)
+            if self.keep_stats:
+                t_1 = time.perf_counter()
+                self.stat_time.append(t_1 - t_0)
+        except Exception as exc:  # pylint: disable=broad-except
+            log_error(f"Exception in {self.name}: {exc}")
+
+
+@attrs.define(slots=True)
+class AsyncCallback(Callback):
+    """An async callback."""
+
+    task: asyncio.Task = attrs.field(default=None, init=False)
+    callback: Callable[[int], Awaitable[None]] = attrs.field(kw_only=True)
+
     async def wrap_callback(self, cb_call: Awaitable[None]) -> None:
         """Catch unhandled exceptions."""
         try:
@@ -43,36 +72,34 @@ class Callback:
                 t_1 = time.perf_counter()
                 self.stat_time.append(t_1 - t_0)
         except Exception as exc:  # pylint: disable=broad-except
-            _LOGGER.error("Exception in %s: %s", self.name, exc)
+            log_error(f"Exception in {self.name}: {exc}")
+
+    def call(self, now: int) -> None:
+        """Create the task."""
+        if self.task and not self.task.done():
+            self.stat_busy += 1
+            return
+        self.next_run = now + self.every
+        self.task = asyncio.create_task(self.wrap_callback(self.callback(now)))
 
 
 async def run_callbacks(callbacks: list[Callback]) -> None:
     """Run the timer."""
+    sleep_task = asyncio.create_task(asyncio.sleep(0.5))
     while callbacks:
-        frac, _ = modf(time.time())
-        await asyncio.sleep(1.1 - frac)  # Try to run at 50ms past the second
-        now = int(time.time())
+        await sleep_task
+        frac, nowf = modf(time.time())
+        sleep_task = asyncio.create_task(asyncio.sleep(1.05 - frac))
+        now = int(nowf)
         for cb in callbacks:
-            should = now % cb.every == 0
-            slip_s = now - cb.next_run if cb.next_run > 0 else 0
-            if not (should or slip_s):
+            slip_s = now - cb.next_run
+            if now % cb.every != 0 and slip_s < 0:
                 continue
+            if cb.keep_stats and cb.next_run > 0:
+                cb.stat_slip.append(abs(slip_s))
+            cb.call(now)
 
-            if cb.keep_stats:
-                cb.stat_slip.append(slip_s)
-
-            if not asyncio.iscoroutinefunction(cb.callback):
-                cb.callback(now)
-                cb.next_run = now + cb.every
-                continue
-
-            # schedule a new run, if the previous is done
-            if cb.task and not cb.task.done():
-                cb.stat_busy += 1
-                continue
-
-            cb.next_run = now + cb.every
-            cb.task = asyncio.create_task(cb.wrap_callback(cb.callback(now)))
+    await sleep_task
 
 
 CALLBACKS: list[Callback] = []

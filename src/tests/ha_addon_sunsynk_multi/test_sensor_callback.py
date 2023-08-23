@@ -25,7 +25,7 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
     ist.write_queue = {}
 
     with (patch("ha_addon_sunsynk_multi.sensor_callback.defaultdict", dds),):
-        mycb = build_callback_schedule(ist=ist, first=True)
+        mycb = build_callback_schedule(ist=ist, idx=0)
         if not iscoroutinefunction(mycb.callback):
             assert False, "Callback is not a coroutine"
 

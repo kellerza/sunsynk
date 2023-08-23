@@ -155,7 +155,7 @@ SENSORS += (
 ###########
 SENSORS += (
     Sensor(200, "Control Mode"),
-    Sensor(232, "Grid Charge enabled", "", -1),
+    SwitchRWSensor(232, "Grid Charge enabled", ""),
     SelectRWSensor(
         235, "Generator input", "", options={0: "Disable", 1: "Output", 2: "Input"}
     ),

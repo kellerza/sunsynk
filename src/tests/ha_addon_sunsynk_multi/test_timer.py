@@ -1,30 +1,50 @@
 """The the timer module."""
+import logging
+from unittest.mock import patch
+
 import pytest
 
-from ha_addon_sunsynk_multi.timer_callback import Callback, run_callbacks
+from ha_addon_sunsynk_multi.timer_callback import (
+    AsyncCallback,
+    SyncCallback,
+    run_callbacks,
+)
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
 
+_LOGGER = logging.getLogger(__name__)
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
 
 async def test_timer() -> None:
     """Test the timer."""
-    cbs: list[Callback] = []
+    run = {1: 0, 2: 0}
 
-    a = False
+    async def run1(now: int) -> None:
+        run[1] += 1
+        _LOGGER.info("now=%s: cnt=%s", now, run[1])
+        if run[1] == 17:
+            cbs.clear()
 
-    async def run1(s: int) -> None:
-        nonlocal a
-        a = True
+    def run2(now: int) -> None:
+        run[2] += 1
+        _LOGGER.info("now=%s:      cnt2=%s", now, run[2])
+        assert now % 2 == 0
 
-        cbs.clear()
+    cbs = [
+        AsyncCallback(name="test", callback=run1, every=1),
+        SyncCallback(name="test2", callback=run2, every=2),
+    ]
 
-    cbs.append(Callback(name="test", callback=run1, every=1))
-
-    await run_callbacks(cbs)
-
-    assert a
+    with (patch("ha_addon_sunsynk_multi.timer_callback.modf") as mock_time,):
+        lst = [(0.99, s) for s in range(2, 20)]
+        _LOGGER.info(lst)
+        mock_time.side_effect = lst
+        # mock_time.return_value = 0
+        await run_callbacks(cbs)
+        assert mock_time.call_count == 18
+        assert run[1] == 17
+        assert run[2] == 9
 
 
 async def test_schedule() -> None:

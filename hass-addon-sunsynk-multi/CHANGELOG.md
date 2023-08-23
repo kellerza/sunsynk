@@ -1,5 +1,10 @@
 # Changelog
 
+## **2023.08.23-0.5.5**
+
+- Group error logs
+- Scheduler updates & test
+
 ## **2023.08.22-0.5.4**
 
 - Minor change to schedules (might address #172 + test coverage)

@@ -10,6 +10,7 @@ from mqtt_entity.helpers import set_attributes  # type: ignore[import]
 from mqtt_entity.utils import tostr  # type: ignore[import]
 
 from ha_addon_sunsynk_multi.a_sensor import MQTT, SS_TOPIC, ASensor
+from ha_addon_sunsynk_multi.errors import log_error
 from ha_addon_sunsynk_multi.options import OPT, InverterOptions
 from ha_addon_sunsynk_multi.sensor_options import DEFS, SOPT
 from ha_addon_sunsynk_multi.timer_callback import Callback
@@ -61,7 +62,9 @@ class AInverter:
         except asyncio.TimeoutError:
             pass
         except Exception as err:  # pylint:disable=broad-except
-            _LOGGER.error("Read Error%s: %s: %s", msg, type(err), err)
+            cname = err.__class__.__name__
+            cname = "" if cname == "Exception" else f"{cname}: "
+            log_error(f"Read Error{msg}: {cname}{err}")
             if OPT.debug > 1:
                 traceback.print_exc()
             self.read_errors += 1
