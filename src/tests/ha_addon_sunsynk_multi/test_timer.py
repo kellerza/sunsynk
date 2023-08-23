@@ -36,7 +36,7 @@ async def test_timer() -> None:
         SyncCallback(name="test2", callback=run2, every=2),
     ]
 
-    with (patch("ha_addon_sunsynk_multi.timer_callback.modf") as mock_time,):
+    with patch("ha_addon_sunsynk_multi.timer_callback.modf") as mock_time:
         lst = [(0.99, s) for s in range(2, 20)]
         _LOGGER.info(lst)
         mock_time.side_effect = lst
