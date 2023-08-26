@@ -34,11 +34,18 @@ Once you have a file, you will see it in your addon's startup log:
 
 ## Using the sensor
 
-Once the sensor is available, you can add it to your configuration:
+Once a sensor is loaded, you still have to add it to your configuration:
 
 ```yaml
 SENSORS:
  - my_custom_sensor
+```
+
+You can also add **all** the custom sensors, using the special group called `mysensors`.
+
+```yaml
+SENSORS:
+  - mysensors
 ```
 
 ## More examples

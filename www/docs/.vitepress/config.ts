@@ -99,9 +99,10 @@ export default defineConfig({
         text: "Reference",
         items: [
           { text: "Addon options", link: "/reference/multi-options" },
+          { text: "Sensors", link: "/reference/definitions", items: [
+            { text: "Custom sensors", link: "/reference/mysensors" },
+          ]},
           { text: "Schedules", link: "/reference/schedules" },
-          { text: "Sensors", link: "/reference/definitions" },
-          { text: "Custom sensors", link: "/reference/mysensors" },
         ],
       },
       {
@@ -140,7 +141,7 @@ export default defineConfig({
   },
   markdown: {
     config: md => {
-      md.use(imsize)
+      md.use(imsize as any)
     },
   },
 });

@@ -162,12 +162,3 @@ prog6_time
 ```
 
 :::
-
-### Custom Sensors
-
-If you have [custom sensors](./mysensors), you can add them all with the `mysensors` group.
-
-```yaml
-SENSORS:
-  - mysensors
-```
