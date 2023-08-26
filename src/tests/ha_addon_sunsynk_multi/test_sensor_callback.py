@@ -43,7 +43,7 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
         assert ist.read_sensors.call_args_list == [  # type: ignore
             call(
                 sensors={TEST1[0].sensor, TEST1[1].sensor},
-                msg=" (poll_need_to_read)",
+                msg="poll_need_to_read",
                 retry_single=False,
             )
         ]
@@ -62,7 +62,7 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
         assert ist.read_sensors.call_args_list == [  # type: ignore
             call(
                 sensors={TEST1[0].sensor, TEST1[1].sensor},
-                msg=" (poll_need_to_read)",
+                msg="poll_need_to_read",
                 retry_single=False,
             )
         ]

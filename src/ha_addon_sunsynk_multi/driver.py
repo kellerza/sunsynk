@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Run the addon."""
 import logging
-import sys
 
 from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter
 from ha_addon_sunsynk_multi.a_sensor import MQTT
@@ -68,10 +67,9 @@ def init_driver(opt: Options) -> None:
         factory = SolarmanSunsynk
         port_prefix = "tcp://"
     else:
-        _LOGGER.critical(
-            "Invalid DRIVER: %s. Expected umodbus, pymodbus, solarman", opt.driver
+        raise ValueError(
+            f"Invalid DRIVER: {opt.driver}. Expected umodbus, pymodbus, solarman"
         )
-        sys.exit(-1)
 
     STATE.clear()
 

@@ -11,7 +11,7 @@ from .sunsynk import Sunsynk
 
 # pylint: enable=unused-import
 
-VERSION = "0.5.5"
+VERSION = "0.5.6"
 
 CELSIUS: Final = "°C"
 KWH: Final = "kWh"

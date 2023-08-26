@@ -12,7 +12,7 @@ from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.a_sensor import ASensor, SensorOption
 from ha_addon_sunsynk_multi.sensor_options import SOPT
 from ha_addon_sunsynk_multi.timer_callback import AsyncCallback
-from sunsynk import RWSensor, Sensor
+from sunsynk import RWSensor, Sensor, ValType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ def _build_schedules(idx: int) -> tuple[dict[int, SensorRun], dict[int, SensorRu
             (e, ", ".join(s.sensor.id for s in r.sensors)) for e, r in read_s.items()
         ),
         field_names=["s", "Sensors"],
-        title="Read every" + (" (first)" if first else ""),
+        title=f"Read every (inverter {'1' if first else '>1'})",
     )
 
     _print_table(
@@ -57,7 +57,7 @@ def _build_schedules(idx: int) -> tuple[dict[int, SensorRun], dict[int, SensorRu
             (e, ", ".join(s.sensor.id for s in r.sensors)) for e, r in report_s.items()
         ),
         field_names=["s", "Sensors"],
-        title="Report every" + (" (first)" if first else ""),
+        title=f"Report every (inverter {'1' if first else '>1'})",
     )
 
     return read_s, report_s
@@ -81,22 +81,22 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
     """Build the callback schedule."""
     read_s, report_s = _build_schedules(idx)
 
-    async def callback_sensor(seconds: int) -> None:
+    async def callback_sensor(now: int) -> None:
         """read or write sensors"""
         # pylint: disable=too-many-branches
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
         # add all read items
         for sec, srun in read_s.items():
-            if seconds % sec == 0 or srun.next_run < seconds:
+            if now % sec == 0 or srun.next_run <= now:
                 sensors_to_read.update(s.sensor for s in srun.sensors)
-                srun.next_run = seconds + sec
+                srun.next_run = now + sec
         # perform the read
         if sensors_to_read:
             _LOGGER.debug("Read: %s", len(sensors_to_read))
             if await ist.read_sensors(
                 sensors=sensors_to_read,
-                msg=" (poll_need_to_read)",
+                msg="poll_need_to_read",
                 retry_single=False,
             ):
                 sensors_to_publish.update(ist.ss[s.id] for s in sensors_to_read)
@@ -112,33 +112,45 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
             sensors_to_publish.add(ist.ss[sensor.id])
 
         # Publish to MQTT
-        pub: set[ASensor] = set()
+        pub: dict[ASensor, ValType] = {}
         # Check significant change reporting
         for asen in sensors_to_publish:
             sensor = asen.opt.sensor
             if sensor in ist.inv.state.historynn:
                 hist = ist.inv.state.historynn[sensor]
-                chg = hist[0] != hist[1]
-                chg_any = isinstance(sensor, RWSensor) or asen.opt.schedule.change_any
-                if chg and chg_any:
-                    pub.add(asen)
+                chg = hist[0] != hist[-1]
+                if chg and asen.opt.schedule.change_any:
+                    pub[asen] = hist[-1]
             elif sensor in ist.inv.state.history:
                 if asen.opt.schedule.significant_change(
                     history=ist.inv.state.history[sensor][:-1],
                     last=ist.inv.state.history[sensor][-1],
                 ):
-                    pub.add(asen)
+                    pub[asen] = ist.inv.state.history[sensor][-1]
 
         # check fixed reporting
         for sec, srun in report_s.items():
-            if seconds % sec == 0 or srun.next_run < seconds:
+            if now % sec == 0 or srun.next_run <= now:
                 # get list of ASensor from SensorOption
-                aaa = [a for a in ist.ss.values() if a.opt in srun.sensors]
-                pub.update(aaa)
-                srun.next_run = seconds + sec
+                sens = [a for a in ist.ss.values() if a.opt in srun.sensors]
+                for asen in sens:
+                    if asen in pub:
+                        continue
+                    sensor = asen.opt.sensor
+                    # Non-numeric value
+                    if sensor in ist.inv.state.historynn:
+                        pub[asen] = ist.inv.state.historynn[sensor][-1]
+                        continue
+                    # average value is n
+                    nhist = ist.inv.state.history[sensor]
+                    if not nhist:
+                        _LOGGER.warning("No history for %s", sensor)
+                        continue
+                    pub[asen] = sum(nhist) / len(nhist)
+                srun.next_run = now + sec
 
         if pub:
-            asyncio.create_task(ist.publish_sensors(states=list(pub)))
+            asyncio.create_task(ist.publish_sensors(states=pub))
 
     return AsyncCallback(
         name=f"read {ist.opt.ha_prefix}",

@@ -84,8 +84,6 @@ SCHEDULES = {
     for s in (
         # Specific sensors
         Schedule(key="date_time", read_every=60, report_every=60, change_any=True),
-        Schedule(key="rated_power", read_every=0),
-        Schedule(key="serial", read_every=0),
         # Configuration (RWSensors) used if no name found
         Schedule(key=SCH_RWSENSOR, read_every=5, report_every=5 * 60, change_any=True),
         # Based on unit

@@ -1,5 +1,21 @@
 # Changelog
 
+## **2023.08.27-0.5.6**
+
+- Bugfix: read_batch_size
+- 5ms delay before reads
+- Average for numeric types
+- Better warnings & exceptions
+  - Warn if no value read
+  - re-run on any exception
+  - list exception per group of sensors (or batch)
+- New defaults
+
+  ```yaml
+  READ_ALLOW_GAP: 2
+  READ_SENSORS_BATCH_SIZE: 20
+  ```
+
 ## **2023.08.23-0.5.5**
 
 - Group error logs

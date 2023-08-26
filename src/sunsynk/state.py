@@ -128,7 +128,7 @@ def group_sensors(
     group: list[int] = []
     adr0 = 0
     for adr1 in sorted(regs):
-        if group and (adr1 - adr0 > allow_gap or len(group) >= max_group_size):
+        if group and (adr1 - adr0 > allow_gap or adr1 - group[0] >= max_group_size):
             yield group
             group = []
         adr0 = adr1

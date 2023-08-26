@@ -52,9 +52,17 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
         # Add startup sensors
         self.startup = {DEFS.rated_power, DEFS.serial}
+        self[DEFS.rated_power] = SensorOption(
+            sensor=DEFS.rated_power, schedule=Schedule(), visible=False
+        )
+        self[DEFS.serial] = SensorOption(
+            sensor=DEFS.serial, schedule=Schedule(), visible=False
+        )
 
-        # Add sensors fron config
+        # Add sensors from config
         for sen in get_sensors(target=self, names=OPT.sensors):
+            if sen in self:
+                continue
             self[sen] = SensorOption(
                 sensor=sen,
                 schedule=get_schedule(sen, SCHEDULES),
@@ -160,6 +168,7 @@ SENSOR_GROUPS = {
         "use_timer",
     ],
     "settings": [
+        "load_limit",
         "prog1_capacity",
         "prog1_charge",
         "prog1_power",

@@ -80,7 +80,10 @@ class ASensor:
         if self.entity is None:
             _LOGGER.error("no entity %s", self.name)
             return
-        if val is None or (self._last == val and self.retain):
+        if val is None:
+            _LOGGER.warning("Cannot publish %s: value is None", self.name)
+            return
+        if self._last == val and self.retain:
             return
         await MQTT.connect(OPT)
         await MQTT.publish(

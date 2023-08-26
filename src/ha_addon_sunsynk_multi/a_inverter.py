@@ -10,13 +10,12 @@ from mqtt_entity.helpers import set_attributes  # type: ignore[import]
 from mqtt_entity.utils import tostr  # type: ignore[import]
 
 from ha_addon_sunsynk_multi.a_sensor import MQTT, SS_TOPIC, ASensor
-from ha_addon_sunsynk_multi.errors import log_error
 from ha_addon_sunsynk_multi.options import OPT, InverterOptions
 from ha_addon_sunsynk_multi.sensor_options import DEFS, SOPT
 from ha_addon_sunsynk_multi.timer_callback import Callback
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sunsynk import Sensor, Sunsynk
+from sunsynk.sunsynk import Sensor, Sunsynk, ValType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -56,21 +55,16 @@ class AInverter:
     ) -> bool:
         """Read from the Modbus interface."""
         try:
+            await asyncio.sleep(0.005)
             await self.inv.read_sensors(sensors)
             self.read_errors = 0
             return True
-        except asyncio.TimeoutError:
-            pass
         except Exception as err:  # pylint:disable=broad-except
-            cname = err.__class__.__name__
-            cname = "" if cname == "Exception" else f"{cname}: "
-            log_error(f"Read Error{msg}: {cname}{err}")
+            if msg:
+                err.args = (err.args[0] + f" ({msg})",) + err.args[1:]
             if OPT.debug > 1:
                 traceback.print_exc()
-            self.read_errors += 1
-            await asyncio.sleep(0.02 * self.read_errors)
-            if self.read_errors > 3:
-                raise IOError(f"Multiple Modbus read errors: {err}") from err
+            raise
 
         if retry_single:
             _LOGGER.info("Retrying individual sensors: %s", [s.id for s in sensors])
@@ -80,13 +74,17 @@ class AInverter:
 
         return False
 
-    async def publish_sensors(self, *, states: list[ASensor]) -> None:
+    async def publish_sensors(self, *, states: dict[ASensor, ValType]) -> None:
         """Publish state to HASS."""
-        for state in states:
+        for state, value in states.items():
             if state.hidden or state.opt.sensor is None:
+                _LOGGER.warning(
+                    "Skipping hidden sensor %s - hid: %s", state.name, state.hidden
+                )
                 continue
-            val = self.inv.state[state.opt.sensor]
-            await state.publish(val)
+            if value is None:
+                value = self.inv.state[state.opt.sensor]
+            await state.publish(value)
 
     async def connect(self) -> None:
         """Connect."""

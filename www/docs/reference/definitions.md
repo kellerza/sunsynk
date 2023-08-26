@@ -2,11 +2,59 @@
 
 You can add sensors under the `SENSORS` and `SENSORS_FIRST_INVERTER` keys in the configuration.
 
-The page does not list all the sensors available, only the most frequently used ones. You might have to explore the sensor definitions for available sensors, or even the Modbus protocol document to add your own definitions.
+If you want to add the *Battery SOC* sensor, you can use any of the following formats. In the logs you will see the first format (no spaces and all lower case).
 
-## Sensor groups
+```yaml
+SENSORS:
+  - battery_soc
+  - Battery SOC
+  - battery_SOC
+```
 
-Sensors groups will allow you to add several sensors with a single sensor entry.
+This page lists common sensors that can also be added through sensor groups. You can find all the supported sensor names in the sensor definition files, or even use the Modbus protocol document to create your own definitions.
+
+## Sensor definitions
+
+The sensor definitions include the modbus register number (or several registers), the name of the sensor, the unit and other optional parameters. For example:
+
+```python
+Sensor(183, "Battery voltage", VOLT, 0.01),
+Sensor(184, "Battery SOC", "%"),
+```
+
+The last parameter in the battery voltage sensor definition is a factor, in this case a value of 1 in the register represents 0.01V. When the factor is negative for normal sensors it indicates that the number in the register is Signed (it can be negative & positive)
+
+To enable both these sensors in your configuration, simply use the names:
+
+```yaml
+SENSORS:
+  - battery_voltage
+  - battery_soc
+```
+
+## Single Phase Inverter Sensor Definitions
+
+You can find all the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions.py>
+
+These definitions are used when you configure a single-phase inverter in the addon:
+
+```yaml
+SENSOR_DEFINITIONS: single-phase
+```
+
+## Three Phase Inverter Sensor Definitions
+
+You can find all the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions3ph.py>
+
+These definitions are used when you configure a three-phase inverter in the addon:
+
+```yaml
+SENSOR_DEFINITIONS: three-phase
+```
+
+## Groups of sensors
+
+Sensor groups will allow you to add several sensors with a single entry.
 
 ### Energy management
 
@@ -86,6 +134,7 @@ SENSORS_FIRST_INVERTER:
 ::: details Sensors included
 
 ```yaml
+load_limit
 prog1_capacity
 prog1_charge
 prog1_power
@@ -122,45 +171,3 @@ If you have [custom sensors](./mysensors), you can add them all with the `mysens
 SENSORS:
   - mysensors
 ```
-
-## Sensor definitions
-
-The sensor definition includes the modbus register number (or several registers), the name of the sensor, the unit and other optional parameters. For example:
-
-```python
-Sensor(183, "Battery voltage", VOLT, 0.01),
-Sensor(184, "Battery SOC", "%"),
-```
-
-The last parameter in the battery sensor definition is a factor, in this case a value of 1 in the register represents 0.01V. When the factor is negative for normal sensors it indicates that the number in the register is Signed
-
-When you add the *Battery voltage* sensor to your configuration you can use any of the following formats
-
-```yaml
-SENSORS:
-  - battery_voltage
-  - Battery Voltage
-  - BATTERY_voltage
-```
-
-In the logs you will typically see the first format (no space and all lower case)
-
-## Single Phase Inverter Sensor Definitions
-
-These definitions apply to the single phase inverters. In the Home Assistant addon these are selected with the following configuration:
-
-```yaml
-SENSOR_DEFINITIONS: single-phase
-```
-
-These definitions can be viewed online at <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions.py>
-
-## Three Phase Inverter Sensor Definitions
-
-These definitions apply to the three phase inverters. In the Home Assistant addon these are selected with the following configuration:
-
-```yaml
-SENSOR_DEFINITIONS: three-phase
-```
-
-These definitions can be viewed online at <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions3ph.py>

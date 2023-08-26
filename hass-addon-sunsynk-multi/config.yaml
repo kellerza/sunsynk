@@ -1,6 +1,6 @@
 ---
 name: Sunsynk/Deye Inverter Add-on (multi)
-version: 2023.08.23-0.5.5
+version: 2023.08.27-0.5.6
 slug: hass-addon-sunsynk-multi
 description: Add-on for a Sunsynk/Deye branded Inverter
 startup: services
@@ -34,8 +34,8 @@ options:
   SENSORS_FIRST_INVERTER:
     - settings
   MANUFACTURER: Sunsynk
-  READ_ALLOW_GAP: 5
-  READ_SENSORS_BATCH_SIZE: 60
+  READ_ALLOW_GAP: 2
+  READ_SENSORS_BATCH_SIZE: 20
   SCHEDULES:
     - KEY: W
       READ_EVERY: 5

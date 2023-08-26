@@ -6,7 +6,6 @@ The default behaviour, without any configuration override will assign the follow
 
 1. Specific sensors, based on the sensor's name
    - Read & report the `date_time` sensor every minute
-   - Read the `rated_power` & `serial` sensors once, since they never change.
 2. Configuration sensors (`key = 'rw'`):
    - Read every 5 seconds, report every 5 minutes. If there is any change, report immediately.
 3. Based on the sensor's unit

@@ -82,11 +82,13 @@ class Sunsynk:
                 _LOGGER.warning("sensor %s not being tracked", sen.id)
 
         new_regs: dict[int, int] = {}
-        for grp in group_sensors(
+        errs: list[str] = []
+        groups = group_sensors(
             sensors,
             allow_gap=self.allow_gap,
             max_group_size=self.read_sensors_batch_size,
-        ):
+        )
+        for grp in groups:
             glen = grp[-1] - grp[0] + 1
             try:
                 perf = time.perf_counter()
@@ -101,13 +103,14 @@ class Sunsynk:
                     f"{perf:.2f}",
                 )
             except asyncio.TimeoutError:
-                _LOGGER.error("timeout reading register %s (%s)", grp[0], glen)
+                errs.append(f"timeout reading {glen} registers from {grp[0]}")
                 self.timeouts += 1
-                raise
+                continue
             except Exception as err:  # pylint: disable=broad-except
-                raise Exception(  # pylint: disable=raise-missing-from,broad-exception-raised
-                    f"({self.server_id},{grp[0]},{glen}) {err}"
+                errs.append(
+                    f"{err.__class__.__name__} reading {glen} registers from {grp[0]}: {err}"
                 )
+                continue
 
             regs = register_map(grp[0], r_r)
             new_regs.update(regs)
@@ -127,6 +130,8 @@ class Sunsynk:
             )
 
         self.state.update(new_regs)
+        if errs:
+            raise IOError("; ".join(errs))
 
 
 class SunsynkInitParameters(TypedDict):
