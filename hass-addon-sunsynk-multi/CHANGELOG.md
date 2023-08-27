@@ -1,6 +1,6 @@
 # Changelog
 
-## **2023.08.27-0.5.6**
+## **2023.08.27-0.5.7**
 
 - Bugfix: read_batch_size
 - 5ms delay before reads

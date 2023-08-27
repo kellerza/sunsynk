@@ -96,6 +96,16 @@ class InverterState:
         for sen, (new, old) in changed.items():
             self.onchange(sen, new, old)
 
+    def history_average(self, sensor: Sensor) -> NumType:
+        """Return the average of the history."""
+        hist0, *hist = self.history[sensor]  # raises ValueError if no history
+        if not hist:
+            return hist0
+        res = sum(hist) / len(hist)
+        self.history[sensor].clear()
+        self.history[sensor].append(res)
+        return res
+
     # def history_done(self) -> None:
     #     """Flush the history."""
     #     self.history.clear()

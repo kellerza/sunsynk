@@ -122,11 +122,14 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
                 if chg and asen.opt.schedule.change_any:
                     pub[asen] = hist[-1]
             elif sensor in ist.inv.state.history:
+                last = ist.inv.state.history[sensor][-1]
                 if asen.opt.schedule.significant_change(
                     history=ist.inv.state.history[sensor][:-1],
-                    last=ist.inv.state.history[sensor][-1],
+                    last=last,
                 ):
-                    pub[asen] = ist.inv.state.history[sensor][-1]
+                    ist.inv.state.history[sensor].clear()
+                    ist.inv.state.history[sensor].append(last)
+                    pub[asen] = last
 
         # check fixed reporting
         for sec, srun in report_s.items():
@@ -142,11 +145,10 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
                         pub[asen] = ist.inv.state.historynn[sensor][-1]
                         continue
                     # average value is n
-                    nhist = ist.inv.state.history[sensor]
-                    if not nhist:
+                    try:
+                        pub[asen] = ist.inv.state.history_average(sensor)
+                    except ValueError:
                         _LOGGER.warning("No history for %s", sensor)
-                        continue
-                    pub[asen] = sum(nhist) / len(nhist)
                 srun.next_run = now + sec
 
         if pub:
