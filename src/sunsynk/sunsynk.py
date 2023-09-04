@@ -6,7 +6,7 @@ from typing import Iterable, Sequence, TypedDict
 
 import attrs
 
-from sunsynk.helpers import patch_bitmask
+from sunsynk.helpers import hex_str, patch_bitmask
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, ValType
 from sunsynk.state import InverterState, group_sensors, register_map
@@ -55,12 +55,11 @@ class Sunsynk:
             regs = (regs0,) + regs[1:]
             msg = f"[Register {val0}-->{val1}]"
 
-        _LOGGER.critical(
-            "Writing sensor %s=%s [%s=%s] %s",
+        _LOGGER.info(
+            "Writing sensor %s=%s Registers:%s %s",
             sensor.id,
             value,
-            sensor.address,
-            regs,
+            hex_str(regs, address=sensor.address),
             msg,
         )
         for idx, addr in enumerate(sensor.address):

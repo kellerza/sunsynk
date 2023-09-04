@@ -1,6 +1,7 @@
 **/.*.json
 **/.*.yaml
-
+.data/*
+.data
 # private config
 options.yaml
 

@@ -44,7 +44,6 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
             call(
                 sensors={TEST1[0].sensor, TEST1[1].sensor},
                 msg="poll_need_to_read",
-                retry_single=False,
             )
         ]
         ist.read_sensors.call_args_list.clear()  # type: ignore
@@ -63,7 +62,6 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
             call(
                 sensors={TEST1[0].sensor, TEST1[1].sensor},
                 msg="poll_need_to_read",
-                retry_single=False,
             )
         ]
         assert read_s == {

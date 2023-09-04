@@ -20,33 +20,18 @@ SENSORS:
 ```yaml
 type: custom:sunsynk-power-flow-card
 cardstyle: full
-panel_mode: 'yes'
-show_solar: 'yes'
-large_font: 'yes'
-inverter:
-  modern: 'yes'
-  colour: '#959595'
+show_solar: true
+large_font: true
 battery:
   energy: 11000
   shutdown_soc: 20
-  invert_power: 'no'
+  invert_power: false
   colour: var(--energy-battery-in-color)
-  show_daily: 'no'
+  show_daily: false
 solar:
   colour: var(--energy-solar-color)
-  show_daily: 'no'
-  mppts: one
-load:
-  colour: '#5fb6ad'
-  show_daily: 'no'
-  show_aux: 'no'
-  invert_aux: 'no'
-grid:
-  colour: '#5490c2'
-  no_grid_colour: '#a40013'
-  show_daily_buy: 'no'
-  show_daily_sell: 'no'
-  show_nonessential: 'yes'
+  show_daily: false
+  mppts: 1
 entities:
   use_timer_248: switch.ss_use_timer
   priority_load_243: switch.ss_priority_load
@@ -73,17 +58,8 @@ entities:
   aux_power_166: sensor.ss_aux_power
   solarday_108: sensor.ss_day_pv_energy
   pv1_power_186: sensor.ss_pv1_power
-  pv2_power_187: none
-  pv3_power_188: none
-  pv4_power_189: none
   pv1_v_109: sensor.ss_pv1_voltage
   pv1_i_110: sensor.ss_pv1_current
-  pv2_v_111: none
-  pv2_i_112: none
-  pv3_v_113: none
-  pv3_i_114: none
-  pv4_v_115: none
-  pv4_i_116: none
 ```
 
 :::

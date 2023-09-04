@@ -1,7 +1,13 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-RUN pip3 install sunsynk[pymodbus,umodbus,solarman]==0.5.7 --no-cache-dir --disable-pip-version-check
+RUN set -x \
+    && apk add --no-cache --virtual .build-deps \
+        build-base \
+    && pip3 install aiohttp==3.8.5 --no-cache-dir --disable-pip-version-check \
+    && apk del .build-deps
+
+RUN pip3 install sunsynk[pymodbus,umodbus,solarman]==0.5.8 --no-cache-dir --disable-pip-version-check
 
 # Install sunsynk from local source
 #! COPY sunsynk sunsynk

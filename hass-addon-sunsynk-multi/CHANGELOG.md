@@ -1,5 +1,11 @@
 # Changelog
 
+## **0.5.8** 2023.09.04
+
+- Improve error handling on initial read
+- mysensors error handling
+- Improve logging
+
 ## **2023.08.27-0.5.7**
 
 - Bugfix: read_batch_size

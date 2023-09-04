@@ -8,7 +8,7 @@ from typing import Callable, Generator, Optional, Union
 import attrs
 from mqtt_entity.utils import BOOL_OFF, BOOL_ON  # type: ignore
 
-from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num
+from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num, hex_str
 from sunsynk.sensors import Sensor
 
 _LOGGER = logging.getLogger(__name__)
@@ -141,10 +141,10 @@ class SystemTimeRWSensor(RWSensor):
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
         # pylint: disable=invalid-name
-        redt = re.compile(r"(2\d{3})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})")
+        redt = re.compile(r"(2\d{3})-(\d{2})-(\d{2}) ([012]?\d{1}):(\d{2}):(\d{2})")
         match = redt.fullmatch(str(value).strip())
         if not match:
-            raise ValueError("Invalid datetime {value}")
+            raise ValueError(f"Invalid datetime {value}")
         y, m, d = int(match.group(1)) - 2000, int(match.group(2)), int(match.group(3))
         h, mn, s = int(match.group(4)), int(match.group(5)), int(match.group(6))
         regs = (
@@ -152,9 +152,10 @@ class SystemTimeRWSensor(RWSensor):
             (d << 8) + h,
             (mn << 8) + s,
         )
-        msg = f"{y}-{m:02}-{d:02} {h}:{mn:02}:{s:02} ==> {regs}"
+        msg = f"20{y:02}-{m:02}-{d:02} {h:02}:{mn:02}:{s:02}"
+        msg += f"==> Registers(ym, dh, ms):{hex_str(regs, address=self.address)}"
         assert len(regs) == len(self.address)
-        _LOGGER.debug(msg)
+        _LOGGER.debug("Set date_time = %s", msg)
         return regs
 
     def reg_to_value(self, regs: RegType) -> ValType:

@@ -5,6 +5,7 @@ from sunsynk.helpers import (
     SSTime,
     as_num,
     ensure_tuple,
+    hex_str,
     int_round,
     patch_bitmask,
     signed,
@@ -95,3 +96,13 @@ def test_patch_bitmask() -> None:
     assert patch_bitmask(0xFFF, 0, 1) == 0xFFE
     assert patch_bitmask(0xFFFF, 0, 1) == 0xFFFE
     assert patch_bitmask(0xFFF, 0, 2) == 0xFFD
+
+
+def test_hex_str() -> None:
+    """Test hex str."""
+    assert hex_str((1, 2)) == "{0x0001 0x0002}"
+    assert hex_str((1, 2), address=(10, 20)) == "{10=0x0001 20=0x0002}"
+    with pytest.raises(ValueError):
+        assert hex_str((1, 2), address=(10,))
+    with pytest.raises(TypeError):
+        assert hex_str(1, address=(10, 12))  # type: ignore

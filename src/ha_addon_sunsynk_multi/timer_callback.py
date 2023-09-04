@@ -21,6 +21,8 @@ class Callback:
     name: str = attrs.field(converter=slug)
     every: int = attrs.field()
     """Run every <every> seconds."""
+    offset: int = attrs.field(default=0)
+    """Offset in seconds."""
     next_run: int = attrs.field(default=0, init=False)
     """Next run in seconds."""
 
@@ -35,6 +37,13 @@ class Callback:
     def call(self, now: int) -> None:
         """Call the callback."""
         raise NotImplementedError()
+
+    def __attrs_post_init__(self) -> None:
+        """Init."""
+        if self.every - self.offset < 1:
+            raise ValueError(
+                f"every ({self.every}) must be larger than offset ({self.offset})"
+            )
 
 
 @attrs.define(slots=True)
@@ -95,7 +104,7 @@ async def run_callbacks(callbacks: list[Callback]) -> None:
         now = int(nowf)
         for cb in callbacks:
             slip_s = now - cb.next_run
-            if now % cb.every != 0 and slip_s < 0:
+            if (now + cb.offset) % cb.every != 0 and slip_s < 0:
                 continue
             if cb.keep_stats and cb.next_run > 0:
                 cb.stat_slip.append(abs(slip_s))

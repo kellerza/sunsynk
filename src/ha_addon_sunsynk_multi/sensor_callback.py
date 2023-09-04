@@ -94,12 +94,11 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
         # perform the read
         if sensors_to_read:
             _LOGGER.debug("Read: %s", len(sensors_to_read))
-            if await ist.read_sensors(
+            await ist.read_sensors(
                 sensors=sensors_to_read,
                 msg="poll_need_to_read",
-                retry_single=False,
-            ):
-                sensors_to_publish.update(ist.ss[s.id] for s in sensors_to_read)
+            )
+            sensors_to_publish.update(ist.ss[s.id] for s in sensors_to_read)
 
         # Flush pending writes
         while ist.write_queue:

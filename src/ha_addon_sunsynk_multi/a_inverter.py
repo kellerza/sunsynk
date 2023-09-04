@@ -46,19 +46,12 @@ class AInverter:
         """Return the get_state function on the inverter."""
         return self.inv.state.get
 
-    async def read_sensors(
-        self,
-        *,
-        sensors: Iterable[Sensor],
-        msg: str = "",
-        retry_single: bool = False,
-    ) -> bool:
+    async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> None:
         """Read from the Modbus interface."""
         try:
             await asyncio.sleep(0.005)
             await self.inv.read_sensors(sensors)
             self.read_errors = 0
-            return True
         except Exception as err:  # pylint:disable=broad-except
             if msg:
                 err.args = (err.args[0] + f" ({msg})",) + err.args[1:]
@@ -66,13 +59,32 @@ class AInverter:
                 traceback.print_exc()
             raise
 
-        if retry_single:
-            _LOGGER.info("Retrying individual sensors: %s", [s.id for s in sensors])
-            for sen in sensors:
-                await asyncio.sleep(0.02)
-                await self.read_sensors(sensors=[sen], msg=sen.name, retry_single=False)
+    async def read_sensors_retry(self, *, sensors: list[Sensor], msg: str = "") -> bool:
+        """Read sensors with a retry."""
+        while True:
+            try:
+                await self.read_sensors(sensors=sensors, msg=msg)
+                return True
+            except Exception as err:  # pylint:disable=broad-except
+                _LOGGER.error("%s", err)
+                await asyncio.sleep(0.1)
+                if self.read_errors > 2:
+                    break
 
-        return False
+        if len(sensors) == 1:
+            return False
+
+        _LOGGER.info("Retrying individual sensors: %s", [s.id for s in sensors])
+        errs = []
+        for sen in sensors:
+            await asyncio.sleep(0.02)
+            if not await self.read_sensors_retry(sensors=[sen], msg=sen.name):
+                errs.append(sen.name)
+
+        if errs:
+            _LOGGER.critical("Could not read sensors: %s", errs)
+            return False
+        return True
 
     async def publish_sensors(self, *, states: dict[ASensor, ValType]) -> None:
         """Publish state to HASS."""
@@ -100,12 +112,11 @@ class AInverter:
             "Reading startup sensors %s", ", ".join(s.name for s in SOPT.startup)
         )
 
-        if not await self.read_sensors(sensors=SOPT.startup):
+        if not await self.read_sensors_retry(sensors=list(SOPT.startup)):
             raise ConnectionError(
                 f"No response on the Modbus interface {self.inv.port}, "
                 "see https://kellerza.github.io/sunsynk/guide/fault-finding"
             )
-
         expected_ser = self.opt.serial_nr.replace("_", "")
         actual_ser = str(self.inv.state[DEFS.serial])
         if expected_ser != actual_ser:

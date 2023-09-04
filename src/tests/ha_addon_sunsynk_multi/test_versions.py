@@ -27,14 +27,26 @@ def test_versions() -> None:
 
     v_config = _get_version(
         filename=f"{ADDON_PATH}/config.yaml",
-        regex=r"version: .+-(.+)",
+        regex=r"version: v(.+)",
     )
 
-    if v_setup != v_docker or v_setup != v_config:
-        _LOGGER.error("versions do not match\n%s\n%s\n%s", v_setup, v_docker, v_config)
+    v_changelog = _get_version(
+        filename=f"{ADDON_PATH}/CHANGELOG.md",
+        regex=r"\*\*(.+)\*\*",
+    )
+
+    if v_setup != v_docker or v_setup != v_config or v_setup != v_changelog:
+        _LOGGER.error(
+            "versions do not match\n%s\n%s\n%s config.yml\n%s CHANGELOG.md",
+            v_setup,
+            v_docker,
+            v_config,
+            v_changelog,
+        )
 
     assert v_setup == v_docker
     assert v_setup == v_config
+    assert v_setup == v_changelog
 
 
 def _get_version(filename: str, regex: str) -> str:

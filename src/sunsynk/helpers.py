@@ -7,6 +7,7 @@ _LOGGER = logging.getLogger(__name__)
 
 ValType = Union[float, int, str, bool, None]
 RegType = tuple[int, ...]
+"""Register addresses or values."""
 NumType = Union[float, int]
 
 
@@ -110,3 +111,11 @@ class SSTime:
 def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
     """Combine bitmask values."""
     return (patch & bitmask) + (value & (0xFFFF - bitmask))
+
+
+def hex_str(regs: RegType, address: Optional[RegType] = None) -> str:
+    """Convert register values to hex strings."""
+    res = (f"0x{r:04x}" for r in regs)
+    if address:
+        res = (f"{k}={v}" for k, v in zip(address, res, strict=True))
+    return f"{{{' '.join(res)}}}"
