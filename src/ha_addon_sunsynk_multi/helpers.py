@@ -22,7 +22,7 @@ def import_module(mod_name: str, folder: str) -> ModuleType:
         sys.path.pop(0)
 
 
-def get_root(create: bool = True) -> Path:
+def get_root(create: bool = False) -> Path:
     """Get the root folder for data and mysensors."""
     root = (
         Path("/share/hass-addon-sunsynk/")
