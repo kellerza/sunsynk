@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Docs
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "www/**"
-      - ".github/workflows/deploy.yml"
+      - ".github/workflows/deploy-docs.yml"
 
 defaults:
   run:

@@ -1,5 +1,5 @@
 ---
-name: Deploy
+name: Deploy ghcr.io
 
 # yamllint disable-line rule:truthy
 on:
@@ -11,6 +11,7 @@ on:
     branches: [main]
     types:
       - completed
+  workflow_dispatch: {}
 
 jobs:
   # https://github.com/hassio-addons/workflows/blob/main/.github/workflows/addon-deploy.yaml
@@ -71,6 +72,12 @@ jobs:
     steps:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v3
+      - name: Local copy of th elib
+        run: |
+          ls
+          echo $GITHUB_WORKSPACE
+          pwd
+          cp -r sunsynk hass-addon-sunsynk-multi
       - name: 🏗 Set up build cache
         id: cache
         uses: actions/cache@v3.3.1
