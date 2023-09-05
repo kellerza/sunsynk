@@ -1,6 +1,14 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "src/**"
+      - "setup.*"
+  pull_request:
+    paths:
+      - "src/**"
+      - "setup.*"
 
 env:
   DEFAULT_PYTHON: 3.11

@@ -63,7 +63,7 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
   deploy:
-    name: 👷 Build & Deploy ${{ matrix.architecture }}
+    name: 👷 Build & Deploy ${{ matrix.architecture }} ${{ needs.information.outputs.version }}
     needs: information
     runs-on: ubuntu-latest
     strategy:
@@ -72,7 +72,7 @@ jobs:
     steps:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v3
-      - name: Local copy of th elib
+      - name: Local copy of sunsynk
         run: |
           ls
           echo $GITHUB_WORKSPACE
