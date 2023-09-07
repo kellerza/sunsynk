@@ -1,11 +1,15 @@
+"""Global fixtures."""
 import os
 import sys
 from importlib import import_module as _import_module
 from pathlib import Path
 from types import ModuleType
 from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
+
+from sunsynk.state import InverterState
 
 #
 # Pytest Mark: https://stackoverflow.com/a/61193490
@@ -46,3 +50,9 @@ def import_module(mod_name: str, folder: str) -> ModuleType:
         return mod_obj
     finally:
         sys.path.pop(0)
+
+
+@pytest.fixture
+def state() -> InverterState:
+    """Sunsynk inverter state."""
+    return InverterState(onchange=MagicMock())

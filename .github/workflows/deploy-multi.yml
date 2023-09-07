@@ -63,7 +63,7 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
   deploy:
-    name: 👷 Build & Deploy ${{ matrix.architecture }} ${{ needs.information.outputs.version }}
+    name: 👷 Build & Deploy ${{ matrix.architecture }} ${{ needs.information.outputs.environment }}/${{ needs.information.outputs.version }}
     needs: information
     runs-on: ubuntu-latest
     strategy:

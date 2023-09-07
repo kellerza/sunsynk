@@ -1,0 +1,1 @@
+"""Sunsynk tests."""

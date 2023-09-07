@@ -52,9 +52,15 @@ class AInverter:
             await asyncio.sleep(0.005)
             await self.inv.read_sensors(sensors)
             self.read_errors = 0
-        except Exception as err:  # pylint:disable=broad-except
+        except (
+            Exception,  # pylint:disable=broad-except
+            asyncio.exceptions.CancelledError,
+        ) as err:
+            self.read_errors += 1
             if msg:
-                err.args = (err.args[0] + f" ({msg})",) + err.args[1:]
+                arg0, *argn = err.args if err.args else ("",)
+                err.args = tuple([f"{arg0} {msg}".strip()] + argn)
+
             if OPT.debug > 1:
                 traceback.print_exc()
             raise
@@ -65,16 +71,18 @@ class AInverter:
             try:
                 await self.read_sensors(sensors=sensors, msg=msg)
                 return True
+            except asyncio.exceptions.CancelledError as err:
+                _LOGGER.error("Timeout %s", err)
             except Exception as err:  # pylint:disable=broad-except
                 _LOGGER.error("%s", err)
-                await asyncio.sleep(0.1)
-                if self.read_errors > 2:
-                    break
+            await asyncio.sleep(0.1)
+            if self.read_errors > 2:
+                break
 
         if len(sensors) == 1:
             return False
 
-        _LOGGER.info("Retrying individual sensors: %s", [s.id for s in sensors])
+        _LOGGER.warning("Retrying individual sensors: %s", [s.id for s in sensors])
         errs = []
         for sen in sensors:
             await asyncio.sleep(0.02)

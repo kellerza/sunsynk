@@ -1,6 +1,6 @@
 # Changelog
 
-## **0.5.8** 2023.09.04
+## **0.5.9** 2023.09.07 *EDGE*
 
 - Improve error handling on initial read
 - mysensors error handling
