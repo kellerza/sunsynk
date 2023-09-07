@@ -1,0 +1,83 @@
+---
+name: Sunsynk/Deye Inverter Add-on (edge)
+version: edge
+image: ghcr.io/kellerza/hass-addon-sunsynk-multi/{arch}
+slug: hass-addon-sunsynk-multi
+description: Add-on for a Sunsynk/Deye branded Inverter
+startup: services
+boot: auto
+url: "https://github.com/kellerza/sunsynk"
+uart: true
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+ports: {}
+ports_description: {}
+host_network: false
+map:
+  - share:rw
+options:
+  DRIVER: "umodbus"
+  INVERTERS:
+    - SERIAL_NR: "007"
+      HA_PREFIX: SS
+      MODBUS_ID: 1
+      DONGLE_SERIAL_NUMBER: "0"
+      PORT: "tcp://homeassistant.local:502"
+  SENSOR_DEFINITIONS: single-phase
+  SENSORS:
+    - energy_management
+    - power_flow_card
+  SENSORS_FIRST_INVERTER:
+    - settings
+  MANUFACTURER: Sunsynk
+  READ_ALLOW_GAP: 2
+  READ_SENSORS_BATCH_SIZE: 20
+  SCHEDULES:
+    - KEY: W
+      READ_EVERY: 5
+      REPORT_EVERY: 60
+      CHANGE_ANY: false
+      CHANGE_BY: 80
+      CHANGE_PERCENT: 0
+  NUMBER_ENTITY_MODE: "auto"
+  MQTT_HOST: core-mosquitto
+  MQTT_PORT: 1883
+  MQTT_USERNAME: hass
+  MQTT_PASSWORD: ""
+  DEBUG: 0
+  DEBUG_DEVICE: "/dev/ttyAMA0"
+schema:
+  DRIVER: list(pymodbus|umodbus|solarman)
+  INVERTERS:
+    - SERIAL_NR: str
+      HA_PREFIX: str
+      MODBUS_ID: int(1,16)
+      DONGLE_SERIAL_NUMBER: str?
+      PORT: str
+  SENSOR_DEFINITIONS: list(single-phase|three-phase)
+  SENSORS:
+    - str
+  SENSORS_FIRST_INVERTER:
+    - str
+  MANUFACTURER: str
+  READ_ALLOW_GAP: int(1,50)
+  READ_SENSORS_BATCH_SIZE: int(1,100)
+  SCHEDULES:
+    - KEY: str
+      READ_EVERY: int(1,3600)
+      REPORT_EVERY: int(2,3600)
+      CHANGE_ANY: bool?
+      CHANGE_BY: int(0,3600)?
+      CHANGE_PERCENT: int(0,500)?
+  NUMBER_ENTITY_MODE: list(auto|box|slider)
+  MQTT_HOST: str
+  MQTT_PORT: port
+  MQTT_USERNAME: str
+  MQTT_PASSWORD: password
+  DEBUG: int(0,5)
+  DEBUG_DEVICE: device(subsystem=tty)
