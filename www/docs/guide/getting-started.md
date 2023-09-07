@@ -22,22 +22,10 @@ An mbusd TCP to RTU gateway. See more [here](./mbusd)
 
 The recommended version of the addon. It supports multiple inverters and custom sensors. The documentation available on this website is for the multi addon.
 
-### Sunsynk Inverter Add-on (dev)
-
-The developer version of the addon - **deprecated**
-
-Full support for writable sensors
-
-::: danger
-This is an older version of the addon and does not suport all the features & sensors mentioned on this website
+::: tip
+This is the recommended version of the addon
 :::
 
-### Sunsynk Inverter Add-on
+### Sunsynk Inverter Add-on (edge)
 
-The original addon - **deprecated**
-
-Limited support for writable sensors
-
-::: danger
-This is an older version of the addon and does not suport all the features & sensors mentioned on this website
-:::
+The developer version of the addon. Contains the latest changes comitted to the Github repository.
