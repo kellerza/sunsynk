@@ -1,10 +1,15 @@
 # Changelog
 
-## **0.5.9** 2023.09.07 *EDGE*
+## **0.5.9** 2023.09.07
 
 - Improve error handling on initial read
 - mysensors error handling
 - Improve logging
+
+Addon & build changes
+
+- Remove the original & dev version of the addon
+- Added a EDGE version, containing all the latest changes from the repo
 
 ## **2023.08.27-0.5.7**
 
