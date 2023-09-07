@@ -18,22 +18,22 @@ def test_versions() -> None:
     v_setup = _get_version(
         filename="src/sunsynk/__init__.py",
         regex=r'VERSION = "(.+)"',
-    )
+    )[0]
 
     v_docker = _get_version(
         filename=f"{ADDON_PATH}/Dockerfile",
         regex=r"sunsynk(?:\[[^\]]+\])?==([0-9.]+)",
-    )
+    )[0]
 
     v_config = _get_version(
         filename=f"{ADDON_PATH}/config.yaml",
         regex=r"version: v(.+)",
-    )
+    )[0]
 
     v_changelog = _get_version(
         filename=f"{ADDON_PATH}/CHANGELOG.md",
         regex=r"\*\*(.+)\*\*",
-    )
+    )[0]
 
     if v_setup != v_docker or v_setup != v_config or v_setup != v_changelog:
         _LOGGER.error(
@@ -49,9 +49,27 @@ def test_versions() -> None:
     assert v_setup == v_changelog
 
 
-def _get_version(filename: str, regex: str) -> str:
-    txt = Path(filename).read_text()
-    res = re.compile(regex).search(txt)
-    assert res, f"version not found in {filename}"
-    _LOGGER.info("\t%s\t%s", res.group(1), filename)
-    return res.group(1)
+def _get_version(filename: str, regex: str) -> list[str]:
+    txt = Path(filename).read_text(encoding="utf-8")
+    reg = re.compile(regex, re.I)
+    res = [str(r.group(1)) for r in reg.finditer(txt)]
+    assert res, f"pattern not found in {filename}"
+    _LOGGER.info("\t%s\t%s", res[0], filename)
+    return res
+
+
+def test_deps() -> None:
+    """Check deps."""
+    regex = r"    ([^ ]+\d)(\s|$)"
+
+    v_docker = _get_version(
+        filename=f"{ADDON_PATH}/Dockerfile",
+        regex=regex,
+    )
+
+    v_setup = _get_version(
+        filename="setup.cfg",
+        regex=regex,
+    )
+
+    assert " ".join(sorted(v_setup)) == " ".join(sorted(v_docker))

@@ -1,14 +1,19 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-RUN apk --no-cache add make cmake gcc g++ git pkgconf
-
-RUN git clone https://github.com/3cky/mbusd.git /usr/src
-RUN cd /usr/src && ls && cmake . && make && ls
+RUN \
+    apk --no-cache add  --virtual .build-deps \
+        make cmake gcc g++ git pkgconf \
+    && git clone --depth 1 --branch v0.5.1 \
+        https://github.com/3cky/mbusd.git /usr/src \
+    && cd /usr/src \
+    && ls \
+    && cmake . \
+    && make \
+    && apk del .build-deps
 
 WORKDIR /usr/src
 
-#COPY /usr/src/mbusd /sbin/mbusd
 COPY run.sh run.sh
 ENTRYPOINT [ "./run.sh" ]
 
