@@ -18,7 +18,7 @@ RUN set -x \
         umodbus==1.0.4 \
     && apk del .build-deps
 
-# RUN pip3 install sunsynk[pymodbus,umodbus,solarman]==0.5.9 --no-cache-dir --disable-pip-version-check
+# RUN pip3 install sunsynk[pymodbus,umodbus,solarman]==0.6.0 --no-cache-dir --disable-pip-version-check
 
 # Install sunsynk from local source
 COPY sunsynk sunsynk
