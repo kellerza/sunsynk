@@ -5,16 +5,16 @@ Schedules gives you a flexible way to define when to read sensors from the inver
 The default behaviour, without any configuration override will assign the following schedules to the sensors:
 
 ```text
-   +-----------+-----+------+--------+-----------+----------+------------+
-   |    Key    | src | Read | Report | Change by | Change % | Change any |
-   +-----------+-----+------+--------+-----------+----------+------------+
-   | date_time |     |  60  |   60   |           |          |    True    |
-   |     rw    |     |  5   |  300   |           |          |    True    |
-   |     w     |     |  5   |   60   |     80    |          |            |
-   |    kwh    |     | 300  |  300   |           |          |            |
-   |  any_unit |     |  15  |  300   |           |          |            |
-   |  no_unit  |     |  15  |  300   |           |          |    True    |
-   +-----------+-----+------+--------+-----------+----------+------------+
++-----------+-----+------+--------+-----------+----------+------------+
+|    Key    | src | Read | Report | Change by | Change % | Change any |
++-----------+-----+------+--------+-----------+----------+------------+
+| date_time |     |  60  |   60   |           |          |    True    |
+|     rw    |     |  5   |  300   |           |          |    True    |
+|     w     |     |  5   |   60   |     80    |          |            |
+|    kwh    |     | 300  |  300   |           |          |            |
+|  any_unit |     |  15  |  300   |           |          |            |
+|  no_unit  |     |  15  |  300   |           |          |    True    |
++-----------+-----+------+--------+-----------+----------+------------+
 ```
 
 What this means is that:
