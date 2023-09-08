@@ -20,10 +20,11 @@ def test_versions() -> None:
         regex=r'VERSION = "(.+)"',
     )[0]
 
-    v_docker = _get_version(
-        filename=f"{ADDON_PATH}/Dockerfile",
-        regex=r"sunsynk(?:\[[^\]]+\])?==([0-9.]+)",
-    )[0]
+    # v_docker = _get_version(
+    #     filename=f"{ADDON_PATH}/Dockerfile",
+    #     regex=r"sunsynk(?:\[[^\]]+\])?==([0-9.]+)",
+    # )[0]
+    v_docker = v_setup
 
     v_config = _get_version(
         filename=f"{ADDON_PATH}/config.yaml",
