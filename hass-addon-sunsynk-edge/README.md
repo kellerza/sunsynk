@@ -1,7 +1,5 @@
-# Sunsynk Inverter Add-on (Edge)
+# Sunsynk Inverter Add-on (Edge / Development version)
 
-An add-on to read Sunsynk Inverter Values and push them to Home Assistant through MQTT.
+The developer version of the addon. Contains the latest changes comitted to the Github repository.
 
-It supports Home Assistant auto-discovery for the sensors. See the docs for more info.
-
-[https://kellerza.github.io/sunsynk](https://kellerza.github.io/sunsynk/reference/multi-options)
+<https://github.com/kellerza/sunsynk/commits/>

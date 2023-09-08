@@ -1,11 +1,12 @@
 # Sunsynk Inverter Add-on (Multi)
 
-An add-on to read Sunsynk Inverter Values and push them to Home Assistant through MQTT.
+An add-on to read Inverter Sensors and push them to MQTT.
+It supports Home Assistant auto-discovery.
 
-It supports Home Assistant auto-discovery for the sensors. See the docs for more info.
+The addon supports multiple inverters and allows you to update the inverter settings.
 
-[https://kellerza.github.io/sunsynk](https://kellerza.github.io/sunsynk/reference/multi-options)
+See the docs for more info - [https://kellerza.github.io/sunsynk](https://kellerza.github.io/sunsynk/reference/multi-options)
 
-Example of Energy Management enabled by this addon
+Example of Home Assistant Energy Management, enabled by this addon.
 
 ![HASS Energy management](https://github.com/kellerza/sunsynk/raw/main/images/energy.png)

@@ -32,6 +32,7 @@ options:
   SENSORS:
     - energy_management
     - power_flow_card
+    - pv2_power
   SENSORS_FIRST_INVERTER:
     - settings
   MANUFACTURER: Sunsynk
