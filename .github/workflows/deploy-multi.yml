@@ -11,6 +11,11 @@ on:
     branches: [main]
     types:
       - completed
+    paths:
+      - src/sunsynk/**
+      - src/ha_addon_sunsynk_multi/**
+      - hass-addon-sunsynk-multi/**
+      #- ".github/workflows/deploy-multi.yml"
   workflow_dispatch: {}
 
 jobs:
