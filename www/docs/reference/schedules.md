@@ -4,6 +4,21 @@ Schedules gives you a flexible way to define when to read sensors from the inver
 
 The default behaviour, without any configuration override will assign the following schedules to the sensors:
 
+```text
+   +-----------+-----+------+--------+-----------+----------+------------+
+   |    Key    | src | Read | Report | Change by | Change % | Change any |
+   +-----------+-----+------+--------+-----------+----------+------------+
+   | date_time |     |  60  |   60   |           |          |    True    |
+   |     rw    |     |  5   |  300   |           |          |    True    |
+   |     w     |     |  5   |   60   |     80    |          |            |
+   |    kwh    |     | 300  |  300   |           |          |            |
+   |  any_unit |     |  15  |  300   |           |          |            |
+   |  no_unit  |     |  15  |  300   |           |          |    True    |
+   +-----------+-----+------+--------+-----------+----------+------------+
+```
+
+What this means is that:
+
 1. Specific sensors, based on the sensor's name
    - Read & report the `date_time` sensor every minute
 2. Configuration sensors (`key = 'rw'`):
@@ -48,3 +63,25 @@ The `KEY` value of the sensor is used to identify sensors, these are show in the
 | 5     | `no_unit`  | A catch-all for sensors without any unit. Typically non-numeric sensors.                   |
 
 To find a  schedule for any specific sensor, the search order in column 1 will be followed. This allows you to be very specific for sensors with a proper name, or be very generic for sensors with & without units.
+
+## Proposed schedule overrides for Solarman
+
+When using the `solarman` driver, the Solarman dongle can be overwhelmed when constantly being read. Ideally you should not read more than once every 10 seconds.
+
+The following schdule overrides is recommended for Solarman:
+
+```yaml
+SCHDULES:
+- KEY: W
+  READ_EVERY: 15
+  REPORT_EVERY: 60
+  CHANGE_BY: 80
+- KEY: RW
+  READ_EVERY: 15
+  REPORT_EVERY: 60
+  CHANGE_ANY: true
+- KEY: any_unit
+  READ_EVERY: 30
+  REPORT_EVERY: 60
+  CHANGE_BY: 80
+```

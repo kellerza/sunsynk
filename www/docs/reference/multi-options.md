@@ -61,6 +61,20 @@ The port for RS485 communications, which can be either:
   If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
   :::
 
+  ::: details Solarman driver details
+
+  The Solarman driver typically uses `tcp://`, with a port value of 8899. You will need to find the dongle's local IP on your network. You can find the IP on your router, or use a utility like [netscan](https://www.portablefreeware.com/?id=730).
+
+  ```yaml
+  DRIVER: solarman
+  INVERTER:
+    - PORT: tcp://192.168.1.182:8899
+  ```
+
+  Refer to the [Schedules](./schedules) section for recommended schedule overrides.
+
+  :::
+
 - A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
 
   ```yaml
