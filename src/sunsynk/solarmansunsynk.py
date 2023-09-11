@@ -24,14 +24,16 @@ class SolarmanSunsynk(Sunsynk):
     dongle_serial_number: int = attrs.field(default=0)
 
     @dongle_serial_number.validator
-    def check_serial(self, attribute, value):
+    def check_serial(self, _: str, value: int) -> None:
         """Check if the dongle serial number is valid."""
         if value == "":
             raise ValueError("DONGLE_SERIAL_NUMBER not set")
         try:
             int(value)
-        except ValueError:
-            raise ValueError(f"DONGLE_SERIAL_NUMBER must be an integer, got '{value}'")
+        except ValueError as err:
+            raise ValueError(
+                f"DONGLE_SERIAL_NUMBER must be an integer, got '{value}'"
+            ) from err
 
     async def connect(self) -> None:
         """Connect."""
