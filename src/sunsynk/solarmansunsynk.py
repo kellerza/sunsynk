@@ -23,6 +23,16 @@ class SolarmanSunsynk(Sunsynk):
     client: PySolarmanV5Async = None
     dongle_serial_number: int = attrs.field(default=0)
 
+    @dongle_serial_number.validator
+    def check_serial(self, attribute, value):
+        """Check if the dongle serial number is valid."""
+        if value == "":
+            raise ValueError("DONGLE_SERIAL_NUMBER not set")
+        try:
+            int(value)
+        except ValueError:
+            raise ValueError(f"DONGLE_SERIAL_NUMBER must be an integer, got '{value}'")
+
     async def connect(self) -> None:
         """Connect."""
         url = urlparse(f"{self.port}")

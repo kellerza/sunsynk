@@ -57,7 +57,11 @@ async def main_loop(loop: AbstractEventLoop) -> None:  # noqa
 def main() -> None:
     """Main."""
     init_options()
-    init_driver(OPT)
+    try:
+        init_driver(OPT)
+    except (TypeError, ValueError) as err:
+        _LOGGER.critical(str(err))
+        return
     init_schedules(OPT.schedules)
     SOPT.init_sensors()
     for ist in STATE:

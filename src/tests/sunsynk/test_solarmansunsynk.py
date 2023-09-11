@@ -18,7 +18,7 @@ async def test_uss_sensor() -> None:
     await ss.read_holding_registers(1, 2)
     assert rhr.called
 
-    wrr = ss.client.write_holding_register = AsyncMock()
+    wrr = ss.client.write_multiple_holding_registers = AsyncMock()
     assert not wrr.called
     await ss.write_register(address=1, value=2)
     assert wrr.called
