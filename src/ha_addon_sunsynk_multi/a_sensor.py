@@ -137,12 +137,17 @@ class ASensor:
                 self.entity = SensorEntity(**ent)
             return self.entity
 
+        def on_change(val: ValType) -> None:
+            """On change callback."""
+            _LOGGER.info("Queue update %s=%s", sensor.id, val)
+            ist.write_queue.update({sensor: val})
+
         ent.update(
             {
                 "entity_category": "config",
                 "icon": hass_default_rw_icon(unit=sensor.unit),
                 "command_topic": command_topic,
-                "on_change": lambda v: ist.write_queue.update({sensor: v}),
+                "on_change": on_change,
             }
         )
 
