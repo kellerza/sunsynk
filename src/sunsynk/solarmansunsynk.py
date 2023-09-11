@@ -41,7 +41,9 @@ class SolarmanSunsynk(Sunsynk):
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
-            await self.client.write_holding_register(address, value)
+            await self.client.write_multiple_holding_registers(
+                register_addr=address, values=[value]
+            )
             return True
         except asyncio.TimeoutError:
             _LOGGER.error("timeout writing register %s=%s", address, value)
