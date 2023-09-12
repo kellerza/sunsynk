@@ -3,13 +3,16 @@ name: CI
 on:
   push:
     paths:
-      - "src/**"
       - "setup.*"
+      - "src/**"
+      - "hass-addon-sunsynk-multi/**"
+      - ".github/workflows/deploy-multi.yml"
+      - ".github/workflows/ci.yml"
   pull_request:
     paths:
       - "setup.*"
       - "src/**"
-      - hass-addon-sunsynk-multi/**
+      - "hass-addon-sunsynk-multi/**"
       - ".github/workflows/deploy-multi.yml"
       - ".github/workflows/ci.yml"
 
