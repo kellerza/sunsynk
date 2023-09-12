@@ -20,7 +20,7 @@ RUN set -x \
 
 # Install sunsynk from local source
 COPY sunsynk sunsynk
-RUN pip3 install sunsynk[pymodbus,umodbus,solarman] --no-cache-dir --disable-pip-version-check
+RUN pip3 install ./sunsynk[pymodbus,umodbus,solarman] --no-cache-dir --disable-pip-version-check
 
 COPY rootfs /
 
