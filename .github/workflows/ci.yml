@@ -7,8 +7,10 @@ on:
       - "setup.*"
   pull_request:
     paths:
-      - "src/**"
       - "setup.*"
+      - "src/**"
+      - hass-addon-sunsynk-multi/**
+      - ".github/workflows/deploy-multi.yml"
 
 env:
   DEFAULT_PYTHON: 3.11
