@@ -349,6 +349,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Point multi to the new ref
         run: |
+          sed -i "s/version:.*/version: ${{ needs.information.outputs.version }}/g" hass-addon-sunsynk-edge/config.yaml
           sed -i "s/version:.*/version: '${{ needs.information.outputs.version }}'/g" hass-addon-sunsynk-multi/config.yaml
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
