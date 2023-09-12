@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  release:
+    types:
+      - published
   push:
     paths:
       - "setup.*"
@@ -8,8 +11,6 @@ on:
       - "hass-addon-sunsynk-multi/**"
       - ".github/workflows/deploy-multi.yml"
       - ".github/workflows/ci.yml"
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
   pull_request:
     paths:
       - "setup.*"
@@ -17,8 +18,6 @@ on:
       - "hass-addon-sunsynk-multi/**"
       - ".github/workflows/deploy-multi.yml"
       - ".github/workflows/ci.yml"
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
 
 env:
   DEFAULT_PYTHON: 3.11
@@ -71,7 +70,7 @@ jobs:
         run: pylint src
       - name: Run mypy
         continue-on-error: true
-        run: mypy --non-interactive src/
+        run: mypy src/
       - name: Run pydocstyle
         run: pydocstyle sunsynk hass-addon-sunsynk-multi
 
