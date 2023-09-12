@@ -336,7 +336,7 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_user_email: kellerza@gmail.com
-          commit_message: Update edge to ${{ needs.information.outputs.version }}
+          commit_message: Update edge to ${{ needs.information.outputs.version }} [no ci]
 
   publish_stable:
     name: 🆕 Update multi ${{ needs.information.outputs.version }}
@@ -354,4 +354,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_user_email: kellerza@gmail.com
-          commit_message: Update stable to ${{ needs.information.outputs.version }}
+          commit_message: Update stable to ${{ needs.information.outputs.version }} [no ci]
