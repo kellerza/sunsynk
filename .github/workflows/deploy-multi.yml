@@ -189,7 +189,7 @@ jobs:
   publish_edge:
     name: 🆕 Update edge ${{ needs.information.outputs.version }}
     needs: [information, deploy]
-    if: ${{ needs.information.outputs.environment }} == 'edge'
+    if: ${{ needs.information.outputs.environment == 'edge' }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -206,7 +206,7 @@ jobs:
   publish_stable:
     name: 🆕 Update multi ${{ needs.information.outputs.version }}
     needs: [information, deploy]
-    if: ${{ needs.information.outputs.environment }} == 'stable'
+    if: ${{ needs.information.outputs.environment == 'stable' }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
