@@ -322,9 +322,8 @@ jobs:
             "ghcr.io/${{ github.repository_owner }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:${{ needs.information.outputs.version }}"
 
   publish_edge:
-    name: 🆕 Update edge ${{ needs.information.outputs.version }}
+    name: 🆕 Update Addon version to ${{ needs.information.outputs.version }}
     needs: [information, deploy]
-    if: ${{ needs.information.outputs.environment == 'edge' }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -332,26 +331,14 @@ jobs:
       - uses: actions/checkout@v3
       - name: Point edge to the new ref
         run: |
-          sed -i "s/version:.*/version: ${{ needs.information.outputs.version }}/g" hass-addon-sunsynk-edge/config.yaml
+          echo "github.event_name = '${{ github.event_name }}'"
+          echo "version = '${{ needs.information.outputs.version }}'"
+          echo "environment = '${{ needs.information.outputs.environment }}'"
+          if [[ "${{ github.event_name }}" = "release" ]]; then
+            sed -i "s/version:.*/version: '${{ needs.information.outputs.version }}'/g" hass-addon-sunsynk-multi/config.yaml
+          fi
+          sed -i "s/version:.*/version: '${{ needs.information.outputs.version }}'/g" hass-addon-sunsynk-edge/config.yaml
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_user_email: kellerza@gmail.com
-          commit_message: Update edge to ${{ needs.information.outputs.version }} [no ci]
-
-  publish_stable:
-    name: 🆕 Update multi ${{ needs.information.outputs.version }}
-    needs: [information, deploy]
-    if: ${{ needs.information.outputs.environment == 'stable' }}
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Point multi to the new ref
-        run: |
-          sed -i "s/version:.*/version: ${{ needs.information.outputs.version }}/g" hass-addon-sunsynk-edge/config.yaml
-          sed -i "s/version:.*/version: '${{ needs.information.outputs.version }}'/g" hass-addon-sunsynk-multi/config.yaml
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_user_email: kellerza@gmail.com
-          commit_message: Update stable to ${{ needs.information.outputs.version }} [no ci]
+          commit_message: Update Addon version to ${{ needs.information.outputs.version }} [no ci]
