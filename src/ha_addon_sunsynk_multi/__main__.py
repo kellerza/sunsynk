@@ -17,6 +17,7 @@ from ha_addon_sunsynk_multi.timer_callback import (
     run_callbacks,
 )
 from ha_addon_sunsynk_multi.timer_schedule import init_schedules
+from sunsynk import VERSION
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ def main() -> None:
     """Main."""
     init_options()
     try:
+        _LOGGER.info("sunsynk library version: %s", VERSION)
         init_driver(OPT)
     except (TypeError, ValueError) as err:
         _LOGGER.critical(str(err))
