@@ -11,6 +11,7 @@ on:
       - "src/**"
       - hass-addon-sunsynk-multi/**
       - ".github/workflows/deploy-multi.yml"
+      - ".github/workflows/ci.yml"
 
 env:
   DEFAULT_PYTHON: 3.11
