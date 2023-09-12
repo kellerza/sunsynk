@@ -3,9 +3,9 @@ name: Deploy hass-addon-sunsynk-multi to ghcr.io
 
 # yamllint disable-line rule:truthy
 on:
-  # release:
-  #   types:
-  #     - published
+  release:
+    types:
+      - published
   workflow_run:
     workflows: ["CI"]
     branches: [main]
