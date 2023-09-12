@@ -77,15 +77,20 @@ def init_options() -> None:
         datefmt="%H:%M:%S",
     )
 
-    opt = {}
-    hassosf = Path("/data/options.json")
-    if hassosf.exists():
-        _LOGGER.info("Loading HASS OS configuration")
-        opt = loads(hassosf.read_text(encoding="utf-8"))
-    else:
-        _LOGGER.info("Local test mode")
-        localf = Path(".local.yaml").resolve(True)
-        opt = yaml.safe_load(localf.read_text(encoding="utf-8"))
+    opt = None
+
+    config_files = ("/data/options.json", "/data/options.yaml", ".data/options.yaml")
+    for fname in config_files:
+        fpath = Path(fname)
+        if fpath.exists():
+            _LOGGER.info("Loading configuration: %s", fpath)
+            txt = fpath.read_text(encoding="utf-8")
+            opt = loads(txt) if fname.endswith(".json") else yaml.safe_load(txt)
+            break
+
+    if opt is None:
+        _LOGGER.error("No configuration file found")
+        return
 
     unmarshal(OPT, opt)
 
