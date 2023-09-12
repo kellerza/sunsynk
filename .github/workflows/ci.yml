@@ -340,5 +340,6 @@ jobs:
           sed -i "s/version:.*/version: '${{ needs.information.outputs.version }}'/g" hass-addon-sunsynk-edge/config.yaml
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
+          branch: main
           commit_user_email: kellerza@gmail.com
           commit_message: Update Addon version to ${{ needs.information.outputs.version }} [no ci]
