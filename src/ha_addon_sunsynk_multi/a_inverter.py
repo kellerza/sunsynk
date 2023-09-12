@@ -33,7 +33,7 @@ class AInverter:
 
     read_errors: int = attrs.field(default=0, init=False)
 
-    write_queue: dict[Sensor, Union[str, int, float]] = attrs.field(factory=dict)
+    write_queue: dict[Sensor, Union[str, int, float | bool]] = attrs.field(factory=dict)
     """Write queue for RWSensors."""
 
     # Reporting stats

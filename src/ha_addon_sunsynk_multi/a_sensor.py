@@ -137,7 +137,7 @@ class ASensor:
                 self.entity = SensorEntity(**ent)
             return self.entity
 
-        def on_change(val: ValType) -> None:
+        def on_change(val: float | int | str | bool) -> None:
             """On change callback."""
             _LOGGER.info("Queue update %s=%s", sensor.id, val)
             ist.write_queue.update({sensor: val})

@@ -6,7 +6,7 @@ from typing import Callable, Generator, Iterable, Iterator, Optional, Sequence, 
 import attr
 
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import NumType, Sensor, ValType
+from sunsynk.sensors import BinarySensor, NumType, Sensor, ValType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ class InverterState:
 
             numeric = (
                 isinstance(newv, (int, float))
-                and not isinstance(sen, RWSensor)
+                and not isinstance(sen, (RWSensor, BinarySensor))
                 and sen not in self.historynn
             )
             if numeric:
