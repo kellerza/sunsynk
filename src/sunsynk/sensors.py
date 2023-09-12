@@ -74,7 +74,6 @@ class BinarySensor(Sensor):
     def reg_to_value(self, regs: RegType) -> ValType:
         """Reg to value for binary."""
         res = super().reg_to_value(regs)
-        _LOGGER.critical("bin = %s", res)
         if self.on is not None:
             return res == self.on
         if self.off is not None:
