@@ -71,7 +71,7 @@ class NumberRWSensor(RWSensor):
         fval = float(value)  # type:ignore
         minv = resolve_num(resolve, self.min, 0)
         maxv = resolve_num(resolve, self.max, 100)
-        val = int(max(minv, min(maxv, fval / abs(self.factor))))
+        val = int(max(minv, min(maxv, fval)) / abs(self.factor))
         if len(self.address) == 1:
             if val < 0:
                 val = 0x10000 + val

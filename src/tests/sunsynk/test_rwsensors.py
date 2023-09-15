@@ -113,6 +113,28 @@ def test_number_rw(state: InverterState) -> None:
         s.value_to_reg(123, state.get)
 
 
+def test_number_rw2(state: InverterState) -> None:
+    """Test fractional RW."""
+    # https://github.com/kellerza/sunsynk/issues/186
+    s = NumberRWSensor(290, "Grid frequency min", "Hz", 0.01)
+    state.track(s)
+
+    state.update({290: 4850})
+    assert state.registers[290] == 4850
+    assert state[s] == 48.5
+
+    assert s.value_to_reg(48, state.get) == (4800,)
+    assert s.value_to_reg(48, {}) == (4800,)
+
+    # signed RW
+    # https://github.com/kellerza/sunsynk/issues/145
+    s2 = NumberRWSensor(206, "Grid Trickle Feed", "W", -1, min=-500, max=500)
+    state.track(s2)
+    state.update({206: 0xFFBA})
+    assert state[s2] == -70
+    assert s2.value_to_reg(-70, {}) == (0xFFBA,)
+
+
 def test_select_rw(caplog: pytest.LogCaptureFixture, state: InverterState) -> None:
     s = SelectRWSensor(1, "", options={1: "one", 2: "two"})
 
