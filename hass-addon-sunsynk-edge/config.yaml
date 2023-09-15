@@ -1,6 +1,6 @@
 ---
 name: Sunsynk/Deye Inverter Add-on (edge/dev)
-version: '0.6.4'
+version: "0.6.4"
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi/{arch}
 slug: hass-addon-sunsynk-edge
 description: Add-on for a Sunsynk/Deye branded Inverter
@@ -21,7 +21,7 @@ host_network: false
 map:
   - share:rw
 options:
-  DRIVER: "umodbus"
+  DRIVER: "pymodbus"
   INVERTERS:
     - SERIAL_NR: "007"
       HA_PREFIX: SS

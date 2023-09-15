@@ -47,6 +47,8 @@ class SolarmanSunsynk(Sunsynk):
             auto_reconnect=True,
             verbose=False,
             socket_timeout=self.timeout * 2,
+            v5_error_correction=True,
+            error_correction=True,  # bug?
         )
         await self.client.connect()
 

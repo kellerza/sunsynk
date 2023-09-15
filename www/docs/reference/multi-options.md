@@ -65,6 +65,8 @@ The port for RS485 communications, which can be either:
 
   The Solarman driver typically uses `tcp://`, with a port value of 8899. You will need to find the dongle's local IP on your network. You can find the IP on your router, or use a utility like [netscan](https://www.portablefreeware.com/?id=730).
 
+  You probably want to set a fixed IP for the dongle on your router.
+
   ```yaml
   DRIVER: solarman
   INVERTER:
