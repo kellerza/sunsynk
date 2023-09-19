@@ -37,7 +37,7 @@ Use the one that is most appropriate for your host computer.
 * View container logs `docker compose logs -f mbusd`
 
 ## Using Pre-built Docker Images
-The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the different images [here](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
+The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the different images for the various supported architectures [here](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
 
 ### Docker-Compose examples:
 #### amd64
