@@ -50,7 +50,7 @@ services:
       - ${PWD}/options.yaml:/usr/src/.local.yaml
 ```
 
-#### aarch63
+#### aarch64
 ``` yaml
 services:
   sunsynk-multi:
@@ -70,6 +70,30 @@ services:
       - ${PWD}/options.yaml:/usr/src/.local.yaml
 ```
 
+### Docker CLI examples:
 
+#### amd64
+``` bash
+docker run -d --name sunsynk-multi \
+--restart unless-stopped \
+-v ${PWD}/options.yaml:/usr/src/.local.yaml \
+ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
+```
+
+#### aarch64
+``` bash
+docker run -d --name sunsynk-multi \
+--restart unless-stopped \
+-v ${PWD}/options.yaml:/usr/src/.local.yaml \
+ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
+```
+
+#### armv7
+``` bash
+docker run -d --name sunsynk-multi \
+--restart unless-stopped \
+-v ${PWD}/options.yaml:/usr/src/.local.yaml \
+ghcr.io/kellerza/hass-addon-sunsynk-multi/armv7:stable
+```
 
 
