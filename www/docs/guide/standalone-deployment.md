@@ -71,6 +71,10 @@ services:
 ```
 
 ### Docker CLI examples:
+Below are examples using the docker CLI.
+
+> ℹ️ **Note:** Replace ${PWD} with the path to the location of your `options.yaml` file.
+
 
 #### amd64
 ``` bash
