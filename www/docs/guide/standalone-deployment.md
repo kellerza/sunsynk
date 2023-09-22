@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
     image: ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
     volumes:
-      - ${PWD}/options.yaml:/usr/src/.local.yaml
+      - ${PWD}/options.yaml:/data/options.yaml
 ```
 
 #### aarch64
@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
     image: ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
     volumes:
-      - ${PWD}/options.yaml:/usr/src/.local.yaml
+      - ${PWD}/options.yaml:/data/options.yaml
 ```
 
 #### armv7
@@ -67,7 +67,7 @@ services:
     restart: unless-stopped
     image: ghcr.io/kellerza/hass-addon-sunsynk-multi/armv7:stable
     volumes:
-      - ${PWD}/options.yaml:/usr/src/.local.yaml
+      - ${PWD}/options.yaml:/data/options.yaml
 ```
 
 ### Docker CLI examples:
@@ -80,7 +80,7 @@ Below are examples using the docker CLI.
 ``` bash
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
--v ${PWD}/options.yaml:/usr/src/.local.yaml \
+-v ${PWD}/options.yaml:/data/options.yaml \
 ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
 ```
 
@@ -88,7 +88,7 @@ ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
 ``` bash
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
--v ${PWD}/options.yaml:/usr/src/.local.yaml \
+-v ${PWD}/options.yaml:/data/options.yaml \
 ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
 ```
 
@@ -96,7 +96,7 @@ ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
 ``` bash
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
--v ${PWD}/options.yaml:/usr/src/.local.yaml \
+-v ${PWD}/options.yaml:/data/options.yaml \
 ghcr.io/kellerza/hass-addon-sunsynk-multi/armv7:stable
 ```
 
