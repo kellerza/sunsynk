@@ -9,6 +9,7 @@ from pymodbus import __version__ as version
 from pymodbus.client import (
     AsyncModbusSerialClient,
     AsyncModbusTcpClient,
+    AsyncModbusUdpClient,
     ModbusBaseClient,
 )
 from pymodbus.transaction import ModbusRtuFramer
@@ -32,15 +33,27 @@ class PySunsynk(Sunsynk):
 
             # Framer from the URL scheme
             opt: dict[str, Any] = {}
-            if url.scheme == "serial-tcp":
-                opt = {"framer": ModbusRtuFramer}
-            elif url.scheme != "tcp":  # default ModbusSocketFramer
-                raise NotImplementedError(
-                    "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
-                )
+
+            client = None
+
+            match url.scheme:
+                case "serial-tcp":
+                    opt = {"framer": ModbusRtuFramer}
+                    client = AsyncModbusTcpClient(host=host, port=port, **opt)
+                case "tcp":
+                    client = AsyncModbusTcpClient(host=host, port=port, **opt)
+                case "serial-udp":
+                    opt = {"framer": ModbusRtuFramer}
+                    client = AsyncModbusUdpClient(host=host, port=port, **opt)
+                case "udp":
+                    client =AsyncModbusUdpClient(host=host, port=port, **opt)
+                case _:
+                    raise NotImplementedError(
+                        "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
+                    )
 
             _LOGGER.info("PyModbus %s %s: %s:%s", version, url.scheme, host, port)
-            return AsyncModbusTcpClient(host=host, port=port, **opt)
+            return client
 
         _LOGGER.info("PyModbus %s Serial: %s", version, self.port)
         return AsyncModbusSerialClient(
