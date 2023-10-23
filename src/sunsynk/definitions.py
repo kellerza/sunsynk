@@ -223,7 +223,9 @@ SENSORS += (
         "Load Limit",
         options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
     ),
-    # If disabled, does not allow the export of any excess solar. If enabled, will export any excess, but will also draw a constant ~40w at all times for an unknown reason
+    # If disabled, does not allow the export of any excess solar. 
+    # If enabled, will export any excess, but will also draw a 
+    # constant ~40w at all times for an unknown reason
     # 0: "Don't Sell", 1: "Sell solar"
     SwitchRWSensor(247, "Solar Export"),
     SwitchRWSensor(248, "Use Timer", bitmask=1),
