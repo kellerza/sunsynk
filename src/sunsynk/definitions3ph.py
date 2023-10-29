@@ -5,9 +5,11 @@ from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
     SwitchRWSensor,
+    SystemTimeRWSensor,
     TimeRWSensor,
 )
 from sunsynk.sensors import (
+    BinarySensor,
     FaultSensor,
     InverterStateSensor,
     MathSensor,
@@ -156,6 +158,8 @@ SENSORS += (
     Sensor(
         552, "Grid Connected Status"
     ),  # Bit 0 = INV Relay, 1 = Undef, 2 = Grid relay, 3 = Gen relay, 4 = Grid give, 5, Dry contact
+    BinarySensor(194, "Grid Connected", bitmask=1 << 2),
+    SystemTimeRWSensor((62, 63, 64), "Date Time", unit=""),
 )
 
 
@@ -192,58 +196,53 @@ SENSORS += (
 )
 
 # Absolute min and max voltage based on Deye inverter
-MIN_VOLTAGE = 41
-MAX_VOLTAGE = 60
+MIN_VOLT = 41
+MAX_VOLT = 60
 
-BATTERY_EQUALIZATION_VOLTAGE = NumberRWSensor(
-    99, "Battery Equalization voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
+BATTERY_EQUALIZATION_VOLT = NumberRWSensor(
+    99, "Battery Equalization voltage", VOLT, 0.01, min=MIN_VOLT, max=MAX_VOLT
 )
-BATTERY_ABSORPTION_VOLTAGE = NumberRWSensor(
-    100, "Battery Absorption voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
+BATTERY_ABSORPTION_VOLT = NumberRWSensor(
+    100, "Battery Absorption voltage", VOLT, 0.01, min=MIN_VOLT, max=MAX_VOLT
 )
-BATTERY_FLOAT_VOLTAGE = NumberRWSensor(
-    101, "Battery Float voltage", VOLT, 0.01, min=MIN_VOLTAGE, max=MAX_VOLTAGE
+BATTERY_FLOAT_VOLT = NumberRWSensor(
+    101, "Battery Float voltage", VOLT, 0.01, min=MIN_VOLT, max=MAX_VOLT
 )
 
-BATTERY_SHUTDOWN_CAPACITY = NumberRWSensor(115, "Battery Shutdown Capacity", "%")
-BATTERY_RESTART_CAPACITY = NumberRWSensor(116, "Battery Restart Capacity", "%")
-BATTERY_LOW_CAPACITY = NumberRWSensor(
+BATTERY_SHUTDOWN_CAP = NumberRWSensor(115, "Battery Shutdown Capacity", "%")
+BATTERY_RESTART_CAP = NumberRWSensor(116, "Battery Restart Capacity", "%")
+BATTERY_LOW_CAP = NumberRWSensor(
     117,
     "Battery Low Capacity",
     "%",
-    min=BATTERY_SHUTDOWN_CAPACITY,
-    max=BATTERY_RESTART_CAPACITY,
+    min=BATTERY_SHUTDOWN_CAP,
+    max=BATTERY_RESTART_CAP,
 )
-BATTERY_SHUTDOWN_CAPACITY.max = BATTERY_LOW_CAPACITY
-BATTERY_RESTART_CAPACITY.min = BATTERY_LOW_CAPACITY
+BATTERY_SHUTDOWN_CAP.max = BATTERY_LOW_CAP
+BATTERY_RESTART_CAP.min = BATTERY_LOW_CAP
 
-BATTERY_SHUTDOWN_VOLTAGE = NumberRWSensor(
-    118, "Battery Shutdown voltage", VOLT, 0.01, min=MIN_VOLTAGE
+BATTERY_SHUTDOWN_VOLT = NumberRWSensor(
+    118, "Battery Shutdown voltage", VOLT, 0.01, min=MIN_VOLT
 )
-BATTERY_RESTART_VOLTAGE = NumberRWSensor(
-    119, "Battery Restart voltage", VOLT, 0.01, max=MAX_VOLTAGE
+BATTERY_LOW_VOLT = NumberRWSensor(
+    120, "Battery Low voltage", VOLT, 0.01, min=BATTERY_SHUTDOWN_VOLT, max=MAX_VOLT
 )
-BATTERY_LOW_VOLTAGE = NumberRWSensor(
-    120,
-    "Battery Low voltage",
-    VOLT,
-    0.01,
-    min=BATTERY_SHUTDOWN_VOLTAGE,
-    max=BATTERY_RESTART_VOLTAGE,
+BATTERY_RESTART_VOLT = NumberRWSensor(
+    119, "Battery Restart voltage", VOLT, 0.01, max=MAX_VOLT
 )
-BATTERY_SHUTDOWN_VOLTAGE.max = BATTERY_LOW_VOLTAGE
-BATTERY_RESTART_VOLTAGE.min = BATTERY_LOW_VOLTAGE
+BATTERY_SHUTDOWN_VOLT.max = BATTERY_LOW_VOLT
+BATTERY_RESTART_VOLT.min = BATTERY_LOW_VOLT
 
 SENSORS += (
-    BATTERY_EQUALIZATION_VOLTAGE,
-    BATTERY_ABSORPTION_VOLTAGE,
-    BATTERY_FLOAT_VOLTAGE,
-    BATTERY_SHUTDOWN_CAPACITY,
-    BATTERY_RESTART_CAPACITY,
-    BATTERY_LOW_CAPACITY,
-    BATTERY_SHUTDOWN_VOLTAGE,
-    BATTERY_RESTART_VOLTAGE,
-    BATTERY_LOW_VOLTAGE,
+    BATTERY_EQUALIZATION_VOLT,
+    BATTERY_ABSORPTION_VOLT,
+    BATTERY_FLOAT_VOLT,
+    BATTERY_SHUTDOWN_CAP,
+    BATTERY_RESTART_CAP,
+    BATTERY_LOW_CAP,
+    BATTERY_SHUTDOWN_VOLT,
+    BATTERY_RESTART_VOLT,
+    BATTERY_LOW_VOLT,
 )
 
 #################
@@ -303,12 +302,12 @@ SENSORS += (
     NumberRWSensor(157, "Prog4 power", WATT, max=RATED_POWER),
     NumberRWSensor(158, "Prog5 power", WATT, max=RATED_POWER),
     NumberRWSensor(159, "Prog6 power", WATT, max=RATED_POWER),
-    NumberRWSensor(166, "Prog1 Capacity", "%", min=BATTERY_LOW_CAPACITY),
-    NumberRWSensor(167, "Prog2 Capacity", "%", min=BATTERY_LOW_CAPACITY),
-    NumberRWSensor(168, "Prog3 Capacity", "%", min=BATTERY_LOW_CAPACITY),
-    NumberRWSensor(169, "Prog4 Capacity", "%", min=BATTERY_LOW_CAPACITY),
-    NumberRWSensor(170, "Prog5 Capacity", "%", min=BATTERY_LOW_CAPACITY),
-    NumberRWSensor(171, "Prog6 Capacity", "%", min=BATTERY_LOW_CAPACITY),
+    NumberRWSensor(166, "Prog1 Capacity", "%", min=BATTERY_LOW_CAP),
+    NumberRWSensor(167, "Prog2 Capacity", "%", min=BATTERY_LOW_CAP),
+    NumberRWSensor(168, "Prog3 Capacity", "%", min=BATTERY_LOW_CAP),
+    NumberRWSensor(169, "Prog4 Capacity", "%", min=BATTERY_LOW_CAP),
+    NumberRWSensor(170, "Prog5 Capacity", "%", min=BATTERY_LOW_CAP),
+    NumberRWSensor(171, "Prog6 Capacity", "%", min=BATTERY_LOW_CAP),
     SelectRWSensor(172, "Prog1 charge", options=PROG_CHARGE_OPTIONS),
     SelectRWSensor(173, "Prog2 charge", options=PROG_CHARGE_OPTIONS),
     SelectRWSensor(174, "Prog3 charge", options=PROG_CHARGE_OPTIONS),
@@ -336,48 +335,48 @@ SENSORS += (
         "Prog1 voltage",
         VOLT,
         0.01,
-        min=BATTERY_LOW_VOLTAGE,
-        max=BATTERY_FLOAT_VOLTAGE,
+        min=BATTERY_LOW_VOLT,
+        max=BATTERY_FLOAT_VOLT,
     ),
     NumberRWSensor(
         161,
         "Prog2 voltage",
         VOLT,
         0.01,
-        min=BATTERY_LOW_VOLTAGE,
-        max=BATTERY_FLOAT_VOLTAGE,
+        min=BATTERY_LOW_VOLT,
+        max=BATTERY_FLOAT_VOLT,
     ),
     NumberRWSensor(
         162,
         "Prog3 voltage",
         VOLT,
         0.01,
-        min=BATTERY_LOW_VOLTAGE,
-        max=BATTERY_FLOAT_VOLTAGE,
+        min=BATTERY_LOW_VOLT,
+        max=BATTERY_FLOAT_VOLT,
     ),
     NumberRWSensor(
         163,
         "Prog4 voltage",
         VOLT,
         0.01,
-        min=BATTERY_LOW_VOLTAGE,
-        max=BATTERY_FLOAT_VOLTAGE,
+        min=BATTERY_LOW_VOLT,
+        max=BATTERY_FLOAT_VOLT,
     ),
     NumberRWSensor(
         164,
         "Prog5 voltage",
         VOLT,
         0.01,
-        min=BATTERY_LOW_VOLTAGE,
-        max=BATTERY_FLOAT_VOLTAGE,
+        min=BATTERY_LOW_VOLT,
+        max=BATTERY_FLOAT_VOLT,
     ),
     NumberRWSensor(
         165,
         "Prog6 voltage",
         VOLT,
         0.01,
-        min=BATTERY_LOW_VOLTAGE,
-        max=BATTERY_FLOAT_VOLTAGE,
+        min=BATTERY_LOW_VOLT,
+        max=BATTERY_FLOAT_VOLT,
     ),
 )
 

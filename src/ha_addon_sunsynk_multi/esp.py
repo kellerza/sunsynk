@@ -102,7 +102,7 @@ class ESP:
             _LOGGER.info("Updating ESP state")
 
             await self.allowance.get_state(self)
-            # await self.query_api()
+            await self.query_api()
             for sen in self.sensors:
                 await sen.get_state(self)
         except Exception:  # pylint:disable=broad-except
