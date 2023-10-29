@@ -171,6 +171,7 @@ class JMESSensor(ESPSensor):
         val = search(self.state, esp.state)
         await MQTT.publish(self.entity, val, retain=True)
         atr = search(self.attr, esp.state)
+        _LOGGER.info("Attributes %s = %s", self.name, json.dumps(atr))
         try:
             await set_attributes(atr, entity=self.entity, client=MQTT)
         except TypeError as err:
