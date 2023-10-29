@@ -115,6 +115,7 @@ export default defineConfig({
           { text: "Settings", link: "/examples/lovelace-settings" },
           { text: "Automations", link: "/examples/a-mode" },
           { text: "Templates", link: "/examples/templates" },
+          { text: "ESP", link: "/examples/esp" },
         ],
       },
     ],
