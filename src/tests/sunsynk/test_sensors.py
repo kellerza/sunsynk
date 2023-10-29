@@ -3,7 +3,6 @@ import logging
 from typing import Iterable, Sequence
 
 import pytest
-
 from sunsynk.definitions import AMPS, CELSIUS, SENSORS, VOLT, WATT
 from sunsynk.sensors import (
     BinarySensor,

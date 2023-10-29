@@ -2,10 +2,9 @@
 from unittest.mock import MagicMock, Mock
 
 import pytest
-from mqtt_entity import Device  # type: ignore
-
 from ha_addon_sunsynk_multi.a_inverter import AInverter, InverterOptions
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
+from mqtt_entity import Device  # type: ignore
 from sunsynk.sunsynk import InverterState
 
 NOSCHEDULE = Schedule("no_unit", read_every=1, report_every=1)

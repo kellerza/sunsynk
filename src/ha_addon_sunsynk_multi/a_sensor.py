@@ -21,9 +21,6 @@ from mqtt_entity.helpers import (  # type: ignore[import]
     hass_device_class,
 )
 from mqtt_entity.utils import tostr  # type: ignore[import]
-
-from ha_addon_sunsynk_multi.options import OPT
-from ha_addon_sunsynk_multi.sensor_options import SensorOption
 from sunsynk.helpers import ValType, slug
 from sunsynk.rwsensors import (
     NumberRWSensor,
@@ -34,6 +31,9 @@ from sunsynk.rwsensors import (
     resolve_num,
 )
 from sunsynk.sensors import BinarySensor
+
+from ha_addon_sunsynk_multi.options import OPT
+from ha_addon_sunsynk_multi.sensor_options import SensorOption
 
 if TYPE_CHECKING:
     from ha_addon_sunsynk_multi.a_inverter import AInverter

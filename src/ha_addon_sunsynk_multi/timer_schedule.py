@@ -3,7 +3,6 @@ import logging
 
 import attrs
 from prettytable import PrettyTable
-
 from sunsynk import KWH, WATT, NumType, Sensor
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor

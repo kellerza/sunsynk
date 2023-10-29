@@ -2,7 +2,6 @@
 from unittest.mock import AsyncMock
 
 import pytest
-
 from sunsynk.solarmansunsynk import SolarmanSunsynk
 
 

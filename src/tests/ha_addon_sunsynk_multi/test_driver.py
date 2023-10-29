@@ -1,6 +1,5 @@
 """Test driver."""
 import pytest
-
 from ha_addon_sunsynk_multi.driver import STATE, init_driver  # noqa
 from ha_addon_sunsynk_multi.options import OPT, unmarshal  # noqa
 from sunsynk.pysunsynk import PySunsynk

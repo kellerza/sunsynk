@@ -6,9 +6,9 @@ from math import modf
 from typing import Awaitable, Callable
 
 import attrs
+from sunsynk.helpers import slug
 
 from ha_addon_sunsynk_multi.errors import log_error
-from sunsynk.helpers import slug
 
 _LOGGER = logging.getLogger(__name__)
 

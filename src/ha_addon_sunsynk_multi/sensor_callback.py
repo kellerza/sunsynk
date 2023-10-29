@@ -7,12 +7,12 @@ from typing import Iterable
 
 import attrs
 from prettytable import PrettyTable
+from sunsynk import RWSensor, Sensor, ValType
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.a_sensor import ASensor, SensorOption
 from ha_addon_sunsynk_multi.sensor_options import SOPT
 from ha_addon_sunsynk_multi.timer_callback import AsyncCallback
-from sunsynk import RWSensor, Sensor, ValType
 
 _LOGGER = logging.getLogger(__name__)
 

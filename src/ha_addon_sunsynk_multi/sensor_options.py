@@ -4,15 +4,15 @@ import traceback
 from typing import Generator, Iterable
 
 import attrs
-
-from ha_addon_sunsynk_multi.helpers import import_mysensors
-from ha_addon_sunsynk_multi.options import OPT
-from ha_addon_sunsynk_multi.timer_schedule import SCHEDULES, Schedule, get_schedule
 from sunsynk.definitions import SENSORS as DEFS1
 from sunsynk.definitions3ph import SENSORS as DEFS3
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, SensorDefinitions
+
+from ha_addon_sunsynk_multi.helpers import import_mysensors
+from ha_addon_sunsynk_multi.options import OPT
+from ha_addon_sunsynk_multi.timer_schedule import SCHEDULES, Schedule, get_schedule
 
 _LOGGER = logging.getLogger(__name__)
 

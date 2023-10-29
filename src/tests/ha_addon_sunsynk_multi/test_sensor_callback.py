@@ -3,7 +3,6 @@ from collections import defaultdict
 from unittest.mock import Mock, call, patch
 
 import pytest
-
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.sensor_callback import SensorRun, build_callback_schedule
 from ha_addon_sunsynk_multi.sensor_options import SOPT, Sensor, SensorOption

@@ -12,11 +12,11 @@ import attrs
 from jmespath import search
 from mqtt_entity import Device, SensorEntity  # type: ignore[import]
 from mqtt_entity.helpers import Entity, MQTTClient  # type: ignore[import]
+from sunsynk.helpers import slug
 
 from ha_addon_sunsynk_multi.a_sensor import MQTT
 from ha_addon_sunsynk_multi.helpers import get_root
 from ha_addon_sunsynk_multi.timer_callback import CALLBACKS, AsyncCallback
-from sunsynk.helpers import slug
 
 _LOGGER = logging.getLogger(__name__)
 

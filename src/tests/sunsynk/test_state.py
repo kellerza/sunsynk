@@ -2,7 +2,6 @@
 import logging
 
 import pytest
-
 from sunsynk.rwsensors import SystemTimeRWSensor
 from sunsynk.sensors import BinarySensor, Sensor
 from sunsynk.state import InverterState
