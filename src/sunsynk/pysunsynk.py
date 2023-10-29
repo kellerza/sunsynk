@@ -46,7 +46,7 @@ class PySunsynk(Sunsynk):
                     opt = {"framer": ModbusRtuFramer}
                     client = AsyncModbusUdpClient(host=host, port=port, **opt)
                 case "udp":
-                    client =AsyncModbusUdpClient(host=host, port=port, **opt)
+                    client = AsyncModbusUdpClient(host=host, port=port, **opt)
                 case _:
                     raise NotImplementedError(
                         "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
