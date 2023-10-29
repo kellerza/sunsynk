@@ -1,0 +1,27 @@
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 121
+# pyflakes, pycodestyle, isort
+select = ["F", "E", "W", "I001"]
+#extend-exclude = ["src/rfr/modules"]
+include = [
+    "src/tests/*.py",
+    "src/**/*.pyi",
+    #"**/pyproject.toml",
+]
+
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+filterwarnings = "ignore:.+@coroutine.+deprecated.+"
+testpaths = "tests"
+norecursedirs = [".git", "modules"]
+log_cli = true
+log_cli_level = "DEBUG"
