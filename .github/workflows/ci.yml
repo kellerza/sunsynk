@@ -60,8 +60,6 @@ jobs:
       - name: Run mypy
         continue-on-error: true
         run: mypy src/
-      - name: Run pydocstyle
-        run: pydocstyle sunsynk hass-addon-sunsynk-multi
 
   pytest:
     name: Run tests Python ${{ matrix.python-version }}

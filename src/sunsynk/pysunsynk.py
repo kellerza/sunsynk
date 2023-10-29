@@ -1,7 +1,7 @@
 """Sunsync Modbus interface."""
 import asyncio
 import logging
-from typing import Any, Sequence
+from typing import Any, Sequence, Union
 from urllib.parse import urlparse
 
 import attrs
@@ -34,9 +34,9 @@ class PySunsynk(Sunsynk):
             # Framer from the URL scheme
             opt: dict[str, Any] = {}
 
-            client = None
+            client: Union[AsyncModbusTcpClient, AsyncModbusUdpClient, None] = None
 
-            match url.scheme:
+            match url.scheme:  # python 3.10 minimum
                 case "serial-tcp":
                     opt = {"framer": ModbusRtuFramer}
                     client = AsyncModbusTcpClient(host=host, port=port, **opt)

@@ -125,7 +125,7 @@ def test_number_rw2(state: InverterState) -> None:
     assert s.value_to_reg(48, state.get) == (4800,)
     assert s.value_to_reg(48, {}) == (4800,)
 
-    # signed RW
+    # signed RW.
     # https://github.com/kellerza/sunsynk/issues/145
     s2 = NumberRWSensor(206, "Grid Trickle Feed", "W", -1, min=-500, max=500)
     state.track(s2)
