@@ -30,6 +30,9 @@ SENSORS += (
     Sensor(184, "Battery SOC", "%"),
     Sensor(190, "Battery power", WATT, -1),
     Sensor(191, "Battery current", AMPS, -0.01),
+    # Charge and Discharge limit vary based on temperature and SoC
+    Sensor(314, "Battery Charge Limit current", AMPS, -0.01),
+    Sensor(315, "Battery Discharge Limit current", AMPS, -0.01),
 )
 
 ###########
