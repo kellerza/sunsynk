@@ -51,6 +51,7 @@ options:
   MQTT_USERNAME: hass
   MQTT_PASSWORD: ""
   DEBUG: 0
+  DEBUG_DEVICE: "/dev/ttyAMA0"
 schema:
   DRIVER: list(pymodbus|umodbus|solarman)
   INVERTERS:
@@ -80,4 +81,5 @@ schema:
   MQTT_USERNAME: str
   MQTT_PASSWORD: password
   DEBUG: int(0,5)
-  DEBUG_DEVICE: device(subsystem=tty)?
+  #DEBUG_DEVICE: device(subsystem=tty)?
+  DEBUG_DEVICE: str?
