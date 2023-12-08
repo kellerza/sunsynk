@@ -59,7 +59,7 @@ class Options:
     read_sensors_batch_size: int = 60
     schedules: list[Schedule] = []
     timeout: int = 10
-    debug: int = 1
+    debug: int = 0
     driver: str = "umodbus"
     manufacturer: str = "Sunsynk"
     debug_device: str = ""
