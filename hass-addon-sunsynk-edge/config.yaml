@@ -81,4 +81,4 @@ schema:
   MQTT_USERNAME: str
   MQTT_PASSWORD: password
   DEBUG: int(0,5)
-  DEBUG_DEVICE: device(subsystem=tty)
+  DEBUG_DEVICE: device(subsystem=tty)?

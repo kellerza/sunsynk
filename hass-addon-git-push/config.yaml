@@ -1,0 +1,55 @@
+---
+version: 0.1
+slug: git_push
+name: Git push (experimental)
+description: Simple git push backup local configuration
+url: https://github.com/kellerza/sunsynk
+advanced: true
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+boot: manual
+#hassio_api: true
+#hassio_role: homeassistant
+#image: homeassistant/{arch}-addon-git_pull
+init: false
+map:
+  - config:rw
+options:
+  repository: null
+  #git_branch: master
+  #git_remote: origin
+  #auto_restart: false
+  #restart_ignore:
+  #  - ui-lovelace.yaml
+  #  - .gitignore
+  git_command: push
+  #git_prune: false
+  deployment_key: []
+  deployment_user: ""
+  #deployment_password: ""
+  #deployment_key_protocol: rsa
+  #repeat:
+  #  active: false
+  #  interval: 300
+schema:
+  repository: str
+  #git_branch: str
+  #git_remote: str
+  #auto_restart: bool
+  #restart_ignore:
+  #  - str
+  #git_command: list(pusll|reset)
+  #git_prune: bool
+  deployment_key:
+    - str
+  deployment_user: str
+  #deployment_password: password
+  #deployment_key_protocol: match(rsa|dsa|ecdsa|ed25519|rsa)
+  #repeat:
+  #  active: bool
+  #  interval: int
+startup: services
