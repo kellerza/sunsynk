@@ -52,6 +52,16 @@ These definitions are used when you configure a three-phase inverter in the addo
 SENSOR_DEFINITIONS: three-phase
 ```
 
+## Three Phase High Voltage Inverter Sensor Definitions
+
+You can find all the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions3phhv.py>
+
+These definitions are used when you configure a three-phase inverter in the addon:
+
+```yaml
+SENSOR_DEFINITIONS: three-phase-hv
+```
+
 ## Groups of sensors
 
 Sensor groups will allow you to add several sensors with a single entry.

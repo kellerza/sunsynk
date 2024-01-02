@@ -6,6 +6,7 @@ from typing import Generator, Iterable
 import attrs
 from sunsynk.definitions import SENSORS as DEFS1
 from sunsynk.definitions3ph import SENSORS as DEFS3
+from sunsynk.definitions3phhv import SENSORS as DEFS3HV
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, SensorDefinitions
@@ -109,6 +110,10 @@ def import_definitions() -> None:
         _LOGGER.info("Using three phase sensor definitions.")
         DEFS.all = dict(DEFS3.all)
         DEFS.deprecated = DEFS3.deprecated
+    if OPT.sensor_definitions == "three-phase-hv":
+        _LOGGER.info("Using three phase HV sensor definitions.")
+        DEFS.all = dict(DEFS3HV.all)
+        DEFS.deprecated = DEFS3HV.deprecated
     else:
         _LOGGER.info("Using Single phase sensor definitions.")
         DEFS.all = dict(DEFS1.all)
