@@ -58,7 +58,7 @@ schema:
       MODBUS_ID: int(1,16)
       DONGLE_SERIAL_NUMBER: int?
       PORT: str
-  SENSOR_DEFINITIONS: list(single-phase|three-phase)
+  SENSOR_DEFINITIONS: list(single-phase|three-phase|three-phase-hv)
   SENSORS:
     - str
   SENSORS_FIRST_INVERTER:
