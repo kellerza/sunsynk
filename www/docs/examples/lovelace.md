@@ -1,6 +1,6 @@
 # Lovelace examples
 
-Thsis page contains a coupe of frontend examples to represent the power flow of your system. While the Home Assistant Energy dashboard give you a good indication of your energy usage, the power flow show you what is happening at the current moment.
+This page contains a coupe of frontend examples to represent the power flow of your system. While the Home Assistant Energy dashboard give you a good indication of your energy usage, the power flow show you what is happening at the current moment.
 
 ## Sunsynk Power Flow Card
 
