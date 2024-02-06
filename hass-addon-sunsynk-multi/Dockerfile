@@ -12,8 +12,8 @@ RUN set -x \
         jmespath==1.0.1 \
         mqtt-entity==0.0.4 \
         prettytable==3.8.0 \
-        pymodbus[serial]==3.5.2 \
-        pysolarmanv5==3.0.0 \
+        pymodbus[serial]==3.6.4 \
+        pysolarmanv5==3.0.1 \
         pyyaml==6.0.1 \
         umodbus==1.0.4 \
     && apk del .build-deps
