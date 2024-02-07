@@ -10,7 +10,7 @@ from sunsynk.rwsensors import (
 )
 from sunsynk.sensors import (
     BinarySensor,
-    FaultSensor,
+    HVFaultSensor,
     InverterStateSensor,
     MathSensor,
     SDStatusSensor,
@@ -26,11 +26,16 @@ SENSORS = SensorDefinitions()
 # Battery
 ##########
 SENSORS += (
-    TempSensor(586, "Battery temperature", CELSIUS, 0.1),
-    Sensor(587, "Battery voltage", VOLT, 0.1),
-    Sensor(588, "Battery SOC", "%"),
-    Sensor(590, "Battery power", WATT, -10),
-    Sensor(591, "Battery current", AMPS, -0.01),
+    Sensor(586, "Battery 1 temperature", CELSIUS, 0.1),
+    Sensor(587, "Battery 1 voltage", VOLT, 0.1),
+    Sensor(588, "Battery 1 SOC", "%"),
+    Sensor(590, "Battery 1 power", WATT, -10),
+    Sensor(591, "Battery 1 current", AMPS, -0.01),
+    Sensor(589, "Battery 2 SOC", "%"), #correct
+    Sensor(593, "Battery 2 voltage", VOLT, 0.1), #correct
+    Sensor(594, "Battery 2 current", AMPS, -0.01), #correct
+    Sensor(595, "Battery 2 power", WATT, -10), #correct
+    Sensor(596, "Battery 2 temperature", CELSIUS, 0.1), #correct I think
 )
 
 #################
@@ -74,6 +79,9 @@ SENSORS += (
     Sensor(650, "Load L1 power", WATT, -1),
     Sensor(651, "Load L2 power", WATT, -1),
     Sensor(652, "Load L3 power", WATT, -1),
+    Sensor(644, "Load L1 voltage", VOLT, 0.1),
+    Sensor(645, "Load L2 voltage", VOLT, 0.1),
+    Sensor(646, "Load L3 voltage", VOLT, 0.1),
 )
 
 #
@@ -81,7 +89,7 @@ SENSORS += (
 # Solar Power
 ################
 SENSORS += (
-    MathSensor((672, 673), "PV power", WATT, factors=(10, 10)),  # pv1 power,pv2 power
+    MathSensor((672, 673, 674, 675), "PV power", WATT, factors=(10, 10, 10, 10)),  # pv1 power,pv2 power
 )
 ################
 # MPPT 1 Solar Power
@@ -161,7 +169,7 @@ SENSORS += (
     Sensor(
         0, "Device Type"
     ),  # {2: "Inverter", 3: "Hybrid Inverter", 4: "Micro Inverter", 5: "3 Phase Hybrid Inverter" }),
-    FaultSensor((555, 556, 557, 558), "Fault"),
+    HVFaultSensor((555, 556, 557, 558), "Fault"),
     InverterStateSensor(500, "Overall state"),
     SDStatusSensor(0, "SD Status", ""),  # type: ignore
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
@@ -181,12 +189,14 @@ SENSORS += (
 SENSORS += (
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=210),
     SwitchRWSensor(130, "Grid Charge enabled"),
+    NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
+    NumberRWSensor(128, "Grid Charge Amps", AMPS),
     SwitchRWSensor(146, "Use Timer", on=255),
     SwitchRWSensor(145, "Solar Export"),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
     NumberRWSensor(108, "Battery Max Charge current", AMPS, max=210),
     NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=210),
-    NumberRWSensor(102, "Battery Capacity current", AMPS, max=2000),
+    NumberRWSensor(102, "Battery Capacity current", "Ah", max=2000),
 )
 
 # Additional optional sensors
@@ -200,11 +210,15 @@ SENSORS += (
         options={0: "Generator", 1: "Smartload", 2: "Micro Inverter"},
     ),
     SelectRWSensor(129, "Generator Charge enabled", options={0: "Off", 1: "On"}),
-    SelectRWSensor(112, "Battery Activate", options={0: "Off", 1: "On"}),
+    NumberRWSensor(124, "Generator Charge Start Battery SOC", "%"),
+    NumberRWSensor(125, "Generator Charge Battery current", AMPS),
+    SelectRWSensor(112, "Battery Wake Up", options={0: "On", 1: "Off"}), #according to docs, 0 is enabled for this one
     NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
+    NumberRWSensor(114, "Battery Charge Efficiency", "%", 0.1),
     NumberRWSensor(104, "System Zero Export power", WATT, -1),
     NumberRWSensor(105, "Battery Equalization Days", "days", -1),
     NumberRWSensor(106, "Battery Equalization Hours", "h", -1),  # 1 = 0.5 hours
+    
 )
 
 # Absolute min and max voltage based on Deye inverter
@@ -220,6 +234,8 @@ BATTERY_ABSORPTION_VOLT = NumberRWSensor(
 BATTERY_FLOAT_VOLT = NumberRWSensor(
     101, "Battery Float voltage", VOLT, 0.01, min=MIN_VOLT, max=MAX_VOLT
 )
+
+BATTERY_MODE = SelectRWSensor(111, "Battery Type", options={0: "Use Battery Voltage", 1: "Lithium (Use BMS)", 2: "No Battery"}), 
 
 BATTERY_SHUTDOWN_CAP = NumberRWSensor(115, "Battery Shutdown Capacity", "%")
 BATTERY_RESTART_CAP = NumberRWSensor(116, "Battery Restart Capacity", "%")
@@ -246,6 +262,7 @@ BATTERY_SHUTDOWN_VOLT.max = BATTERY_LOW_VOLT
 BATTERY_RESTART_VOLT.min = BATTERY_LOW_VOLT
 
 SENSORS += (
+    BATTERY_MODE,
     BATTERY_EQUALIZATION_VOLT,
     BATTERY_ABSORPTION_VOLT,
     BATTERY_FLOAT_VOLT,
@@ -266,7 +283,7 @@ SENSORS += SwitchRWSensor(141, "Priority Load")
 SENSORS += SelectRWSensor(
     142,
     "Load Limit",
-    options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
+    options={0: "Allow Export", 1: "Zero Export To Non Essential", 2: "Zero Export To Grid CT"},
 )
 
 PROG1_TIME = TimeRWSensor(148, "Prog1 Time")
@@ -285,7 +302,9 @@ PROG6_TIME.max = PROG1_TIME
 
 PROG_CHARGE_OPTIONS = {
     0: "Off",
-    1: "On",
+    1: "Grid Only",
+    2: "Gen Only",
+    3: "Grid and Gen",
 }
 
 SENSORS += (
@@ -313,6 +332,17 @@ SENSORS += (
     SelectRWSensor(175, "Prog4 charge", options=PROG_CHARGE_OPTIONS),
     SelectRWSensor(176, "Prog5 charge", options=PROG_CHARGE_OPTIONS),
     SelectRWSensor(177, "Prog6 charge", options=PROG_CHARGE_OPTIONS),
+)
+
+SENSORS += (
+    SelectRWSensor(146, "Prog Time Of Use Enabled", options={0: "off", 1: "on"}, bitmask=0x01),
+    SelectRWSensor(146, "Prog Monday Enabled", options={0: "off", 2: "on"}, bitmask=0x02),
+    SelectRWSensor(146, "Prog Tuesday Enabled", options={0: "off", 4: "on"}, bitmask=0x04),
+    SelectRWSensor(146, "Prog Wednesday Enabled", options={0: "off", 8: "on"}, bitmask=0x08),
+    SelectRWSensor(146, "Prog Thursday Enabled", options={0: "off", 16: "on"}, bitmask=0x10),
+    SelectRWSensor(146, "Prog Friday Enabled", options={0: "off", 32: "on"}, bitmask=0x20),
+    SelectRWSensor(146, "Prog Saturday Enabled", options={0: "off", 64: "on"}, bitmask=0x40),
+    SelectRWSensor(146, "Prog Sunday Enabled", options={0: "off", 128: "on"}, bitmask=0x80),
 )
 
 
@@ -367,9 +397,19 @@ SENSORS += (
     ),
 )
 
+SENSORS += (
+    NumberRWSensor(131, "Generator AC Couple Frz High", "Hz", 0.01),
+    NumberRWSensor(135, "Generator Off", "%"),
+    NumberRWSensor(137, "Generator On", "%"),
+)
 
 SENSORS.deprecated.update(
     {
         "priority_mode": "priority_load",
+        "Battery temperature": "Battery 1 temperature",
+        "Battery voltage": "Battery 1 voltage",
+        "Battery SOC": "Battery 1 SOC",
+        "Battery power": "Battery 1 power",
+        "Battery current": "Battery 1 current",
     }
 )
