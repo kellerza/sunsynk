@@ -183,6 +183,23 @@ class SerialSensor(Sensor):
             val += chr(b16 & 0xFF)
         return val
 
+@attrs.define(slots=True, eq=False)
+class EnumSensor(Sensor):
+    """Sensor with a set of enum values. Like a read-only SelectRWSensor"""
+
+    options: dict[int, str] = attrs.field(factory=dict)
+
+    def available_values(self) -> list[str]:
+        """Get the available values for this sensor."""
+        return list(self.options.values())
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the register."""
+        regsm = self.masked(regs)
+        res = self.options.get(regsm[0])
+        if res is None:
+            _LOGGER.warning("%s: Unknown register value %s", self.id, regsm[0])
+        return res
 
 @attrs.define(slots=True, eq=False)
 class FaultSensor(Sensor):
@@ -223,35 +240,35 @@ class HVFaultSensor(Sensor):
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode HV Inverter faults."""
         faults = {
-            01: "F01 DC Inversed Failure",
-            07: "F07 DC START Failure",
-            13: "F13 Working mode change",
-            15: "F15 AC over current SW Failure",
-            16: "F16 DC Ground Leakage current fault",
-            18: "F18 AC over current TZ",
-            20: "F20 DC over current",
-            21: "F21 DC HV Bus over current",
-            22: "F22 Remote Emergency stop",
-            23: "F23 AC leak current or transient over current",
-            24: "F24 DC insulation impedance",
-            26: "F26 DC busbar imbalanced",
-            29: "F29 Parallel comms cable",
-            34: "F34 AC Overload (backup)",
-            35: "F35 No AC grid",
-            41: "F41 Parallel system stopped",
-            42: "F42 AC line low voltage",
-            47: "F47 AC grid freq too high",
-            48: "F48 AC grid freq too low",
-            52: "F52 DC voltage too high",
-            53: "F53 DC voltage too low",
-            54: "F54 battery 1 voltage high",
-            55: "F55 battery 2 voltage high",
-            56: "F56 battery 1 voltage low",
-            57: "F57 battery 2 voltage low",
-            58: "F58 bms communication lost",
-            62: "F62 DRM stop activated",
-            63: "F63 ARC fault",
-            64: "F64 Heat sink tempfailure",
+            1: "DC Inversed Failure",
+            7: "DC START Failure",
+            13: "Working mode change",
+            15: "AC over current SW Failure",
+            16: "DC Ground Leakage current fault",
+            18: "AC over current TZ",
+            20: "DC over current",
+            21: "DC HV Bus over current",
+            22: "Remote Emergency stop",
+            23: "AC leak current or transient over current",
+            24: "DC insulation impedance",
+            26: "DC busbar imbalanced",
+            29: "Parallel comms cable",
+            34: "AC Overload (backup)",
+            35: "No AC grid",
+            41: "Parallel system stopped",
+            42: "AC line low voltage",
+            47: "AC grid freq too high",
+            48: "AC grid freq too low",
+            52: "DC voltage too high",
+            53: "DC voltage too low",
+            54: "battery 1 voltage high",
+            55: "battery 2 voltage high",
+            56: "battery 1 voltage low",
+            57: "battery 2 voltage low",
+            58: "bms communication lost",
+            62: "DRM stop activated",
+            63: "ARC fault",
+            64: "Heat sink tempfailure",
         }
         err = []
         off = 0
