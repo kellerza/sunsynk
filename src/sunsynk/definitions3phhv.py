@@ -27,7 +27,7 @@ SENSORS = SensorDefinitions()
 # Battery
 ##########
 SENSORS += (
-    Sensor(586, "Battery 1 temperature", CELSIUS, 0.1),
+    Sensor(586, "Battery 1 temperature", CELSIUS, 0.1), #this one seems to not follow the convention of other temperatures. 290 = 29c
     Sensor(587, "Battery 1 voltage", VOLT, 0.1),
     Sensor(588, "Battery 1 SOC", "%"),
     Sensor(590, "Battery 1 power", WATT, -10),
@@ -95,7 +95,7 @@ SENSORS += (
 # Solar Power
 ################
 SENSORS += (
-    MathSensor((672, 673, 674, 675), "PV power", WATT, factors=(10, 10, 10, 10)),  # pv1 power,pv2 power
+    MathSensor((672, 673, 674, 675), "PV power", WATT, factors=(10, 10, 10, 10)),  # pv1,pv2,pv3,pv4 power
 )
 ################
 # MPPT 1 Solar Power
@@ -179,10 +179,10 @@ SENSORS += (
         0, "Device Type"
     ),  # {2: "Inverter", 3: "Hybrid Inverter", 4: "Micro Inverter", 5: "3 Phase Hybrid Inverter" }),
     HVFaultSensor((555, 556, 557, 558), "Fault"),
-    EnumSensor(553, "Fan Warning", {0: "No Warning", 1: "Warning"}, bitmask=0x02),
-    EnumSensor(553, "Grid Phase Warning", {0: "No Warning", 1: "Warning"}, bitmask=0x04),
-    EnumSensor(554, "Lithium Battery Loss Warning", {0: "No Warning", 1: "Warning"}, bitmask=0x4000),
-    EnumSensor(554, "Parallel Communication Quality Warning", {0: "No Warning", 1: "Warning"}, bitmask=0x8000),
+    EnumSensor(553, "Fan Warning", {0: "No Warning", 2: "Warning"}, bitmask=0x02),
+    EnumSensor(553, "Grid Phase Warning", {0: "No Warning", 4: "Warning"}, bitmask=0x04),
+    EnumSensor(554, "Lithium Battery Loss Warning", {0: "No Warning", 16384: "Warning"}, bitmask=0x4000),
+    EnumSensor(554, "Parallel Communication Quality Warning", {0: "No Warning", 32768: "Warning"}, bitmask=0x8000),
     InverterStateSensor(500, "Overall state"),
     SDStatusSensor(0, "SD Status", ""),  # type: ignore
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
@@ -200,12 +200,12 @@ SENSORS += (
 ##############
 SENSORS += (
     EnumSensor(552, "INV Relay Status", {0: "Off", 1: "On"}, bitmask=0x01),
-    EnumSensor(552, "Undefined Load Relay Status", {0: "Off", 1: "On"}, bitmask=0x02),
-    EnumSensor(552, "Grid Relay Status", {0: "Off", 1: "On"}, bitmask=0x04),
-    EnumSensor(552, "Generator Relay Status", {0: "Off", 1: "On"}, bitmask=0x08),
-    EnumSensor(552, "Grid Give Power to Relay Status", {0: "Off", 1: "On"}, bitmask=0x10),
-    EnumSensor(552, "Dry Contact1 Status", {0: "Off", 1: "On"}, bitmask=0x80),
-    EnumSensor(552, "Dry Contact2 Status", {0: "Off", 1: "On"}, bitmask=0x100),
+    EnumSensor(552, "Undefined Load Relay Status", {0: "Off", 2: "On"}, bitmask=0x02),
+    EnumSensor(552, "Grid Relay Status", {0: "Off", 4: "On"}, bitmask=0x04),
+    EnumSensor(552, "Generator Relay Status", {0: "Off", 8: "On"}, bitmask=0x08),
+    EnumSensor(552, "Grid Give Power to Relay Status", {0: "Off", 16: "On"}, bitmask=0x10),
+    EnumSensor(552, "Dry Contact1 Status", {0: "Off", 32: "On"}, bitmask=0x80),
+    EnumSensor(552, "Dry Contact2 Status", {0: "Off", 64: "On"}, bitmask=0x100),
 )
 
 ###########
@@ -499,9 +499,9 @@ SENSORS += (
     Sensor(220, "Battery 1 BMS alarm flag", ""),
     Sensor(221, "Battery 1 BMS fault flag", ""),
     SelectRWSensor(222, "Battery 1 BMS other flag - NULL", options={0: "NULL"}, bitmask=0x01),
-    SelectRWSensor(222, "Battery 1 BMS other flag - Battery 1 Force charge", options={0: "off", 1: "on"}, bitmask=0x02),
-    SelectRWSensor(222, "Battery 1 BMS other flag - Battery 2 Force charge", options={0: "off", 1: "on"}, bitmask=0x04),
-    SelectRWSensor(222, "Battery 1 BMS other flag - Battery 1 Sleep", options={0: "off", 1: "on"}, bitmask=0x08),
+    SelectRWSensor(222, "Battery 1 BMS other flag - Battery 1 Force charge", options={0: "off", 2: "on"}, bitmask=0x02),
+    SelectRWSensor(222, "Battery 1 BMS other flag - Battery 2 Force charge", options={0: "off", 4: "on"}, bitmask=0x04),
+    SelectRWSensor(222, "Battery 1 BMS other flag - Battery 1 Sleep", options={0: "off", 8: "on"}, bitmask=0x08),
     Sensor(223, "Battery 1 BMS type", ""),
     Sensor(224, "Battery 1 BMS SOH", "%"),
     Sensor(225, "Battery 1 BMS software version", ""),
@@ -521,9 +521,9 @@ SENSORS += (
     Sensor(251, "Battery 2 BMS alarm flag", ""),
     Sensor(252, "Battery 2 BMS fault flag", ""),
     SelectRWSensor(253, "Battery 2 BMS other flag - NULL", options={0: "NULL"}, bitmask=0x01),
-    SelectRWSensor(253, "Battery 2 BMS other flag - Battery 1 Force charge", options={0: "off", 1: "on"}, bitmask=0x02),
-    SelectRWSensor(253, "Battery 2 BMS other flag - Battery 2 Force charge", options={0: "off", 1: "on"}, bitmask=0x04),
-    SelectRWSensor(253, "Battery 2 BMS other flag - Battery 2 Sleep", options={0: "off", 1: "on"}, bitmask=0x08),
+    SelectRWSensor(253, "Battery 2 BMS other flag - Battery 1 Force charge", options={0: "off", 2: "on"}, bitmask=0x02),
+    SelectRWSensor(253, "Battery 2 BMS other flag - Battery 2 Force charge", options={0: "off", 4: "on"}, bitmask=0x04),
+    SelectRWSensor(253, "Battery 2 BMS other flag - Battery 2 Sleep", options={0: "off", 8: "on"}, bitmask=0x08),
     Sensor(254, "Battery 2 BMS type", ""),
     Sensor(255, "Battery 2 BMS SOH", "%"),
     Sensor(256, "Battery 2 BMS software version", ""),
@@ -551,14 +551,14 @@ SENSORS += (
 SENSORS += (
     # these are some Australian standard. Found a definition here https://www.gses.com.au/wp-content/uploads/2016/09/GC_AU8-2_4777-2016-updates.pdf
     EnumSensor(544, "DRM0 Code", {0: "Not Active", 1: "Shutdown Inverter"}, bitmask=0x01),
-    EnumSensor(544, "DRM1 Code", {0: "Not Active", 1: "No Power Consumption"}, bitmask=0x02),
-    EnumSensor(544, "DRM2 Code", {0: "Not Active", 1: "Max 50% Power Consumption"}, bitmask=0x04),
-    EnumSensor(544, "DRM3 Code", {0: "Not Active", 1: "Max 75% Power Consumption, Source Reactive Power"}, bitmask=0x08),
-    EnumSensor(544, "DRM4 Code", {0: "Not Active", 1: "Increase Power Consumption"}, bitmask=0x10),
-    EnumSensor(544, "DRM5 Code", {0: "Not Active", 1: "No Power Generation"}, bitmask=0x20),
-    EnumSensor(544, "DRM6 Code", {0: "Not Active", 1: "Max 50% Power Generation"}, bitmask=0x40),
-    EnumSensor(544, "DRM7 Code", {0: "Not Active", 1: "Max 75% Power Generation, Sink Reactive Power"}, bitmask=0x80),
-    EnumSensor(544, "DRM8 Code", {0: "Not Active", 1: "Increase Power Generation"}, bitmask=0x100)
+    EnumSensor(544, "DRM1 Code", {0: "Not Active", 2: "No Power Consumption"}, bitmask=0x02),
+    EnumSensor(544, "DRM2 Code", {0: "Not Active", 4: "Max 50% Power Consumption"}, bitmask=0x04),
+    EnumSensor(544, "DRM3 Code", {0: "Not Active", 8: "Max 75% Power Consumption, Source Reactive Power"}, bitmask=0x08),
+    EnumSensor(544, "DRM4 Code", {0: "Not Active", 16: "Increase Power Consumption"}, bitmask=0x10),
+    EnumSensor(544, "DRM5 Code", {0: "Not Active", 32: "No Power Generation"}, bitmask=0x20),
+    EnumSensor(544, "DRM6 Code", {0: "Not Active", 64: "Max 50% Power Generation"}, bitmask=0x40),
+    EnumSensor(544, "DRM7 Code", {0: "Not Active", 128: "Max 75% Power Generation, Sink Reactive Power"}, bitmask=0x80),
+    EnumSensor(544, "DRM8 Code", {0: "Not Active", 256: "Increase Power Generation"}, bitmask=0x100)
 )
 
 SENSORS.deprecated.update(
