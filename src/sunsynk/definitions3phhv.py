@@ -215,7 +215,6 @@ SENSORS += (
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=210),
     SwitchRWSensor(130, "Grid Charge enabled"),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
-    NumberRWSensor(128, "Grid Charge Amps", AMPS),
     SwitchRWSensor(146, "Use Timer", on=255),
     SwitchRWSensor(145, "Solar Export"),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
@@ -262,7 +261,7 @@ BATTERY_FLOAT_VOLT = NumberRWSensor(
     101, "Battery Float voltage", VOLT, 0.01, min=MIN_VOLT, max=MAX_VOLT
 )
 
-BATTERY_MODE = SelectRWSensor(111, "Battery Type", options={0: "Use Battery Voltage", 1: "Lithium (Use BMS)", 2: "No Battery"}), 
+BATTERY_MODE = SelectRWSensor(111, "Battery Type", options={0: "Use Battery Voltage", 1: "Lithium (Use BMS)", 2: "No Battery"})
 
 BATTERY_SHUTDOWN_CAP = NumberRWSensor(115, "Battery Shutdown Capacity", "%")
 BATTERY_RESTART_CAP = NumberRWSensor(116, "Battery Restart Capacity", "%")
