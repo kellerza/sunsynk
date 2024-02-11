@@ -309,7 +309,7 @@ SENSORS += SwitchRWSensor(141, "Priority Load")
 SENSORS += SelectRWSensor(
     142,
     "Load Limit",
-    options={0: "Allow Export", 1: "Zero Export To Non Essential", 2: "Zero Export To Grid CT"},
+    options={0: "Allow Export", 1: "Zero Export To Load", 2: "Zero Export To CT"},
 )
 
 PROG1_TIME = TimeRWSensor(148, "Prog1 Time")
@@ -539,7 +539,7 @@ SENSORS += (
     ### no idea why there is a "no work" option, but it's in the spec and for me, beep is set to No Work when I disabled in on the inverter...
     SelectRWSensor(228, "Time synchronization", options={0: "No work", 1: "No work", 2: "Disable", 3: "Enable"}, bitmask=0x03),
     SelectRWSensor(228, "Beep", options={0: "No work", 4: "No work", 8: "Disable", 12: "Enable"}, bitmask=0x0C), # mine was set to 4 after I disabled it on the inverter
-    SelectRWSensor(228, "AM/PM", options={0: "No work", 16: "No work", 32: "Disable", 48: "Enable"}, bitmask=0x30), #I guess this is 24 hour or AM/PM time display
+    SelectRWSensor(228, "AM PM", options={0: "No work", 16: "No work", 32: "Disable", 48: "Enable"}, bitmask=0x30), #I guess this is 24 hour or AM/PM time display
     SelectRWSensor(228, "Auto dim", options={0: "No work", 64: "No work", 128: "Disable", 192: "Enable"}, bitmask=0xC0),
     SelectRWSensor(228, "Allow Remote", options={0: "No work", 16384: "No work", 32768: "Disable", 49152: "Enable"}, bitmask=0xC000), # mine was set to 32768 from factory (a "no work" option)
     NumberRWSensor(209, "UPS delay time", "s")
