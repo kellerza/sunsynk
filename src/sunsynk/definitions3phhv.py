@@ -179,10 +179,10 @@ SENSORS += (
         0, "Device Type"
     ),  # {2: "Inverter", 3: "Hybrid Inverter", 4: "Micro Inverter", 5: "3 Phase Hybrid Inverter" }),
     HVFaultSensor((555, 556, 557, 558), "Fault"),
-    EnumSensor(553, "Fan Warning", {0: "No Warning", 2: "Warning"}, bitmask=0x02),
-    EnumSensor(553, "Grid Phase Warning", {0: "No Warning", 4: "Warning"}, bitmask=0x04),
-    EnumSensor(554, "Lithium Battery Loss Warning", {0: "No Warning", 16384: "Warning"}, bitmask=0x4000),
-    EnumSensor(554, "Parallel Communication Quality Warning", {0: "No Warning", 32768: "Warning"}, bitmask=0x8000),
+    EnumSensor(553, "Fan Warning", options={0: "No Warning", 2: "Warning"}, bitmask=0x02),
+    EnumSensor(553, "Grid Phase Warning", options={0: "No Warning", 4: "Warning"}, bitmask=0x04),
+    EnumSensor(554, "Lithium Battery Loss Warning", options={0: "No Warning", 16384: "Warning"}, bitmask=0x4000),
+    EnumSensor(554, "Parallel Communication Quality Warning", options={0: "No Warning", 32768: "Warning"}, bitmask=0x8000),
     InverterStateSensor(500, "Overall state"),
     SDStatusSensor(0, "SD Status", ""),  # type: ignore
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
@@ -191,21 +191,21 @@ SENSORS += (
     Sensor(
         552, "Grid Connected Status"
     ),  # Bit 0 = INV Relay, 1 = Undef, 2 = Grid relay, 3 = Gen relay, 4 = Grid give, 5, Dry contact
-    BinarySensor(194, "Grid Connected", bitmask=1 << 2),
+    BinarySensor(552, "Grid Connected", bitmask=1 << 2),
     SystemTimeRWSensor((62, 63, 64), "Date Time", unit=""),
 )
 
 ##############
-# Relay status
+# AC Relay status
 ##############
 SENSORS += (
-    EnumSensor(552, "INV Relay Status", {0: "Off", 1: "On"}, bitmask=0x01),
-    EnumSensor(552, "Undefined Load Relay Status", {0: "Off", 2: "On"}, bitmask=0x02),
-    EnumSensor(552, "Grid Relay Status", {0: "Off", 4: "On"}, bitmask=0x04),
-    EnumSensor(552, "Generator Relay Status", {0: "Off", 8: "On"}, bitmask=0x08),
-    EnumSensor(552, "Grid Give Power to Relay Status", {0: "Off", 16: "On"}, bitmask=0x10),
-    EnumSensor(552, "Dry Contact1 Status", {0: "Off", 32: "On"}, bitmask=0x80),
-    EnumSensor(552, "Dry Contact2 Status", {0: "Off", 64: "On"}, bitmask=0x100),
+    EnumSensor(552, "INV Relay Status", options={0: "Off", 1: "On"}, bitmask=0x01),
+    EnumSensor(552, "Undefined Load Relay Status", options={0: "Off", 2: "On"}, bitmask=0x02),
+    EnumSensor(552, "Grid Relay Status", options={0: "Off", 4: "On"}, bitmask=0x04),
+    EnumSensor(552, "Generator Relay Status", options={0: "Off", 8: "On"}, bitmask=0x08),
+    EnumSensor(552, "Grid Give Power to Relay Status", options={0: "Off", 16: "On"}, bitmask=0x10),
+    EnumSensor(552, "Dry Contact1 Status", options={0: "Off", 32: "On"}, bitmask=0x80),
+    EnumSensor(552, "Dry Contact2 Status", options={0: "Off", 64: "On"}, bitmask=0x100),
 )
 
 ###########
@@ -550,15 +550,15 @@ SENSORS += (
 ############
 SENSORS += (
     # these are some Australian standard. Found a definition here https://www.gses.com.au/wp-content/uploads/2016/09/GC_AU8-2_4777-2016-updates.pdf
-    EnumSensor(544, "DRM0 Code", {0: "Not Active", 1: "Shutdown Inverter"}, bitmask=0x01),
-    EnumSensor(544, "DRM1 Code", {0: "Not Active", 2: "No Power Consumption"}, bitmask=0x02),
-    EnumSensor(544, "DRM2 Code", {0: "Not Active", 4: "Max 50% Power Consumption"}, bitmask=0x04),
-    EnumSensor(544, "DRM3 Code", {0: "Not Active", 8: "Max 75% Power Consumption, Source Reactive Power"}, bitmask=0x08),
-    EnumSensor(544, "DRM4 Code", {0: "Not Active", 16: "Increase Power Consumption"}, bitmask=0x10),
-    EnumSensor(544, "DRM5 Code", {0: "Not Active", 32: "No Power Generation"}, bitmask=0x20),
-    EnumSensor(544, "DRM6 Code", {0: "Not Active", 64: "Max 50% Power Generation"}, bitmask=0x40),
-    EnumSensor(544, "DRM7 Code", {0: "Not Active", 128: "Max 75% Power Generation, Sink Reactive Power"}, bitmask=0x80),
-    EnumSensor(544, "DRM8 Code", {0: "Not Active", 256: "Increase Power Generation"}, bitmask=0x100)
+    EnumSensor(544, "DRM0 Code", options={0: "Not Active", 1: "Shutdown Inverter"}, bitmask=0x01),
+    EnumSensor(544, "DRM1 Code", options={0: "Not Active", 2: "No Power Consumption"}, bitmask=0x02),
+    EnumSensor(544, "DRM2 Code", options={0: "Not Active", 4: "Max 50% Power Consumption"}, bitmask=0x04),
+    EnumSensor(544, "DRM3 Code", options={0: "Not Active", 8: "Max 75% Power Consumption, Source Reactive Power"}, bitmask=0x08),
+    EnumSensor(544, "DRM4 Code", options={0: "Not Active", 16: "Increase Power Consumption"}, bitmask=0x10),
+    EnumSensor(544, "DRM5 Code", options={0: "Not Active", 32: "No Power Generation"}, bitmask=0x20),
+    EnumSensor(544, "DRM6 Code", options={0: "Not Active", 64: "Max 50% Power Generation"}, bitmask=0x40),
+    EnumSensor(544, "DRM7 Code", options={0: "Not Active", 128: "Max 75% Power Generation, Sink Reactive Power"}, bitmask=0x80),
+    EnumSensor(544, "DRM8 Code", options={0: "Not Active", 256: "Increase Power Generation"}, bitmask=0x100)
 )
 
 SENSORS.deprecated.update(

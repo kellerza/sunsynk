@@ -6,10 +6,12 @@ from prettytable import PrettyTable
 from sunsynk import KWH, WATT, NumType, Sensor
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
+from sunsynk.sensors import EnumSensor
 
 _LOGGER = logging.getLogger(__name__)
 
 SCH_RWSENSOR = "rw"
+SCH_ENUMSENSOR = "enum"
 SCH_ANY_UNIT = "any_unit"
 SCH_NO_UNIT = "no_unit"
 
@@ -61,6 +63,7 @@ def get_schedule(sensor: Sensor, schedules: dict[str, Schedule]) -> Schedule:
     search_keys = (
         ("name", sensor.name),
         ("RWSensor", SCH_RWSENSOR if isinstance(sensor, RWSensor) else None),
+        ("EnumSensor", SCH_ENUMSENSOR if isinstance(sensor, EnumSensor) else None),
         ("Unit", sensor.unit),
         ("Any unit", SCH_ANY_UNIT if sensor.unit != "" else None),
         ("No unit", SCH_NO_UNIT if sensor.unit == "" else None),
@@ -85,6 +88,8 @@ SCHEDULES = {
         Schedule(key="date_time", read_every=60, report_every=60, change_any=True),
         # Configuration (RWSensors) used if no name found
         Schedule(key=SCH_RWSENSOR, read_every=5, report_every=5 * 60, change_any=True),
+        # Configuration (EnumSensors) used if no name found
+        Schedule(key=SCH_ENUMSENSOR, read_every=5, report_every=5 * 60, change_any=True),
         # Based on unit
         Schedule(key=WATT, read_every=5, report_every=60, change_by=80),
         Schedule(key=KWH, read_every=5 * 60, report_every=5 * 60),
