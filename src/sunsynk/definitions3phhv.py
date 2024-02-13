@@ -241,7 +241,7 @@ SENSORS += (
     SelectRWSensor(112, "Battery 2 Wake Up", options={0: "Enabled", 256: "Disabled"}, bitmask=0x0100), #according to docs, 0 is enabled for this one
     NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
     Sensor(114, "Battery Charge Efficiency", "%", 0.1),
-    NumberRWSensor(104, "System Zero Export power", WATT, -1),
+    NumberRWSensor(104, "System Zero Export power", WATT, -10),
     NumberRWSensor(105, "Battery Equalization Days", "days", -1),
     NumberRWSensor(106, "Battery Equalization Hours", "h", -1),  # 1 = 0.5 hours
     
