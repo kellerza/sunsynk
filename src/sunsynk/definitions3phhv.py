@@ -182,9 +182,18 @@ RATED_POWER = Sensor((20, 21), "Rated power", WATT, 0.1)
 SENSORS += RATED_POWER
 
 SENSORS += (
-    Sensor(
-        0, "Device Type"
-    ),  # {2: "Inverter", 3: "Hybrid Inverter", 4: "Micro Inverter", 5: "3 Phase Hybrid Inverter" }),
+    EnumSensor(
+        0,
+        "Device type",
+        options={
+            0x0200: "Inverter",
+            0x0300: "Single phase hybrid",
+            0x0400: "Microinverter",
+            0x0500: "Low voltage three phase hybrid",
+            0x0600: "High voltage three phase hybrid 6-15kw",
+            0x0601: "High voltage three phase hybrid 20-50kw",
+        },
+    ),
     HVFaultSensor((555, 556, 557, 558), "Fault"),
     EnumSensor(
         553, "Fan Warning", options={0: "No Warning", 1 << 1: "Warning"}, bitmask=1 << 1
