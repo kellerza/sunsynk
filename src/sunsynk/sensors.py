@@ -245,7 +245,6 @@ class HVFaultSensor(Sensor):
             13: "Working mode change",
             15: "AC over current SW Failure",
             10: "Aux Power Board Failure",
-            13: "Working mode changed",
             16: "DC Ground Leakage current fault",
             18: "AC over current TZ",
             20: "DC over current",
