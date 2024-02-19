@@ -30,7 +30,7 @@ from sunsynk.rwsensors import (
     TimeRWSensor,
     resolve_num,
 )
-from sunsynk.sensors import BinarySensor
+from sunsynk.sensors import BinarySensor, EnumSensor
 
 from ha_addon_sunsynk_multi.options import OPT
 from ha_addon_sunsynk_multi.sensor_options import SensorOption
@@ -98,11 +98,15 @@ class ASensor:
         """Return the name of the sensor."""
         return self.opt.sensor.name
 
+    def is_measurement(self, units: str) -> bool:
+        """Return True if the units are a measurement."""
+        return units in {"W", "V", "A", "Hz", "°C", "°F", "%", "Ah", "VA"}
+
     def create_entity(
         self, dev: Union[Device, Entity, None], *, ist: AInverter
     ) -> Entity:
         """Create HASS entity."""
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches,too-many-return-statements
         if self.hidden:
             raise ValueError(f"Do not create hidden entities! {self}")
         if self.opt.sensor is None:
@@ -129,11 +133,20 @@ class ASensor:
             },
         }
 
+        if isinstance(sensor, EnumSensor):
+            self.entity = SensorEntity(
+                **ent,
+                # options=sensor.available_values(),
+            )
+            return self.entity
+
         if not isinstance(sensor, RWSensor):
             ent["device_class"] = hass_device_class(unit=sensor.unit)
             if isinstance(sensor, BinarySensor):
                 self.entity = BinarySensorEntity(**ent)
             else:
+                if self.is_measurement(sensor.unit):
+                    ent["state_class"] = "measurement"
                 self.entity = SensorEntity(**ent)
             return self.entity
 
