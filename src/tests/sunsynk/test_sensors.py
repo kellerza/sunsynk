@@ -50,6 +50,14 @@ def test_binary_sensor(state: InverterState) -> None:
     assert b.reg_to_value((2,)) is False
     assert b.reg_to_value((255,)) is True
 
+    b = BinarySensor(111, "B 3", on=0b11, off=0b10, bitmask=0b11)
+    assert b.reg_to_value((0b10,)) is False
+    assert b.reg_to_value((0b1110,)) is False
+    assert b.reg_to_value((0b11,)) is True
+    assert b.reg_to_value((0b1111,)) is True
+    assert b.reg_to_value((0b00,)) is None
+    assert b.reg_to_value((0b01,)) is None
+
 
 def test_sen() -> None:
     s = Sensor(0, "S 1")
