@@ -30,6 +30,7 @@ def test_create_entity(mqtt_device: Device, ist: AInverter) -> None:
         "device": {"identifiers": ["888"]},
         "name": "one",
         "object_id": "ss1_one",
+        "state_class": "measurement",
         "state_topic": "SUNSYNK/status/888/one",
         "unique_id": "888_one",
         "unit_of_measurement": "W",
