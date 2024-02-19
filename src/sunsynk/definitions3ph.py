@@ -179,7 +179,12 @@ SENSORS += (
     SelectRWSensor(
         178,
         "Grid Peak Shaving",
-        options={0b10 << 4: "Disable", 0b11 << 4: "Enable"},
+        options={
+            0: "No work",
+            0b01 << 4: "No work",
+            0b10 << 4: "Disable",
+            0b11 << 4: "Enable",
+        },
         bitmask=0b11 << 4,
     ),
 )
