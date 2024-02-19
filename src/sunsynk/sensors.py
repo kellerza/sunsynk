@@ -183,6 +183,23 @@ class SerialSensor(Sensor):
             val += chr(b16 & 0xFF)
         return val
 
+@attrs.define(slots=True, eq=False)
+class EnumSensor(Sensor):
+    """Sensor with a set of enum values. Like a read-only SelectRWSensor"""
+
+    options: dict[int, str] = attrs.field(factory=dict)
+
+    def available_values(self) -> list[str]:
+        """Get the available values for this sensor."""
+        return list(self.options.values())
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode the register."""
+        regsm = self.masked(regs)
+        res = self.options.get(regsm[0])
+        if res is None:
+            _LOGGER.warning("%s: Unknown register value %s", self.id, regsm[0])
+        return res
 
 @attrs.define(slots=True, eq=False)
 class FaultSensor(Sensor):
@@ -202,6 +219,57 @@ class FaultSensor(Sensor):
             42: "AC line low voltage",
             47: "AC freq high/low",
             56: "DC busbar voltage low",
+            63: "ARC fault",
+            64: "Heat sink tempfailure",
+        }
+        err = []
+        off = 0
+        for b16 in regs:
+            for bit in range(16):
+                msk = 1 << bit
+                if msk & b16:
+                    msg = f"F{bit+off+1:02} " + faults.get(off + msk, "")
+                    err.append(msg.strip())
+            off += 16
+        return ", ".join(err)
+
+@attrs.define(slots=True, eq=False)
+class HVFaultSensor(Sensor):
+    """Decode HV Inverter faults."""
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Decode HV Inverter faults."""
+        faults = {
+            1: "DC Inversed Failure",
+            7: "DC START Failure",
+            13: "Working mode change",
+            15: "AC over current SW Failure",
+            10: "Aux Power Board Failure",
+            16: "DC Ground Leakage current fault",
+            18: "AC over current TZ",
+            20: "DC over current",
+            21: "DC HV Bus over current",
+            22: "Remote Emergency stop",
+            23: "AC leakage current is transient over current",
+            24: "DC insulation impedance",
+            26: "DC busbar imbalanced",
+            29: "Parallel comms cable",
+            34: "AC Overload (backup)",
+            35: "No AC grid",
+            41: "Parallel system stopped",
+            42: "AC line low voltage",
+            46: "Battery 1 fault",
+            49: "Battery 2 fault",
+            47: "AC grid freq too high",
+            48: "AC grid freq too low",
+            52: "DC voltage too high",
+            53: "DC voltage too low",
+            54: "battery 1 voltage high",
+            55: "battery 2 voltage high",
+            56: "battery 1 voltage low",
+            57: "battery 2 voltage low",
+            58: "bms communication lost",
+            62: "DRM stop activated",
             63: "ARC fault",
             64: "Heat sink tempfailure",
         }
