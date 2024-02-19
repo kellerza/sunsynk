@@ -75,7 +75,7 @@ class BinarySensor(Sensor):
         """Reg to value for binary."""
         res = super().reg_to_value(regs)
         if self.on is not None and self.off is not None:
-            if res != self.on and res != self.off:
+            if res not in [self.on, self.off]:
                 return None
         if self.on is not None:
             return res == self.on
@@ -186,6 +186,7 @@ class SerialSensor(Sensor):
             val += chr(b16 & 0xFF)
         return val
 
+
 @attrs.define(slots=True, eq=False)
 class EnumSensor(Sensor):
     """Sensor with a set of enum values. Like a read-only SelectRWSensor"""
@@ -203,6 +204,7 @@ class EnumSensor(Sensor):
         if res is None:
             _LOGGER.warning("%s: Unknown register value %s", self.id, regsm[0])
         return res
+
 
 @attrs.define(slots=True, eq=False)
 class FaultSensor(Sensor):
@@ -235,6 +237,7 @@ class FaultSensor(Sensor):
                     err.append(msg.strip())
             off += 16
         return ", ".join(err)
+
 
 @attrs.define(slots=True, eq=False)
 class HVFaultSensor(Sensor):

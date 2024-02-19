@@ -89,7 +89,9 @@ SCHEDULES = {
         # Configuration (RWSensors) used if no name found
         Schedule(key=SCH_RWSENSOR, read_every=5, report_every=5 * 60, change_any=True),
         # Configuration (EnumSensors) used if no name found
-        Schedule(key=SCH_ENUMSENSOR, read_every=5, report_every=5 * 60, change_any=True),
+        Schedule(
+            key=SCH_ENUMSENSOR, read_every=5, report_every=5 * 60, change_any=True
+        ),
         # Based on unit
         Schedule(key=WATT, read_every=5, report_every=60, change_by=80),
         Schedule(key=KWH, read_every=5 * 60, report_every=5 * 60),

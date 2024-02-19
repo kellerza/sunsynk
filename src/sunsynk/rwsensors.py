@@ -111,6 +111,7 @@ class SelectRWSensor(RWSensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the register."""
+        # pylint: disable=duplicate-code
         regsm = self.masked(regs)
         res = self.options.get(regsm[0])
         if res is None:

@@ -585,7 +585,8 @@ SENSORS += (
         "Lithium HV BMS Protocol",
         options={
             0: "PYLON SOLAX (CAN)",
-            1: "Tianbanda RS485 Modbus Protocol (Also BYD CAN)",  # according to supported battery documents, this is also set to 1 for BYD CAN... I can confirm this is true as I have this battery/inverter
+            # according to supported battery documents, this is also set to 1 for BYD CAN
+            1: "Tianbanda RS485 Modbus Protocol (BYD CAN)",
             2: "KOK Protocol",
             3: "Keith",
             4: "Topai Protocol",
@@ -737,7 +738,8 @@ SENSORS += (  ### no idea why there is a "no work" option, but it's in the spec
 # DRM Codes (Australia only)
 ############
 SENSORS += (
-    # these are some Australian standard. Found a definition here https://www.gses.com.au/wp-content/uploads/2016/09/GC_AU8-2_4777-2016-updates.pdf
+    # these are some Australian standard. Found a definition here
+    # https://www.gses.com.au/wp-content/uploads/2016/09/GC_AU8-2_4777-2016-updates.pdf
     EnumSensor(
         544,
         "DRM0 Code",

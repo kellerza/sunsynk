@@ -97,7 +97,7 @@ class ASensor:
     def name(self) -> str:
         """Return the name of the sensor."""
         return self.opt.sensor.name
-    
+
     def is_measurement(self, units: str) -> bool:
         """Return True if the units are a measurement."""
         return units in {"W", "V", "A", "Hz", "°C", "°F", "%", "Ah", "VA"}
@@ -106,7 +106,7 @@ class ASensor:
         self, dev: Union[Device, Entity, None], *, ist: AInverter
     ) -> Entity:
         """Create HASS entity."""
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches,too-many-return-statements
         if self.hidden:
             raise ValueError(f"Do not create hidden entities! {self}")
         if self.opt.sensor is None:
@@ -133,11 +133,10 @@ class ASensor:
             },
         }
 
-                
         if isinstance(sensor, EnumSensor):
             self.entity = SensorEntity(
                 **ent,
-                #options=sensor.available_values(),
+                # options=sensor.available_values(),
             )
             return self.entity
 
