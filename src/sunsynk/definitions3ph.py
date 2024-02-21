@@ -176,9 +176,6 @@ SENSORS += (
     NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=210),
     NumberRWSensor(102, "Battery Capacity current", AMPS, max=2000),
     NumberRWSensor(191, "Grid Peak Shaving power", WATT, max=100000),
-    SwitchRWSensor(
-        178, "Grid Peak Shaving", off=0b10 << 4, on=0b11 << 4, bitmask=0b11 << 4
-    ),
 )
 
 # Additional optional sensors
