@@ -51,6 +51,7 @@ class Options:
     mqtt_username: str = ""
     mqtt_password: str = ""
     number_entity_mode: str = "auto"
+    prog_time_interval: int = 15
     inverters: list[InverterOptions] = []
     sensor_definitions: str = "single-phase"
     sensors: list[str] = []
