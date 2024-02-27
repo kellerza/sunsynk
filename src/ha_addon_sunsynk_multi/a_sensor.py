@@ -189,7 +189,7 @@ class ASensor:
             ent["icon"] = "mdi:clock"
             self.entity = SelectEntity(
                 **ent,
-                options=sensor.available_values(OPT.number_entity_mode, ist.get_state),
+                options=sensor.available_values(OPT.prog_time_interval, ist.get_state),
             )
             return self.entity
 
