@@ -23,7 +23,49 @@ Use the one that is most appropriate for your host computer.
 
 ### Sunsynk Multi
 
-* Copy `options.yaml.template` to `options.yaml` and make changes to `options.yaml` to match your setup. Use `PORT: tcp://mbusd:502` for the inverter port if you want to use the `mbusd` included in this docker compose stack.
+::: details **options.yaml** example
+
+Create your own `options.yaml` file with the following content:
+
+```yaml
+---
+DRIVER: "pymodbus"
+INVERTERS:
+  - SERIAL_NR: "007"
+    HA_PREFIX: SS
+    MODBUS_ID: 1
+    DONGLE_SERIAL_NUMBER: "0"
+    PORT: tcp://mbusd:502
+SENSOR_DEFINITIONS: single-phase
+SENSORS:
+  - energy_management
+  - power_flow_card
+  - pv2_power
+SENSORS_FIRST_INVERTER:
+  - settings
+MANUFACTURER: Sunsynk
+READ_ALLOW_GAP: 2
+READ_SENSORS_BATCH_SIZE: 20
+SCHEDULES:
+  - KEY: W
+    READ_EVERY: 5
+    REPORT_EVERY: 60
+    CHANGE_ANY: false
+    CHANGE_BY: 80
+    CHANGE_PERCENT: 0
+NUMBER_ENTITY_MODE: "auto"
+MQTT_HOST: core-mosquitto
+MQTT_PORT: 1883
+MQTT_USERNAME: hass
+MQTT_PASSWORD: ""
+# DEBUG: 0
+# DEBUG_DEVICE: "/dev/ttyAMA0"
+```
+
+Adjust the `INVERTERS` section to match your inverter setup. `tcp://mbusd:502` points toward a DNS entry, or most likely container named `mbusd` included in this docker compose stack.
+
+:::
+
 * Build the image `BUILD_FROM=<base_image> docker compose build sunsynk-multi`
 * Run the container `docker compose up -d sunsynk-multi`
 * See the container logs `docker compose logs -f sunsynk-multi`
@@ -37,10 +79,13 @@ Use the one that is most appropriate for your host computer.
 * View container logs `docker compose logs -f mbusd`
 
 ## Using Pre-built Docker Images
+
 The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the different images for the various supported architectures [here](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
 
 ### Docker-Compose examples:
+
 #### amd64
+
 ``` yaml
 services:
   sunsynk-multi:

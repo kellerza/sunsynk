@@ -130,6 +130,7 @@ class ASensor:
             # https://github.com/kellerza/sunsynk/issues/165
             "discovery_extra": {
                 "object_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
+                "suggested_display_precision": 1,
             },
         }
 

@@ -26,10 +26,10 @@
   },
   "devDependencies": {
     "js-yaml": "^4.1.0",
-    "markdown-it-deflist": "^2.1.0",
+    "markdown-it-deflist": "^3.0.0",
     "markdown-it-imsize": "^2.0.1",
     "sitemap-ts": "^1.4.0",
-    "vitepress": "^1.0.0-rc.10",
+    "vitepress": "^1.0.0-rc.44",
     "vue": "^3.3.4",
     "vue3-json-viewer": "^2.2.2"
   }
