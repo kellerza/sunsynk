@@ -25,7 +25,12 @@ def unmarshal(target: object, json: dict) -> object:
             newv = [unmarshal(newcls(), item) for item in val]
             setattr(target, key, newv)
             continue
+        target_old = getattr(target, key)
         setattr(target, key, val)
+        for thetype in [int, str]:
+            if isinstance(target_old, thetype):
+                setattr(target, key, thetype(val))
+                break
     return target
 
 

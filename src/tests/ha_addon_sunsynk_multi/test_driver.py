@@ -37,5 +37,13 @@ def test_init() -> None:
     init_driver(OPT)
     assert len(STATE) == 1
     assert STATE[0].inv == SolarmanSunsynk(
-        port=inv_port, state=STATE[0].inv.state, dongle_serial_number=101
+        port=inv_port, state=STATE[0].inv.state, dongle_serial_number="101"
     )
+
+
+def test_unmarhal() -> None:
+    OPT.prog_time_interval = 15
+
+    unmarshal(OPT, {"prog_time_interval": "30"})
+
+    assert OPT.prog_time_interval == 30

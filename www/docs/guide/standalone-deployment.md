@@ -82,7 +82,7 @@ Adjust the `INVERTERS` section to match your inverter setup. `tcp://mbusd:502` p
 
 The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the different images for the various supported architectures [here](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
 
-### Docker-Compose examples:
+### Docker-Compose examples
 
 #### amd64
 
@@ -123,7 +123,7 @@ Below are examples using the docker CLI.
 
 > ℹ️ **Note:** Replace ${PWD} with the path to the location of your `options.yaml` file.
 
-#### amd64
+#### CLI: amd64
 
 ``` bash
 docker run -d --name sunsynk-multi \
@@ -132,7 +132,7 @@ docker run -d --name sunsynk-multi \
 ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
 ```
 
-#### aarch64
+#### CLI: aarch64
 
 ``` bash
 docker run -d --name sunsynk-multi \
@@ -141,7 +141,7 @@ docker run -d --name sunsynk-multi \
 ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
 ```
 
-#### armv7
+#### CLI: armv7
 
 ``` bash
 docker run -d --name sunsynk-multi \
