@@ -128,6 +128,9 @@ The `MANUFACTURER` option allows you to rename the inverter manufacturer that wi
 The `NUMBER_ENTITY_MODE` option allows you to change how read/write sensors which present as number entities in Home Assistant behave.
 The default display mode is `auto`. This setting controls how the number entity should be displayed in the UI. Can be set to `box` or `slider` to force a display mode.
 
+The `PROG_TIME_INTERVAL` option allows you to change the time interval in the lists for setting the program time.
+Be aware that if you set this to 5 mnutes you will have a very long select list of times to scroll through.
+
 ## MQTT Settings
 
 You will need a working MQTT server since all values will be sent via MQTT toward Home
