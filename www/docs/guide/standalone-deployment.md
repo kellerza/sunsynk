@@ -96,6 +96,7 @@ services:
 ```
 
 #### aarch64
+
 ``` yaml
 services:
   sunsynk-multi:
@@ -106,6 +107,7 @@ services:
 ```
 
 #### armv7
+
 ``` yaml
 services:
   sunsynk-multi:
@@ -115,13 +117,14 @@ services:
       - ${PWD}/options.yaml:/data/options.yaml
 ```
 
-### Docker CLI examples:
+### Docker CLI examples
+
 Below are examples using the docker CLI.
 
 > ℹ️ **Note:** Replace ${PWD} with the path to the location of your `options.yaml` file.
 
-
 #### amd64
+
 ``` bash
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
@@ -130,6 +133,7 @@ ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
 ```
 
 #### aarch64
+
 ``` bash
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
@@ -138,11 +142,10 @@ ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
 ```
 
 #### armv7
+
 ``` bash
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
 -v ${PWD}/options.yaml:/data/options.yaml \
 ghcr.io/kellerza/hass-addon-sunsynk-multi/armv7:stable
 ```
-
-

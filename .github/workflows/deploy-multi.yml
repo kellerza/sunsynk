@@ -31,7 +31,7 @@ jobs:
       version: ${{ steps.release.outputs.version }}
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🚀 Run add-on information
         id: information
         uses: frenck/action-addon-information@v1.4
@@ -68,7 +68,7 @@ jobs:
         architecture: ${{ fromJson(needs.information.outputs.architectures) }}
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Local copy of sunsynk
         run: |
           ls
@@ -169,7 +169,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Point edge to the new ref
         run: |
           sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-edge/config.yaml
