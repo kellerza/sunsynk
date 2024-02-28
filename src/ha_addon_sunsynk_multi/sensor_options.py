@@ -5,8 +5,8 @@ from typing import Generator, Iterable
 
 import attrs
 from sunsynk.definitions import SENSORS as DEFS1
-from sunsynk.definitions3ph import SENSORS as DEFS3
 from sunsynk.definitions3phhv import SENSORS as DEFS3HV
+from sunsynk.definitions3phlv import SENSORS as DEFS3
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, SensorDefinitions

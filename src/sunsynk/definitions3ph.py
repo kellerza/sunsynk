@@ -9,7 +9,7 @@ from sunsynk.rwsensors import (
     TimeRWSensor,
 )
 from sunsynk.sensors import (
-    BinarySensor,
+    EnumSensor,
     FaultSensor,
     InverterStateSensor,
     MathSensor,
@@ -54,11 +54,16 @@ SENSORS += (
     Sensor(622, "Grid L1 power", WATT, -1),  # aPower
     Sensor(623, "Grid L2 power", WATT, -1),  # bPower
     Sensor(624, "Grid L3 power", WATT, -1),  # cPower
-    Sensor(600, "Grid voltage", VOLT, 0.1),  # aLineVolt
+    Sensor(598, "Grid L1 voltage", VOLT, 0.1),  # aLineVolt
+    Sensor(599, "Grid L2 voltage", VOLT, 0.1),  # bLineVolt
+    Sensor(600, "Grid L3 voltage", VOLT, 0.1),  # cLineVolt
     MathSensor(
         (610, 611, 612), "Grid current", AMPS, factors=(0.01, 0.01, 0.01)
     ),  # iac1,iac2,iac3
-    Sensor(619, "Grid CT power", WATT, -1),  # gridOutsideTotalPac (unsure ??)
+    Sensor(616, "Grid CT L1 power", WATT, -1),  # aPower
+    Sensor(617, "Grid CT L2 power", WATT, -1),  # bPower
+    Sensor(618, "Grid CT L3 power", WATT, -1),  # cPower
+    Sensor(619, "Grid CT power", WATT, -1),  # totalPower
 )
 
 #############
@@ -69,39 +74,42 @@ SENSORS += (
     Sensor(650, "Load L1 power", WATT, -1),
     Sensor(651, "Load L2 power", WATT, -1),
     Sensor(652, "Load L3 power", WATT, -1),
+    Sensor(644, "Load L1 voltage", VOLT, 0.1),
+    Sensor(645, "Load L2 voltage", VOLT, 0.1),
+    Sensor(646, "Load L3 voltage", VOLT, 0.1),
 )
 
-################
-# Solar Power 1
-################
+#####################
+# MPPT 1 Solar Power
+#####################
 SENSORS += (
     Sensor(672, "PV1 power", WATT, -1),
     Sensor(676, "PV1 voltage", VOLT, 0.1),
     Sensor(677, "PV1 current", AMPS, 0.1),
 )
 
-################
-# Solar Power 2
-################
+#####################
+# MPPT2 Solar Power
+#####################
 SENSORS += (
     Sensor(673, "PV2 power", WATT, -1),
     Sensor(678, "PV2 voltage", VOLT, 0.1),
     Sensor(679, "PV2 current", AMPS, 0.1),
 )
 
-################
-# Solar Power 3 (?? deye 3 Phase  only has 2 MPPT)
-################
-SENSORS += (
+#####################
+# MPPT 3 Solar Power
+#####################
+SENSORS += (  # Deye 3 Phase  only has 2 MPPT)
     Sensor(674, "PV3 power", WATT, -1),
     Sensor(680, "PV3 voltage", VOLT, 0.1),
     Sensor(681, "PV3 current", AMPS, 0.1),
 )
 
-################
-# Solar Power 4 (?? deye 3 Phase  only has 2 MPPT)
-################
-SENSORS += (
+#####################
+# MPPT 4 Solar Power
+#####################
+SENSORS += (  # Deye 3 Phase  only has 2 MPPT)
     Sensor(675, "PV4 power", WATT, -1),
     Sensor(682, "PV4 voltage", VOLT, 0.1),
     Sensor(683, "PV4 current", AMPS, 0.1),
@@ -146,9 +154,18 @@ RATED_POWER = Sensor((20, 21), "Rated power", WATT, 0.1)
 SENSORS += RATED_POWER
 
 SENSORS += (
-    Sensor(
-        0, "Device Type"
-    ),  # {2: "Inverter", 3: "Hybrid Inverter", 4: "Micro Inverter", 5: "3 Phase Hybrid Inverter" }),
+    EnumSensor(
+        0,
+        "Device type",
+        options={
+            0x0200: "Inverter",
+            0x0300: "Single phase hybrid",
+            0x0400: "Microinverter",
+            0x0500: "Low voltage three phase hybrid",
+            0x0600: "High voltage three phase hybrid 6-15kw",
+            0x0601: "High voltage three phase hybrid 20-50kw",
+        },
+    ),
     FaultSensor((555, 556, 557, 558), "Fault"),
     InverterStateSensor(500, "Overall state"),
     SDStatusSensor(0, "SD Status", ""),  # type: ignore        # 3 Phase does not have SD Card but crashes when removed
@@ -158,7 +175,6 @@ SENSORS += (
     Sensor(
         552, "Grid Connected Status"
     ),  # Bit 0 = INV Relay, 1 = Undef, 2 = Grid relay, 3 = Gen relay, 4 = Grid give, 5, Dry contact
-    BinarySensor(194, "Grid Connected", bitmask=1 << 2),
     SystemTimeRWSensor((62, 63, 64), "Date Time", unit=""),
 )
 
@@ -169,7 +185,7 @@ SENSORS += (
 SENSORS += (
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=210),
     SwitchRWSensor(130, "Grid Charge enabled"),
-    SwitchRWSensor(146, "Use Timer", on=255),
+    SwitchRWSensor(146, "Use Timer", bitmask=1),
     SwitchRWSensor(145, "Solar Export"),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
     NumberRWSensor(108, "Battery Max Charge current", AMPS, max=210),
@@ -183,17 +199,22 @@ SENSORS += (
     NumberRWSensor(
         103, "Battery low voltage", VOLT, -0.1
     ),  # interesting perhaps not available in menu. default 4500 (45V)
+    NumberRWSensor(104, "System Zero Export power", WATT, -1),
+    NumberRWSensor(105, "Battery Equalization Days", "days", -1),
+    NumberRWSensor(106, "Battery Equalization Hours", "h", -1),  # 1 = 0.5 hours
+    SwitchRWSensor(129, "Generator Charge enabled"),
+    SelectRWSensor(
+        112,
+        "Battery Wake Up",
+        options={0: "Enabled", 1 << 0: "Disabled"},
+        bitmask=1 << 0,
+    ),  # according to docs, 0 is enabled for this one
+    NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
     SelectRWSensor(
         133,
         "Generator Port Usage",
         options={0: "Generator", 1: "Smartload", 2: "Micro Inverter"},
     ),
-    SelectRWSensor(129, "Generator Charge enabled", options={0: "Off", 1: "On"}),
-    SelectRWSensor(112, "Battery Activate", options={0: "Off", 1: "On"}),
-    NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
-    NumberRWSensor(104, "System Zero Export power", WATT, -1),
-    NumberRWSensor(105, "Battery Equalization Days", "days", -1),
-    NumberRWSensor(106, "Battery Equalization Hours", "h", -1),  # 1 = 0.5 hours
 )
 
 # Absolute min and max voltage based on Deye inverter
@@ -271,18 +292,14 @@ PROG3_TIME.max = PROG4_TIME
 PROG4_TIME.max = PROG5_TIME
 PROG5_TIME.max = PROG6_TIME
 PROG6_TIME.max = PROG1_TIME
+SENSORS += (PROG1_TIME, PROG2_TIME, PROG3_TIME, PROG4_TIME, PROG5_TIME, PROG6_TIME)
 
 PROG_CHARGE_OPTIONS = {
-    0: "Off",
-    1: "On",
+    0: "No Grid or Gen",
+    1: "Allow Grid",
+    2: "Allow Gen",
+    3: "Allow Grid & Gen",
 }
-
-# PROG_CHARGE_OPTIONS = {
-#     0: "No Grid or Gen",
-#     1: "Allow Grid",
-#     2: "Allow Gen",
-#     3: "Allow Grid & Gen",
-# }
 # PROG_MODE_OPTIONS = {
 #     0: "None",
 #     4: "General",
@@ -291,12 +308,6 @@ PROG_CHARGE_OPTIONS = {
 # }
 
 SENSORS += (
-    PROG1_TIME,
-    PROG2_TIME,
-    PROG3_TIME,
-    PROG4_TIME,
-    PROG5_TIME,
-    PROG6_TIME,
     NumberRWSensor(154, "Prog1 power", WATT, max=RATED_POWER),
     NumberRWSensor(155, "Prog2 power", WATT, max=RATED_POWER),
     NumberRWSensor(156, "Prog3 power", WATT, max=RATED_POWER),
@@ -332,52 +343,22 @@ SENSORS += (
 
 SENSORS += (
     NumberRWSensor(
-        160,
-        "Prog1 voltage",
-        VOLT,
-        0.01,
-        min=BATTERY_LOW_VOLT,
-        max=BATTERY_FLOAT_VOLT,
+        160, "Prog1 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLT, max=BATTERY_FLOAT_VOLT
     ),
     NumberRWSensor(
-        161,
-        "Prog2 voltage",
-        VOLT,
-        0.01,
-        min=BATTERY_LOW_VOLT,
-        max=BATTERY_FLOAT_VOLT,
+        161, "Prog2 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLT, max=BATTERY_FLOAT_VOLT
     ),
     NumberRWSensor(
-        162,
-        "Prog3 voltage",
-        VOLT,
-        0.01,
-        min=BATTERY_LOW_VOLT,
-        max=BATTERY_FLOAT_VOLT,
+        162, "Prog3 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLT, max=BATTERY_FLOAT_VOLT
     ),
     NumberRWSensor(
-        163,
-        "Prog4 voltage",
-        VOLT,
-        0.01,
-        min=BATTERY_LOW_VOLT,
-        max=BATTERY_FLOAT_VOLT,
+        163, "Prog4 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLT, max=BATTERY_FLOAT_VOLT
     ),
     NumberRWSensor(
-        164,
-        "Prog5 voltage",
-        VOLT,
-        0.01,
-        min=BATTERY_LOW_VOLT,
-        max=BATTERY_FLOAT_VOLT,
+        164, "Prog5 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLT, max=BATTERY_FLOAT_VOLT
     ),
     NumberRWSensor(
-        165,
-        "Prog6 voltage",
-        VOLT,
-        0.01,
-        min=BATTERY_LOW_VOLT,
-        max=BATTERY_FLOAT_VOLT,
+        165, "Prog6 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLT, max=BATTERY_FLOAT_VOLT
     ),
 )
 

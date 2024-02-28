@@ -247,6 +247,7 @@ PROG3_TIME.max = PROG4_TIME
 PROG4_TIME.max = PROG5_TIME
 PROG5_TIME.max = PROG6_TIME
 PROG6_TIME.max = PROG1_TIME
+SENSORS += (PROG1_TIME, PROG2_TIME, PROG3_TIME, PROG4_TIME, PROG5_TIME, PROG6_TIME)
 
 PROG_CHARGE_OPTIONS = {
     0: "No Grid or Gen",
@@ -262,12 +263,7 @@ PROG_MODE_OPTIONS = {
 }
 
 SENSORS += (
-    PROG1_TIME,
-    PROG2_TIME,
-    PROG3_TIME,
-    PROG4_TIME,
-    PROG5_TIME,
-    PROG6_TIME,
+    # The max power that can be used from the battery
     NumberRWSensor(256, "Prog1 power", WATT, max=RATED_POWER),
     NumberRWSensor(257, "Prog2 power", WATT, max=RATED_POWER),
     NumberRWSensor(258, "Prog3 power", WATT, max=RATED_POWER),
