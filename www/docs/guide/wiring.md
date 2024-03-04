@@ -12,6 +12,15 @@ If the RJ-45 connector on the inverter side is crimped according to [T568A/T568B
 |              2              |              Green               |              Orange              |     A/D+      |
 |              3              |           Orange-White           |           Green-White            |      GND      |
 
+::: tip
+
+The newer inverters have a combined RS485 and CAN-BUS port. If your battery is already using the port for its CAN-BUS communications, you need to split the cable to connect your RS485 connector. The following articles explains the wiring of the port:
+
+- [DIY cable split](https://solarenergyconcepts.co.uk/practical-and-diy/crc-error-solar-assistant/)
+- [SolarAssistant's RJ45 splitter](https://solar-assistant.io/help/deye/2_in_1_bms_port)
+
+:::
+
 ## USB-to-RS485 adaptors
 
 1. Wave USB-to-RS485 [example](https://www.robotics.org.za/W17286)
@@ -72,14 +81,6 @@ Other tested adaptors
 Model number: `SUN-3.6K-SG04LP1-EU`
 
 This likely applies to similar models in the Ecco range: `SUN-3K-SG04LP1-24-EU / SUN-3K-SG04LP1-EU / SUN-5K-SG04LP1-EU / SUN-6K-SG04LP1-EU`
-
-::: tip
-
-The newer Ecco inverters have a combined RS485 and CAN-BUS port. If your battery is already using the port for its CAN-BUS communications, an RJ45 splitter is required to separate the communications between RS485 and CAN-BUS.
-
-[SolarAssistant have a helpful page](https://solar-assistant.io/help/deye/2_in_1_bms_port) that explains the wiring of the port and the splitter required.
-
-:::
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-ecco-3-6kw.png" width="80%">
 
