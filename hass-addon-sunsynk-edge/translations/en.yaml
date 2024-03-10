@@ -21,3 +21,10 @@ configuration:
   SENSOR_DEFINITIONS:
     name: Sensor definitions
     description: ""
+
+  PROG_TIME_INTERVAL:
+    name: Program time interval
+    description: "
+      Set the program time interval in minutes for the selection list.
+
+      Warning: setting this to 5 minutes will result in a very long list to scroll through."
