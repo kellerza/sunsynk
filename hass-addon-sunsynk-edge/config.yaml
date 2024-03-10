@@ -75,7 +75,7 @@ schema:
       CHANGE_BY: int(0,3600)?
       CHANGE_PERCENT: int(0,500)?
   NUMBER_ENTITY_MODE: list(auto|box|slider)
-  PROG_TIME_INTERVAL: list(5|10|15|20|25|30|35|40|45|50|55|60)
+  PROG_TIME_INTERVAL: list(5|10|15|30|45|60)?
   MQTT_HOST: str
   MQTT_PORT: port
   MQTT_USERNAME: str
