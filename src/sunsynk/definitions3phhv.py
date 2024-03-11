@@ -24,9 +24,7 @@ SENSORS = SENSORS.copy()
 # Battery
 ##########
 SENSORS += (
-    Sensor(
-        586, "Battery 1 temperature", CELSIUS, 0.1
-    ),  # this one seems to not follow the convention of other temperatures. 290 = 29c
+    TempSensor(586, "Battery 1 temperature", CELSIUS, 0.1),
     Sensor(587, "Battery 1 voltage", VOLT, 0.1),
     Sensor(588, "Battery 1 SOC", "%"),
     Sensor(590, "Battery 1 power", WATT, -10),
@@ -35,9 +33,7 @@ SENSORS += (
     Sensor(593, "Battery 2 voltage", VOLT, 0.1),
     Sensor(594, "Battery 2 current", AMPS, -0.01),
     Sensor(595, "Battery 2 power", WATT, -10),
-    Sensor(
-        596, "Battery 2 temperature", CELSIUS, 0.1
-    ),  # this one seems to not follow the convention of other temperatures. 290 = 29c
+    TempSensor(596, "Battery 2 temperature", CELSIUS, 0.1),
 )
 
 #############
