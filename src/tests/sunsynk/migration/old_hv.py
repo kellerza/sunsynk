@@ -28,9 +28,7 @@ SENSORS = SensorDefinitions()
 # Battery
 ##########
 SENSORS += (
-    Sensor(
-        586, "Battery 1 temperature", CELSIUS, 0.1
-    ),  # this one seems to not follow the convention of other temperatures. 290 = 29c
+    TempSensor(586, "Battery 1 temperature", CELSIUS, 0.1),
     Sensor(587, "Battery 1 voltage", VOLT, 0.1),
     Sensor(588, "Battery 1 SOC", "%"),
     Sensor(590, "Battery 1 power", WATT, -10),
@@ -39,9 +37,7 @@ SENSORS += (
     Sensor(593, "Battery 2 voltage", VOLT, 0.1),
     Sensor(594, "Battery 2 current", AMPS, -0.01),
     Sensor(595, "Battery 2 power", WATT, -10),
-    Sensor(
-        596, "Battery 2 temperature", CELSIUS, 0.1
-    ),  # this one seems to not follow the convention of other temperatures. 290 = 29c
+    TempSensor(596, "Battery 2 temperature", CELSIUS, 0.1),
 )
 
 #################
@@ -245,14 +241,14 @@ SENSORS += (
 # Settings
 ###########
 SENSORS += (
-    NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=210),
+    NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=240),
     SwitchRWSensor(130, "Grid Charge enabled"),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
     SwitchRWSensor(146, "Use Timer", on=255),
     SwitchRWSensor(145, "Solar Export"),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
-    NumberRWSensor(108, "Battery Max Charge current", AMPS, max=210),
-    NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=210),
+    NumberRWSensor(108, "Battery Max Charge current", AMPS, max=240),
+    NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=240),
     NumberRWSensor(102, "Battery Capacity current", "Ah", max=2000),
     NumberRWSensor(191, "Grid Peak Shaving power", WATT, 10, max=100000),
 )

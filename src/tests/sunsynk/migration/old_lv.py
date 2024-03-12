@@ -167,13 +167,13 @@ SENSORS += (
 # Settings
 ###########
 SENSORS += (
-    NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=210),
+    NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=240),
     SwitchRWSensor(130, "Grid Charge enabled"),
     SwitchRWSensor(146, "Use Timer", on=255),
     SwitchRWSensor(145, "Solar Export"),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
-    NumberRWSensor(108, "Battery Max Charge current", AMPS, max=210),
-    NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=210),
+    NumberRWSensor(108, "Battery Max Charge current", AMPS, max=240),
+    NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=240),
     NumberRWSensor(102, "Battery Capacity current", AMPS, max=2000),
     NumberRWSensor(191, "Grid Peak Shaving power", WATT, max=100000),
 )
