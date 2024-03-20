@@ -58,6 +58,8 @@ class SolarmanSunsynk(Sunsynk):
             return
         try:
             await self.client.disconnect()
+        except AttributeError:
+            pass
         finally:
             self.client = None
 

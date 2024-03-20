@@ -1,12 +1,15 @@
 """Solarman Sunsynk"""
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from sunsynk.solarmansunsynk import SolarmanSunsynk
 
+P_CONNECT = "sunsynk.solarmansunsynk.SolarmanSunsynk.connect"
+
 
 @pytest.mark.asyncio
-async def test_uss_sensor() -> None:
+@patch(P_CONNECT, new_callable=AsyncMock)
+async def test_uss_sensor(connect) -> None:
     ss = SolarmanSunsynk(port="tcp://127.0.0.1:502")
     # await ss.connect()
     ss.client = AsyncMock()
