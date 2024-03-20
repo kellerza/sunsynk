@@ -6,7 +6,7 @@ from typing import Sequence
 from urllib.parse import urlparse
 
 import attrs
-from pysolarmanv5 import PySolarmanV5Async, V5FrameError  # type: ignore
+from pysolarmanv5 import PySolarmanV5Async  # type: ignore
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -50,12 +50,22 @@ class SolarmanSunsynk(Sunsynk):
             v5_error_correction=True,
             error_correction=True,  # bug?
         )
-        await self.client.connect()
+        # await self.client.connect()
+
+    async def disconnect(self) -> None:
+        """Disconnect."""
+        if not self.client:
+            return
+        try:
+            await self.client.disconnect()
+        finally:
+            self.client = None
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
             _LOGGER.debug("DBG: write_register: %s ==> ...", [value])
+            await self.connect()
             res = await self.client.write_multiple_holding_registers(
                 register_addr=address, values=[value]
             )
@@ -63,21 +73,25 @@ class SolarmanSunsynk(Sunsynk):
             return True
         except asyncio.TimeoutError:
             _LOGGER.error("timeout writing register %s=%s", address, value)
+            await self.disconnect()
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.error("Error writing register %s: %s", address, err)
+            await self.disconnect()
+
         self.timeouts += 1
         return False
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read a holding register."""
-        try:
-            return await self.client.read_holding_registers(start, length)
-        except Exception as exc:  # pylint: disable=broad-except
-            for attempt in range(RETRY_ATTEMPTS):
-                try:
-                    return await self.client.read_holding_registers(start, length)
-                except V5FrameError as err:
-                    _LOGGER.info("Frame error retry attempt(%s): %s", attempt, err)
-                except Exception as err:  # pylint: disable=broad-except
-                    _LOGGER.error("Error retry attempt(%s): %s", attempt, err)
+        attempt = 0
+        while True:
+            try:
+                await self.connect()
+                return await self.client.read_holding_registers(start, length)
+            except Exception as err:  # pylint: disable=broad-except
+                attempt += 1
+                _LOGGER.error("Error reading: %s (retry %s)", err, attempt)
+                await self.disconnect()
+                if attempt >= RETRY_ATTEMPTS:
+                    raise IOError(f"Failed to read register {start}") from err
                 await asyncio.sleep(2)
-                continue
-            raise IOError(f"Failed to read register {start}") from exc
