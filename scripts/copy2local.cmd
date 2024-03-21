@@ -13,19 +13,27 @@ xcopy /Y README.md %~2\sunsynk\
 xcopy /Y /S %~1\rootfs %~2\rootfs\
 xcopy /Y /S %~1\translations %~2\translations\
 xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt src %~2\sunsynk\src\
-echo # Modify Dockerfile
-cp %~1\Dockerfile %~1\Dockerfile.local
-rem Comment out installing sunsynk from pypi
-sed -i 's/RUN pip3/# RUN pip3/' %~1\Dockerfile.local
-rem Uncomment local test commands
-sed -i -E 's/#! (# )?//' %~1\Dockerfile.local
-rem sed -i 's/#! //' %~1\Dockerfile.local
-xcopy /Y %~1\Dockerfile.local %~2\Dockerfile
 
+for /f %%i in ('application arg0 arg1') do set ID=%%i
+echo %ID%
+echo # Modify Config for local testing
+set cf=%~1\config.localtest.yaml
+cp %~1\config.yaml %cf%
+sed -i 's/image:/# image:/' %cf%
+sed -i 's/name: /name: LOCAL /' %cf%
+@REM echo %TIME%| sed -r 's/([0-9]+:)+//'> .id
+@REM set /p "VER=" < .id
+@REM echo Version: "%VER%"
+@REM sed -i 's/version:.*\"/version: \"%VER%\"/' %cf%
+xcopy /Y %cf% %~2\config.yaml
 
-cp %~1\config.yaml config.tmp
-sed -i 's/name: /name: LOCAL /' config.tmp
-xcopy /Y config.tmp %~2\config.yaml
-rm config.tmp
+@REM echo # Modify Dockerfile
+@REM cp %~1\Dockerfile %~1\Dockerfile.local
+@REM rem Comment out installing sunsynk from pypi
+@REM sed -i 's/RUN pip3/# RUN pip3/' %~1\Dockerfile.local
+@REM rem Uncomment local test commands
+@REM sed -i -E 's/#! (# )?//' %~1\Dockerfile.local
+@REM rem sed -i 's/#! //' %~1\Dockerfile.local
+@REM xcopy /Y %~1\Dockerfile.local %~2\Dockerfile
 
 EXIT /B 0

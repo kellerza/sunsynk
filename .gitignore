@@ -2,8 +2,11 @@
 **/.*.yaml
 .data/*
 .data
+.id
 # private config
 options.yaml
+
+config.localtest.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -37,6 +37,8 @@ class SolarmanSunsynk(Sunsynk):
 
     async def connect(self) -> None:
         """Connect."""
+        if self.client:
+            return
         url = urlparse(f"{self.port}")
         self.allow_gap = 10
         self.client = PySolarmanV5Async(
@@ -50,7 +52,7 @@ class SolarmanSunsynk(Sunsynk):
             v5_error_correction=True,
             error_correction=True,  # bug?
         )
-        # await self.client.connect()
+        await self.client.connect()
 
     async def disconnect(self) -> None:
         """Disconnect."""
