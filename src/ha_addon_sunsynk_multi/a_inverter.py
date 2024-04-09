@@ -188,7 +188,7 @@ class AInverter:
             name="RS485 timeout",
             unique_id=f"{dev.id}_{name}",
             state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
-            entity_category="config",
+            entity_category="diagnostic",
             device=dev,
             discovery_extra={
                 "object_id": slug(f"{self.opt.ha_prefix} {name}".strip()),
@@ -200,7 +200,7 @@ class AInverter:
             unique_id=f"{dev.id}_{name}",
             state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
             json_attributes_topic=f"{SS_TOPIC}/{dev.id}/{name}_attr",
-            entity_category="config",
+            entity_category="diagnostic",
             device=dev,
             discovery_extra={
                 "object_id": slug(f"{self.opt.ha_prefix} {name}".strip()),

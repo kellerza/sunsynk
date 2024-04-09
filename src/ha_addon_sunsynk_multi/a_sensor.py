@@ -30,7 +30,7 @@ from sunsynk.rwsensors import (
     TimeRWSensor,
     resolve_num,
 )
-from sunsynk.sensors import BinarySensor, EnumSensor
+from sunsynk.sensors import BinarySensor, EnumSensor, TextSensor
 
 from ha_addon_sunsynk_multi.options import OPT
 from ha_addon_sunsynk_multi.sensor_options import SensorOption
@@ -130,9 +130,11 @@ class ASensor:
             # https://github.com/kellerza/sunsynk/issues/165
             "discovery_extra": {
                 "object_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
-                "suggested_display_precision": 1,
             },
         }
+
+        if not isinstance(sensor, TextSensor):
+            ent["discovery_extra"]["suggested_display_precision"] = 1
 
         if isinstance(sensor, EnumSensor):
             self.entity = SensorEntity(
@@ -195,6 +197,12 @@ class ASensor:
             return self.entity
 
         RWEntity._path = "text"  # pylint: disable=protected-access
+        ent.update(
+            {
+                "entity_category": "diagnostic",
+            }
+        )
+
         self.entity = RWEntity(**ent)
         return self.entity
 
