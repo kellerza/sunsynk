@@ -68,8 +68,6 @@ class Sensor:
 class TextSensor(Sensor):
     """Text/non-numeric sensors are discovered differently."""
 
-    pass
-
 
 @attrs.define(slots=True, eq=False)
 class BinarySensor(Sensor):
