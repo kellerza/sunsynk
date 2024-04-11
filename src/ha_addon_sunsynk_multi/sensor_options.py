@@ -110,7 +110,7 @@ def import_definitions() -> None:
         _LOGGER.info("Using three phase sensor definitions.")
         DEFS.all = dict(DEFS3.all)
         DEFS.deprecated = DEFS3.deprecated
-    if OPT.sensor_definitions == "three-phase-hv":
+    elif OPT.sensor_definitions == "three-phase-hv":
         _LOGGER.info("Using three phase HV sensor definitions.")
         DEFS.all = dict(DEFS3HV.all)
         DEFS.deprecated = DEFS3HV.deprecated
