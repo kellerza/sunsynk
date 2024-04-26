@@ -1,4 +1,5 @@
 """Sunsynk/Deye high voltage hybrid 3-phase HV inverter sensor definitions."""
+
 # pylint: disable=duplicate-code
 from sunsynk import AMPS, CELSIUS, VOLT, WATT
 from sunsynk.definitions3ph import SENSORS
@@ -80,9 +81,6 @@ SENSORS += (
 ##########
 # General
 ##########
-RATED_POWER = Sensor((20, 21), "Rated power", WATT, 0.1)
-SENSORS += RATED_POWER
-
 SENSORS += (
     HVFaultSensor((555, 556, 557, 558), "Fault"),
     EnumSensor(
@@ -109,19 +107,6 @@ SENSORS += (
     SDStatusSensor(0, "SD Status", ""),  # type: ignore
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
     BinarySensor(552, "Grid Connected", bitmask=1 << 2),
-)
-
-##############
-# AC Relay status
-##############
-SENSORS += (
-    BinarySensor(552, "INV Relay Status", bitmask=1 << 0),
-    BinarySensor(552, "Undefined Load Relay Status", bitmask=1 << 1),
-    BinarySensor(552, "Grid Relay Status", bitmask=1 << 2),
-    BinarySensor(552, "Generator Relay Status", bitmask=1 << 3),
-    BinarySensor(552, "Grid Give Power to Relay Status", bitmask=1 << 4),
-    BinarySensor(552, "Dry Contact1 Status", bitmask=1 << 5),
-    BinarySensor(552, "Dry Contact2 Status", bitmask=1 << 6),
 )
 
 ###########
@@ -161,15 +146,6 @@ SENSORS += SelectRWSensor(
 #################
 # System program
 #################
-SENSORS += (
-    NumberRWSensor(154, "Prog1 power", WATT, 10, max=RATED_POWER),
-    NumberRWSensor(155, "Prog2 power", WATT, 10, max=RATED_POWER),
-    NumberRWSensor(156, "Prog3 power", WATT, 10, max=RATED_POWER),
-    NumberRWSensor(157, "Prog4 power", WATT, 10, max=RATED_POWER),
-    NumberRWSensor(158, "Prog5 power", WATT, 10, max=RATED_POWER),
-    NumberRWSensor(159, "Prog6 power", WATT, 10, max=RATED_POWER),
-)
-
 SENSORS += (
     SwitchRWSensor(
         146,

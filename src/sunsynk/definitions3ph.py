@@ -1,4 +1,5 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
+
 # pylint: disable=duplicate-code
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
 from sunsynk.rwsensors import (
@@ -22,17 +23,6 @@ from sunsynk.sensors import (
 )
 
 SENSORS = SensorDefinitions()
-
-##########
-# Battery
-##########
-SENSORS += (
-    TempSensor(586, "Battery temperature", CELSIUS, 0.1),
-    Sensor(587, "Battery voltage", VOLT, 0.01),
-    Sensor(588, "Battery SOC", "%"),
-    Sensor(590, "Battery power", WATT, -1),
-    Sensor(591, "Battery current", AMPS, -0.01),
-)
 
 #################
 # Inverter Power
@@ -155,7 +145,6 @@ RATED_POWER = Sensor((20, 21), "Rated power", WATT, 0.1)
 
 SENSORS += (
     RATED_POWER,
-    BinarySensor(194, "Grid Connected", bitmask=1 << 2),
     EnumSensor(
         0,
         "Device type",
@@ -174,12 +163,22 @@ SENSORS += (
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
     TempSensor(540, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(541, "Radiator temperature", CELSIUS, 0.1),
-    Sensor(
-        552, "Grid Connected Status"
-    ),  # Bit 0 = INV Relay, 1 = Undef, 2 = Grid relay, 3 = Gen relay, 4 = Grid give, 5, Dry contact
+    BinarySensor(552, "Grid Connected", bitmask=1 << 2),
     SystemTimeRWSensor((62, 63, 64), "Date Time", unit=""),
 )
 
+##############
+# AC Relay status
+##############
+SENSORS += (
+    BinarySensor(552, "INV Relay Status", bitmask=1 << 0),
+    BinarySensor(552, "Undefined Load Relay Status", bitmask=1 << 1),
+    BinarySensor(552, "Grid Relay Status", bitmask=1 << 2),
+    BinarySensor(552, "Generator Relay Status", bitmask=1 << 3),
+    BinarySensor(552, "Grid Give Power to Relay Status", bitmask=1 << 4),
+    BinarySensor(552, "Dry Contact1 Status", bitmask=1 << 5),
+    BinarySensor(552, "Dry Contact2 Status", bitmask=1 << 6),
+)
 
 ###########
 # Settings
