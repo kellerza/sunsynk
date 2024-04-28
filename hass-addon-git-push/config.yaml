@@ -1,5 +1,6 @@
+# https://github.com/home-assistant/addons/tree/master/git_pull
 ---
-version: 0.1b
+version: 0.1c
 slug: git_push
 name: Git push (experimental)
 description: Simple git push backup local configuration
@@ -31,10 +32,10 @@ options:
   deployment_key: []
   deployment_user: ""
   #deployment_password: ""
-  #deployment_key_protocol: rsa
-  #repeat:
-  #  active: false
-  #  interval: 300
+  deployment_key_protocol: rsa
+  repeat:
+    active: false
+    interval: 86400
 schema:
   repository: str
   #git_branch: str
@@ -48,8 +49,8 @@ schema:
     - str
   deployment_user: str
   #deployment_password: password
-  #deployment_key_protocol: match(rsa|dsa|ecdsa|ed25519|rsa)
-  #repeat:
-  #  active: bool
-  #  interval: int
+  deployment_key_protocol: match(rsa|dsa|ecdsa|ed25519|rsa)
+  repeat:
+    active: bool
+    interval: int
 startup: services
