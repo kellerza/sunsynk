@@ -1,5 +1,5 @@
 ---
-version: 0.1
+version: 0.1b
 slug: git_push
 name: Git push (experimental)
 description: Simple git push backup local configuration
