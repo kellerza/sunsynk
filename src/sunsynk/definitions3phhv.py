@@ -497,12 +497,10 @@ SENSORS += (
 SENSORS.deprecated.update(
     {
         "priority_mode": "priority_load",
-        "Battery temperature": "Battery 1 temperature",
-        "Battery voltage": "Battery 1 voltage",
-        "Battery SOC": "Battery 1 SOC",
-        "Battery power": "Battery 1 power",
-        "Battery current": "Battery 1 current",
-        # merge
-        # "grid_charge_start_battery_soc": "",
+        "battery_temperature": "battery_1_temperature",
+        "battery voltage": "battery_1_voltage",
+        "battery_soc": "battery_1_soc",
+        "battery_power": "battery_1_power",
+        "battery_current": "battery_1_current",
     }
 )
