@@ -201,7 +201,7 @@ SENSORS += (
     NumberRWSensor(
         103, "Battery low voltage", VOLT, -0.1
     ),  # interesting perhaps not available in menu. default 4500 (45V)
-    NumberRWSensor(104, "System Zero Export power", WATT, -1),
+    NumberRWSensor(104, "System Zero Export power", WATT, -1, min=-500, max=500),
     NumberRWSensor(105, "Battery Equalization Days", "days", -1),
     NumberRWSensor(106, "Battery Equalization Hours", "h", -1),  # 1 = 0.5 hours
     SwitchRWSensor(129, "Generator Charge enabled"),
