@@ -162,7 +162,6 @@ SENSORS += (
     SwitchRWSensor(146, "Prog Friday Enabled", on=1 << 5, bitmask=1 << 5),
     SwitchRWSensor(146, "Prog Saturday Enabled", on=1 << 6, bitmask=1 << 6),
     SwitchRWSensor(146, "Prog Sunday Enabled", on=1 << 7, bitmask=1 << 7),
-
     NumberRWSensor(154, "Prog1 power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(155, "Prog2 power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(156, "Prog3 power", WATT, 10, max=RATED_POWER),
