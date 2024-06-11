@@ -114,7 +114,10 @@ SENSORS += (
 ###########
 # Settings
 ###########
-SENSORS += (NumberRWSensor(191, "Grid Peak Shaving power", WATT, 10, max=100000),)
+SENSORS += (
+    NumberRWSensor(191, "Grid Peak Shaving power", WATT, 10, max=100000),
+    NumberRWSensor(340, "Max Solar power", WATT, 10, max=65000),
+)
 
 # Additional optional sensors
 SENSORS += (
