@@ -1,5 +1,9 @@
 # Sensors
 
+::: tip
+You can find all sensors names in the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions>
+:::
+
 You can add sensors under the `SENSORS` and `SENSORS_FIRST_INVERTER` keys in the configuration.
 
 If you want to add the *Battery SOC* sensor, you can use any of the following formats. In the logs you will see the first format (no spaces and all lower case).
@@ -32,34 +36,10 @@ SENSORS:
   - battery_soc
 ```
 
-## Single Phase Inverter Sensor Definitions
-
-You can find all the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions.py>
-
-These definitions are used when you configure a single-phase inverter in the addon:
+You can find the details of the definitions [here](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions) and definitions are selected in the configuration with one of the following options:
 
 ```yaml
-SENSOR_DEFINITIONS: single-phase
-```
-
-## Three Phase Inverter Sensor Definitions
-
-You can find all the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions3ph.py>
-
-These definitions are used when you configure a three-phase inverter in the addon:
-
-```yaml
-SENSOR_DEFINITIONS: three-phase
-```
-
-## Three Phase High Voltage Inverter Sensor Definitions
-
-You can find all the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions3phhv.py>
-
-These definitions are used when you configure a three-phase inverter in the addon:
-
-```yaml
-SENSOR_DEFINITIONS: three-phase-hv
+SENSOR_DEFINITIONS: single-phase / thee-phase / three-phase-lv
 ```
 
 ## Groups of sensors
