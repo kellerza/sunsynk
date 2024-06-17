@@ -1,8 +1,6 @@
 """Sunsynk/Deye high voltage hybrid 3-phase HV inverter sensor definitions."""
-
-# pylint: disable=duplicate-code
 from sunsynk import AMPS, CELSIUS, VOLT, WATT
-from sunsynk.definitions3ph import SENSORS
+from sunsynk.definitions.three_phase_common import SENSORS
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,

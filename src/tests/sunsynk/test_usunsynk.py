@@ -4,8 +4,6 @@ import os
 from unittest.mock import AsyncMock
 
 import pytest
-
-# from sunsynk.definitions import serial
 from sunsynk.usunsynk import USunsynk
 
 _LOGGER = logging.getLogger(__name__)

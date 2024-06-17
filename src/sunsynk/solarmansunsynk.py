@@ -1,5 +1,4 @@
 """Sunsynk lib using PySolarman."""
-# pylint: disable=duplicate-code
 import asyncio
 import logging
 from typing import Sequence

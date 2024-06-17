@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, PropertyMock, patch
 
 import pytest
 from ha_addon_sunsynk_multi.a_inverter import AInverter
-from sunsynk.definitions import SENSORS
+from sunsynk.definitions.single_phase import SENSORS
 from sunsynk.pysunsynk import PySunsynk
 from sunsynk.state import InverterState
 

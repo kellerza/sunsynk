@@ -211,7 +211,13 @@ class EnumSensor(TextSensor):
         regsm = self.masked(regs)
         res = self.options.get(regsm[0])
         if res is None:
-            _LOGGER.warning("%s: Unknown register value %s", self.id, regsm[0])
+            _LOGGER.warning(
+                "%s: Unknown register value %s. "
+                "Consider extending the definition with a PR. "
+                "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions",
+                self.id,
+                regsm[0],
+            )
         return res
 
 

@@ -4,9 +4,9 @@ import traceback
 from typing import Generator, Iterable
 
 import attrs
-from sunsynk.definitions import SENSORS as DEFS1
-from sunsynk.definitions3phhv import SENSORS as DEFS3HV
-from sunsynk.definitions3phlv import SENSORS as DEFS3
+from sunsynk.definitions.single_phase import SENSORS as SENSORS_1PH
+from sunsynk.definitions.three_phase_hv import SENSORS as SENSORS_3PHV
+from sunsynk.definitions.three_phase_lv import SENSORS as SENSORS_3PHLV
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, SensorDefinitions
@@ -108,16 +108,16 @@ def import_definitions() -> None:
     # Load DEFS
     if OPT.sensor_definitions == "three-phase":
         _LOGGER.info("Using three phase sensor definitions.")
-        DEFS.all = dict(DEFS3.all)
-        DEFS.deprecated = DEFS3.deprecated
+        DEFS.all = dict(SENSORS_3PHLV.all)
+        DEFS.deprecated = SENSORS_3PHLV.deprecated
     elif OPT.sensor_definitions == "three-phase-hv":
         _LOGGER.info("Using three phase HV sensor definitions.")
-        DEFS.all = dict(DEFS3HV.all)
-        DEFS.deprecated = DEFS3HV.deprecated
+        DEFS.all = dict(SENSORS_3PHV.all)
+        DEFS.deprecated = SENSORS_3PHV.deprecated
     else:
         _LOGGER.info("Using Single phase sensor definitions.")
-        DEFS.all = dict(DEFS1.all)
-        DEFS.deprecated = DEFS1.deprecated
+        DEFS.all = dict(SENSORS_1PH.all)
+        DEFS.deprecated = SENSORS_1PH.deprecated
 
     # Add custom sensors to DEFS
     try:

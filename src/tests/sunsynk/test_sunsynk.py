@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, call, patch
 
 import pytest
 
-# from sunsynk.definitions import serial
+# from sunsynk.definitions.single import serial
 from sunsynk import Sunsynk
 from sunsynk.rwsensors import NumberRWSensor
 from sunsynk.state import InverterState
