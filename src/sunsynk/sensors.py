@@ -73,20 +73,17 @@ class TextSensor(Sensor):
 class BinarySensor(Sensor):
     """Binary sensor."""
 
-    off: Optional[int] = attrs.field(default=None)
+    off: int = attrs.field(default=0)
     on: Optional[int] = attrs.field(default=None)
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Reg to value for binary."""
         res = super().reg_to_value(regs)
-        if self.on is not None and self.off is not None:
-            if res not in [self.on, self.off]:
-                return None
+        if res is None:
+            return None
         if self.on is not None:
             return res == self.on
-        if self.off is not None:
-            return res != self.off
-        return bool(res)
+        return res != self.off
 
 
 @attrs.define(slots=True)

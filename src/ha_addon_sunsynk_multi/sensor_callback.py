@@ -86,6 +86,18 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
         # pylint: disable=too-many-branches
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
+
+        # Flush pending writes
+        while ist.write_queue:
+            sensor, value = ist.write_queue.popitem()
+            if not isinstance(sensor, RWSensor):
+                continue
+            await asyncio.sleep(0.1)
+            await ist.inv.write_sensor(sensor, value)
+            await asyncio.sleep(0.05)
+            await ist.read_sensors(sensors=[sensor], msg=sensor.name)
+            sensors_to_publish.add(ist.ss[sensor.id])
+
         # add all read items
         for sec, srun in read_s.items():
             if now % sec == 0 or srun.next_run <= now:
@@ -99,17 +111,6 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
                 msg="poll_need_to_read",
             )
             sensors_to_publish.update(ist.ss[s.id] for s in sensors_to_read)
-
-        # Flush pending writes
-        while ist.write_queue:
-            sensor, value = ist.write_queue.popitem()
-            if not isinstance(sensor, RWSensor):
-                continue
-            await asyncio.sleep(0.1)
-            await ist.inv.write_sensor(sensor, value)
-            await asyncio.sleep(0.05)
-            await ist.read_sensors(sensors=[sensor], msg=sensor.name)
-            sensors_to_publish.add(ist.ss[sensor.id])
 
         # Publish to MQTT
         pub: dict[ASensor, ValType] = {}

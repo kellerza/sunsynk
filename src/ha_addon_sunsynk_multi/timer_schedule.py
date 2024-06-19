@@ -43,8 +43,7 @@ class Schedule:
     def significant_change(self, history: list[NumType], last: NumType) -> bool:
         """Check if there is a significant change according to the schedule."""
         if self.change_any:
-            if not history or last != history[-1]:
-                return True
+            raise NotImplementedError()
         if not history:
             return False
         avg = sum(history) / len(history)

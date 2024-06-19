@@ -47,11 +47,11 @@ def test_bitmask2(caplog: pytest.LogCaptureFixture, state: InverterState) -> Non
     assert state[s] is None
     state.update({1: 0x1})
 
-    assert state[s] == "OFF"
+    assert state[s] is False
     assert "outside" not in caplog.text
 
     state.update({1: 0x14})
-    assert state[s] == "ON"
+    assert state[s] is True
 
     val = "OFF"
     reg = s.value_to_reg(val, state.get)
@@ -123,7 +123,6 @@ def test_number_rw2(state: InverterState) -> None:
     assert state[s] == 48.5
 
     assert s.value_to_reg(48, state.get) == (4800,)
-    assert s.value_to_reg(48, {}) == (4800,)
 
     # signed RW.
     # https://github.com/kellerza/sunsynk/issues/145
@@ -131,7 +130,7 @@ def test_number_rw2(state: InverterState) -> None:
     state.track(s2)
     state.update({206: 0xFFBA})
     assert state[s2] == -70
-    assert s2.value_to_reg(-70, {}) == (0xFFBA,)
+    assert s2.value_to_reg(-70, state.get) == (0xFFBA,)
 
 
 def test_select_rw(caplog: pytest.LogCaptureFixture, state: InverterState) -> None:

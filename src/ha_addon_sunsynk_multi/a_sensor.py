@@ -27,6 +27,7 @@ from sunsynk.rwsensors import (
     RWSensor,
     SelectRWSensor,
     SwitchRWSensor,
+    SwitchRWSensor0,
     TimeRWSensor,
     resolve_num,
 )
@@ -157,6 +158,7 @@ class ASensor:
             """On change callback."""
             _LOGGER.info("Queue update %s=%s", sensor.id, val)
             ist.write_queue.update({sensor: val})
+            self.publish(val)
 
         ent.update(
             {
@@ -177,7 +179,7 @@ class ASensor:
             )
             return self.entity
 
-        if isinstance(sensor, SwitchRWSensor):
+        if isinstance(sensor, (SwitchRWSensor, SwitchRWSensor0)):
             self.entity = SwitchEntity(**ent)
             return self.entity
 

@@ -35,5 +35,6 @@ xcopy /Y %cf% %~2\config.yaml
 @REM sed -i -E 's/#! (# )?//' %~1\Dockerfile.local
 @REM rem sed -i 's/#! //' %~1\Dockerfile.local
 @REM xcopy /Y %~1\Dockerfile.local %~2\Dockerfile
+xcopy /Y %~1\Dockerfile.local %~2\Dockerfile
 
 EXIT /B 0

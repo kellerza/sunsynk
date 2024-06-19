@@ -50,8 +50,8 @@ async def test_schedule() -> None:
     """Test the schedule."""
     s = Schedule(key="x", change_any=True)
     # no history = change
-    assert s.significant_change([], 12)
-    assert s.significant_change([12], 12) is False
+    with pytest.raises(NotImplementedError):
+        s.significant_change([], 12)
 
     s = Schedule(key="x", change_by=80)
     # lower

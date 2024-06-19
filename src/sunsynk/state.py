@@ -83,8 +83,8 @@ class InverterState:
             if numeric:
                 self.history[sen].append(cast(NumType, newv))
             else:
-                if not self.historynn[sen]:
-                    self.historynn[sen].append(None)
+                if sen not in self.historynn:
+                    self.historynn[sen] = [None]
                 self.historynn[sen].append(newv)
                 while len(self.historynn[sen]) > 2:
                     self.historynn[sen].pop(0)

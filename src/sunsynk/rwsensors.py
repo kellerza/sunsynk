@@ -6,7 +6,7 @@ import re
 from typing import Callable, Generator, Optional, Union
 
 import attrs
-from mqtt_entity.utils import BOOL_OFF, BOOL_ON  # type: ignore
+from mqtt_entity.utils import BOOL_OFF, BOOL_ON
 
 from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num, hex_str
 from sunsynk.sensors import Sensor
@@ -119,8 +119,8 @@ class SelectRWSensor(RWSensor):
 
 
 @attrs.define(slots=True, eq=False)
-class SwitchRWSensor(SelectRWSensor):
-    """Switch Sensor."""
+class SwitchRWSensor0(SelectRWSensor):
+    """Switch Sensor. The original implementation."""
 
     on: int = attrs.field(default=1)
     """The register value representing ON."""
@@ -132,6 +132,45 @@ class SwitchRWSensor(SelectRWSensor):
         assert not self.options
         assert self.on != self.off
         self.options = {self.off: BOOL_OFF, self.on: BOOL_ON}
+        if self.bitmask:
+            if self.on is not None:
+                assert self.on & self.bitmask == self.on
+            assert self.off & self.bitmask == self.off
+
+
+@attrs.define(slots=True, eq=False)
+class SwitchRWSensor(RWSensor):
+    """Switch. Similar to BinarySensor, but writeable."""
+
+    on: Optional[int] = attrs.field(default=None)
+    """The register value representing ON."""
+    off: int = attrs.field(default=0)
+    """The register value representing OFF."""
+
+    def __attrs_post_init__(self) -> None:
+        """Ensure correct parameters."""
+        if self.bitmask:
+            if self.on is not None:
+                assert self.on & self.bitmask == self.on
+            assert self.off & self.bitmask == self.off
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Reg to value for binary."""
+        res = super().reg_to_value(regs)
+        if res is None:
+            return ""
+        if self.on is not None:
+            return res == self.on
+        return res != self.off
+
+    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+        """Get the reg value from a display value, or the current reg value if out of range."""
+        value = str(value)
+        if value == BOOL_ON:
+            return self.on if self.on else self.masked((0xFF,))
+        if value != BOOL_OFF:
+            _LOGGER.warning("%s: ON/OFF expected, got %s", self.name, value)
+        return (self.off,)
 
 
 @attrs.define(slots=True, eq=False)

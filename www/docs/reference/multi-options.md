@@ -53,17 +53,11 @@ The port for RS485 communications, which can be either:
     - PORT: tcp://homeassistant.local:502
   ```
 
-  A `serial-tcp://` port is also suported and can be used depending on your gateway.
-
-  ::: tip
-  This repository contains a [mbusd](../guide/mbusd) TCP gateway add-on that can be used for this purpose.
-
-  If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
-  :::
+  If your gateway do not support Modbus TCP to Modbus RTU conversion, you can try using `serial-tcp://` or `serial-udp://` as the port protocol. This will send Modbus RTU framed data over TCP/UDP (RTU-over-TCP).
 
   ::: details Solarman driver details
 
-  The Solarman driver typically uses `tcp://`, with a port value of 8899. You will need to find the dongle's local IP on your network. You can find the IP on your router, or use a utility like [netscan](https://www.portablefreeware.com/?id=730).
+  The Solarman driver typically uses `tcp://`, with a port value of **8899**. You will need to find the dongle's local IP on your network. You can find the IP on your router, or use a utility like [netscan](https://www.portablefreeware.com/?id=730).
 
   You probably want to set a fixed IP for the dongle on your router.
 
@@ -86,6 +80,12 @@ The port for RS485 communications, which can be either:
   ```
 
   ::: tip
+  This repository contains a [mbusd](../guide/mbusd) add-on, a very reliable Modbus TCP to Modbus RTU gateway.
+
+  If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
+  :::
+
+  ::: tip
   umodbus requires a `serial://` prefix
 
   ```yaml
@@ -94,16 +94,14 @@ The port for RS485 communications, which can be either:
     - PORT: serial:///dev/ttyUSB0
   ```
 
-    :::
+  :::
 
-- For the first inverter in the list, you can use an empty string
+- For the first inverter in the list, you can use an empty string. The serial port selected under `DEBUG_DEVICE` will be used (located at the bottom of you config)*
 
   ```yaml
   INVERTERS:
     - PORT: ""
   ```
-
-  The serial port under `DEBUG_DEVICE` will be used (located at the bottom of you config)*
 
 - umodbus support an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
 

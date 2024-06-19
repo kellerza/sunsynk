@@ -226,12 +226,14 @@ SENSORS += (
         "Load Limit",
         options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
     ),
+    NumberRWSensor(53, "Max Solar power", WATT, 1, min=0, max=RATED_POWER),
+    NumberRWSensor(245, "Max Sell power", WATT, 1, min=0, max=RATED_POWER),
     # If disabled, does not allow the export of any excess solar.
     # If enabled, will export any excess, but will also draw a
     # constant ~40w at all times for an unknown reason
     # 0: "Don't Sell", 1: "Sell solar"
     SwitchRWSensor(247, "Solar Export"),
-    SwitchRWSensor(248, "Use Timer", bitmask=1),
+    SwitchRWSensor(248, "Use Timer"),
 )
 
 PROG1_TIME = TimeRWSensor(250, "Prog1 Time")

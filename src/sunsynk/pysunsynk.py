@@ -37,12 +37,12 @@ class PySunsynk(Sunsynk):
             client: Union[AsyncModbusTcpClient, AsyncModbusUdpClient, None] = None
 
             match url.scheme:  # python 3.10 minimum
-                case "serial-tcp":
+                case "serial-tcp":  # RTU-over-TCP
                     opt = {"framer": ModbusRtuFramer}
                     client = AsyncModbusTcpClient(host=host, port=port, **opt)
                 case "tcp":
                     client = AsyncModbusTcpClient(host=host, port=port, **opt)
-                case "serial-udp":
+                case "serial-udp":  # RTU-over-UDP
                     opt = {"framer": ModbusRtuFramer}
                     client = AsyncModbusUdpClient(host=host, port=port, **opt)
                 case "udp":
