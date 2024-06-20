@@ -1,4 +1,4 @@
-"""Sunsynk/Deye high voltage hybrid 3-phase HV inverter sensor definitions."""
+"""Sunsynk/Deye hybrid 3-phase high voltage (HV) inverter sensor definitions."""
 from sunsynk import AMPS, CELSIUS, VOLT, WATT
 from sunsynk.definitions.three_phase_common import SENSORS
 from sunsynk.rwsensors import (
