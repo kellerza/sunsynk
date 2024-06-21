@@ -68,10 +68,10 @@ To find a  schedule for any specific sensor, the search order in column 1 will b
 
 When using the `solarman` driver, the Solarman dongle can be overwhelmed when constantly being read. Ideally you should not read more than once every 10 seconds.
 
-The following schdule overrides is recommended for Solarman:
+The following schedule overrides are recommended for Solarman:
 
 ```yaml
-SCHDULES:
+SCHEDULES:
 - KEY: W
   READ_EVERY: 15
   REPORT_EVERY: 60
