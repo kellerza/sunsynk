@@ -113,6 +113,7 @@ SENSORS += (
 # Settings
 ###########
 SENSORS += (
+    NumberRWSensor(143, "Export Limit power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(191, "Grid Peak Shaving power", WATT, 10, max=100000),
     NumberRWSensor(340, "Max Solar power", WATT, 10, max=65000),
 )
