@@ -267,6 +267,7 @@ SENSOR_GROUPS_3PH_HV = {
     ],
 }
 
+
 def get_sensors(
     *, target: Iterable[Sensor], names: list[str], warn_once: bool = True
 ) -> Generator[Sensor, None, None]:
