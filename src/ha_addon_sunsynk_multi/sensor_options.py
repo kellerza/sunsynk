@@ -201,6 +201,71 @@ SENSOR_GROUPS = {
     ],
 }
 
+SENSOR_GROUPS_3PH_LV = {
+    "power_flow_card": [
+        "battery_current",
+        "battery_power",
+        "battery_soc",
+        "battery_voltage",
+        "day_battery_charge",
+        "day_battery_discharge",
+        "day_grid_export",
+        "day_grid_import",
+        "day_load_energy",
+        "day_pv_energy",
+        "grid_connected",
+        "grid_ct_power",
+        "grid_frequency",
+        "grid_power",
+        "grid_l1_voltage",
+        "grid_l2_voltage",
+        "grid_l3_voltage",
+        "grid_l1_power",
+        "grid_l2_power",
+        "grid_l3_power",
+        "inverter_power",
+        "inverter_frequency",
+        "overall_state",
+        "priority_load",
+        "pv1_current",
+        "pv1_power",
+        "pv1_voltage",
+        "use_timer",
+    ],
+}
+
+SENSOR_GROUPS_3PH_HV = {
+    "power_flow_card": [
+        "battery_1_current",
+        "battery_1_power",
+        "battery_1_soc",
+        "battery_1_voltage",
+        "day_battery_charge",
+        "day_battery_discharge",
+        "day_grid_export",
+        "day_grid_import",
+        "day_load_energy",
+        "day_pv_energy",
+        "grid_connected",
+        "grid_ct_power",
+        "grid_frequency",
+        "grid_power",
+        "grid_l1_voltage",
+        "grid_l2_voltage",
+        "grid_l3_voltage",
+        "grid_l1_power",
+        "grid_l2_power",
+        "grid_l3_power",
+        "inverter_power",
+        "inverter_frequency",
+        "overall_state",
+        "priority_load",
+        "pv1_current",
+        "pv1_power",
+        "pv1_voltage",
+        "use_timer",
+    ],
+}
 
 def get_sensors(
     *, target: Iterable[Sensor], names: list[str], warn_once: bool = True
@@ -212,6 +277,12 @@ def get_sensors(
             _LOGGER.warning("Modifiers was replaced by schedules: %s", sensor_def)
 
         name = slug(name)
+
+        # Merge sensor groups
+        if OPT.sensor_definitions == "three-phase":
+            SENSOR_GROUPS.update(SENSOR_GROUPS_3PH_LV)
+        elif OPT.sensor_definitions == "three-phase-hv":
+            SENSOR_GROUPS.update(SENSOR_GROUPS_3PH_HV)
 
         # Recursive add for groups
         if name in SENSOR_GROUPS:
