@@ -1,5 +1,6 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
+from sunsynk.definitions import DEVICE_TYPE
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
@@ -9,7 +10,6 @@ from sunsynk.rwsensors import (
 )
 from sunsynk.sensors import (
     BinarySensor,
-    EnumSensor,
     FaultSensor,
     InverterStateSensor,
     MathSensor,
@@ -151,18 +151,8 @@ SENSORS += (
 RATED_POWER = Sensor((20, 21), "Rated power", WATT, 0.1)
 
 SENSORS += (
+    DEVICE_TYPE,
     RATED_POWER,
-    EnumSensor(
-        0,
-        "Device type",
-        options={
-            2: "Inverter",
-            3: "Single phase hybrid",
-            4: "Microinverter",
-            5: "Low voltage three phase hybrid",
-            6: "High voltage three phase hybrid",
-        },
-    ),
     FaultSensor((555, 556, 557, 558), "Fault"),
     InverterStateSensor(500, "Overall state"),
     SDStatusSensor(0, "SD Status", ""),  # type: ignore        # 3 Phase does not have SD Card but crashes when removed

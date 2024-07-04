@@ -1,5 +1,6 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
+from sunsynk.definitions import DEVICE_TYPE
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
@@ -138,10 +139,11 @@ SENSORS += (
 # General
 ##########
 RATED_POWER = Sensor((16, 17), "Rated power", WATT, 0.1)
+
 SENSORS += (
+    DEVICE_TYPE,
     RATED_POWER,
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
-    Sensor(0, "Device Type"),
     FaultSensor((103, 104, 105, 106), "Fault"),
     InverterStateSensor(59, "Overall state"),
     SDStatusSensor(92, "SD Status", ""),  # type: ignore
