@@ -1,5 +1,5 @@
 # FROM ghcr.io/kellerza/hass-addon-sunsynk-multi/armhf:edge
-FROM ghcr.io/kellerza/hass-addon-sunsynk-multi/armhf:2185293
+FROM ghcr.io/kellerza/hass-addon-sunsynk-multi/armhf:2cec340
 
 # RUN set -x \
 #     && apk add --no-cache --virtual .build-deps \

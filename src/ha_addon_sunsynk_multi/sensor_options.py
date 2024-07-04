@@ -133,7 +133,7 @@ def import_definitions() -> None:
 SOPT = SensorOptions()
 """A dict of all options related to sensors."""
 
-SENSOR_GROUPS = {
+SENSOR_GROUPS: dict[str, list[str]] = {
     # https://kellerza.github.io/sunsynk/guide/energy-management
     "energy_management": [
         "total_battery_charge",
@@ -145,10 +145,12 @@ SENSOR_GROUPS = {
     # https://kellerza.github.io/sunsynk/examples/lovelace#sunsynk-power-flow-card
     "power_flow_card": [
         "aux_power",
+        "battery_1_soc",  # 3PH HV
+        "battery_1_voltage",  # 3PH HV
         "battery_current",
         "battery_power",
-        "battery_soc",
-        "battery_voltage",
+        "battery_soc",  # 1PH & 3PH LV
+        "battery_voltage",  # 1PH & 3PH LV
         "day_battery_charge",
         "day_battery_discharge",
         "day_grid_export",
@@ -159,6 +161,9 @@ SENSOR_GROUPS = {
         "grid_connected",
         "grid_ct_power",
         "grid_frequency",
+        "grid_l1_power",  # 3PH LV & HV
+        "grid_l2_power",  # 3PH LV & HV
+        "grid_l3_power",  # 3PH LV & HV
         "grid_power",
         "grid_voltage",
         "inverter_current",
@@ -170,6 +175,9 @@ SENSOR_GROUPS = {
         "pv1_current",
         "pv1_power",
         "pv1_voltage",
+        "pv2_current",
+        "pv2_power",
+        "pv2_voltage",
         "use_timer",
     ],
     "settings": [
@@ -203,21 +211,21 @@ SENSOR_GROUPS = {
 
 
 def get_sensors(
-    *, target: Iterable[Sensor], names: list[str], warn_once: bool = True
+    *, target: Iterable[Sensor], names: list[str], warn: bool = True
 ) -> Generator[Sensor, None, None]:
     """Add a sensor."""
-    for sensor_def in names:
-        name, _, mod = sensor_def.partition(":")
-        if mod:
-            _LOGGER.warning("Modifiers was replaced by schedules: %s", sensor_def)
+    groups: set[str] = set()
 
-        name = slug(name)
+    for sensor_def in names:
+        if ":" in sensor_def:
+            _LOGGER.error("Modifiers was replaced by schedules: %s", sensor_def)
+            continue
+
+        name = slug(sensor_def)
 
         # Recursive add for groups
-        if name in SENSOR_GROUPS:
-            yield from get_sensors(
-                target=target, names=SENSOR_GROUPS[name], warn_once=False
-            )
+        if name in SENSOR_GROUPS or name == "all":
+            groups.add(name)
             continue
 
         # Warn on deprecated
@@ -229,13 +237,19 @@ def get_sensors(
             )
             continue
 
-        if name in [t.name for t in target] and warn_once:
+        if name in [t.name for t in target] and warn:
             _LOGGER.warning("Sensor %s only allowed once", name)
             continue
 
         sen = DEFS.all.get(name)
         if not isinstance(sen, Sensor):
-            _LOGGER.error("Unknown sensor specified: %s", name)
+            if warn:
+                _LOGGER.error("Unknown sensor specified: %s", name)
             continue
 
         yield sen
+
+    # Add groups at the end
+    for name in groups:
+        names = list(DEFS.all) if name == "all" else SENSOR_GROUPS[name]
+        yield from get_sensors(target=target, names=names, warn=False)
