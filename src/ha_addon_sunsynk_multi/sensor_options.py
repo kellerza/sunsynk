@@ -230,11 +230,12 @@ def get_sensors(
 
         # Warn on deprecated
         if name in DEFS.deprecated:
-            _LOGGER.error(
-                "Your config includes deprecated sensors. Replace %s with %s",
-                name,
-                DEFS.deprecated[name],
-            )
+            if warn:
+                _LOGGER.error(
+                    "Your config includes deprecated sensors. Replace %s with %s",
+                    name,
+                    DEFS.deprecated[name],
+                )
             continue
 
         if name in [t.name for t in target] and warn:
