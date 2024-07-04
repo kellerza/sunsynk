@@ -36,7 +36,7 @@ class Callback:
 
     def call(self, now: int) -> None:
         """Call the callback."""
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def __attrs_post_init__(self) -> None:
         """Init."""
@@ -62,7 +62,7 @@ class SyncCallback(Callback):
                 t_1 = time.perf_counter()
                 self.stat_time.append(t_1 - t_0)
         except Exception as exc:  # pylint: disable=broad-except
-            log_error(f"{exc.__class__.__name__} in {self.name}: {exc}")
+            log_error(f"{exc.__class__.__name__} in callback {self.name}: {exc}\n", exc)
             self.next_run = now  # re run!
 
 
@@ -82,7 +82,7 @@ class AsyncCallback(Callback):
                 t_1 = time.perf_counter()
                 self.stat_time.append(t_1 - t_0)
         except Exception as exc:  # pylint: disable=broad-except
-            log_error(f"{exc.__class__.__name__} in {self.name}: {exc}")
+            log_error(f"{exc.__class__.__name__} in callback {self.name}: {exc}\n", exc)
             self.next_run = int(time.time())  # re run!
 
     def call(self, now: int) -> None:

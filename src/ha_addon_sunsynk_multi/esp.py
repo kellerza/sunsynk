@@ -156,7 +156,7 @@ class ESPSensor:
 
     async def get_state(self, esp: ESP) -> Any:
         """Read the sensor value from the API."""
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 @attrs.define(slots=True)

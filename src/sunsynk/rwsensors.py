@@ -33,7 +33,7 @@ class RWSensor(Sensor):
 
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the register."""
@@ -78,7 +78,7 @@ class NumberRWSensor(RWSensor):
             return self.reg(val)
         if len(self.address) == 2:
             return self.reg(val & 0xFFFF, int(val >> 16))
-        raise NotImplementedError
+        raise NotImplementedError(f"Address length not supported: {self.address}")
 
 
 @attrs.define(slots=True, eq=False)

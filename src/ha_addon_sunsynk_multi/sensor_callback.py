@@ -79,11 +79,11 @@ def _print_table(
 
 def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
     """Build the callback schedule."""
+    # pylint: disable=too-many-branches,too-many-statements
     read_s, report_s = _build_schedules(idx)
 
     async def callback_sensor(now: int) -> None:
         """read or write sensors"""
-        # pylint: disable=too-many-branches
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
 
@@ -122,6 +122,16 @@ def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
                 chg = hist[0] != hist[-1]
                 if chg and asen.opt.schedule.change_any:
                     pub[asen] = hist[-1]
+            elif asen.opt.schedule.change_any:
+                # make sure it is part of historynn
+                last = (
+                    ist.inv.state.history.pop(sensor)[-1]
+                    if sensor in ist.inv.state.history
+                    else None
+                )
+                if last is not None:
+                    pub[asen] = last
+                ist.inv.state.historynn[sensor] = [None, last]
             elif sensor in ist.inv.state.history:
                 last = ist.inv.state.history[sensor][-1]
                 if asen.opt.schedule.significant_change(

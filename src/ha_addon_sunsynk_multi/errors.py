@@ -1,17 +1,22 @@
 """Error messages."""
 import logging
 from collections import defaultdict
+from traceback import format_exception
+from typing import Optional
 
 ERRLIST: dict[str, int] = defaultdict(int)
 _LOGGER = logging.getLogger(__name__)
 
 
-def log_error(msg: str) -> None:
+def log_error(msg: str, exc: Optional[Exception] = None) -> None:
     """Print an error message."""
     ERRLIST[msg] += 1
     if ERRLIST[msg] > 1:
         return
-    _LOGGER.error(msg)
+    if exc:
+        _LOGGER.error("%s\n%s", msg, "\n".join(format_exception(exc)))
+    else:
+        _LOGGER.error(msg)
 
 
 def print_errors(_: int) -> None:
