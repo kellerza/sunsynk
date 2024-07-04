@@ -26,6 +26,7 @@ SENSORS += Sensor(178, "My Custom Sensor", WATT, -1)
 ```
 
 An example of adding a custom selling load sensor, the takes the ct power off the inverter output is
+
 ```python
 MathSensor((175, 172), "Selling Load Power direct", WATT, factors=(1, 1)),
 ```

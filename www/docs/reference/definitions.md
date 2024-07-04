@@ -46,6 +46,23 @@ SENSOR_DEFINITIONS: single-phase / three-phase [low voltage] / three-phase-hv [h
 
 Sensor groups will allow you to add several sensors with a single entry.
 
+### All sensors
+
+The **all** group will include all the sensors available for your inverter.
+
+```yaml
+SENSORS:
+  - all
+```
+
+Adding all sensors will cause Home Assistant to record a great amount of data, that you might not need. This could lead to a large database and slow down your system. It is especially bad if you are using an SD card for your Home Assistant installation.
+
+Rather consider using the other groups or selecting the sensors you need.
+
+::: warning
+It is *not* recommended to add **all** sensors for your final system. This is mainly for testing purposes.
+:::
+
 ### Energy management
 
 These sensors are mostly related to energy or kWh and required for the Home Assistant [Energy Management](../guide/energy-management)
@@ -152,3 +169,12 @@ prog6_time
 ```
 
 :::
+
+### My Sensors
+
+All your [custom sensors](mysensors) can be added to the configuration using the `mysensors` group.
+
+```yaml
+SENSORS:
+  - mysensors
+```
