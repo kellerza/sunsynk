@@ -46,6 +46,7 @@ options:
       CHANGE_BY: 80
       CHANGE_PERCENT: 0
   NUMBER_ENTITY_MODE: "auto"
+  PROG_TIME_INTERVAL: 15
   MQTT_HOST: core-mosquitto
   MQTT_PORT: 1883
   MQTT_USERNAME: hass
@@ -56,9 +57,9 @@ schema:
     - SERIAL_NR: str
       HA_PREFIX: str
       MODBUS_ID: int(1,16)
-      DONGLE_SERIAL_NUMBER: int?
+      DONGLE_SERIAL_NUMBER: str?
       PORT: str
-  SENSOR_DEFINITIONS: list(single-phase|three-phase)
+  SENSOR_DEFINITIONS: list(single-phase|three-phase|three-phase-hv)
   SENSORS:
     - str
   SENSORS_FIRST_INVERTER:
@@ -74,6 +75,7 @@ schema:
       CHANGE_BY: int(0,3600)?
       CHANGE_PERCENT: int(0,500)?
   NUMBER_ENTITY_MODE: list(auto|box|slider)
+  PROG_TIME_INTERVAL: list(5|10|15|30|45|60)?
   MQTT_HOST: str
   MQTT_PORT: port
   MQTT_USERNAME: str
