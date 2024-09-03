@@ -57,7 +57,7 @@ schema:
     - SERIAL_NR: str
       HA_PREFIX: str
       MODBUS_ID: int(1,16)
-      DONGLE_SERIAL_NUMBER: int?
+      DONGLE_SERIAL_NUMBER: str?
       PORT: str
   SENSOR_DEFINITIONS: list(single-phase|three-phase|three-phase-hv)
   SENSORS:
