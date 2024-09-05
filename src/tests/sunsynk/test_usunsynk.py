@@ -1,9 +1,11 @@
 """Test sunsynk library."""
+
 import logging
 import os
 from unittest.mock import AsyncMock
 
 import pytest
+
 from sunsynk.usunsynk import USunsynk
 
 _LOGGER = logging.getLogger(__name__)

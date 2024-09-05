@@ -1,8 +1,10 @@
 """Tests."""
+
 import asyncio
 from unittest.mock import AsyncMock, PropertyMock, patch
 
 import pytest
+
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from sunsynk.definitions.single_phase import SENSORS
 from sunsynk.pysunsynk import PySunsynk

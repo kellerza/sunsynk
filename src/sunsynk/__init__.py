@@ -1,4 +1,5 @@
 """Sunsynk library."""
+
 from typing import Final
 
 from .helpers import NumType, ValType

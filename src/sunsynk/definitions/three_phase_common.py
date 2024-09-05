@@ -1,4 +1,5 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
+
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
 from sunsynk.definitions import DEVICE_TYPE
 from sunsynk.rwsensors import (

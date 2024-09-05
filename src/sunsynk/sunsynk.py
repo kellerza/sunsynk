@@ -1,4 +1,5 @@
 """Sunsync Modbus interface."""
+
 import asyncio
 import logging
 import time

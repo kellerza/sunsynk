@@ -1,8 +1,10 @@
 """The the timer module."""
+
 import logging
 from unittest.mock import patch
 
 import pytest
+
 from ha_addon_sunsynk_multi.timer_callback import (
     AsyncCallback,
     SyncCallback,

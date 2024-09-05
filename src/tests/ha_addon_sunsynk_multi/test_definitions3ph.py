@@ -1,4 +1,5 @@
 """Test 3ph defs."""
+
 from sunsynk.definitions.single_phase import SENSORS as SENSORS1P
 from sunsynk.definitions.three_phase_common import SENSORS as SENSORS3P
 

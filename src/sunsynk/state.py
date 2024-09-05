@@ -1,4 +1,5 @@
 """Register state."""
+
 import logging
 from collections import defaultdict
 from typing import Callable, Generator, Iterable, Iterator, Optional, Sequence, cast

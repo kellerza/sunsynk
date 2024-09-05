@@ -1,4 +1,5 @@
 """Sensor classes represent modbus registers for an inverter."""
+
 from __future__ import annotations
 
 import logging

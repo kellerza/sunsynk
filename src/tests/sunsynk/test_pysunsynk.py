@@ -1,8 +1,10 @@
 """PyModbus."""
+
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
 
 import pytest
+
 from sunsynk.pysunsynk import ModbusRtuFramer, PySunsynk
 from sunsynk.state import InverterState
 

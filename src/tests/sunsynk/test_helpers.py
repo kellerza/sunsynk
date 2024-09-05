@@ -1,5 +1,7 @@
 """Test helpers."""
+
 import pytest
+
 from sunsynk.helpers import (
     SSTime,
     as_num,

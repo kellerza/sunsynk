@@ -1,4 +1,5 @@
 """State of a sensor & entity."""
+
 from __future__ import annotations
 
 import logging
@@ -21,6 +22,9 @@ from mqtt_entity.helpers import (  # type: ignore[import]
     hass_device_class,
 )
 from mqtt_entity.utils import tostr  # type: ignore[import]
+
+from ha_addon_sunsynk_multi.options import OPT
+from ha_addon_sunsynk_multi.sensor_options import SensorOption
 from sunsynk.helpers import ValType, slug
 from sunsynk.rwsensors import (
     NumberRWSensor,
@@ -32,9 +36,6 @@ from sunsynk.rwsensors import (
     resolve_num,
 )
 from sunsynk.sensors import BinarySensor, EnumSensor, TextSensor
-
-from ha_addon_sunsynk_multi.options import OPT
-from ha_addon_sunsynk_multi.sensor_options import SensorOption
 
 if TYPE_CHECKING:
     from ha_addon_sunsynk_multi.a_inverter import AInverter
@@ -154,18 +155,17 @@ class ASensor:
                 self.entity = SensorEntity(**ent)
             return self.entity
 
-        def on_change(val: float | int | str | bool) -> None:
+        async def on_change(val: float | int | str | bool) -> None:
             """On change callback."""
             _LOGGER.info("Queue update %s=%s", sensor.id, val)
             ist.write_queue.update({sensor: val})
-            self.publish(val)
+            await self.publish(val)
 
         ent.update(
             {
                 "entity_category": "config",
                 "icon": hass_default_rw_icon(unit=sensor.unit),
                 "command_topic": command_topic,
-                "on_change": on_change,
             }
         )
 
@@ -205,7 +205,7 @@ class ASensor:
             }
         )
 
-        self.entity = RWEntity(**ent)
+        self.entity = RWEntity(**ent, on_change=on_change)
         return self.entity
 
 

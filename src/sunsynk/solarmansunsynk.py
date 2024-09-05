@@ -1,4 +1,5 @@
 """Sunsynk lib using PySolarman."""
+
 import asyncio
 import logging
 from typing import Sequence

@@ -3,6 +3,7 @@ from collections import defaultdict
 from unittest.mock import Mock, call, patch
 
 import pytest
+
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.sensor_callback import SensorRun, build_callback_schedule
 from ha_addon_sunsynk_multi.sensor_options import SOPT, Sensor, SensorOption
@@ -23,7 +24,9 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
 
     ist.write_queue = {}
 
-    with (patch("ha_addon_sunsynk_multi.sensor_callback.defaultdict", dds),):
+    with (
+        patch("ha_addon_sunsynk_multi.sensor_callback.defaultdict", dds),
+    ):
         mycb = build_callback_schedule(ist=ist, idx=0)
         if not iscoroutinefunction(mycb.callback):
             assert False, "Callback is not a coroutine"

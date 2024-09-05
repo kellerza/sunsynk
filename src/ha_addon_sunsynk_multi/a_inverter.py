@@ -1,4 +1,5 @@
 """Inverter state."""
+
 import asyncio
 import logging
 import traceback
@@ -8,14 +9,14 @@ import attrs
 from mqtt_entity import Device, SensorEntity  # type: ignore[import]
 from mqtt_entity.helpers import set_attributes  # type: ignore[import]
 from mqtt_entity.utils import tostr  # type: ignore[import]
-from sunsynk.helpers import slug
-from sunsynk.rwsensors import RWSensor
-from sunsynk.sunsynk import Sensor, Sunsynk, ValType
 
 from ha_addon_sunsynk_multi.a_sensor import MQTT, SS_TOPIC, ASensor
 from ha_addon_sunsynk_multi.options import OPT, InverterOptions
 from ha_addon_sunsynk_multi.sensor_options import DEFS, SOPT
 from ha_addon_sunsynk_multi.timer_callback import Callback
+from sunsynk.helpers import slug
+from sunsynk.rwsensors import RWSensor
+from sunsynk.sunsynk import Sensor, Sunsynk, ValType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -187,6 +188,7 @@ class AInverter:
         self.entity_timeout = SensorEntity(
             name="RS485 timeout",
             unique_id=f"{dev.id}_{name}",
+            unit_of_measurement="",
             state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
             entity_category="diagnostic",
             device=dev,
@@ -198,6 +200,7 @@ class AInverter:
         self.entity_cbstats = SensorEntity(
             name="Callback stats",
             unique_id=f"{dev.id}_{name}",
+            unit_of_measurement="",
             state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
             json_attributes_topic=f"{SS_TOPIC}/{dev.id}/{name}_attr",
             entity_category="diagnostic",

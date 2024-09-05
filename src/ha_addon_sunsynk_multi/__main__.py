@@ -1,9 +1,8 @@
 """Main."""
+
 import asyncio
 import logging
 from asyncio.events import AbstractEventLoop
-
-from sunsynk import VERSION
 
 from ha_addon_sunsynk_multi.a_inverter import STATE
 from ha_addon_sunsynk_multi.a_sensor import MQTT, SS_TOPIC
@@ -19,6 +18,7 @@ from ha_addon_sunsynk_multi.timer_callback import (
     run_callbacks,
 )
 from ha_addon_sunsynk_multi.timer_schedule import init_schedules
+from sunsynk import VERSION
 
 _LOGGER = logging.getLogger(__name__)
 

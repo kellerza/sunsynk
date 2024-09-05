@@ -1,19 +1,20 @@
 """Parse sensors from options."""
+
 import logging
 import traceback
 from typing import Generator, Iterable
 
 import attrs
+
+from ha_addon_sunsynk_multi.helpers import import_mysensors
+from ha_addon_sunsynk_multi.options import OPT
+from ha_addon_sunsynk_multi.timer_schedule import SCHEDULES, Schedule, get_schedule
 from sunsynk.definitions.single_phase import SENSORS as SENSORS_1PH
 from sunsynk.definitions.three_phase_hv import SENSORS as SENSORS_3PHV
 from sunsynk.definitions.three_phase_lv import SENSORS as SENSORS_3PHLV
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, SensorDefinitions
-
-from ha_addon_sunsynk_multi.helpers import import_mysensors
-from ha_addon_sunsynk_multi.options import OPT
-from ha_addon_sunsynk_multi.timer_schedule import SCHEDULES, Schedule, get_schedule
 
 _LOGGER = logging.getLogger(__name__)
 

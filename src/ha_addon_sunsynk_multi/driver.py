@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Run the addon."""
-import logging
 
-from sunsynk.helpers import ValType
-from sunsynk.sunsynk import Sensor, Sunsynk, SunsynkInitParameters
+import logging
 
 from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter
 from ha_addon_sunsynk_multi.a_sensor import MQTT
 from ha_addon_sunsynk_multi.options import OPT, Options
 from ha_addon_sunsynk_multi.sensor_options import SOPT
+from sunsynk.helpers import ValType
+from sunsynk.sunsynk import Sensor, Sunsynk, SunsynkInitParameters
 
 _LOGGER = logging.getLogger(":")
 

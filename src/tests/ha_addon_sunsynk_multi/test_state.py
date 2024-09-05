@@ -1,10 +1,12 @@
 """States."""
+
 import logging
+
+from mqtt_entity import Device, Entity  # type: ignore
 
 from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter
 from ha_addon_sunsynk_multi.a_sensor import ASensor
 from ha_addon_sunsynk_multi.sensor_options import SensorOption
-from mqtt_entity import Device, Entity  # type: ignore
 from sunsynk.helpers import slug
 from sunsynk.sensors import Sensor
 

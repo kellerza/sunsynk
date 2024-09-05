@@ -1,4 +1,5 @@
 """States."""
+
 import logging
 
 from ha_addon_sunsynk_multi.sensor_options import OPT, SOPT

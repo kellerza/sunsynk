@@ -1,4 +1,5 @@
 """Sensor definitions."""
+
 from sunsynk.sensors import EnumSensor
 
 DEVICE_TYPE = EnumSensor(

@@ -1,4 +1,5 @@
 """Global fixtures."""
+
 import os
 import sys
 from importlib import import_module as _import_module
@@ -8,6 +9,7 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
+
 from sunsynk.state import InverterState
 
 #

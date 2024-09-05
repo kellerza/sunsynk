@@ -1,4 +1,5 @@
 """Sunsynk/Deye hybrid 3-phase LV inverter sensor definitions."""
+
 from sunsynk import AMPS, CELSIUS, VOLT, WATT
 from sunsynk.definitions.three_phase_common import SENSORS
 from sunsynk.sensors import (

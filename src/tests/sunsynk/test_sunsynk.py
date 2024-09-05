@@ -1,4 +1,5 @@
 """Test sunsynk library."""
+
 import logging
 from unittest.mock import MagicMock, call, patch
 

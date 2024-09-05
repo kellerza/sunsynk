@@ -1,4 +1,5 @@
 """Error messages."""
+
 import logging
 from collections import defaultdict
 from traceback import format_exception

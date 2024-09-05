@@ -30,20 +30,11 @@ jobs:
       - uses: chartboost/ruff-action@v1
         with:
           #src: "./src"
-          version: 0.1.0
-
-  black:
-    name: Check black
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v3
+          version: 0.6.3
+      - uses: chartboost/ruff-action@v1
         with:
-          python-version: ${{ env.DEFAULT_PYTHON }}
-      - uses: psf/black@23.10.0
-        with:
-          options: "--check"
-          src: "src/"
+          version: 0.6.3
+          args: "format --check"
 
   lint:
     name: Check pylint, mypy & pydocstyle

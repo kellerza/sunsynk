@@ -1,8 +1,10 @@
 """Solarman Sunsynk"""
+
 from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
+
 from sunsynk.solarmansunsynk import SolarmanSunsynk
 
 P_CONNECT = "sunsynk.solarmansunsynk.SolarmanSunsynk.connect"
