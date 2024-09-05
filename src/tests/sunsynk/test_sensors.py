@@ -1,4 +1,5 @@
 """Sunsynk sensor tests."""
+
 import logging
 from typing import Iterable, Sequence
 
@@ -179,7 +180,7 @@ def test_other_sensors() -> None:
 
     s = InverterStateSensor(1, "", "")
     assert s.reg_to_value((2,)) == "ok"
-    assert s.reg_to_value((1,)) == "unknown 1"
+    assert s.reg_to_value((6,)) == "unknown 6"
 
 
 def test_math() -> None:
