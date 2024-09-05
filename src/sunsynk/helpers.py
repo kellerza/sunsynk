@@ -48,9 +48,14 @@ def as_num(val: ValType) -> Union[float, int]:
     return 0
 
 
-def signed(val: Union[int, float]) -> Union[int, float]:
-    """Convert 16-bit value to signed int."""
-    return val if val <= 0x7FFF else val - 0x10000
+def signed(val: Union[int, float], bits: int = 16) -> Union[int, float]:
+    """Convert value to signed int."""
+    sign_bit = 1 << (bits - 1)
+    if val < sign_bit:
+        return val
+    return val - (1 << bits)
+    # 16-bit only (old)
+    # return val if val <= 0x7FFF else val - 0x10000
 
 
 def slug(name: str) -> str:

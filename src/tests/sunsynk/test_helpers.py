@@ -46,6 +46,12 @@ def test_signed() -> None:
     assert signed(32768) == -32768
 
 
+def test_signed32bits() -> None:
+    assert signed(0x7FFFFFFF, bits=32) == 0x7FFFFFFF
+    assert signed(0xFFFFFFFF, bits=32) == -1
+    assert signed(0x80000000, bits=32) == 0x80000000 - (1 << 32)
+
+
 def test_signeds() -> None:
     """Signed sensors have a -1 factor"""
     s = Sensor(1, "", "", factor=-1)

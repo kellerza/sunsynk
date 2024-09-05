@@ -43,7 +43,7 @@ class Sensor:
         if len(regs) == 2:
             val += regs[1] << 16
         elif self.factor < 0:  # Indicates this register is signed
-            val = signed(val)
+            val = signed(val, bits=16 * len(regs))
         val = int_round(val * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
@@ -63,6 +63,10 @@ class Sensor:
         if not isinstance(other, Sensor):
             raise TypeError(str(type(other)))
         return self.id == other.id
+
+
+class Sensor2(Sensor):
+    """Numeric sensor."""
 
 
 @attrs.define(slots=True, eq=False)
