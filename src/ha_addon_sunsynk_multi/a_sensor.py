@@ -208,13 +208,13 @@ class ASensor:
             return self.entity
 
         RWEntity._path = "text"  # pylint: disable=protected-access
-        ent.update(
-            {
-                "entity_category": "diagnostic",
-            }
-        )
 
-        self.entity = RWEntity(**ent, on_change=on_change)
+        self.entity = RWEntity(
+            device=dev,
+            **ent,
+            entity_category="diagnostic",
+            on_change=on_change,
+        )
         return self.entity
 
 

@@ -65,10 +65,6 @@ class Sensor:
         return self.id == other.id
 
 
-class Sensor2(Sensor):
-    """Numeric sensor."""
-
-
 @attrs.define(slots=True, eq=False)
 class TextSensor(Sensor):
     """Text/non-numeric sensors are discovered differently."""
