@@ -123,23 +123,26 @@ class ASensor:
         state_topic = f"{SS_TOPIC}/{dev.id}/{sensor.id}"
         command_topic = f"{state_topic}_set"
 
-        ent = {  # type:ignore
-            "device": dev,
+        discovery_extra: dict[str, str | int] = {
+            "object_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
+            "suggested_display_precision": 1,
+        }
+
+        ent: dict[str, str | dict[str, str | int]] = {  # type:ignore
             "name": sensor.name,
             "state_topic": state_topic,
             "unique_id": f"{dev.id}_{sensor.id}",
             "unit_of_measurement": sensor.unit,
             # https://github.com/kellerza/sunsynk/issues/165
-            "discovery_extra": {
-                "object_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
-            },
+            "discovery_extra": discovery_extra,
         }
 
-        if not isinstance(sensor, TextSensor):
-            ent["discovery_extra"]["suggested_display_precision"] = 1
+        if isinstance(sensor, TextSensor):
+            discovery_extra.pop("suggested_display_precision")
 
         if isinstance(sensor, EnumSensor):
             self.entity = SensorEntity(
+                device=dev,
                 **ent,
                 # options=sensor.available_values(),
             )
@@ -148,11 +151,11 @@ class ASensor:
         if not isinstance(sensor, RWSensor):
             ent["device_class"] = hass_device_class(unit=sensor.unit)
             if isinstance(sensor, BinarySensor):
-                self.entity = BinarySensorEntity(**ent)
+                self.entity = BinarySensorEntity(device=dev, **ent)
             else:
                 if self.is_measurement(sensor.unit):
                     ent["state_class"] = "measurement"
-                self.entity = SensorEntity(**ent)
+                self.entity = SensorEntity(device=dev, **ent)
             return self.entity
 
         async def on_change(val: float | int | str | bool) -> None:
@@ -171,30 +174,36 @@ class ASensor:
 
         if isinstance(sensor, NumberRWSensor):
             self.entity = NumberEntity(
+                device=dev,
                 **ent,
                 min=resolve_num(ist.get_state, sensor.min, 0),
                 max=resolve_num(ist.get_state, sensor.max, 100),
                 mode=OPT.number_entity_mode,
                 step=0.1 if sensor.factor < 1 else 1,
+                on_change=on_change,
             )
             return self.entity
 
         if isinstance(sensor, (SwitchRWSensor, SwitchRWSensor0)):
-            self.entity = SwitchEntity(**ent)
+            self.entity = SwitchEntity(device=dev, **ent, on_change=on_change)
             return self.entity
 
         if isinstance(sensor, SelectRWSensor):
             self.entity = SelectEntity(
+                device=dev,
                 **ent,
                 options=sensor.available_values(),
+                on_change=on_change,
             )
             return self.entity
 
         if isinstance(sensor, TimeRWSensor):
             ent["icon"] = "mdi:clock"
             self.entity = SelectEntity(
+                device=dev,
                 **ent,
                 options=sensor.available_values(OPT.prog_time_interval, ist.get_state),
+                on_change=on_change,
             )
             return self.entity
 

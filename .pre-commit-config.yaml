@@ -10,28 +10,28 @@ repos:
     rev: v2.3.0
     hooks:
       - id: codespell
-        files: "sunsynk/.*.py"
+        files: "src/.*.py"
         args:
           - -L
-          - HASS,hass,Hass
+          - HASS,hass,Hass,ist
           - --skip
           - "package-lock.json,*.map,www/docs/.vitepress/cache/*"
-      - id: codespell
-        files: "hass-addon-sunsynk-multi/.*.py"
-        args:
-          - -L
-          - HASS,hass,Hass
-          - --skip
-          - "package-lock.json,*.map,www/docs/.vitepress/cache/*"
+      # - id: codespell
+      #   files: "hass-addon-sunsynk-multi/.*.py"
+      #   args:
+      #     - -L
+      #     - HASS,hass,Hass
+      #     - --skip
+      #     - "package-lock.json,*.map,www/docs/.vitepress/cache/*"
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.2
     hooks:
+      # - id: mypy
+      #   files: "^(sunsynk|hass-addon-multi)/"
+      #   additional_dependencies:
+      #     ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
       - id: mypy
-        files: "^(sunsynk|hass-addon-multi)/"
-        additional_dependencies:
-          ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
-      - id: mypy
-        files: "hass-addon-multi/.*.py"
+        files: "src/.*.py"
         additional_dependencies:
           ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]

@@ -161,7 +161,7 @@ SENSORS += (
 ###########
 SENSORS += (
     Sensor(200, "Control Mode"),
-    SwitchRWSensor(232, "Grid Charge enabled", ""),
+    SwitchRWSensor(232, "Grid Charge enabled", "", bitmask=1),
     SelectRWSensor(
         235, "Generator input", "", options={0: "Disable", 1: "Output", 2: "Input"}
     ),
@@ -223,7 +223,7 @@ SENSORS += (
 #################
 SENSORS += (
     # 0: "Battery first", 1: "Load first"
-    SwitchRWSensor(243, "Priority Load"),
+    SwitchRWSensor(243, "Priority Load", bitmask=1),
     SelectRWSensor(
         244,
         "Load Limit",
@@ -235,8 +235,8 @@ SENSORS += (
     # If enabled, will export any excess, but will also draw a
     # constant ~40w at all times for an unknown reason
     # 0: "Don't Sell", 1: "Sell solar"
-    SwitchRWSensor(247, "Solar Export"),
-    SwitchRWSensor(248, "Use Timer"),
+    SwitchRWSensor(247, "Solar Export", bitmask=1),
+    SwitchRWSensor(248, "Use Timer", bitmask=1),
 )
 
 PROG1_TIME = TimeRWSensor(250, "Prog1 Time")

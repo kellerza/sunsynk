@@ -168,7 +168,7 @@ class SwitchRWSensor(RWSensor):
         """Get the reg value from a display value, or the current reg value if out of range."""
         value = str(value)
         if value == BOOL_ON:
-            return self.on if self.on else self.masked((0xFF,))
+            return (self.on,) if self.on else self.masked((0xFF,))
         if value != BOOL_OFF:
             _LOGGER.warning("%s: ON/OFF expected, got %s", self.name, value)
         return (self.off,)
