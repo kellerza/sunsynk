@@ -175,21 +175,14 @@ class InverterStateSensor(TextSensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the inverter status."""
-        match regs[0]:
-            case 0:
-                return "standby"
-            case 1:
-                return "selfcheck"
-            case 2:
-                return "ok"
-            case 3:
-                return "alarm"
-            case 4:
-                return "fault"
-            case 5:
-                return "activating"
-            case _:
-                return f"unknown {regs[0]}"
+        return {
+            0: "standby",
+            1: "selfcheck",
+            2: "ok",
+            3: "alarm",
+            4: "fault",
+            5: "activating",
+        }.get(regs[0]) or f"unknown {regs[0]}"
 
 
 @attrs.define(slots=True, eq=False)
