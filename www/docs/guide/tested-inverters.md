@@ -8,7 +8,7 @@ There are several inverters that are rebranded Deye inverters, so you might have
 | Sunsynk 3.6kW Ecco | Sunsynk Sun-Batt 5.12 | multi    | @Fr3d         | RS485/CAN (top left)     |
 | Sunsynk 5.5kW      | Hubble AM-2           | beta/all | @kellerza     | BMS485 (top left)        |
 | Sunsynk 8.8kW      | BSL 8.2 kWH           | 0.0.8    | @dirkackerman | RS485                    |
-| Deye 8kW           | Pylontech US3000C     | 0.1.3dev | @Kladrie      | RS485 (top left)         |
+| Deye 8kW           | Pylontech US3000C     | 0.7.4 multi | @Kladrie      | RS485 (top left)         |
 | Deye 20kW 3PH HV   | Deye BOS-G            | head     | @rixxxx       | Solarman                 |
 | Turbo-E 5kW        | DIY with JKBMS        | 0.1.4    | @agtconf      | BMS485 (top left)        |
 
