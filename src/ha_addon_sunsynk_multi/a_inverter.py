@@ -6,7 +6,7 @@ import traceback
 from typing import Callable, Iterable, Union
 
 import attrs
-from mqtt_entity import Device, SensorEntity  # type: ignore[import]
+from mqtt_entity import Device, Entity, SensorEntity  # type: ignore[import]
 from mqtt_entity.helpers import set_attributes  # type: ignore[import]
 from mqtt_entity.utils import tostr  # type: ignore[import]
 
@@ -162,9 +162,14 @@ class AInverter:
             manufacturer=OPT.manufacturer,
         )
 
-        ents = [
-            s.create_entity(dev, ist=self) for s in self.ss.values() if not s.hidden
-        ]
+        ents: list[Entity] = []
+        for s in self.ss.values():
+            if s.hidden:
+                continue
+            try:
+                ents.append(s.create_entity(dev, ist=self))
+            except Exception as err:  # pylint:disable=broad-except
+                _LOGGER.error("Could not create MQTT entity for %s: %s", s, err)
         ents.extend(self.create_stats_entities(dev))
         await MQTT.connect(OPT)
         await MQTT.publish_discovery_info(entities=ents)

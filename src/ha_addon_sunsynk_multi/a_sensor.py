@@ -185,7 +185,11 @@ class ASensor:
             return self.entity
 
         if isinstance(sensor, (SwitchRWSensor, SwitchRWSensor0)):
-            self.entity = SwitchEntity(device=dev, **ent, on_change=on_change)
+            self.entity = SwitchEntity(
+                device=dev,
+                **ent,
+                on_change=on_change,
+            )
             return self.entity
 
         if isinstance(sensor, SelectRWSensor):
@@ -209,10 +213,11 @@ class ASensor:
 
         RWEntity._path = "text"  # pylint: disable=protected-access
 
+        ent["entity_category"] = "diagnostic"
+
         self.entity = RWEntity(
             device=dev,
             **ent,
-            entity_category="diagnostic",
             on_change=on_change,
         )
         return self.entity
