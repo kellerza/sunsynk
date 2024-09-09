@@ -36,17 +36,6 @@ SENSORS += (
     TempSensor(596, "Battery 2 temperature", CELSIUS, 0.1),
 )
 
-#############
-# Grid Power
-#############
-SENSORS += (
-    Sensor(604, "A Phase Power on the Inner Side of the Grid", "W"),
-    Sensor(605, "B Phase Power on the Inner Side of the Grid", "W"),
-    Sensor(606, "C Phase Power on the Inner Side of the Grid", "W"),
-    Sensor(607, "Total Active Power from Side to Side of the Grid", "W"),
-    Sensor(608, "Grid Side - Inside Total Apparent Power", "W"),
-)
-
 ##############
 # Solar Power
 ##############
@@ -64,16 +53,6 @@ SENSORS += (
     Sensor(673, "PV2 power", WATT, 10),
     Sensor(674, "PV3 power", WATT, 10),
     Sensor(675, "PV4 power", WATT, 10),
-)
-
-
-###################
-# Power on Outputs (aka GEN - which has multiple modes on the deye 3 Phase )
-###################
-SENSORS += (
-    Sensor(661, "Gen L1 volts", VOLT, 0.1),
-    Sensor(662, "Gen L2 volts", VOLT, 0.1),
-    Sensor(663, "Gen L3 volts", VOLT, 0.1),
 )
 
 
@@ -137,136 +116,18 @@ SENSORS += (
         options={0: "Enabled", 1 << 8: "Disabled"},
         bitmask=1 << 8,
     ),  # according to docs, 0 is enabled for this one
-    Sensor(114, "Battery Charge Efficiency", "%", 0.1),
 )
-
-
-SENSORS += SelectRWSensor(
-    111,
-    "Battery Type",
-    options={0: "Use Battery Voltage", 1: "Lithium (Use BMS)", 2: "No Battery"},
-)
-
 
 #################
 # System program
 #################
 SENSORS += (
-    SwitchRWSensor(
-        146,
-        "Prog Time Of Use Enabled",
-        on=1 << 0,
-        bitmask=1 << 0,
-    ),
-    SwitchRWSensor(146, "Prog Monday Enabled", on=1 << 1, bitmask=1 << 1),
-    SwitchRWSensor(146, "Prog Tuesday Enabled", on=1 << 2, bitmask=1 << 2),
-    SwitchRWSensor(146, "Prog Wednesday Enabled", on=1 << 3, bitmask=1 << 3),
-    SwitchRWSensor(146, "Prog Thursday Enabled", on=1 << 4, bitmask=1 << 4),
-    SwitchRWSensor(146, "Prog Friday Enabled", on=1 << 5, bitmask=1 << 5),
-    SwitchRWSensor(146, "Prog Saturday Enabled", on=1 << 6, bitmask=1 << 6),
-    SwitchRWSensor(146, "Prog Sunday Enabled", on=1 << 7, bitmask=1 << 7),
     NumberRWSensor(154, "Prog1 power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(155, "Prog2 power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(156, "Prog3 power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(157, "Prog4 power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(158, "Prog5 power", WATT, 10, max=RATED_POWER),
     NumberRWSensor(159, "Prog6 power", WATT, 10, max=RATED_POWER),
-)
-
-########
-# Other
-########
-SENSORS += (
-    SelectRWSensor(
-        178,
-        "Microinverter export to grid cutoff",
-        options={0b10 << 0: "Disable", 0b11 << 0: "Enable"},
-        bitmask=0b11 << 0,
-    ),
-    SelectRWSensor(
-        178,
-        "Gen peak-shaving",
-        options={0b10 << 2: "Disable", 0b11 << 2: "Enable"},
-        bitmask=0b11 << 2,
-    ),
-    SelectRWSensor(
-        178,
-        "Grid peak-shaving",
-        options={0b10 << 4: "Disable", 0b11 << 4: "Enable"},
-        bitmask=0b11 << 4,
-    ),
-    SelectRWSensor(
-        178,
-        "On Grid always on",
-        options={0b10 << 6: "Disable", 0b11 << 6: "Enable"},
-        bitmask=0b11 << 6,
-    ),
-    SelectRWSensor(
-        178,
-        "External relay",
-        options={0b10 << 8: "Disable", 0b11 << 8: "Enable"},
-        bitmask=0b11 << 8,
-    ),
-    SelectRWSensor(
-        178,
-        "Loss of lithium battery report fault",
-        options={0b10 << 10: "Disable", 0b11 << 10: "Enable"},
-        bitmask=0b11 << 10,
-    ),
-    SelectRWSensor(
-        178,
-        "DRM",
-        options={0b10 << 12: "Disable", 0b11 << 12: "Enable"},
-        bitmask=0b11 << 12,
-    ),
-    SelectRWSensor(
-        178,
-        "US version grounding fault",
-        options={0b10 << 14: "Disable", 0b11 << 14: "Enable"},
-        bitmask=0b11 << 14,
-    ),
-)
-
-SENSORS += (
-    NumberRWSensor(131, "Generator AC Couple Frz High", "Hz", 0.01),
-    NumberRWSensor(135, "Generator Off SOC", "%"),
-    NumberRWSensor(137, "Generator On SOC", "%"),
-    NumberRWSensor(121, "Generator Max Operating Time", "Hours", 0.1),
-    NumberRWSensor(122, "Generator Cooling Time", "Hours", 0.1),
-    NumberRWSensor(139, "Min PV Power for Gen Start", WATT),
-    SwitchRWSensor(140, "Grid Signal On", on=1 << 0, bitmask=1 << 0),
-    SwitchRWSensor(140, "Gen Signal On", on=1 << 1, bitmask=1 << 1),
-)
-#################
-# Advanced Grid Configuration Settings
-#################
-
-SENSORS += (
-    SelectRWSensor(
-        182,
-        "Grid Standard",
-        options={
-            0: "Generic",
-            1: "IEEE1547",
-            2: "RULE21",
-            3: "SRD_UL1741",
-            4: "CEI_0_21",
-            5: "EN50549_CZ",  # Czech >16A
-            6: "AS4777_A",  # Australia A
-            7: "AS4777_B",  # Australia B
-            8: "AS4777_C",  # Australia C
-            9: "AS4777_NewZealand",
-            10: "VDE4105",  # Germany
-            11: "OVE_Directive_R25",  # Austria
-            12: "EN50549_CZ_PPDS_L16A",  # Czech <16A
-        },
-    ),
-    SelectRWSensor(183, "Configured Grid Frequency", options={0: "50Hz", 1: "60Hz"}),
-    SelectRWSensor(
-        184,
-        "Configured Grid Phases",
-        options={0: "Three Phase", 1: "Single Phase", 2: "Split Phase"},
-    ),
 )
 
 #################
@@ -373,136 +234,6 @@ SENSORS += (
     Sensor(256, "Battery 2 BMS software version", ""),
     Sensor(257, "Battery 2 BMS rated AH", "Ah"),
     Sensor(258, "Battery 2 BMS hardware version", ""),
-)
-
-#################
-# Advanced Inverter Software Configuration Settings
-#################
-SENSORS += (  ### no idea why there is a "no work" option, but it's in the spec
-    SelectRWSensor(
-        228,
-        "Time synchronization",
-        options={
-            # 0: "No work",
-            0b01 << 0: "No work",
-            0b10 << 0: "Disable",
-            0b11 << 0: "Enable",
-        },
-        bitmask=0b11 << 0,
-    ),
-    SelectRWSensor(
-        228,
-        "Beep",
-        options={
-            # 0: "No work",
-            0b01 << 2: "No work",
-            0b10 << 2: "Disable",
-            0b11 << 2: "Enable",
-        },
-        bitmask=0b11 << 2,
-    ),
-    SelectRWSensor(
-        228,
-        "AM PM",
-        options={
-            # 0: "No work",
-            0b01 << 4: "No work",
-            0b10 << 4: "Disable",
-            0b11 << 4: "Enable",
-        },
-        bitmask=0b11 << 4,
-    ),
-    SelectRWSensor(
-        228,
-        "Auto dim",
-        options={
-            # 0: "No work",
-            0b01 << 6: "No work",
-            0b10 << 6: "Disable",
-            0b11 << 6: "Enable",
-        },
-        bitmask=0b11 << 6,
-    ),
-    SelectRWSensor(
-        228,
-        "Allow Remote",
-        options={
-            # 0: "No work",
-            0b01 << 14: "No work",
-            0b10 << 14: "Disable",
-            0b11 << 14: "Enable",
-        },
-        bitmask=0b11 << 14,
-    ),
-    NumberRWSensor(209, "UPS delay time", "s"),
-)
-
-############
-# DRM Codes (Australia only)
-############
-SENSORS += (
-    # these are some Australian standard. Found a definition here
-    # https://www.gses.com.au/wp-content/uploads/2016/09/GC_AU8-2_4777-2016-updates.pdf
-    EnumSensor(
-        544,
-        "DRM0 Code",
-        options={0: "Not Active", 1 << 0: "Shutdown Inverter"},
-        bitmask=1 << 0,
-    ),
-    EnumSensor(
-        544,
-        "DRM1 Code",
-        options={0: "Not Active", 1 << 1: "No Power Consumption"},
-        bitmask=1 << 1,
-    ),
-    EnumSensor(
-        544,
-        "DRM2 Code",
-        options={0: "Not Active", 1 << 2: "Max 50% Power Consumption"},
-        bitmask=1 << 2,
-    ),
-    EnumSensor(
-        544,
-        "DRM3 Code",
-        options={
-            0: "Not Active",
-            1 << 3: "Max 75% Power Consumption, Source Reactive Power",
-        },
-        bitmask=1 << 3,
-    ),
-    EnumSensor(
-        544,
-        "DRM4 Code",
-        options={0: "Not Active", 1 << 4: "Increase Power Consumption"},
-        bitmask=1 << 4,
-    ),
-    EnumSensor(
-        544,
-        "DRM5 Code",
-        options={0: "Not Active", 1 << 5: "No Power Generation"},
-        bitmask=1 << 5,
-    ),
-    EnumSensor(
-        544,
-        "DRM6 Code",
-        options={0: "Not Active", 1 << 6: "Max 50% Power Generation"},
-        bitmask=1 << 6,
-    ),
-    EnumSensor(
-        544,
-        "DRM7 Code",
-        options={
-            0: "Not Active",
-            1 << 7: "Max 75% Power Generation, Sink Reactive Power",
-        },
-        bitmask=1 << 7,
-    ),
-    EnumSensor(
-        544,
-        "DRM8 Code",
-        options={0: "Not Active", 1 << 8: "Increase Power Generation"},
-        bitmask=1 << 8,
-    ),
 )
 
 SENSORS.deprecated.update(
