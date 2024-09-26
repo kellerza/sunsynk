@@ -23,13 +23,13 @@ The newer inverters have a combined RS485 and CAN-BUS port. If your battery is a
 
 ## USB-to-RS485 adaptors
 
-1. Wave USB-to-RS485 [example](https://www.robotics.org.za/W17286)
+1. Waveshare USB-to-RS485 [example](https://www.robotics.org.za/W17286)
 
    This is my preferred adaptor. It includes a GND and lightning/ESD protection, TVS diodes and a resettable fuse.
 
-   ![Wave](../images/usb-wave-rs485.webp =360x360)
+   ![Waveshare](../images/usb-wave-rs485.webp =360x360)
 
-   Wave also has a RS485-to-Ethernet module. (which does not work!)
+   Waveshare also has a RS485-to-Ethernet module. (which does not work!)
 
 2. USB-to-RS485 adaptor with cable [example](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
