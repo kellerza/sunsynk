@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from json import loads
 from pathlib import Path
 
@@ -52,24 +53,24 @@ class Options:
 
     _LISTS = {"inverters": InverterOptions, "schedules": Schedule}
 
-    mqtt_host: str = ""
-    mqtt_port: int = 0
-    mqtt_username: str = ""
-    mqtt_password: str = ""
-    number_entity_mode: str = "auto"
-    prog_time_interval: int = 15
+    mqtt_host: str = os.getenv("MQTT_HOST", "")
+    mqtt_port: int = int(os.getenv("MQTT_PORT", 0))
+    mqtt_username: str = os.getenv("MQTT_USERNAME", "")
+    mqtt_password: str = os.getenv("MQTT_PASSWORD", "")
+    number_entity_mode: str = os.getenv("NUMBER_ENTITY_MODE", "auto")
+    prog_time_interval: int = int(os.getenv("PROG_TIME_INTERVAL", 15))
     inverters: list[InverterOptions] = []
-    sensor_definitions: str = "single-phase"
+    sensor_definitions: str = os.getenv("SENSOR_DEFINITIONS", "single-phase")
     sensors: list[str] = []
     sensors_first_inverter: list[str] = []
-    read_allow_gap: int = 10
-    read_sensors_batch_size: int = 60
+    read_allow_gap: int = int(os.getenv("READ_ALLOW_GAP", 10))
+    read_sensors_batch_size: int = int(os.getenv("READ_SENSORS_BATCH_SIZE", 60))
     schedules: list[Schedule] = []
-    timeout: int = 10
-    debug: int = 0
-    driver: str = "umodbus"
-    manufacturer: str = "Sunsynk"
-    debug_device: str = ""
+    timeout: int = int(os.getenv("TIMEOUT", 10))
+    debug: int = int(os.getenv("DEBUG", 0))
+    driver: str = os.getenv("DRIVER", "umodbus")
+    manufacturer: str = os.getenv("MANUFACTURER", "Sunsynk")
+    debug_device: str = os.getenv("DEBUG_DEVICE", "")
 
 
 OPT = Options()
