@@ -58,7 +58,7 @@ class Options:
     mqtt_username: str = os.getenv("MQTT_USERNAME", "")
     mqtt_password: str = os.getenv("MQTT_PASSWORD", "")
     number_entity_mode: str = os.getenv("NUMBER_ENTITY_MODE", "auto")
-    prog_time_interval: int = int(os.getenv("PROG_TIME_INTERVAL", 15))
+    prog_time_interval: int = int(os.getenv("PROG_TIME_INTERVAL", "15"))
     inverters: list[InverterOptions] = []
     sensor_definitions: str = os.getenv("SENSOR_DEFINITIONS", "single-phase")
     sensors: list[str] = []
