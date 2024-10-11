@@ -15,24 +15,36 @@ from ha_addon_sunsynk_multi.timer_schedule import Schedule
 _LOGGER = logging.getLogger(__name__)
 
 
-def unmarshal(target: object, json: dict) -> object:
-    """Update options."""
-    if not isinstance(json, dict):
-        _LOGGER.error("invalid options %s", json)
+def unmarshal(target: object, json_data: dict) -> object:
+    """Update options from a JSON dictionary."""
+    if not isinstance(json_data, dict):
+        _LOGGER.error("Invalid options format: %s", json_data)
+        return target
+
     _lst = getattr(target, "_LISTS", {})
-    for key, val in json.items():
+
+    for key, val in json_data.items():
         key = fixkey(key)
-        if key in _lst:
+        
+        if key in _lst:  # Handle lists (e.g., inverters, schedules)
             newcls = _lst[key]
-            newv = [unmarshal(newcls(), item) for item in val]
-            setattr(target, key, newv)
+            if isinstance(val, list):
+                # Preserve existing values if already set (e.g., from environment)
+                current_value = getattr(target, key, None)
+                if current_value:  # If already set, skip overwriting
+                    continue
+                newv = [unmarshal(newcls(), item) for item in val]
+                setattr(target, key, newv)
             continue
+        
+        # Handle simple type conversion if necessary
         target_old = getattr(target, key)
         setattr(target, key, val)
         for thetype in [int, str]:
             if isinstance(target_old, thetype):
                 setattr(target, key, thetype(val))
                 break
+    
     return target
 
 
@@ -59,13 +71,19 @@ class Options:
     mqtt_password: str = os.getenv("MQTT_PASSWORD", "")
     number_entity_mode: str = os.getenv("NUMBER_ENTITY_MODE", "auto")
     prog_time_interval: int = int(os.getenv("PROG_TIME_INTERVAL", "15"))
-    inverters: list[InverterOptions] = []
+    inverters: list[InverterOptions] = [
+        InverterOptions(**{k.lower(): v for k, v in inv.items()})
+        for inv in loads(os.getenv("INVERTERS", "[]"))
+    ]
     sensor_definitions: str = os.getenv("SENSOR_DEFINITIONS", "single-phase")
-    sensors: list[str] = []
-    sensors_first_inverter: list[str] = []
+    sensors: list[str] = loads(os.getenv("SENSORS", "[]"))
+    sensors_first_inverter: list[str] = loads(os.getenv("SENSORS_FIRST_INVERTER", "[]"))
     read_allow_gap: int = int(os.getenv("READ_ALLOW_GAP", "10"))
     read_sensors_batch_size: int = int(os.getenv("READ_SENSORS_BATCH_SIZE", "60"))
-    schedules: list[Schedule] = []
+    schedules: list[Schedule] = [
+        Schedule(**{k.lower(): v for k, v in sched.items()})
+        for sched in loads(os.getenv("SCHEDULES", "[]"))
+    ]
     timeout: int = int(os.getenv("TIMEOUT", "10"))
     debug: int = int(os.getenv("DEBUG", "0"))
     driver: str = os.getenv("DRIVER", "umodbus")
