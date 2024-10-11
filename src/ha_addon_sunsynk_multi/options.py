@@ -63,11 +63,11 @@ class Options:
     sensor_definitions: str = os.getenv("SENSOR_DEFINITIONS", "single-phase")
     sensors: list[str] = []
     sensors_first_inverter: list[str] = []
-    read_allow_gap: int = int(os.getenv("READ_ALLOW_GAP", 10))
-    read_sensors_batch_size: int = int(os.getenv("READ_SENSORS_BATCH_SIZE", 60))
+    read_allow_gap: int = int(os.getenv("READ_ALLOW_GAP", "10"))
+    read_sensors_batch_size: int = int(os.getenv("READ_SENSORS_BATCH_SIZE", "60"))
     schedules: list[Schedule] = []
-    timeout: int = int(os.getenv("TIMEOUT", 10))
-    debug: int = int(os.getenv("DEBUG", 0))
+    timeout: int = int(os.getenv("TIMEOUT", "10"))
+    debug: int = int(os.getenv("DEBUG", "0"))
     driver: str = os.getenv("DRIVER", "umodbus")
     manufacturer: str = os.getenv("MANUFACTURER", "Sunsynk")
     debug_device: str = os.getenv("DEBUG_DEVICE", "")
