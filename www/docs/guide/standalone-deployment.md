@@ -149,3 +149,47 @@ docker run -d --name sunsynk-multi \
 -v ${PWD}/options.yaml:/data/options.yaml \
 ghcr.io/kellerza/hass-addon-sunsynk-multi/armv7:stable
 ```
+
+## Using Environment Variables with Docker Compose
+
+If you prefer to use environment variables instead of an `options.yaml` file, you can configure the Sunsynk Multi service entirely with environment variables. All configuration options that would normally be set in the `options.yaml` file can be set as environment variables.
+
+### Example Configuration
+
+Here is an example of how to run the Sunsynk Multi service using environment variables in a `docker-compose.yml` file:
+
+```yaml
+services:
+  sunsynk-mult-amd64:
+    restart: unless-stopped
+    profiles: ['sunsynk-amd64']
+    image: ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
+    environment:
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      MQTT_USERNAME: ${MQTT_USER}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      S6_KEEP_ENV: 1
+      DRIVER: "pymodbus"
+      SENSOR_DEFINITIONS: "single-phase"
+      SENSORS: '["energy_management", "power_flow_card", "pv2_power"]'
+      SENSORS_FIRST_INVERTER: '["settings"]'
+      MANUFACTURER: "Sunsynk"
+      READ_ALLOW_GAP: 2
+      READ_SENSORS_BATCH_SIZE: 20
+      NUMBER_ENTITY_MODE: "auto"
+      INVERTERS: '[{"SERIAL_NR":"1234567890","HA_PREFIX":"SUN-10k-dsaxz","MODBUS_ID":1,"DONGLE_SERIAL_NUMBER":"1234567890","PORT":"tcp://192.168.1.123:8899"}]'
+      SCHEDULES: '[{"key":"w","read_every":5,"report_every":60,"change_by":80,"change_percent":0,"change_any":0}]'
+```
+
+### Explanation of Environment Variables
+
+- **MQTT_HOST**: The MQTT broker host.
+- **MQTT_PORT**: The MQTT broker port (typically 1883).
+- **MQTT_USERNAME**: The username for the MQTT broker.
+- **MQTT_PASSWORD**: The password for the MQTT broker.
+- **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes when using the `s6` init system.
+- **DRIVER**: The driver to use for modbus communication (e.g., `pymodbus`, `umodbus`).
+- **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values for `SERIAL_NR`, `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
+- **SCHEDULES**: A JSON string representing the schedules for sensor reading and reporting.
+- **Other Configuration Options**: Any other configuration option that is typically defined in `options.yaml` can be passed as an environment variable. The keys from `options.yaml` should be written in uppercase and underscores (e.g., `SENSOR_DEFINITIONS`, `READ_ALLOW_GAP`, `SENSORS`, etc.).
