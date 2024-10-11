@@ -54,7 +54,7 @@ class Options:
     _LISTS = {"inverters": InverterOptions, "schedules": Schedule}
 
     mqtt_host: str = os.getenv("MQTT_HOST", "")
-    mqtt_port: int = int(os.getenv("MQTT_PORT", 0))
+    mqtt_port: int = int(os.getenv("MQTT_PORT", "0"))
     mqtt_username: str = os.getenv("MQTT_USERNAME", "")
     mqtt_password: str = os.getenv("MQTT_PASSWORD", "")
     number_entity_mode: str = os.getenv("NUMBER_ENTITY_MODE", "auto")
