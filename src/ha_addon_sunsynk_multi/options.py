@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from json import loads
 from pathlib import Path
 
@@ -14,24 +15,36 @@ from ha_addon_sunsynk_multi.timer_schedule import Schedule
 _LOGGER = logging.getLogger(__name__)
 
 
-def unmarshal(target: object, json: dict) -> object:
-    """Update options."""
-    if not isinstance(json, dict):
-        _LOGGER.error("invalid options %s", json)
+def unmarshal(target: object, json_data: dict) -> object:
+    """Update options from a JSON dictionary."""
+    if not isinstance(json_data, dict):
+        _LOGGER.error("Invalid options format: %s", json_data)
+        return target
+
     _lst = getattr(target, "_LISTS", {})
-    for key, val in json.items():
+
+    for key, val in json_data.items():
         key = fixkey(key)
-        if key in _lst:
+        
+        if key in _lst:  # Handle lists (e.g., inverters, schedules)
             newcls = _lst[key]
-            newv = [unmarshal(newcls(), item) for item in val]
-            setattr(target, key, newv)
+            if isinstance(val, list):
+                # Preserve existing values if already set (e.g., from environment)
+                current_value = getattr(target, key, None)
+                if current_value:  # If already set, skip overwriting
+                    continue
+                newv = [unmarshal(newcls(), item) for item in val]
+                setattr(target, key, newv)
             continue
+        
+        # Handle simple type conversion if necessary
         target_old = getattr(target, key)
         setattr(target, key, val)
         for thetype in [int, str]:
             if isinstance(target_old, thetype):
                 setattr(target, key, thetype(val))
                 break
+    
     return target
 
 
@@ -52,24 +65,30 @@ class Options:
 
     _LISTS = {"inverters": InverterOptions, "schedules": Schedule}
 
-    mqtt_host: str = ""
-    mqtt_port: int = 0
-    mqtt_username: str = ""
-    mqtt_password: str = ""
-    number_entity_mode: str = "auto"
-    prog_time_interval: int = 15
-    inverters: list[InverterOptions] = []
-    sensor_definitions: str = "single-phase"
-    sensors: list[str] = []
-    sensors_first_inverter: list[str] = []
-    read_allow_gap: int = 10
-    read_sensors_batch_size: int = 60
-    schedules: list[Schedule] = []
-    timeout: int = 10
-    debug: int = 0
-    driver: str = "umodbus"
-    manufacturer: str = "Sunsynk"
-    debug_device: str = ""
+    mqtt_host: str = os.getenv("MQTT_HOST", "")
+    mqtt_port: int = int(os.getenv("MQTT_PORT", "0"))
+    mqtt_username: str = os.getenv("MQTT_USERNAME", "")
+    mqtt_password: str = os.getenv("MQTT_PASSWORD", "")
+    number_entity_mode: str = os.getenv("NUMBER_ENTITY_MODE", "auto")
+    prog_time_interval: int = int(os.getenv("PROG_TIME_INTERVAL", "15"))
+    inverters: list[InverterOptions] = [
+        InverterOptions(**{k.lower(): v for k, v in inv.items()})
+        for inv in loads(os.getenv("INVERTERS", "[]"))
+    ]
+    sensor_definitions: str = os.getenv("SENSOR_DEFINITIONS", "single-phase")
+    sensors: list[str] = loads(os.getenv("SENSORS", "[]"))
+    sensors_first_inverter: list[str] = loads(os.getenv("SENSORS_FIRST_INVERTER", "[]"))
+    read_allow_gap: int = int(os.getenv("READ_ALLOW_GAP", "10"))
+    read_sensors_batch_size: int = int(os.getenv("READ_SENSORS_BATCH_SIZE", "60"))
+    schedules: list[Schedule] = [
+        Schedule(**{k.lower(): v for k, v in sched.items()})
+        for sched in loads(os.getenv("SCHEDULES", "[]"))
+    ]
+    timeout: int = int(os.getenv("TIMEOUT", "10"))
+    debug: int = int(os.getenv("DEBUG", "0"))
+    driver: str = os.getenv("DRIVER", "umodbus")
+    manufacturer: str = os.getenv("MANUFACTURER", "Sunsynk")
+    debug_device: str = os.getenv("DEBUG_DEVICE", "")
 
 
 OPT = Options()
