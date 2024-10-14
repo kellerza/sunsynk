@@ -21,11 +21,11 @@ def unmarshal(target: object, json_data: dict) -> object:
         _LOGGER.error("Invalid options format: %s", json_data)
         return target
 
-    _lst = getattr(target, "_LISTS", {})
+    _lst = getattr(target, "_lists", {})
 
     for key, val in json_data.items():
         key = fixkey(key)
-        
+
         if key in _lst:  # Handle lists (e.g., inverters, schedules)
             newcls = _lst[key]
             if isinstance(val, list):
@@ -36,7 +36,7 @@ def unmarshal(target: object, json_data: dict) -> object:
                 newv = [unmarshal(newcls(), item) for item in val]
                 setattr(target, key, newv)
             continue
-        
+
         # Handle simple type conversion if necessary
         target_old = getattr(target, key)
         setattr(target, key, val)
@@ -44,7 +44,7 @@ def unmarshal(target: object, json_data: dict) -> object:
             if isinstance(target_old, thetype):
                 setattr(target, key, thetype(val))
                 break
-    
+
     return target
 
 
@@ -63,7 +63,7 @@ class InverterOptions:
 class Options:
     """HASS Addon Options."""
 
-    _LISTS = {"inverters": InverterOptions, "schedules": Schedule}
+    _lists = {"inverters": InverterOptions, "schedules": Schedule}
 
     mqtt_host: str = os.getenv("MQTT_HOST", "")
     mqtt_port: int = int(os.getenv("MQTT_PORT", "0"))
