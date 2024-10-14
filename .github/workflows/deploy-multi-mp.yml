@@ -144,7 +144,7 @@ jobs:
           touch "/tmp/digests/${digest#sha256:}"
 
       - name: Prepare artifact name
-        run: echo "SANITIZED_PLATFORM=$(echo ${{ matrix.platform }} | sed 's/\//-/g')" >> $GITHUB_ENV
+        run: echo "SANITIZED_PLATFORM=$(echo ${{ matrix.platform }} | sed 's/^linux\///')" >> $GITHUB_ENV
   
       - name: Upload digest
         uses: actions/upload-artifact@v4
