@@ -118,15 +118,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare sanitized platform name
+        run: |
+          SANITIZED_PLATFORM=$(echo ${{ matrix.platform }} | sed 's/^linux\///')
+          echo "SANITIZED_PLATFORM=${SANITIZED_PLATFORM}" >> $GITHUB_ENV
+          echo "Sanitized platform name: ${SANITIZED_PLATFORM}"
+
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
         with:
-          # yamllint disable rule:line-length
           tags: |
-            ${{ env.REGISTRY_IMAGE }}/${{ matrix.platform }}:${{ needs.information.outputs.environment }}
-            ${{ env.REGISTRY_IMAGE }}/${{ matrix.platform }}:${{ steps.meta.outputs.version }}
-          # yamllint enable rule:line-length
+            ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi:${{ needs.information.outputs.version }}-${{ env.SANITIZED_PLATFORM }}
+            ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi:${{ needs.information.outputs.environment }}-${{ env.SANITIZED_PLATFORM }}
+            ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi:${{ env.SANITIZED_PLATFORM }}
+            ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi:${{ needs.information.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi:${{ needs.information.outputs.environment }}
           context: ./hass-addon-sunsynk-multi  # Specify the directory containing your Dockerfile
           file: ./hass-addon-sunsynk-multi/Dockerfile  # Specify the Dockerfile path within the context
           platforms: ${{ matrix.platform }}
@@ -143,9 +150,6 @@ jobs:
           digest="${{ steps.build.outputs.digest }}"
           touch "/tmp/digests/${digest#sha256:}"
 
-      - name: Prepare artifact name
-        run: echo "SANITIZED_PLATFORM=$(echo ${{ matrix.platform }} | sed 's/^linux\///')" >> $GITHUB_ENV
-  
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
