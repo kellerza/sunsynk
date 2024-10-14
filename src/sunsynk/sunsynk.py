@@ -22,12 +22,12 @@ class Sunsynk:
     # pylint: disable=too-many-instance-attributes
 
     state: InverterState = attrs.field(factory=InverterState)
-    port: str = attrs.field(default="/dev/tty0")
-    baudrate: int = attrs.field(default=9600)
-    server_id: int = attrs.field(default=1)
-    timeout: int = attrs.field(default=10)
-    read_sensors_batch_size: int = attrs.field(default=60)
-    allow_gap: int = attrs.field(default=10)
+    port: str = "/dev/tty0"
+    baudrate: int = 9600
+    server_id: int = 1
+    timeout: int = 10
+    read_sensors_batch_size: int = 60
+    allow_gap: int = 10
     timeouts: int = 0
 
     async def connect(self) -> None:

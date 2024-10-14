@@ -5,7 +5,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 pythonpath = [".", "src"]
 filterwarnings = "ignore:.+@coroutine.+deprecated.+"
-testpaths = "tests"
+testpaths = "src\tests"
 norecursedirs = [".git", "modules"]
 log_cli = true
 log_cli_level = "DEBUG"

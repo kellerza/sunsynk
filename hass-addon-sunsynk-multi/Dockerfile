@@ -7,7 +7,7 @@ RUN set -x \
     && pip3 install --no-cache-dir --disable-pip-version-check \
         aiohttp==3.8.5 \
         async_modbus==0.2.1 \
-        attrs>21 \
+        attrs==24.2.0 \
         connio==0.2.0 \
         jmespath==1.0.1 \
         mqtt-entity==0.0.4 \

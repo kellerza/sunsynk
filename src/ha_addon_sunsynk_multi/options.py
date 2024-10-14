@@ -21,18 +21,18 @@ def unmarshal(target: object, json_data: dict) -> object:
         _LOGGER.error("Invalid options format: %s", json_data)
         return target
 
-    _lst = getattr(target, "_lists", {})
+    _lst = getattr(target, "_LISTS", {})
 
     for key, val in json_data.items():
-        key = fixkey(key)
+        key = key.lower()
 
         if key in _lst:  # Handle lists (e.g., inverters, schedules)
             newcls = _lst[key]
             if isinstance(val, list):
                 # Preserve existing values if already set (e.g., from environment)
-                current_value = getattr(target, key, None)
-                if current_value:  # If already set, skip overwriting
-                    continue
+                # current_value = getattr(target, key, None)
+                # if current_value:  # If already set, skip overwriting
+                #     continue
                 newv = [unmarshal(newcls(), item) for item in val]
                 setattr(target, key, newv)
             continue
@@ -48,6 +48,16 @@ def unmarshal(target: object, json_data: dict) -> object:
     return target
 
 
+def env_list(key: str) -> list:
+    """Return the list from the environment."""
+    val = os.getenv(key, "")
+    if not val:
+        return []
+    if "[" not in val:
+        return val.split(",")
+    return loads(val)
+
+
 @attrs.define(slots=True)
 class InverterOptions:
     """Options for an inverter."""
@@ -56,14 +66,14 @@ class InverterOptions:
     modbus_id: int = 0
     ha_prefix: str = ""
     serial_nr: str = ""
-    dongle_serial_number: str = ""
+    dongle_serial_number: str | int = ""
 
 
 @attrs.define(slots=True)
 class Options:
     """HASS Addon Options."""
 
-    _lists = {"inverters": InverterOptions, "schedules": Schedule}
+    _LISTS = {"inverters": InverterOptions, "schedules": Schedule}
 
     mqtt_host: str = os.getenv("MQTT_HOST", "")
     mqtt_port: int = int(os.getenv("MQTT_PORT", "0"))
@@ -71,19 +81,13 @@ class Options:
     mqtt_password: str = os.getenv("MQTT_PASSWORD", "")
     number_entity_mode: str = os.getenv("NUMBER_ENTITY_MODE", "auto")
     prog_time_interval: int = int(os.getenv("PROG_TIME_INTERVAL", "15"))
-    inverters: list[InverterOptions] = [
-        InverterOptions(**{k.lower(): v for k, v in inv.items()})
-        for inv in loads(os.getenv("INVERTERS", "[]"))
-    ]
+    inverters: list[InverterOptions] = env_list("INVERTERS")
     sensor_definitions: str = os.getenv("SENSOR_DEFINITIONS", "single-phase")
-    sensors: list[str] = loads(os.getenv("SENSORS", "[]"))
-    sensors_first_inverter: list[str] = loads(os.getenv("SENSORS_FIRST_INVERTER", "[]"))
+    sensors: list[str] = env_list("SENSORS")
+    sensors_first_inverter: list[str] = env_list("SENSORS_FIRST_INVERTER")
     read_allow_gap: int = int(os.getenv("READ_ALLOW_GAP", "10"))
     read_sensors_batch_size: int = int(os.getenv("READ_SENSORS_BATCH_SIZE", "60"))
-    schedules: list[Schedule] = [
-        Schedule(**{k.lower(): v for k, v in sched.items()})
-        for sched in loads(os.getenv("SCHEDULES", "[]"))
-    ]
+    schedules: list[Schedule] = env_list("SCHEDULES")
     timeout: int = int(os.getenv("TIMEOUT", "10"))
     debug: int = int(os.getenv("DEBUG", "0"))
     driver: str = os.getenv("DRIVER", "umodbus")
@@ -126,28 +130,3 @@ def init_options() -> None:
             level=logging.DEBUG,
             force=True,
         )
-
-
-#     for handler in logging.getLogger().handlers:
-#         handler.addFilter(Whitelist('foo', 'bar'))
-
-
-# class Whitelist(logging.Filter):
-#     def __init__(self, *whitelist):
-#         self.whitelist = [logging.Filter(name) for name in whitelist]
-
-#     def filter(self, record):
-#         return any(f.filter(record) for f in self.whitelist)
-
-
-def fixkey(key: str) -> str:
-    """Return the correct lowercase key.
-
-    Replacements for old keys.
-    """
-    replace = {
-        "change_significant": "change_by",
-        "change_significant_percent": "change_percent",
-    }
-    key = key.lower()
-    return replace.get(key.lower(), key)

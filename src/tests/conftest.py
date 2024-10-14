@@ -33,9 +33,11 @@ def pytest_configure(config: Any) -> None:
         config.addinivalue_line("markers", f"{mrk}: include the {mrk} tests")
 
 
-def pytest_collection_modifyitems(config: Any, items: list) -> None:
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
     for mrk in MARKERS:
-        if not config.getoption(f"--{mrk}"):
+        if not config.getoption(f"--{mrk}", None):
             skip_mrk = pytest.mark.skip(reason=f"need --{mrk} option to run")
             for item in items:
                 if mrk in item.keywords:

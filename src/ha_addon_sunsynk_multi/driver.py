@@ -65,7 +65,7 @@ def init_driver(opt: Options) -> None:
     elif opt.driver == "solarman":
         from sunsynk.solarmansunsynk import SolarmanSunsynk
 
-        factory = SolarmanSunsynk
+        factory = SolarmanSunsynk  # type:ignore
         port_prefix = "tcp://"
     else:
         raise ValueError(
@@ -86,7 +86,7 @@ def init_driver(opt: Options) -> None:
         if opt.driver == "solarman":
             kwargs["dongle_serial_number"] = inv.dongle_serial_number  # type: ignore
 
-        _LOGGER.debug("%s driver options: %s", opt.driver, kwargs)
+        _LOGGER.debug("%s driver options: kwargs:%s - inv:%s", opt.driver, kwargs, inv)
         suns = factory(**kwargs)
         suns.state.onchange = sensor_on_update
 

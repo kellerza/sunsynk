@@ -32,7 +32,7 @@ def test_init() -> None:
     assert STATE[0].inv == USunsynk(port=inv_port, state=STATE[0].inv.state)
 
     inv_option = {
-        "inverters": [{"port": inv_port, "modbus_id": 1, "dongle_serial_number": 101}]
+        "inverters": [{"port": inv_port, "modbus_id": 1, "dongle_serial_number": "101"}]
     }
     OPT.driver = "solarman"
     unmarshal(OPT, inv_option)

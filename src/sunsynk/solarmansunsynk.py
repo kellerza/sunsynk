@@ -21,15 +21,15 @@ class SolarmanSunsynk(Sunsynk):
     """Sunsynk class using PySolarmanV5."""
 
     client: PySolarmanV5Async = None
-    dongle_serial_number: str = attrs.field(default="")
+    dongle_serial_number: str | int = attrs.field(kw_only=True)
 
     @dongle_serial_number.validator
-    def check_serial(self, _: str, value: int) -> None:
+    def check_serial(self, _: attrs.Attribute, value: str) -> None:
         """Check if the dongle serial number is valid."""
-        if value == "":
-            raise ValueError("DONGLE_SERIAL_NUMBER not set")
+        _LOGGER.debug("DBG: check_serial: %s %s", _, value)
         try:
-            int(value)
+            if int(value) == 0:
+                raise ValueError("DONGLE_SERIAL_NUMBER not set")
         except ValueError as err:
             raise ValueError(
                 f"DONGLE_SERIAL_NUMBER must be an integer, got '{value}'"
