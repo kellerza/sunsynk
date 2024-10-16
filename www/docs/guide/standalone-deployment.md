@@ -84,71 +84,51 @@ The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the
 
 ### Docker-Compose examples
 
-#### amd64
+#### amd64 / aarch64 / armv6 / armv7
 
-``` yaml
+```yaml
 services:
   sunsynk-multi:
     restart: unless-stopped
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
+    image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
     volumes:
       - ${PWD}/options.yaml:/data/options.yaml
 ```
 
-#### aarch64
-
-``` yaml
+```yaml
 services:
   sunsynk-multi:
     restart: unless-stopped
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
+    image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
     volumes:
       - ${PWD}/options.yaml:/data/options.yaml
-```
-
-#### armv7
-
-``` yaml
-services:
-  sunsynk-multi:
-    restart: unless-stopped
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi/armv7:stable
-    volumes:
-      - ${PWD}/options.yaml:/data/options.yaml
+    environment:
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      MQTT_USERNAME: ${MQTT_USER}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      S6_KEEP_ENV: 1
 ```
 
 ### Docker CLI examples
 
 Below are examples using the docker CLI.
 
-> ℹ️ **Note:** Replace ${PWD} with the path to the location of your `options.yaml` file.
+> ℹ️ **Note:** Replace `${PWD}` with the path to the location of your `options.yaml` file.
 
-#### CLI: amd64
+#### CLI: amd64 / aarch64 / armv6 / armv7
 
-``` bash
+```bash
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
 -v ${PWD}/options.yaml:/data/options.yaml \
-ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
+ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
 ```
 
-#### CLI: aarch64
+### Important Information on Compatibility
 
-``` bash
-docker run -d --name sunsynk-multi \
---restart unless-stopped \
--v ${PWD}/options.yaml:/data/options.yaml \
-ghcr.io/kellerza/hass-addon-sunsynk-multi/aarch64:stable
-```
+You should use the `ghcr.io/kellerza/hass-addon-sunsynk-multi` image without specifying the platform, as the image is supported for all platforms. However, it is backwards compatible, meaning that even if you use `ghcr.io/kellerza/hass-addon-sunsynk-multi/armv6` on an x86 PC, it will still work. This offers flexibility when pulling images for different platforms.
 
-#### CLI: armv7
-
-``` bash
-docker run -d --name sunsynk-multi \
---restart unless-stopped \
--v ${PWD}/options.yaml:/data/options.yaml \
-ghcr.io/kellerza/hass-addon-sunsynk-multi/armv7:stable
-```
 
 ## Using Environment Variables with Docker Compose
 
