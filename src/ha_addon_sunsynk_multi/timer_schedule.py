@@ -25,17 +25,14 @@ class Schedule:
     key: str = attrs.field(default="", converter=slug, on_setattr=attrs.setters.convert)
     """Key can be: the sensor name, class (i.e. RWSensor) and unit."""
 
-    read_every: int = attrs.field(default=0)
-    report_every: int = attrs.field(default=0)
-    change_by: float = attrs.field(default=0)
+    read_every: int = 0
+    report_every: int = 0
+    change_by: float = 0
     """Significant change over last samples."""
-    change_percent: int = attrs.field(default=0)
+    change_percent: int = 0
     """Significant change percent over last samples."""
-    change_any: bool = attrs.field(default=False)
+    change_any: bool = False
     """Report any change to the last. Only use the last sample."""
-
-    # def __attrs_post_init__(self):
-    #     self.key = slug(self.key)
 
     @property
     def read_once(self) -> bool:

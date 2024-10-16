@@ -5,9 +5,10 @@ RUN set -x \
     && apk add --no-cache --virtual .build-deps \
         build-base \
     && pip3 install --no-cache-dir --disable-pip-version-check \
-        aiohttp==3.8.5 \
+        aiohttp \
         async_modbus==0.2.1 \
         attrs==24.2.0 \
+        cattrs==24.1.2 \
         connio==0.2.0 \
         jmespath==1.0.1 \
         mqtt-entity==0.0.4 \

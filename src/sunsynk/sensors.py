@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union
 
 import attrs
 
@@ -26,10 +25,10 @@ class Sensor:
 
     # pylint: disable=too-many-instance-attributes
     address: RegType = attrs.field(converter=ensure_tuple)
-    name: str = attrs.field()
-    unit: str = attrs.field(default="")
-    factor: float = attrs.field(default=1)
-    bitmask: int = attrs.field(default=0)
+    name: str
+    unit: str = ""
+    factor: float = 1
+    bitmask: int = 0
 
     @property
     def id(self) -> str:
@@ -74,8 +73,8 @@ class TextSensor(Sensor):
 class BinarySensor(Sensor):
     """Binary sensor."""
 
-    off: int = attrs.field(default=0)
-    on: Optional[int] = attrs.field(default=None)
+    off: int = 0
+    on: int | None = None
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Reg to value for binary."""
@@ -106,7 +105,7 @@ class SensorDefinitions:
         return self.all["rated_power"]
 
     def __add__(
-        self, item: Union[Sensor, tuple[Sensor, ...], list[Sensor]]
+        self, item: Sensor | tuple[Sensor, ...] | list[Sensor]
     ) -> SensorDefinitions:
         """Add new sensors."""
         if isinstance(item, Sensor):
@@ -127,8 +126,8 @@ class MathSensor(Sensor):
     """Math sensor, add multiple registers."""
 
     factors: tuple[float, ...] = attrs.field(default=None, converter=ensure_tuple)
-    no_negative: bool = attrs.field(default=False)
-    absolute: bool = attrs.field(default=False)
+    no_negative: bool = False
+    absolute: bool = False
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Calculate the math value."""
@@ -148,11 +147,13 @@ class MathSensor(Sensor):
 class TempSensor(Sensor):
     """Offset by 100 for temperature."""
 
+    offset: int = 100
+
     def reg_to_value(self, regs: RegType) -> ValType:
-        """Decode the temperature (offset by 100)."""
+        """Decode the temperature (offset)."""
         try:
             val = regs[0]
-            return int_round((float(val) * abs(self.factor)) - 100)  # type: ignore
+            return int_round((float(val) * abs(self.factor)) - self.offset)  # type: ignore
         except (TypeError, ValueError) as err:
             _LOGGER.error("Could not decode temperature: %s", err)
         return None

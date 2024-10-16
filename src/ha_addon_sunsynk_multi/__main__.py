@@ -23,7 +23,7 @@ from sunsynk import VERSION
 _LOGGER = logging.getLogger(__name__)
 
 
-async def main_loop(loop: AbstractEventLoop) -> None:  # noqa
+async def main_loop(loop: AbstractEventLoop) -> None:
     """Main async loop."""
     loop.set_debug(OPT.debug > 0)
 

@@ -21,7 +21,7 @@ class SolarmanSunsynk(Sunsynk):
     """Sunsynk class using PySolarmanV5."""
 
     client: PySolarmanV5Async = None
-    dongle_serial_number: str | int = attrs.field(kw_only=True)
+    dongle_serial_number: int = attrs.field(kw_only=True)
 
     @dongle_serial_number.validator
     def check_serial(self, _: attrs.Attribute, value: str) -> None:

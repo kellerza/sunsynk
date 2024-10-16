@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import attrs
 from mqtt_entity import (  # type: ignore[import]
@@ -48,13 +48,28 @@ MQTT = MQTTClient()
 """The MQTTClient instance."""
 
 
+class MqttEntityOptions(TypedDict):
+    """Shared MQTTEntity options."""
+
+    name: str
+    state_topic: str
+    unique_id: str
+    device_class: str
+    state_class: str
+    icon: str
+    entity_category: str
+    unit_of_measurement: str
+    # command_topic: str
+    discovery_extra: dict[str, Any]
+
+
 @attrs.define(slots=True)
 class ASensor:
     """Addon Sensor state & entity."""
 
-    opt: SensorOption = attrs.field()
+    opt: SensorOption
     # istate: int = attrs.field()
-    entity: Optional[Entity] = attrs.field(default=None)
+    entity: Entity | None = None
     "The entity will be None if hidden."
 
     def __hash__(self) -> int:
@@ -104,9 +119,7 @@ class ASensor:
         """Return True if the units are a measurement."""
         return units in {"W", "V", "A", "Hz", "°C", "°F", "%", "Ah", "VA"}
 
-    def create_entity(
-        self, dev: Union[Device, Entity, None], *, ist: AInverter
-    ) -> Entity:
+    def create_entity(self, dev: Device | Entity | None, *, ist: AInverter) -> Entity:
         """Create HASS entity."""
         # pylint: disable=too-many-branches,too-many-return-statements
         if self.hidden:
@@ -128,7 +141,7 @@ class ASensor:
             "suggested_display_precision": 1,
         }
 
-        ent: dict[str, str | dict[str, str | int]] = {  # type:ignore
+        ent: MqttEntityOptions = {  # type:ignore
             "name": sensor.name,
             "state_topic": state_topic,
             "unique_id": f"{dev.id}_{sensor.id}",
@@ -164,18 +177,14 @@ class ASensor:
             ist.write_queue.update({sensor: val})
             await self.publish(val)
 
-        ent.update(
-            {
-                "entity_category": "config",
-                "icon": hass_default_rw_icon(unit=sensor.unit),
-                "command_topic": command_topic,
-            }
-        )
+        ent["entity_category"] = "config"
+        ent["icon"] = hass_default_rw_icon(unit=sensor.unit)
 
         if isinstance(sensor, NumberRWSensor):
             self.entity = NumberEntity(
                 device=dev,
                 **ent,
+                command_topic=command_topic,
                 min=resolve_num(ist.get_state, sensor.min, 0),
                 max=resolve_num(ist.get_state, sensor.max, 100),
                 mode=OPT.number_entity_mode,
@@ -188,6 +197,7 @@ class ASensor:
             self.entity = SwitchEntity(
                 device=dev,
                 **ent,
+                command_topic=command_topic,
                 on_change=on_change,
             )
             return self.entity
@@ -196,6 +206,7 @@ class ASensor:
             self.entity = SelectEntity(
                 device=dev,
                 **ent,
+                command_topic=command_topic,
                 options=sensor.available_values(),
                 on_change=on_change,
             )
@@ -206,6 +217,7 @@ class ASensor:
             self.entity = SelectEntity(
                 device=dev,
                 **ent,
+                command_topic=command_topic,
                 options=sensor.available_values(OPT.prog_time_interval, ist.get_state),
                 on_change=on_change,
             )
@@ -218,6 +230,7 @@ class ASensor:
         self.entity = RWEntity(
             device=dev,
             **ent,
+            command_topic=command_topic,
             on_change=on_change,
         )
         return self.entity
@@ -229,9 +242,7 @@ class TimeoutState(ASensor):
 
     retain = True
 
-    def create_entity(
-        self, dev: Union[Device, Entity, None], *, ist: AInverter
-    ) -> Entity:
+    def create_entity(self, dev: Device | Entity | None, *, ist: AInverter) -> Entity:
         """MQTT entities for stats."""
         if dev is None:
             raise ValueError(f"No device specified for create_entity! {self}")

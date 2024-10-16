@@ -2,7 +2,7 @@
 
 import logging
 from collections import defaultdict
-from typing import Callable, Generator, Iterable, Iterator, Optional, Sequence, cast
+from typing import Callable, Generator, Iterable, Iterator, Sequence, cast
 
 import attr
 
@@ -18,9 +18,7 @@ class InverterState:
 
     values: dict[Sensor, ValType] = attr.field(factory=dict)
     registers: dict[int, int] = attr.field(factory=dict)
-    onchange: Optional[Callable[[Sensor, ValType, ValType], None]] = attr.field(
-        default=None
-    )
+    onchange: Callable[[Sensor, ValType, ValType], None] | None = None
     history: dict[Sensor, list[NumType]] = attr.field(
         init=False, factory=lambda: defaultdict(list)
     )
@@ -92,10 +90,9 @@ class InverterState:
 
         self.registers.update(new_regs)
 
-        if not self.onchange:
-            return
         for sen, (new, old) in changed.items():
-            self.onchange(sen, new, old)
+            if self.onchange is not None:
+                self.onchange(sen, new, old)
 
     def history_average(self, sensor: Sensor) -> NumType:
         """Return the average of the history."""

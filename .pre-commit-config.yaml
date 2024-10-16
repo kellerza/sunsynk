@@ -33,5 +33,18 @@ repos:
       #     ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
       - id: mypy
         files: "src/.*.py"
-        additional_dependencies:
-          ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
+        additional_dependencies: ["attrs>24", "types-PyYAML", "pymodbus"]
+
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        pass_filenames: false
+        args: [
+            "src",
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+          ]

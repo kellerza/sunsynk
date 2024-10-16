@@ -7,7 +7,7 @@ import traceback
 from importlib import import_module as _import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Optional
+from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ def get_root(create: bool = False) -> Path:
     return root
 
 
-def import_mysensors() -> Optional[dict[str, Any]]:
+def import_mysensors() -> dict[str, Any] | None:
     """Import my sensors."""
     root = get_root()
     modn = "mysensors"

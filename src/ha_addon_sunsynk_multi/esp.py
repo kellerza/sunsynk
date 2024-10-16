@@ -184,7 +184,7 @@ class JMESSensor(ESPSensor):
 class AllowanceSensor(ESPSensor):
     """Allowance Sensor."""
 
-    name: str = attrs.field(default="Allowance")
+    name: str = "Allowance"
 
     async def get_state(self, esp: ESP) -> Any:
         """Read the sensor value from the API."""

@@ -27,7 +27,7 @@ SENSORS: SensorDefinitions = SensorDefinitions()
 # Battery
 ##########
 SENSORS += (
-    TempSensor(182, "Battery temperature", CELSIUS, 0.1),
+    TempSensor(182, "Battery temperature", CELSIUS, 0.1, offset=1000),
     Sensor(183, "Battery voltage", VOLT, 0.01),
     Sensor(184, "Battery SOC", "%"),
     Sensor(190, "Battery power", WATT, -1),

@@ -22,17 +22,17 @@ class Callback:
     name: str = attrs.field(converter=slug)
     every: int = attrs.field()
     """Run every <every> seconds."""
-    offset: int = attrs.field(default=0)
+    offset: int = 0
     """Offset in seconds."""
     next_run: int = attrs.field(default=0, init=False)
     """Next run in seconds."""
 
-    keep_stats: bool = attrs.field(default=False)
+    keep_stats: bool = False
     stat_time: list[float] = attrs.field(factory=list)
     """Execution time history."""
     stat_slip: list[int] = attrs.field(factory=list)
     """Seconds that execution slipped."""
-    stat_busy: int = attrs.field(default=0)
+    stat_busy: int = 0
     """Number of times the callback was still busy."""
 
     def call(self, now: int) -> None:

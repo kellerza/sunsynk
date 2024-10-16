@@ -26,13 +26,13 @@ DEFS = SensorDefinitions()
 class SensorOption:
     """Options for a sensor."""
 
-    sensor: Sensor = attrs.field()
-    schedule: Schedule = attrs.field()
-    visible: bool = attrs.field(default=True)
-    startup: bool = attrs.field(default=False)
+    sensor: Sensor
+    schedule: Schedule
+    visible: bool = True
+    startup: bool = False
     affects: set[Sensor] = attrs.field(factory=set)
     """Affect sensors due to dependencies."""
-    first: bool = attrs.field(default=False)
+    first: bool = False
     """Only on the first inverter."""
 
     def __hash__(self) -> int:

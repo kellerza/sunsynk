@@ -2,17 +2,17 @@
 
 import logging
 import math
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
 
-ValType = Union[float, int, str, bool, None]
+ValType = float | int | str | bool | None
 RegType = tuple[int, ...]
 """Register addresses or values."""
-NumType = Union[float, int]
+NumType = float | int
 
 
-def ensure_tuple(val: Any) -> Tuple[int]:
+def ensure_tuple(val: Any) -> tuple[int, ...]:
     """Return a tuple."""
     if isinstance(val, tuple):
         return val  # type: ignore
@@ -31,7 +31,7 @@ def int_round(val: NumType) -> NumType:
     return val
 
 
-def as_num(val: ValType) -> Union[float, int]:
+def as_num(val: ValType) -> float | int:
     """Convert to float."""
     if isinstance(val, (float, int)):
         return val
@@ -48,7 +48,7 @@ def as_num(val: ValType) -> Union[float, int]:
     return 0
 
 
-def signed(val: Union[int, float], bits: int = 16) -> Union[int, float]:
+def signed(val: int | float, bits: int = 16) -> int | float:
     """Convert value to signed int."""
     sign_bit = 1 << (bits - 1)
     if val < sign_bit:
@@ -71,9 +71,9 @@ class SSTime:
     def __init__(
         self,
         *,
-        minutes: Optional[int] = None,
-        register: Optional[int] = None,
-        string: Optional[str] = None,
+        minutes: int | None = None,
+        register: int | None = None,
+        string: str | None = None,
     ) -> None:
         """Init the time. All mutually exclusive."""
         if minutes is not None:
@@ -119,7 +119,7 @@ def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
     return (patch & bitmask) + (value & (0xFFFF - bitmask))
 
 
-def hex_str(regs: RegType, address: Optional[RegType] = None) -> str:
+def hex_str(regs: RegType, address: RegType | None = None) -> str:
     """Convert register values to hex strings."""
     res = (f"0x{r:04x}" for r in regs)
     if address:

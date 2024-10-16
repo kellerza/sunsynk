@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from typing import Any, Sequence, Union
+from typing import Any, Sequence
 from urllib.parse import urlparse
 
 import attrs
@@ -13,7 +13,7 @@ from pymodbus.client import (
     AsyncModbusUdpClient,
     ModbusBaseClient,
 )
-from pymodbus.transaction import ModbusRtuFramer
+from pymodbus.transaction import ModbusRtuFramer  # type: ignore
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -35,7 +35,7 @@ class PySunsynk(Sunsynk):
             # Framer from the URL scheme
             opt: dict[str, Any] = {}
 
-            client: Union[AsyncModbusTcpClient, AsyncModbusUdpClient, None] = None
+            client: AsyncModbusTcpClient | AsyncModbusUdpClient | None = None
 
             match url.scheme:  # python 3.10 minimum
                 case "serial-tcp":  # RTU-over-TCP
@@ -80,8 +80,10 @@ class PySunsynk(Sunsynk):
         """Write to a register - Sunsynk supports modbus function 0x10."""
         await self.connect()
         try:
-            res = await self.client.write_registers(  # type:ignore
-                address=address, values=[value], slave=self.server_id
+            res = await self.client.write_registers(
+                address=address,
+                values=[value],  # type:ignore
+                slave=self.server_id,
             )
             if res.function_code < 0x80:  # test that we are not an error
                 return True

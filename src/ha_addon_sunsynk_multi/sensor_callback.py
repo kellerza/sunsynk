@@ -22,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 class SensorRun:
     """Sensor run schedule."""
 
-    next_run: int = attrs.field(default=0)
+    next_run: int = 0
     sensors: set[SensorOption] = attrs.field(factory=set)
 
 

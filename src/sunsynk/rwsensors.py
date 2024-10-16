@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Callable, Generator, Optional, Union
+from typing import Callable, Generator
 
 import attrs
 from mqtt_entity.utils import BOOL_OFF, BOOL_ON
@@ -13,7 +13,7 @@ from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num, hex_str
 from sunsynk.sensors import Sensor
 
 _LOGGER = logging.getLogger(__name__)
-ResolveType = Optional[Callable[[Sensor, ValType], ValType]]
+ResolveType = Callable[[Sensor, ValType], ValType] | None
 
 
 @attrs.define(slots=True, eq=False)
@@ -59,8 +59,8 @@ class RWSensor(Sensor):
 class NumberRWSensor(RWSensor):
     """Numeric sensor which can be read and written."""
 
-    min: int | float | Sensor = attrs.field(default=0)
-    max: int | float | Sensor = attrs.field(default=100)
+    min: int | float | Sensor = 0
+    max: int | float | Sensor = 100
 
     @property
     def dependencies(self) -> list[Sensor]:
@@ -87,7 +87,7 @@ class SelectRWSensor(RWSensor):
     """Sensor with a set of options to select from."""
 
     options: dict[int, str] = attrs.field(factory=dict)
-    # switch: Optional[tuple[int, int]] = attrs.field(default=None)
+    # switch: tuple[int, int] | None = None
 
     # def __attrs_post_init__(self) -> None:
     #     """Ensure correct parameters."""
@@ -123,9 +123,9 @@ class SelectRWSensor(RWSensor):
 class SwitchRWSensor0(SelectRWSensor):
     """Switch Sensor. The original implementation."""
 
-    on: int = attrs.field(default=1)
+    on: int = 1
     """The register value representing ON."""
-    off: int = attrs.field(default=0)
+    off: int = 0
     """The register value representing OFF."""
 
     def __attrs_post_init__(self) -> None:
@@ -143,9 +143,9 @@ class SwitchRWSensor0(SelectRWSensor):
 class SwitchRWSensor(RWSensor):
     """Switch. Similar to BinarySensor, but writeable."""
 
-    on: Optional[int] = attrs.field(default=None)
+    on: int | None = None
     """The register value representing ON."""
-    off: int = attrs.field(default=0)
+    off: int = 0
     """The register value representing OFF."""
 
     def __attrs_post_init__(self) -> None:
@@ -214,8 +214,8 @@ class SystemTimeRWSensor(RWSensor):
 class TimeRWSensor(RWSensor):
     """Extract the time."""
 
-    min: TimeRWSensor = attrs.field(default=None)
-    max: TimeRWSensor = attrs.field(default=None)
+    min: TimeRWSensor | None = None
+    max: TimeRWSensor | None = None
 
     def available_values(
         self, step_minutes: int, resolve: Callable[[Sensor, ValType], ValType]
@@ -260,7 +260,7 @@ class TimeRWSensor(RWSensor):
 
 def resolve_num(
     resolve: ResolveType,
-    val: Union[NumType, Sensor],
+    val: NumType | Sensor,
     default: NumType = 0,
 ) -> NumType:
     """Resolve a number helper."""

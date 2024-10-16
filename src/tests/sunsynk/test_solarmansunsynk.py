@@ -13,7 +13,7 @@ P_CONNECT = "sunsynk.solarmansunsynk.SolarmanSunsynk.connect"
 @pytest.mark.asyncio
 @patch(P_CONNECT, new_callable=AsyncMock)
 async def test_uss_sensor(connect: Any) -> None:
-    ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number="101")
+    ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number=101)
     # await ss.connect()
     ss.client = AsyncMock()
     rhr = ss.client.read_holding_registers = AsyncMock()

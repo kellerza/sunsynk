@@ -26,8 +26,8 @@ class Sunsynk:
     baudrate: int = 9600
     server_id: int = 1
     timeout: int = 10
-    read_sensors_batch_size: int = 60
-    allow_gap: int = 10
+    read_sensors_batch_size: int = 20
+    allow_gap: int = 2
     timeouts: int = 0
 
     async def connect(self) -> None:
