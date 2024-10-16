@@ -70,8 +70,6 @@ jobs:
           - linux/arm/v6
           - linux/arm/v7
           - linux/arm64
-    outputs:
-      platforms: ${{ steps.collect-platforms.outputs.platforms }}
     steps:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v4
@@ -120,17 +118,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Prepare sanitized platform name
+        id: sanitize-platform
         run: |
-          SANITIZED_PLATFORM=$(echo ${{ matrix.platform }} | sed 's/^linux\///')
+          SANITIZED_PLATFORM=$(echo ${{ matrix.platform }} | sed 's/^linux\///; s/\///g')
           echo "SANITIZED_PLATFORM=${SANITIZED_PLATFORM}" >> $GITHUB_ENV
           echo "Sanitized platform name: ${SANITIZED_PLATFORM}"
-          echo "${SANITIZED_PLATFORM}" >> /tmp/platforms.txt
-
-      - name: Upload platform information
-        uses: actions/upload-artifact@v4
-        with:
-          name: platforms
-          path: /tmp/platforms.txt
 
       - name: Build and push by digest
         id: build
@@ -160,27 +152,17 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Prepare sanitized platform name
-        id: sanitize-platform
+      - name: Save platform to file
+        id: save-platform
         run: |
-          echo "SANITIZED_PLATFORM=$(echo ${{ matrix.platform }} | sed 's/^linux\///')" >> $GITHUB_ENV
-          echo "Sanitized platform: $SANITIZED_PLATFORM"
-
-      - name: Collect platforms
-        id: collect-platforms
-        run: |
-          # Get the platforms from the previous matrix job if any
-          platforms="${{ needs.build.outputs.platforms }}"
-          
-          # Append the current sanitized platform
-          platforms="${platforms},${{ env.SANITIZED_PLATFORM }}"
-          
-          # Remove any leading commas
-          platforms="${platforms#,}"
+          mkdir -p outputs
+          echo ${{ env.SANITIZED_PLATFORM }} >> outputs/${{ env.SANITIZED_PLATFORM }}.txt
   
-          # Output the final list of platforms
-          echo "platforms=$platforms" >> $GITHUB_ENV
-          echo "::set-output name=platforms::$platforms"
+      - name: Artifact platform file for later
+        uses: actions/upload-artifact@v3
+        with:
+          name: outputs
+          path: outputs/*.txt
 
   merge:
     runs-on: ubuntu-latest
@@ -188,6 +170,13 @@ jobs:
       - information
       - build
     steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -204,6 +193,19 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Load outputs
+        uses: actions/download-artifact@v3
+        with:
+          name: outputs
+          path: outputs
+
+      - name: Load outputs to variable
+        id: platforms_raw
+        run: |
+          ls outputs
+          # Replace newlines with commas, then remove the trailing comma
+          echo "value=$(cat outputs/*.txt | tr '\n' ',' | sed 's/,$//')" >> "$GITHUB_OUTPUT"
+
       - name: Generate tags for multi-platform image
         run: |
           # Define base tags
@@ -213,7 +215,7 @@ jobs:
           )
           
           # Get the list of platforms from the build job output
-          platforms="${{ needs.build.outputs.platforms }}"
+          platforms="${{ steps.platforms_raw.outputs.value }}"
 
           # Split the platforms and add platform-specific tags
           IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
@@ -239,4 +241,11 @@ jobs:
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+          # Inspect the image using the first tag from TAGS_STRING (without the leading '-t ' part)
+          INSPECT_TAG=$(echo "${TAGS_STRING}" | awk '{print $2}')
+          
+          # Log the tag being inspected
+          echo "Inspecting image with tag: $INSPECT_TAG"
+          
+          # Run the inspection
+          docker buildx imagetools inspect $INSPECT_TAG
