@@ -39,9 +39,9 @@ class Sensor:
         """Return the value from the registers."""
         regs = self.masked(regs)
         val: NumType = regs[0]
-        if len(regs) == 2:
+        if len(regs) > 1:
             val += regs[1] << 16
-        elif self.factor < 0:  # Indicates this register is signed
+        if self.factor < 0:  # Indicates this register is signed
             val = signed(val, bits=16 * len(regs))
         val = int_round(val * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
