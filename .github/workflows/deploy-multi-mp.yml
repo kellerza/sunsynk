@@ -249,3 +249,24 @@ jobs:
           
           # Run the inspection
           docker buildx imagetools inspect $INSPECT_TAG
+
+  publish_addon:
+    name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
+    needs: [information, build, merge]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Point edge to the new ref
+        run: |
+          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-edge/config.yaml
+      - name: Point multi to the new ref
+        if: "${{ needs.information.outputs.environment == 'stable'}}"
+        run: |
+          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-multi/config.yaml
+      - uses: stefanzweifel/git-auto-commit-action@v5.0.1
+        with:
+          branch: main
+          commit_user_email: kellerza@gmail.com
+          commit_message: Update addon version to ${{ needs.information.outputs.version }} [no ci]
