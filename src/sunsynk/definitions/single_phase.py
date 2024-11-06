@@ -88,6 +88,15 @@ SENSORS += (
     Sensor(112, "PV2 current", AMPS, 0.1),
 )
 
+#############
+# Solar PV 3
+#############
+SENSORS += (
+    Sensor(188, "PV3 power", WATT, -1),
+    Sensor(113, "PV3 voltage", VOLT, 0.1),
+    Sensor(114, "PV3 current", AMPS, 0.1),
+)
+
 ###################
 # Power on Outputs
 ###################
