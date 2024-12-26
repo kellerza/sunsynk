@@ -166,13 +166,157 @@ prog6_capacity
 prog6_charge
 prog6_power
 prog6_time
+date_time
+grid_charge_battery_current
+grid_charge_start_battery_soc
+grid_charge_enabled
+use_timer
+solar_export
+export_limit_power
+battery_max_charge_current
+battery_max_discharge_current
+battery_capacity_current
+battery_shutdown_capacity
+battery_restart_capacity
+battery_low_capacity
+battery_type
+battery_wake_up
+battery_resistance
+battery_charge_efficiency
+grid_standard
+configured_grid_frequency
+configured_grid_phases
+ups_delay_time
+```
+
+:::
+
+### Generator
+
+Sensors used for generator control and monitoring.
+
+```yaml
+SENSORS:
+  - generator
+```
+
+::: details Sensors included
+
+```yaml
+generator_port_usage
+generator_off_soc
+generator_on_soc
+generator_max_operating_time
+generator_cooling_time
+min_pv_power_for_gen_start
+generator_charge_enabled
+generator_charge_start_battery_soc
+generator_charge_battery_current
+gen_signal_on
+```
+
+:::
+
+### Diagnostics
+
+Sensors used for system diagnostics and monitoring.
+
+```yaml
+SENSORS:
+  - diagnostics
+```
+
+::: details Sensors included
+
+```yaml
+grid_voltage
+grid_l1_voltage
+grid_l2_voltage
+grid_l3_voltage
+battery_temperature
+battery_voltage
+battery_soc
+battery_power
+battery_current
+fault
+dc_transformer_temperature
+radiator_temperature
+grid_relay_status
+inverter_relay_status
+battery_bms_alarm_flag
+battery_bms_fault_flag
+battery_bms_soh
+fan_warning
+grid_phase_warning
+lithium_battery_loss_warning
+parallel_communication_quality_warning
 ```
 
 :::
 
 ### My Sensors
 
-All your [custom sensors](mysensors) can be added to the configuration using the `mysensors` group.
+You can create custom sensors by defining them in a file called `mysensors.py` in the `/share/hass-addon-sunsynk/` directory. This allows you to add sensors that are not included in the default definitions.
+
+To create custom sensors:
+
+1. Create the directory and file:
+   ```bash
+   /share/hass-addon-sunsynk/mysensors.py
+   ```
+
+2. Define your sensors in the file. Here's a basic example:
+   ```python
+   from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
+   from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor
+   from sunsynk.sensors import Sensor, SensorDefinitions, MathSensor
+
+   # Initialize the sensor definitions
+   SENSORS = SensorDefinitions()
+
+   # Add your custom sensors
+   SENSORS += (
+       # Basic sensor example
+       Sensor(178, "My Custom Power Sensor", WATT, -1),
+       
+       # Math sensor example (combining multiple registers)
+       MathSensor((175, 172), "Custom Combined Power", WATT, factors=(1, 1)),
+       
+       # Read/Write sensor example
+       NumberRWSensor(130, "Custom Control Setting", "%", min=0, max=100),
+   )
+   ```
+
+3. Add your custom sensors to your configuration using either individual sensors or the `mysensors` group:
+   ```yaml
+   SENSORS:
+     - mysensors  # Adds all custom sensors
+     # Or add specific sensors:
+     - my_custom_power_sensor
+     - custom_combined_power
+     - custom_control_setting
+   ```
+
+The sensor definition parameters are:
+- First parameter: Register number(s)
+- Second parameter: Sensor name
+- Third parameter: Unit (WATT, VOLT, AMPS, etc.)
+- Last parameter: Scale factor (optional)
+
+You can create different types of sensors:
+- `Sensor`: Basic read-only sensor
+- `MathSensor`: Combines multiple registers with mathematical operations
+- `NumberRWSensor`: Read/write sensor for configurable values
+- `SelectRWSensor`: Read/write sensor with predefined options
+- `SwitchRWSensor`: Read/write sensor for boolean values
+
+Once defined, your custom sensors will be loaded automatically when the addon starts, and you'll see them listed in the startup logs:
+```log
+INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
+INFO      custom sensors: my_custom_power_sensor, custom_combined_power, custom_control_setting
+```
+
+All your [custom sensors](mysensors) can be added to the configuration using the `mysensors` group:
 
 ```yaml
 SENSORS:

@@ -46,6 +46,43 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
     startup: set[Sensor] = attrs.field(factory=set)
 
+    def _add_sensor_with_deps(self, sensor: Sensor, visible: bool = False, path: set[Sensor] | None = None) -> None:
+        """Add a sensor and all its dependencies recursively.
+        
+        Args:
+            sensor: The sensor to add
+            visible: Whether the sensor should be visible
+            path: Set of sensors in the current dependency path to detect cycles
+        """
+        if path is None:
+            path = set()
+
+        if sensor in path:
+            _LOGGER.warning("Circular dependency detected for sensor %s", sensor.name)
+            return
+
+        path.add(sensor)
+
+        # Add to startup set regardless of visibility
+        self.startup.add(sensor)
+
+        # Only add to SOPT if it's explicitly requested (visible) or a direct dependency
+        if visible or len(path) <= 2:  # Original sensor or direct dependency
+            if sensor not in self:
+                self[sensor] = SensorOption(
+                    sensor=sensor,
+                    schedule=get_schedule(sensor, SCHEDULES),
+                    visible=visible,
+                )
+
+        if isinstance(sensor, RWSensor):
+            for dep in sensor.dependencies:
+                self._add_sensor_with_deps(dep, visible=False, path=path.copy())  # Pass copy of path
+                if dep in self and sensor in self:  # Only track affects if both sensors are in SOPT
+                    self[dep].affects.add(sensor)
+
+        path.remove(sensor)
+
     def init_sensors(self) -> None:
         """Parse options and get the various sensor lists."""
         if not DEFS.all:
@@ -54,22 +91,12 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
         # Add startup sensors
         self.startup = {DEFS.rated_power, DEFS.serial}
-        self[DEFS.rated_power] = SensorOption(
-            sensor=DEFS.rated_power, schedule=Schedule(), visible=False
-        )
-        self[DEFS.serial] = SensorOption(
-            sensor=DEFS.serial, schedule=Schedule(), visible=False
-        )
+        self._add_sensor_with_deps(DEFS.rated_power, visible=False)
+        self._add_sensor_with_deps(DEFS.serial, visible=False)
 
         # Add sensors from config
         for sen in get_sensors(target=self, names=OPT.sensors):
-            if sen in self:
-                continue
-            self[sen] = SensorOption(
-                sensor=sen,
-                schedule=get_schedule(sen, SCHEDULES),
-                visible=True,
-            )
+            self._add_sensor_with_deps(sen, visible=True)
 
         # Add 1st inverter sensors
         for sen in get_sensors(target=self, names=OPT.sensors_first_inverter):
@@ -80,18 +107,7 @@ class SensorOptions(dict[Sensor, SensorOption]):
                     visible=True,
                     first=True,
                 )
-
-        # Handle RW sensor deps
-        for sopt in list(self.values()):
-            if isinstance(sopt.sensor, RWSensor):
-                for dep in sopt.sensor.dependencies:
-                    self.startup.add(dep)
-                    if dep not in self:
-                        self[dep] = SensorOption(
-                            sensor=dep,
-                            schedule=get_schedule(dep, SCHEDULES),
-                        )
-                    self[dep].affects.add(sopt.sensor)
+                self._add_sensor_with_deps(sen, visible=True)
 
         # Info if we have hidden sensors
         if hidden := [s.sensor.name for s in self.values() if not s.visible]:
@@ -170,9 +186,14 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "inverter_current",
         "inverter_power",
         "load_frequency",
+        "load_power",
+        "load_l1_power",
+        "load_l2_power",
+        "load_l3_power",
         "non_essential_power",
         "overall_state",
         "priority_load",
+        "pv_power",
         "pv1_current",
         "pv1_power",
         "pv1_voltage",
@@ -207,6 +228,62 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "prog6_charge",
         "prog6_power",
         "prog6_time",
+        "date_time",
+        "grid_charge_battery_current",
+        "grid_charge_start_battery_soc",
+        "grid_charge_enabled",
+        "use_timer",
+        "solar_export",
+        "export_limit_power",
+        "battery_max_charge_current",
+        "battery_max_discharge_current",
+        "battery_capacity_current",
+        "battery_shutdown_capacity",
+        "battery_restart_capacity",
+        "battery_low_capacity",
+        "battery_type",
+        "battery_wake_up",
+        "battery_resistance",
+        "battery_charge_efficiency",
+        "grid_standard",
+        "configured_grid_frequency",
+        "configured_grid_phases",
+        "ups_delay_time",
+    ],
+    "generator": [
+        "generator_port_usage",
+        "generator_off_soc",
+        "generator_on_soc",
+        "generator_max_operating_time",
+        "generator_cooling_time",
+        "min_pv_power_for_gen_start",
+        "generator_charge_enabled",
+        "generator_charge_start_battery_soc",
+        "generator_charge_battery_current",
+        "gen_signal_on",
+    ],
+    "diagnostics": [
+        "grid_voltage",
+        "grid_l1_voltage",
+        "grid_l2_voltage",
+        "grid_l3_voltage",
+        "battery_temperature",
+        "battery_voltage",
+        "battery_soc",
+        "battery_power",
+        "battery_current",
+        "fault",
+        "dc_transformer_temperature",
+        "radiator_temperature",
+        "grid_relay_status",
+        "inverter_relay_status",
+        "battery_bms_alarm_flag",
+        "battery_bms_fault_flag",
+        "battery_bms_soh",
+        "fan_warning",
+        "grid_phase_warning",
+        "lithium_battery_loss_warning",
+        "parallel_communication_quality_warning",
     ],
 }
 
