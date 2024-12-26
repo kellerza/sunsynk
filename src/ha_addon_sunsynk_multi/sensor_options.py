@@ -46,8 +46,23 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
     startup: set[Sensor] = attrs.field(factory=set)
 
-    def _add_sensor_with_deps(self, sensor: Sensor, visible: bool = False) -> None:
-        """Add a sensor and all its dependencies recursively."""
+    def _add_sensor_with_deps(self, sensor: Sensor, visible: bool = False, path: set[Sensor] | None = None) -> None:
+        """Add a sensor and all its dependencies recursively.
+        
+        Args:
+            sensor: The sensor to add
+            visible: Whether the sensor should be visible
+            path: Set of sensors in the current dependency path to detect cycles
+        """
+        if path is None:
+            path = set()
+            
+        if sensor in path:
+            _LOGGER.warning("Circular dependency detected for sensor %s", sensor.name)
+            return
+            
+        path.add(sensor)
+        
         if sensor not in self:
             self[sensor] = SensorOption(
                 sensor=sensor,
@@ -58,8 +73,10 @@ class SensorOptions(dict[Sensor, SensorOption]):
         if isinstance(sensor, RWSensor):
             for dep in sensor.dependencies:
                 self.startup.add(dep)
-                self._add_sensor_with_deps(dep, visible=False)  # Recursive call
+                self._add_sensor_with_deps(dep, visible=False, path=path.copy())  # Pass copy of path
                 self[dep].affects.add(sensor)
+                
+        path.remove(sensor)
 
     def init_sensors(self) -> None:
         """Parse options and get the various sensor lists."""
