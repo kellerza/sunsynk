@@ -46,6 +46,21 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
     startup: set[Sensor] = attrs.field(factory=set)
 
+    def _add_sensor_with_deps(self, sensor: Sensor, visible: bool = False) -> None:
+        """Add a sensor and all its dependencies recursively."""
+        if sensor not in self:
+            self[sensor] = SensorOption(
+                sensor=sensor,
+                schedule=get_schedule(sensor, SCHEDULES),
+                visible=visible,
+            )
+        
+        if isinstance(sensor, RWSensor):
+            for dep in sensor.dependencies:
+                self.startup.add(dep)
+                self._add_sensor_with_deps(dep, visible=False)  # Recursive call
+                self[dep].affects.add(sensor)
+
     def init_sensors(self) -> None:
         """Parse options and get the various sensor lists."""
         if not DEFS.all:
@@ -54,22 +69,12 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
         # Add startup sensors
         self.startup = {DEFS.rated_power, DEFS.serial}
-        self[DEFS.rated_power] = SensorOption(
-            sensor=DEFS.rated_power, schedule=Schedule(), visible=False
-        )
-        self[DEFS.serial] = SensorOption(
-            sensor=DEFS.serial, schedule=Schedule(), visible=False
-        )
+        self._add_sensor_with_deps(DEFS.rated_power, visible=False)
+        self._add_sensor_with_deps(DEFS.serial, visible=False)
 
         # Add sensors from config
         for sen in get_sensors(target=self, names=OPT.sensors):
-            if sen in self:
-                continue
-            self[sen] = SensorOption(
-                sensor=sen,
-                schedule=get_schedule(sen, SCHEDULES),
-                visible=True,
-            )
+            self._add_sensor_with_deps(sen, visible=True)
 
         # Add 1st inverter sensors
         for sen in get_sensors(target=self, names=OPT.sensors_first_inverter):
@@ -80,18 +85,7 @@ class SensorOptions(dict[Sensor, SensorOption]):
                     visible=True,
                     first=True,
                 )
-
-        # Handle RW sensor deps
-        for sopt in list(self.values()):
-            if isinstance(sopt.sensor, RWSensor):
-                for dep in sopt.sensor.dependencies:
-                    self.startup.add(dep)
-                    if dep not in self:
-                        self[dep] = SensorOption(
-                            sensor=dep,
-                            schedule=get_schedule(dep, SCHEDULES),
-                        )
-                    self[dep].affects.add(sopt.sensor)
+                self._add_sensor_with_deps(sen, visible=True)
 
         # Info if we have hidden sensors
         if hidden := [s.sensor.name for s in self.values() if not s.visible]:
