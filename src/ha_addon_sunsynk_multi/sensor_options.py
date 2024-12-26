@@ -56,26 +56,26 @@ class SensorOptions(dict[Sensor, SensorOption]):
         """
         if path is None:
             path = set()
-            
+
         if sensor in path:
             _LOGGER.warning("Circular dependency detected for sensor %s", sensor.name)
             return
-            
+
         path.add(sensor)
-        
+
         if sensor not in self:
             self[sensor] = SensorOption(
                 sensor=sensor,
                 schedule=get_schedule(sensor, SCHEDULES),
                 visible=visible,
             )
-        
+
         if isinstance(sensor, RWSensor):
             for dep in sensor.dependencies:
                 self.startup.add(dep)
                 self._add_sensor_with_deps(dep, visible=False, path=path.copy())  # Pass copy of path
                 self[dep].affects.add(sensor)
-                
+
         path.remove(sensor)
 
     def init_sensors(self) -> None:
