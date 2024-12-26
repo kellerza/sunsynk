@@ -63,18 +63,23 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
         path.add(sensor)
 
-        if sensor not in self:
-            self[sensor] = SensorOption(
-                sensor=sensor,
-                schedule=get_schedule(sensor, SCHEDULES),
-                visible=visible,
-            )
+        # Add to startup set regardless of visibility
+        self.startup.add(sensor)
+
+        # Only add to SOPT if it's explicitly requested (visible) or a direct dependency
+        if visible or len(path) <= 2:  # Original sensor or direct dependency
+            if sensor not in self:
+                self[sensor] = SensorOption(
+                    sensor=sensor,
+                    schedule=get_schedule(sensor, SCHEDULES),
+                    visible=visible,
+                )
 
         if isinstance(sensor, RWSensor):
             for dep in sensor.dependencies:
-                self.startup.add(dep)
                 self._add_sensor_with_deps(dep, visible=False, path=path.copy())  # Pass copy of path
-                self[dep].affects.add(sensor)
+                if dep in self and sensor in self:  # Only track affects if both sensors are in SOPT
+                    self[dep].affects.add(sensor)
 
         path.remove(sensor)
 
