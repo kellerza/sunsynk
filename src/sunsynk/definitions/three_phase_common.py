@@ -192,7 +192,7 @@ SENSORS += (
 SENSORS += (
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=240),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
-    SwitchRWSensor(130, "Grid Charge enabled"),
+    SwitchRWSensor(130, "Grid Charge enabled", on=1),
     SwitchRWSensor(146, "Use Timer"),
     SwitchRWSensor(145, "Solar Export"),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
