@@ -2,7 +2,9 @@
 
 This repository contains the user documentation for the sunsynk HASS addon.
 
-It is hosted at `https://github.io/kellerza/sunsynk/`
+This fork is based on the work of many people, with the idea of being better maintained and with more updates and improvements.
+
+It is hosted at `https://github.io/maslyankov/sunsynk/`
 
 ## Contributions
 
