@@ -1,5 +1,5 @@
 # FROM ghcr.io/maslyankov/hass-addon-sunsynk-multi/armhf:edge
-FROM ghcr.io/maslyankov/hass-addon-sunsynk-multi/armhf:0.7.5
+FROM ghcr.io/maslyankov/hass-addon-sunsynk-multi/armhf:0.8.0
 
 # Install sunsynk from local source
 COPY sunsynk sunsynk
