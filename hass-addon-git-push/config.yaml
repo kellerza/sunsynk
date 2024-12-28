@@ -4,7 +4,7 @@ version: 0.1c
 slug: git_push
 name: Git push (experimental)
 description: Simple git push backup local configuration
-url: https://github.com/kellerza/sunsynk
+url: https://github.com/maslyankov/sunsynk
 advanced: true
 arch:
   - armhf

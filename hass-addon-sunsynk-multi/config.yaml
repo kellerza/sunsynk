@@ -1,12 +1,12 @@
 ---
 name: Sunsynk/Deye Inverter Add-on (multi)
 version: "0.7.5"
-image: ghcr.io/kellerza/hass-addon-sunsynk-multi/{arch}
+image: ghcr.io/maslyankov/hass-addon-sunsynk-multi/{arch}
 slug: hass-addon-sunsynk-multi
 description: Add-on for a Sunsynk/Deye branded Inverter
 startup: services
 boot: auto
-url: "https://github.com/kellerza/sunsynk"
+url: "https://github.com/maslyankov/sunsynk"
 uart: true
 init: false
 arch:

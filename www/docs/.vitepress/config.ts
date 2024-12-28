@@ -4,7 +4,7 @@ import imsize from "markdown-it-imsize"
 export default defineConfig({
   lang: "en-US",
   title: "Deye/Sunsynk",
-  base: "/sunsynk/",
+  base: "/",
   description: "Take control of your inverter.",
   lastUpdated: true,
   cleanUrls: true,
@@ -121,12 +121,12 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: "https://github.com/kellerza/sunsynk/edit/main/www/docs/:path",
+      pattern: "https://github.com/maslyankov/sunsynk/edit/main/www/docs/:path",
       text: "Edit this page on GitHub",
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/kellerza/sunsynk" },
+      { icon: "github", link: "https://github.com/maslyankov/sunsynk" },
     ],
 
     footer: {

@@ -1,7 +1,7 @@
 # Sensors
 
 ::: tip
-You can find all sensors names in the definitions here: <https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions>
+You can find all sensors names in the definitions here: <https://github.com/maslyankov/sunsynk/blob/main/src/sunsynk/definitions>
 :::
 
 You can add sensors under the `SENSORS` and `SENSORS_FIRST_INVERTER` keys in the configuration.
@@ -36,7 +36,7 @@ SENSORS:
   - battery_soc
 ```
 
-You can find the details of the definitions [here](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions) and definitions are selected in the configuration with one of the following options:
+You can find the details of the definitions [here](https://github.com/maslyankov/sunsynk/blob/main/src/sunsynk/definitions) and definitions are selected in the configuration with one of the following options:
 
 ```yaml
 SENSOR_DEFINITIONS: single-phase / three-phase [low voltage] / three-phase-hv [high voltage]

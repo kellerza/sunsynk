@@ -80,7 +80,7 @@ Adjust the `INVERTERS` section to match your inverter setup. `tcp://mbusd:502` p
 
 ## Using Pre-built Docker Images
 
-The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the different images for the various supported architectures [here](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
+The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the different images for the various supported architectures [here](https://github.com/maslyankov?tab=packages&repo_name=sunsynk).
 
 ### Docker-Compose examples
 
@@ -90,7 +90,7 @@ The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the
 services:
   sunsynk-multi:
     restart: unless-stopped
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
+    image: ghcr.io/maslyankov/hass-addon-sunsynk-multi:stable
     volumes:
       - ${PWD}/options.yaml:/data/options.yaml
 ```
@@ -99,7 +99,7 @@ services:
 services:
   sunsynk-multi:
     restart: unless-stopped
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
+    image: ghcr.io/maslyankov/hass-addon-sunsynk-multi:stable
     volumes:
       - ${PWD}/options.yaml:/data/options.yaml
     environment:
@@ -122,12 +122,12 @@ Below are examples using the docker CLI.
 docker run -d --name sunsynk-multi \
 --restart unless-stopped \
 -v ${PWD}/options.yaml:/data/options.yaml \
-ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
+ghcr.io/maslyankov/hass-addon-sunsynk-multi:stable
 ```
 
 ### Important Information on Compatibility
 
-You should use the `ghcr.io/kellerza/hass-addon-sunsynk-multi` image without specifying the platform, as the image is supported for all platforms. However, it is backwards compatible, meaning that even if you use `ghcr.io/kellerza/hass-addon-sunsynk-multi/armv6` on an x86 PC, it will still work. This offers flexibility when pulling images for different platforms.
+You should use the `ghcr.io/maslyankov/hass-addon-sunsynk-multi` image without specifying the platform, as the image is supported for all platforms. However, it is backwards compatible, meaning that even if you use `ghcr.io/maslyankov/hass-addon-sunsynk-multi/armv6` on an x86 PC, it will still work. This offers flexibility when pulling images for different platforms.
 
 
 ## Using Environment Variables with Docker Compose
@@ -143,7 +143,7 @@ services:
   sunsynk-mult-amd64:
     restart: unless-stopped
     profiles: ['sunsynk-amd64']
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
+    image: ghcr.io/maslyankov/hass-addon-sunsynk-multi/amd64:stable
     environment:
       MQTT_HOST: mqtt
       MQTT_PORT: 1883

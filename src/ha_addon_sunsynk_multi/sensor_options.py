@@ -151,7 +151,7 @@ SOPT = SensorOptions()
 """A dict of all options related to sensors."""
 
 SENSOR_GROUPS: dict[str, list[str]] = {
-    # https://kellerza.github.io/sunsynk/guide/energy-management
+    # https://sunsynk.wectrl.net/guide/energy-management
     "energy_management": [
         "total_battery_charge",
         "total_battery_discharge",
@@ -159,7 +159,7 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "total_grid_import",
         "total_pv_energy",
     ],
-    # https://kellerza.github.io/sunsynk/examples/lovelace#sunsynk-power-flow-card
+    # https://sunsynk.wectrl.net/examples/lovelace#sunsynk-power-flow-card
     "power_flow_card": [
         "aux_power",
         "battery_1_soc",  # 3PH HV

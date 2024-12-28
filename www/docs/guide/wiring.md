@@ -74,7 +74,7 @@ Other tested adaptors
 
 ### Sunsynk 3.6kW Inverter
 
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-3-6kw.png" width="80%">
+<img src="https://github.com/maslyankov/sunsynk/raw/main/images/inv-ss-3-6kw.png" width="80%">
 
 ### Sunsynk Ecco 3.6kW Hybrid Inverter
 
@@ -82,9 +82,9 @@ Model number: `SUN-3.6K-SG04LP1-EU`
 
 This likely applies to similar models in the Ecco range: `SUN-3K-SG04LP1-24-EU / SUN-3K-SG04LP1-EU / SUN-5K-SG04LP1-EU / SUN-6K-SG04LP1-EU`
 
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-ecco-3-6kw.png" width="80%">
+<img src="https://github.com/maslyankov/sunsynk/raw/main/images/inv-ss-ecco-3-6kw.png" width="80%">
 
-[Closer view of the RS485/CAN port](https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-ecco-3-6kw-485can.png)
+[Closer view of the RS485/CAN port](https://github.com/maslyankov/sunsynk/raw/main/images/inv-ss-ecco-3-6kw-485can.png)
 
 ### Sunsynk 5.5kW Inverter
 
@@ -94,7 +94,7 @@ NOTE: RJ-45 port marked **RS485** (bottom right) does not work.
 
 ### Sunsynk 8.8kW Inverter
 
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-ss-8kw.png" width="80%">
+<img src="https://github.com/maslyankov/sunsynk/raw/main/images/inv-ss-8kw.png" width="80%">
 
 Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
@@ -102,7 +102,7 @@ Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.
 
 ### Deye 8kW Inverter
 
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/inv-deye-8kw.png" width="80%">
+<img src="https://github.com/maslyankov/sunsynk/raw/main/images/inv-deye-8kw.png" width="80%">
 
 RS485 is the blue line - top left, as with the Sunsynk inverters. Yellow is the CAN-comms with the Pylontech batteries
 

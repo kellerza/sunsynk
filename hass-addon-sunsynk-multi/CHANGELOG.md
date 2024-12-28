@@ -1,3 +1,3 @@
 # Changelog
 
-<https://github.com/kellerza/sunsynk/releases>
+<https://github.com/maslyankov/sunsynk/releases>

@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kellerza/sunsynk.git"
+    "url": "git+https://github.com/maslyankov/sunsynk.git"
   },
-  "author": "Johann Kellerman <kellerza@gmail.com>",
+  "author": "Martin Maslyankov <m.maslyankov@me.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/kellerza/sunsynk"
+    "url": "https://github.com/maslyankov/sunsynk"
   },
-  "homepage": "https://github.com/kellerza/sunsynk",
+  "homepage": "https://github.com/maslyankov/sunsynk",
   "dependencies": {
     "clipboard": "^2.0.11"
   },

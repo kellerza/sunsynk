@@ -124,7 +124,7 @@ class AInverter:
         if not await self.read_sensors_retry(sensors=list(SOPT.startup)):
             raise ConnectionError(
                 f"No response on the Modbus interface {self.inv.port}, "
-                "see https://kellerza.github.io/sunsynk/guide/fault-finding"
+                "see https://sunsynk.wectrl.net/guide/fault-finding"
             )
         expected_ser = self.opt.serial_nr.replace("_", "")
         actual_ser = str(self.inv.state[DEFS.serial])

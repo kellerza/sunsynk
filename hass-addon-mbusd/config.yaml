@@ -4,7 +4,7 @@ description: Add-on for a Modbus TCP to Modbus RTU Gateway using mbusd
 version: 2021.10.1
 startup: services
 boot: auto
-url: 'https://github.com/kellerza/sunsynk'
+url: 'https://github.com/maslyankov/sunsynk'
 uart: true
 arch:
   - aarch64
