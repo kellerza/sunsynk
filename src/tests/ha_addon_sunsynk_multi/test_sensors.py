@@ -16,7 +16,11 @@ def test_opt1() -> None:
     OPT.sensors = ["prog1_time"]
     SOPT.init_sensors()
     assert sorted(s.id for s in SOPT.startup) == [
+        "prog1_time",
         "prog2_time",
+        "prog3_time",
+        "prog4_time",
+        "prog5_time",
         "prog6_time",
         "rated_power",
         "serial",
