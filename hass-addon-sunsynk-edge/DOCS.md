@@ -1,1 +1,1 @@
-# [Online Documentation](https://kellerza.github.io/sunsynk/reference/multi-options)
+# [Online Documentation](https://sunsynk.wectrl.net/reference/multi-options)

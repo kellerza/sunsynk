@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Existing sensor definitions can be found [here](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions/). You can test your own definitions using [custom sensors](https://kellerza.github.io/sunsynk/reference/mysensors)
+Existing sensor definitions can be found [here](https://github.com/maslyankov/sunsynk/blob/main/src/sunsynk/definitions/). You can test your own definitions using [custom sensors](https://sunsynk.wectrl.net/reference/mysensors)
 
 ### Your environment
 - Home Assistant version: __

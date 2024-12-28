@@ -14,7 +14,7 @@ An add-on to receive Sunsynk Inverter Values and push them to Home Assistant thr
 
 It supports Home Assistant auto-discovery for the sensors and flexible scheduling when to read and when to report.
 
-![HASS Energy management](https://github.com/kellerza/sunsynk/raw/main/images/energy.png)
+![HASS Energy management](https://github.com/maslyankov/sunsynk/raw/main/images/energy.png)
 
 For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk inverter. Sensors are read using the Modbus protocol and sent to a MQTT server.
 
@@ -51,4 +51,4 @@ Please note that the addon is an example of how the library can be used and no s
 - Powerforum users Bloubul7, @jacauc and Sc00bs. See [this thread](https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/).
 - @Ivan-L for adding the writable sensors.
 - @kababook & @archi for the 3-phase definitions.
-- Other [contributors](https://github.com/kellerza/sunsynk/graphs/contributors)
+- Other [contributors](https://github.com/maslyankov/sunsynk/graphs/contributors)

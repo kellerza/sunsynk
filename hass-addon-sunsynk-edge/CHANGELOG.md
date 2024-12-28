@@ -1,3 +1,3 @@
 # Changelog
 
-<https://github.com/kellerza/sunsynk/commits/>
+<https://github.com/maslyankov/sunsynk/commits/>
