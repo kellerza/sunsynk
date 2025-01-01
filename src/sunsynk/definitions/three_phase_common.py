@@ -78,6 +78,7 @@ SENSORS += (
     Sensor(644, "Load L1 voltage", VOLT, 0.1),
     Sensor(645, "Load L2 voltage", VOLT, 0.1),
     Sensor(646, "Load L3 voltage", VOLT, 0.1),
+    Sensor(655, "Load frequency", "Hz", 0.01),
 )
 
 ##############
