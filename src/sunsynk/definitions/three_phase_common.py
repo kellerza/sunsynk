@@ -35,9 +35,9 @@ SENSORS += (
     Sensor(627, "Inverter L1 voltage", VOLT, 0.1),
     Sensor(628, "Inverter L2 voltage", VOLT, 0.1),
     Sensor(629, "Inverter L3 voltage", VOLT, 0.1),
-    Sensor(630, "Inverter L1 current", AMPS, 0.01),
-    Sensor(631, "Inverter L2 current", AMPS, 0.01),
-    Sensor(632, "Inverter L3 current", AMPS, 0.01),
+    Sensor(630, "Inverter L1 current", AMPS, -0.01),
+    Sensor(631, "Inverter L2 current", AMPS, -0.01),
+    Sensor(632, "Inverter L3 current", AMPS, -0.01),
     Sensor(638, "Inverter frequency", "Hz", 0.01),
 )
 
