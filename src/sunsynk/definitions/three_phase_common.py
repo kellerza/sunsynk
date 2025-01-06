@@ -56,7 +56,7 @@ SENSORS += (
     Sensor(604, "A Phase Power on the Inner Side of the Grid", "W"),
     Sensor(605, "B Phase Power on the Inner Side of the Grid", "W"),
     Sensor(606, "C Phase Power on the Inner Side of the Grid", "W"),
-    Sensor(607, "Total Active Power from Side to Side of the Grid", "W"),
+    Sensor(607, "Total Active Power from Side to Side of the Grid", "W", -1),
     Sensor(608, "Grid Side - Inside Total Apparent Power", "W"),
     MathSensor(
         (610, 611, 612), "Grid current", AMPS, factors=(0.01, 0.01, 0.01)
