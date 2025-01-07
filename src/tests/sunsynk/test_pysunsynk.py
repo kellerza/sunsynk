@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
 
 import pytest
 
-from sunsynk.pysunsynk import ModbusRtuFramer, PySunsynk
+from sunsynk.pysunsynk import FramerType, PySunsynk
 from sunsynk.state import InverterState
 
 
@@ -26,7 +26,7 @@ async def test_pyss() -> None:
         assert client.call_args_list == []
         await ss.connect()
         assert client.call_args_list == [
-            call(host="localhost", port=10, framer=ModbusRtuFramer)
+            call(host="localhost", port=10, framer=FramerType.RTU)
         ]
         assert ss.client is not None
 

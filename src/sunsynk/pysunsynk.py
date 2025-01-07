@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from typing import Any, Sequence
+import typing
 from urllib.parse import urlparse
 
 import attrs
@@ -13,7 +13,7 @@ from pymodbus.client import (
     AsyncModbusUdpClient,
     ModbusBaseClient,
 )
-from pymodbus.transaction import ModbusRtuFramer  # type: ignore
+from pymodbus.framer import FramerType
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -32,22 +32,21 @@ class PySunsynk(Sunsynk):
         if url.hostname:
             host, port = url.hostname, url.port or 502
 
-            # Framer from the URL scheme
-            opt: dict[str, Any] = {}
-
             client: AsyncModbusTcpClient | AsyncModbusUdpClient | None = None
 
             match url.scheme:  # python 3.10 minimum
                 case "serial-tcp":  # RTU-over-TCP
-                    opt = {"framer": ModbusRtuFramer}
-                    client = AsyncModbusTcpClient(host=host, port=port, **opt)
+                    client = AsyncModbusTcpClient(
+                        host=host, port=port, framer=FramerType.RTU
+                    )
                 case "tcp":
-                    client = AsyncModbusTcpClient(host=host, port=port, **opt)
+                    client = AsyncModbusTcpClient(host=host, port=port)
                 case "serial-udp":  # RTU-over-UDP
-                    opt = {"framer": ModbusRtuFramer}
-                    client = AsyncModbusUdpClient(host=host, port=port, **opt)
+                    client = AsyncModbusUdpClient(
+                        host=host, port=port, framer=FramerType.RTU
+                    )
                 case "udp":
-                    client = AsyncModbusUdpClient(host=host, port=port, **opt)
+                    client = AsyncModbusUdpClient(host=host, port=port)
                 case _:
                     raise NotImplementedError(
                         "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
@@ -93,7 +92,9 @@ class PySunsynk(Sunsynk):
         self.timeouts += 1
         return False
 
-    async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
+    async def read_holding_registers(
+        self, start: int, length: int
+    ) -> typing.Sequence[int]:
         """Read a holding register."""
         await self.connect()
         res = await self.client.read_holding_registers(  # type:ignore
