@@ -1,7 +1,7 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
 
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.definitions import DEVICE_TYPE
+from sunsynk.definitions import DEVICE_TYPE, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
@@ -315,13 +315,6 @@ PROG5_TIME.max = PROG6_TIME
 PROG6_TIME.max = PROG1_TIME
 SENSORS += (PROG1_TIME, PROG2_TIME, PROG3_TIME, PROG4_TIME, PROG5_TIME, PROG6_TIME)
 
-PROG_CHARGE_OPTIONS = {
-    0: "No Grid or Gen",
-    1: "Allow Grid",
-    2: "Allow Gen",
-    3: "Allow Grid & Gen",
-}
-
 SENSORS += (
     SwitchRWSensor(
         146,
@@ -351,12 +344,18 @@ SENSORS += (
     NumberRWSensor(169, "Prog4 Capacity", "%", min=BATTERY_LOW_CAP),
     NumberRWSensor(170, "Prog5 Capacity", "%", min=BATTERY_LOW_CAP),
     NumberRWSensor(171, "Prog6 Capacity", "%", min=BATTERY_LOW_CAP),
-    SelectRWSensor(172, "Prog1 charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(173, "Prog2 charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(174, "Prog3 charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(175, "Prog4 charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(176, "Prog5 charge", options=PROG_CHARGE_OPTIONS),
-    SelectRWSensor(177, "Prog6 charge", options=PROG_CHARGE_OPTIONS),
+    SelectRWSensor(172, "Prog1 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(173, "Prog2 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(174, "Prog3 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(175, "Prog4 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(176, "Prog5 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(177, "Prog6 charge", options=PROG_CHARGE_OPTIONS, bitmask=0x03),
+    SelectRWSensor(172, "Prog1 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(173, "Prog2 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(174, "Prog3 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(175, "Prog4 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(176, "Prog5 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
+    SelectRWSensor(177, "Prog6 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
 )
 
 

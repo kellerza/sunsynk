@@ -1,7 +1,7 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.definitions import DEVICE_TYPE
+from sunsynk.definitions import DEVICE_TYPE, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
@@ -263,18 +263,6 @@ PROG5_TIME.max = PROG6_TIME
 PROG6_TIME.max = PROG1_TIME
 SENSORS += (PROG1_TIME, PROG2_TIME, PROG3_TIME, PROG4_TIME, PROG5_TIME, PROG6_TIME)
 
-PROG_CHARGE_OPTIONS = {
-    0: "No Grid or Gen",
-    1: "Allow Grid",
-    2: "Allow Gen",
-    3: "Allow Grid & Gen",
-}
-PROG_MODE_OPTIONS = {
-    0: "None",
-    4: "General",
-    8: "Backup",
-    16: "Charge",
-}
 
 SENSORS += (
     # The max power that can be used from the battery
