@@ -98,9 +98,11 @@ TEST1 = (
     SensorOption(
         sensor=Sensor(1, name="test", unit="kWh"),
         schedule=Schedule(read_every=1, report_every=10),
+        visible=True,
     ),
     SensorOption(
         sensor=Sensor(2, name="test2", unit="kWh"),
         schedule=Schedule(read_every=1, report_every=20),
+        visible=True,
     ),
 )

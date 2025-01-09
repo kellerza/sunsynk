@@ -10,31 +10,25 @@ _LOGGER = logging.getLogger(__name__)
 def test_opt1() -> None:
     """Sensors."""
     SOPT.init_sensors()
-    assert sorted(s.id for s in SOPT.startup) == ["rated_power", "serial"]
-    assert sorted(s.id for s in SOPT) == ["rated_power", "serial"]
+    assert sorted(s.id for s in SOPT.startup) == ["device_type", "serial"]
+    assert sorted(s.id for s in SOPT) == ["device_type", "serial"]
 
     OPT.sensors = ["prog1_time"]
     SOPT.init_sensors()
     assert sorted(s.id for s in SOPT.startup) == [
+        "device_type",
+        "serial",
+    ]
+    assert sorted(s.id for s in SOPT) == [
+        "device_type",
         "prog1_time",
         "prog2_time",
         "prog3_time",
         "prog4_time",
         "prog5_time",
         "prog6_time",
-        "rated_power",
         "serial",
     ]
-    assert sorted(s.id for s in SOPT) == [
+    assert sorted(s.id for s in SOPT if SOPT[s].visible) == [
         "prog1_time",
-        "prog2_time",
-        "prog6_time",
-        "rated_power",
-        "serial",
     ]
-    # assert SOPT.filter_str == {
-    #     "prog1_time": "round_robin",
-    #     "prog2_time": "round_robin",
-    #     "prog6_time": "round_robin",
-    # }
-    # assert SOPT["prog1_time"].visible

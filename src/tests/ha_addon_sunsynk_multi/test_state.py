@@ -20,13 +20,15 @@ def test_create_entity(mqtt_device: Device, ist: AInverter) -> None:
     STATE.append(ist)
 
     st = ASensor(
-        opt=SensorOption(sensor=Sensor(1, "one", "W"), schedule=NOSCHEDULE),
+        opt=SensorOption(
+            sensor=Sensor(1, "one", "W"), schedule=NOSCHEDULE, visible=True
+        ),
     )
 
     assert st.name == "one"
 
     # Create the mqtt entity
-    ent: Entity = st.create_entity(dev=mqtt_device, ist=ist)
+    ent: Entity = st.create_entity(mqtt_device, ist=ist)
     entd: dict = ent.asdict
     assert entd == {
         "device": {"identifiers": ["888"]},
@@ -49,7 +51,11 @@ def test_create_entity2(mqtt_device: Device, ist: AInverter) -> None:
 
     STATE.append(ist)
 
-    st = ASensor(opt=SensorOption(sensor=Sensor(1, nme, "kWh"), schedule=NOSCHEDULE))
+    st = ASensor(
+        opt=SensorOption(
+            sensor=Sensor(1, nme, "kWh"), schedule=NOSCHEDULE, visible=True
+        )
+    )
 
     # Create the mqtt entity
     ent: Entity = st.create_entity(mqtt_device, ist=ist)
