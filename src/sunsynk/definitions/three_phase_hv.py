@@ -12,9 +12,7 @@ from sunsynk.sensors import (
     EnumSensor,
     HVFaultSensor,
     MathSensor,
-    SDStatusSensor,
     Sensor,
-    SerialSensor,
     TempSensor,
 )
 
@@ -84,8 +82,7 @@ SENSORS += (
         options={0: "No Warning", 1 << 15: "Warning"},
         bitmask=1 << 15,
     ),
-    SDStatusSensor(0, "SD Status", ""),  # type: ignore
-    SerialSensor((3, 4, 5, 6, 7), "Serial"),
+    # SDStatusSensor(0, "SD Status", ""),  # type: ignore
     BinarySensor(552, "Grid Connected", bitmask=1 << 2),
 )
 
