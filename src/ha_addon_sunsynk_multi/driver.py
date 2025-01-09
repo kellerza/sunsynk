@@ -74,7 +74,7 @@ def init_driver(opt: Options) -> None:
 
     STATE.clear()
 
-    for inv in opt.inverters:
+    for idx, inv in enumerate(opt.inverters):
         kwargs: SunsynkInitParameters = {
             "port": inv.port if inv.port else port_prefix + opt.debug_device,
             "server_id": inv.modbus_id,
@@ -90,4 +90,4 @@ def init_driver(opt: Options) -> None:
         suns = factory(**kwargs)
         suns.state.onchange = sensor_on_update
 
-        STATE.append(AInverter(inv=suns, ss={}, opt=inv))
+        STATE.append(AInverter(inv=suns, ss={}, opt=inv, index=idx))

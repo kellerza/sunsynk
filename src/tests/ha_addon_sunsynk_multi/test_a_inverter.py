@@ -42,7 +42,7 @@ async def test_ss_tcp_read(
     async_connect.return_value = 1
 
     # AInverter.read_sensors_retry
-    ist = AInverter(ss, {}, {})  # type:ignore
+    ist = AInverter(index=0, inv=ss, opt={}, ss={})  # type:ignore
 
     sensors = [SENSORS.rated_power]
 

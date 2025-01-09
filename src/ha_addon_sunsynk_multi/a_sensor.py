@@ -81,9 +81,6 @@ class ASensor:
         """Hide state from HA."""
         return not self.opt.visible
 
-    # hidden: bool = attrs.field(default=False)
-    # "Hide state from HA."
-
     _last: ValType = None
     retain: bool = False
 
@@ -122,12 +119,14 @@ class ASensor:
     def create_entity(self, dev: Device | Entity | None, *, ist: AInverter) -> Entity:
         """Create HASS entity."""
         # pylint: disable=too-many-branches,too-many-return-statements
+        if self.opt.first and ist.index > 0:
+            raise ValueError(f"This entity should only be on the 1st inverter: {self}")
         if self.hidden:
-            raise ValueError(f"Do not create hidden entities! {self}")
+            raise ValueError(f"Do not create hidden entities: {self}")
         if self.opt.sensor is None:
-            raise ValueError(f"Cannot create entity if no sensor specified! {self}")
+            raise ValueError(f"Cannot create entity if no sensor specified: {self}")
         if dev is None:
-            raise ValueError(f"No device specified for create_entity! {self}")
+            raise ValueError(f"No device specified for create_entity: {self}")
         if isinstance(dev, Entity):
             dev = dev.device
 

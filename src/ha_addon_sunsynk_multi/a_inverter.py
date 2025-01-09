@@ -21,14 +21,15 @@ from sunsynk.sunsynk import Sensor, Sunsynk, ValType
 _LOGGER = logging.getLogger(__name__)
 
 
-@attrs.define(slots=True)
+@attrs.define(slots=True, kw_only=True)
 class AInverter:
     """Addon Inverter state (per inverter)."""
 
     # pylint:disable=too-many-instance-attributes
 
-    inv: Sunsynk = attrs.field()
-    opt: InverterOptions = attrs.field()
+    index: int
+    inv: Sunsynk
+    opt: InverterOptions
     ss: dict[str, ASensor] = attrs.field(factory=dict)
     """Sensor states."""
 
@@ -175,6 +176,8 @@ class AInverter:
         ents: list[Entity] = []
         for s in self.ss.values():
             if s.hidden:
+                continue
+            if s.opt.first and self.index > 0:
                 continue
             try:
                 ents.append(s.create_entity(dev, ist=self))

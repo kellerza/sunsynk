@@ -2,6 +2,7 @@
 
 import logging
 
+import pytest
 from mqtt_entity import Device, Entity  # type: ignore
 
 from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter
@@ -71,3 +72,23 @@ def test_create_entity2(mqtt_device: Device, ist: AInverter) -> None:
         "state_class": "total_increasing",
         "device_class": "energy",
     }
+
+
+def test_create_fail(mqtt_device: Device, ist: AInverter) -> None:
+    """Create entity."""
+    STATE.append(ist)
+
+    st = ASensor(
+        opt=SensorOption(
+            sensor=Sensor(1, "one", "W"), schedule=NOSCHEDULE, visible=True, first=True
+        ),
+    )
+    assert st.name == "one"
+
+    # Create the mqtt entity
+    ist.index = 0
+    st.create_entity(mqtt_device, ist=ist)
+
+    ist.index = 1
+    with pytest.raises(ValueError):
+        st.create_entity(mqtt_device, ist=ist)
