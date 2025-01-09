@@ -1,6 +1,7 @@
-# FROM ghcr.io/kellerza/hass-addon-sunsynk-multi/armhf:edge
-# FROM ghcr.io/kellerza/hass-addon-sunsynk-multi/armhf:0.7.5
-FROM ghcr.io/kellerza/hass-addon-sunsynk-multi/armhf:7a2597f
+# FROM ghcr.io/kellerza/hass-addon-sunsynk-multi:edge
+# FROM ghcr.io/kellerza/hass-addon-sunsynk-multi:0.7.5
+FROM ghcr.io/kellerza/hass-addon-sunsynk-multi:7a2597f
+
 
 # Install sunsynk from local source
 COPY sunsynk sunsynk

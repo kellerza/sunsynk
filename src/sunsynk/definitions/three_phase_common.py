@@ -1,7 +1,7 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
 
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.definitions import DEVICE_TYPE, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS
+from sunsynk.definitions import DEVICE_TYPE, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS, SERIAL_SENSOR
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
@@ -18,7 +18,6 @@ from sunsynk.sensors import (
     SDStatusSensor,
     Sensor,
     SensorDefinitions,
-    SerialSensor,
     TempSensor,
 )
 
@@ -172,7 +171,7 @@ SENSORS += (
     FaultSensor((555, 556, 557, 558), "Fault"),
     InverterStateSensor(500, "Overall state"),
     SDStatusSensor(0, "SD Status", ""),  # type: ignore        # 3 Phase does not have SD Card but crashes when removed
-    SerialSensor((3, 4, 5, 6, 7), "Serial"),
+    SERIAL_SENSOR,
     TempSensor(540, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(541, "Radiator temperature", CELSIUS, 0.1),
     BinarySensor(552, "Grid Connected", bitmask=1 << 2),

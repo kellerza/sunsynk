@@ -95,6 +95,11 @@ class SensorDefinitions:
     """map of 'old_name': 'new_name'"""
 
     @property
+    def device_type(self) -> Sensor:
+        """Get the device type."""
+        return self.all["device_type"]
+
+    @property
     def serial(self) -> Sensor:
         """Get the serial sensor."""
         return self.all["serial"]
