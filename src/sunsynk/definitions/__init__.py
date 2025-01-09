@@ -1,6 +1,6 @@
 """Sensor definitions."""
 
-from sunsynk.sensors import EnumSensor
+from sunsynk.sensors import EnumSensor, SerialSensor
 
 DEVICE_TYPE = EnumSensor(
     0,
@@ -13,3 +13,5 @@ DEVICE_TYPE = EnumSensor(
         6: "High voltage three phase hybrid",
     },
 )
+
+SERIAL_SENSOR = SerialSensor((3, 4, 5, 6, 7), "Serial")

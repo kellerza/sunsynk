@@ -28,8 +28,7 @@ class SensorOption:
 
     sensor: Sensor
     schedule: Schedule
-    visible: bool = True
-    startup: bool = False
+    visible: bool = False
     affects: set[Sensor] = attrs.field(factory=set)
     """Affect sensors due to dependencies."""
     first: bool = False
@@ -45,43 +44,26 @@ class SensorOptions(dict[Sensor, SensorOption]):
     """A dict of sensors from the configuration."""
 
     startup: set[Sensor] = attrs.field(factory=set)
+    _deps: set[Sensor] = attrs.field(factory=set)
 
-    def _add_sensor_with_deps(self, sensor: Sensor, visible: bool = False, path: set[Sensor] | None = None) -> None:
-        """Add a sensor and all its dependencies recursively.
-        
-        Args:
-            sensor: The sensor to add
-            visible: Whether the sensor should be visible
-            path: Set of sensors in the current dependency path to detect cycles
-        """
-        if path is None:
-            path = set()
-
-        if sensor in path:
-            _LOGGER.warning("Circular dependency detected for sensor %s", sensor.name)
+    def _add_sensor(
+        self,
+        sensor: Sensor,
+        *,
+        visible: bool = False,
+        first: bool = False,
+    ) -> None:
+        """Add a sensor. Keep dependencies for later."""
+        if sensor in self:
             return
-
-        path.add(sensor)
-
-        # Add to startup set regardless of visibility
-        self.startup.add(sensor)
-
-        # Only add to SOPT if it's explicitly requested (visible) or a direct dependency
-        if visible or len(path) <= 2:  # Original sensor or direct dependency
-            if sensor not in self:
-                self[sensor] = SensorOption(
-                    sensor=sensor,
-                    schedule=get_schedule(sensor, SCHEDULES),
-                    visible=visible,
-                )
-
+        self[sensor] = SensorOption(
+            sensor=sensor,
+            schedule=get_schedule(sensor, SCHEDULES),
+            visible=visible,
+            first=first,
+        )
         if isinstance(sensor, RWSensor):
-            for dep in sensor.dependencies:
-                self._add_sensor_with_deps(dep, visible=False, path=path.copy())  # Pass copy of path
-                if dep in self and sensor in self:  # Only track affects if both sensors are in SOPT
-                    self[dep].affects.add(sensor)
-
-        path.remove(sensor)
+            self._deps.update(sensor.dependencies)
 
     def init_sensors(self) -> None:
         """Parse options and get the various sensor lists."""
@@ -89,27 +71,35 @@ class SensorOptions(dict[Sensor, SensorOption]):
             import_definitions()
         self.clear()
 
-        # Add startup sensors
-        self.startup = {DEFS.rated_power, DEFS.serial}
-        self._add_sensor_with_deps(DEFS.rated_power, visible=False)
-        self._add_sensor_with_deps(DEFS.serial, visible=False)
+        self.startup = {DEFS.device_type, DEFS.rated_power, DEFS.serial}
+        sensors_all = list(get_sensors(target=self, names=OPT.sensors))
+        sensors_1st = list(get_sensors(target=self, names=OPT.sensors_first_inverter))
 
-        # Add sensors from config
-        for sen in get_sensors(target=self, names=OPT.sensors):
-            self._add_sensor_with_deps(sen, visible=True)
+        # 1. Add startup sensors to all inverters. Visible if configured anywhere.
+        for sen in self.startup:
+            visible = sen in sensors_1st or sen in sensors_all
+            self._add_sensor(sen, visible=visible)
 
-        # Add 1st inverter sensors
-        for sen in get_sensors(target=self, names=OPT.sensors_first_inverter):
+        # 2. Add sensors configured for all inverters
+        for sen in sensors_all:
+            self._add_sensor(sen, visible=True)
+
+        # 3. Add deps, usually hidden, but visible if configured on 1st inverter
+        while self._deps:
+            sen = self._deps.pop()
+            self._add_sensor(sen, visible=sen in sensors_1st)
+
+        # 4. Add sensors configured for the 1st inverter
+        for sen in sensors_1st:
             if sen not in self:
-                self[sen] = SensorOption(
-                    sensor=sen,
-                    schedule=get_schedule(sen, SCHEDULES),
-                    visible=True,
-                    first=True,
-                )
-                self._add_sensor_with_deps(sen, visible=True)
+                self._add_sensor(sen, visible=True, first=True)
 
-        # Info if we have hidden sensors
+        # 5. Add deps for the 1st inverter, always hidden
+        while self._deps:
+            sen = self._deps.pop()
+            self._add_sensor(sen, first=True)
+
+        # Display hidden sensors
         if hidden := [s.sensor.name for s in self.values() if not s.visible]:
             _LOGGER.info(
                 "Added hidden sensors as other sensors depend on it: %s",
