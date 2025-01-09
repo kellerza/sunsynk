@@ -106,6 +106,12 @@ class SensorOptions(dict[Sensor, SensorOption]):
                 ", ".join(hidden),
             )
 
+        # Add Affects
+        for sen in self:
+            if isinstance(sen, RWSensor):
+                for dep in sen.dependencies:
+                    self[dep].affects.add(sen)
+
 
 def import_definitions() -> None:
     """Load definitions according to options."""
