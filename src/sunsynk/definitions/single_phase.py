@@ -1,7 +1,12 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.definitions import DEVICE_TYPE, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS, SERIAL_SENSOR
+from sunsynk.definitions import (
+    DEVICE_TYPE,
+    PROG_CHARGE_OPTIONS,
+    PROG_MODE_OPTIONS,
+    SERIAL_SENSOR,
+)
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
