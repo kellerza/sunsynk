@@ -133,6 +133,12 @@ class AInverter:
             )
         self.log_bold(f"Inverter serial number '****{actual_ser[-4:]}'")
 
+        _LOGGER.info(
+            "Device type: %s, using the %s sensor definitions",
+            self.inv.state[DEFS.device_type],
+            OPT.sensor_definitions,
+        )
+
         # Initial read for all sensors
         sensors = list(SOPT)
         _LOGGER.info("Reading all sensors %s", ", ".join(s.name for s in sensors))
