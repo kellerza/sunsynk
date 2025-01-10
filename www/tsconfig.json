@@ -12,12 +12,11 @@
     "sourceMap": true,
     "baseUrl": ".",
     "isolatedModules": true,
-
     "typeRoots": [
-      "./node_modules/@types"
+      "./node_modules/@types", "./node_modules/vitepress/node_modules"
     ],
     "types": [
-      "../vite/client",
+      "./vite/client",
     ],
     "paths": {
       "../*": [
