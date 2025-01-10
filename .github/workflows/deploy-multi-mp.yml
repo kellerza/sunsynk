@@ -15,7 +15,7 @@ env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi
 
 jobs:
-  on-failure:
+  ci-failure:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
@@ -23,7 +23,7 @@ jobs:
   information:
     name: Gather add-on information
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'release' }}
     outputs:
       architectures: ${{ steps.information.outputs.architectures }}
       build: ${{ steps.information.outputs.build }}
