@@ -78,10 +78,10 @@ def _print_table(
     _LOGGER.info("%s\n%s", title, tab.get_string())
 
 
-def build_callback_schedule(ist: AInverter, idx: int) -> AsyncCallback:
+def build_callback_schedule(ist: AInverter) -> AsyncCallback:
     """Build the callback schedule."""
     # pylint: disable=too-many-branches,too-many-statements
-    read_s, report_s = _build_schedules(idx)
+    read_s, report_s = _build_schedules(ist.index)
 
     async def callback_sensor(now: int) -> None:
         """read or write sensors"""

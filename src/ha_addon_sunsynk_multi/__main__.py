@@ -2,7 +2,6 @@
 
 import asyncio
 import logging
-from asyncio.events import AbstractEventLoop
 
 from ha_addon_sunsynk_multi.a_inverter import STATE
 from ha_addon_sunsynk_multi.a_sensor import MQTT, SS_TOPIC
@@ -23,9 +22,9 @@ from sunsynk import VERSION
 _LOGGER = logging.getLogger(__name__)
 
 
-async def main_loop(loop: AbstractEventLoop) -> None:
+async def main_loop() -> None:
     """Main async loop."""
-    loop.set_debug(OPT.debug > 0)
+    asyncio.get_event_loop().set_debug(OPT.debug > 0)
 
     # MQTT availability will always use first inverter's serial
     MQTT.availability_topic = f"{SS_TOPIC}/{OPT.inverters[0].serial_nr}/availability"
@@ -34,11 +33,11 @@ async def main_loop(loop: AbstractEventLoop) -> None:
         AsyncCallback(name="discovery_info", every=5, callback=callback_discovery_info)
     )
 
-    for idx, ist in enumerate(STATE):
+    for ist in STATE:
         try:
             await ist.connect()
             await ist.hass_discover_sensors()
-            ist.cb = build_callback_schedule(ist=ist, idx=idx)
+            ist.cb = build_callback_schedule(ist)
             CALLBACKS.append(ist.cb)
         except (ConnectionError, ValueError) as err:
             ist.log_bold(str(err))
@@ -70,9 +69,7 @@ def main() -> None:
     for ist in STATE:
         ist.init_sensors()
 
-    loop = asyncio.get_event_loop_policy().get_event_loop()
-    loop.run_until_complete(main_loop(loop))
-    loop.close()
+    asyncio.run(main_loop())
 
 
 if __name__ == "__main__":
