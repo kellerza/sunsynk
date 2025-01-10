@@ -210,6 +210,7 @@ class EnumSensor(TextSensor):
     """Sensor with a set of enum values. Like a read-only SelectRWSensor"""
 
     options: dict[int, str] = attrs.field(factory=dict)
+    _warn: bool = True
 
     def available_values(self) -> list[str]:
         """Get the available values for this sensor."""
@@ -220,13 +221,17 @@ class EnumSensor(TextSensor):
         regsm = self.masked(regs)
         res = self.options.get(regsm[0])
         if res is None:
-            _LOGGER.warning(
-                "%s: Unknown register value %s. "
-                "Consider extending the definition with a PR. "
-                "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions",
-                self.id,
-                regsm[0],
-            )
+            if self._warn:
+                _LOGGER.warning(
+                    "%s: Unknown register value %s. "
+                    "Consider extending the definition with a PR. "
+                    "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions",
+                    self.id,
+                    regsm[0],
+                )
+            self._warn = False
+            return None
+        self._warn = True
         return res
 
 

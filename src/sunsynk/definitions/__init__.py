@@ -24,6 +24,7 @@ DEVICE_TYPE = EnumSensor(
         4: "Microinverter",
         5: "Low voltage three phase hybrid",
         6: "High voltage three phase hybrid",
+        # 512: "16K MAX",  # See issue #387
     },
 )
 
