@@ -99,13 +99,9 @@ class AInverter:
     async def publish_sensors(self, *, states: dict[ASensor, ValType]) -> None:
         """Publish state to HASS."""
         for state, value in states.items():
-            if not state.visible_on(self):
+            # Entity was never created, don't publish state
+            if not state.entity:
                 continue
-            # if state.hidden or state.opt.sensor is None:
-            #     _LOGGER.warning(
-            #         "Skipping hidden sensor %s - hid: %s", state.name, state.hidden
-            #     )
-            #     continue
             if value is None:
                 value = self.inv.state[state.opt.sensor]
             await state.publish(value)
