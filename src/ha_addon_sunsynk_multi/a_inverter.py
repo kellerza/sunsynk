@@ -99,11 +99,13 @@ class AInverter:
     async def publish_sensors(self, *, states: dict[ASensor, ValType]) -> None:
         """Publish state to HASS."""
         for state, value in states.items():
-            if state.hidden or state.opt.sensor is None:
-                _LOGGER.warning(
-                    "Skipping hidden sensor %s - hid: %s", state.name, state.hidden
-                )
+            if not state.visible_on(self):
                 continue
+            # if state.hidden or state.opt.sensor is None:
+            #     _LOGGER.warning(
+            #         "Skipping hidden sensor %s - hid: %s", state.name, state.hidden
+            #     )
+            #     continue
             if value is None:
                 value = self.inv.state[state.opt.sensor]
             await state.publish(value)
@@ -175,9 +177,7 @@ class AInverter:
 
         ents: list[Entity] = []
         for s in self.ss.values():
-            if s.hidden:
-                continue
-            if s.opt.first and self.index > 0:
+            if not s.visible_on(self):
                 continue
             try:
                 ents.append(s.create_entity(dev, ist=self))

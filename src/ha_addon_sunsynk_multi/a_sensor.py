@@ -76,10 +76,10 @@ class ASensor:
         """Hasable."""
         return self.opt.sensor.__hash__()
 
-    @property
-    def hidden(self) -> bool:
-        """Hide state from HA."""
-        return not self.opt.visible
+    # @property
+    # def hidden(self) -> bool:
+    #     """Hide state from HA."""
+    #     return not self.opt.visible
 
     _last: ValType = None
     retain: bool = False
@@ -116,13 +116,21 @@ class ASensor:
         """Return True if the units are a measurement."""
         return units in {"W", "V", "A", "Hz", "°C", "°F", "%", "Ah", "VA"}
 
+    def visible_on(self, ist: AInverter) -> bool:
+        """Should entity be visible on this inverter."""
+        if not self.opt.visible:
+            return False
+        if self.opt.first and ist.index > 0:
+            return False
+        if self.opt.sensor is None:
+            return False
+        return True
+
     def create_entity(self, dev: Device | Entity | None, *, ist: AInverter) -> Entity:
         """Create HASS entity."""
         # pylint: disable=too-many-branches,too-many-return-statements
-        if self.opt.first and ist.index > 0:
-            raise ValueError(f"This entity should only be on the 1st inverter: {self}")
-        if self.hidden:
-            raise ValueError(f"Do not create hidden entities: {self}")
+        if not self.visible_on(ist):
+            raise ValueError("Entity not visible")
         if self.opt.sensor is None:
             raise ValueError(f"Cannot create entity if no sensor specified: {self}")
         if dev is None:

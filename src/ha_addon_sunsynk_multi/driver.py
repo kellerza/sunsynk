@@ -23,7 +23,9 @@ async def callback_discovery_info(now: int) -> None:
     if HASS_DISCOVERY_INFO_UPDATE_QUEUE:
         for ist in STATE:
             states = [ist.ss[s.id] for s in HASS_DISCOVERY_INFO_UPDATE_QUEUE]
-            ents = [s.create_entity(s.entity, ist=ist) for s in states if not s.hidden]
+            ents = [
+                s.create_entity(s.entity, ist=ist) for s in states if s.visible_on(ist)
+            ]
             await MQTT.connect(OPT)
             await MQTT.publish_discovery_info(entities=ents, remove_entities=False)
         HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
