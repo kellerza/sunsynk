@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 import attrs
 from mqtt_entity import (  # type: ignore[import]
@@ -48,16 +48,17 @@ MQTT = MQTTClient()
 """The MQTTClient instance."""
 
 
+# NotRequired need Python 3.11 - Already standard in HASS
 class MqttEntityOptions(TypedDict):
     """Shared MQTTEntity options."""
 
     name: str
     state_topic: str
     unique_id: str
-    device_class: str
-    state_class: str
-    icon: str
-    entity_category: str
+    device_class: NotRequired[str]
+    state_class: NotRequired[str]
+    icon: NotRequired[str]
+    entity_category: NotRequired[str]
     unit_of_measurement: str
     # command_topic: str
     discovery_extra: dict[str, Any]
@@ -148,7 +149,7 @@ class ASensor:
             "suggested_display_precision": 1,
         }
 
-        ent: MqttEntityOptions = {  # type:ignore
+        ent: MqttEntityOptions = {
             "name": sensor.name,
             "state_topic": state_topic,
             "unique_id": f"{dev.id}_{sensor.id}",

@@ -39,28 +39,28 @@ jobs:
         id: release
         run: |
           sha="${{ github.sha }}"
-          
+
           # Default values
           environment="edge"
           version="${sha:0:7}"
-      
+
           # Check if it's a release event
           if [[ "${{ github.event_name }}" == "release" ]]; then
             version="${{ github.event.release.tag_name }}"  # Lowercase the tag name
             version="${version#v}"  # Remove 'v' prefix if present
-            
+
             environment="stable"
-            
+
             # Set environment to beta if it's a prerelease
             if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
               environment="beta"
             fi
           fi
-      
+
           # Output the environment and version
           echo "environment=${environment}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
-      
+
           # Log the outputs
           cat "$GITHUB_OUTPUT" >> $GITHUB_STEP_SUMMARY
   build:
@@ -78,7 +78,7 @@ jobs:
     steps:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v4
-      
+
       - name: Prepare Files for Build
         run: |
           mkdir -p hass-addon-sunsynk-multi/sunsynk
@@ -88,11 +88,11 @@ jobs:
       - name: Set up the correct base image based on platform
         run: |
           case "${{ matrix.platform }}" in
-            linux/amd64)  echo "BUILD_FROM=homeassistant/amd64-base-python:3.11-alpine3.18" >> $GITHUB_ENV ;;
-            linux/arm64)  echo "BUILD_FROM=homeassistant/aarch64-base-python:3.11-alpine3.18" >> $GITHUB_ENV ;;
-            linux/arm/v6) echo "BUILD_FROM=homeassistant/armhf-base-python:3.11-alpine3.18" >> $GITHUB_ENV ;;
-            linux/arm/v7) echo "BUILD_FROM=homeassistant/armv7-base-python:3.11-alpine3.18" >> $GITHUB_ENV ;;
-            linux/i386)   echo "BUILD_FROM=homeassistant/i386-base-python:3.11-alpine3.18" >> $GITHUB_ENV ;;
+            linux/amd64)  echo "BUILD_FROM=homeassistant/amd64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
+            linux/arm64)  echo "BUILD_FROM=homeassistant/aarch64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
+            linux/arm/v6) echo "BUILD_FROM=homeassistant/armhf-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
+            linux/arm/v7) echo "BUILD_FROM=homeassistant/armv7-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
+            linux/i386)   echo "BUILD_FROM=homeassistant/i386-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
           esac
 
       - name: Docker meta
@@ -110,8 +110,8 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v4
         with:
-          path: /tmp/.buildx-cache  # Cache path
-          key: ${{ runner.os }}-buildx-${{ github.sha }}  # Unique key for cache
+          path: /tmp/.buildx-cache # Cache path
+          key: ${{ runner.os }}-buildx-${{ github.sha }} # Unique key for cache
           restore-keys: |
             ${{ runner.os }}-buildx-
 
@@ -133,11 +133,11 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ./hass-addon-sunsynk-multi  # Specify the directory containing your Dockerfile
-          file: ./hass-addon-sunsynk-multi/Dockerfile  # Specify the Dockerfile path within the context
+          context: ./hass-addon-sunsynk-multi # Specify the directory containing your Dockerfile
+          file: ./hass-addon-sunsynk-multi/Dockerfile # Specify the Dockerfile path within the context
           platforms: ${{ matrix.platform }}
-          cache-from: type=local,src=/tmp/.buildx-cache  # Use cache for build
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max  # Save cache
+          cache-from: type=local,src=/tmp/.buildx-cache # Use cache for build
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max # Save cache
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
@@ -152,7 +152,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ env.SANITIZED_PLATFORM }}  # Use the sanitized platform name
+          name: digests-${{ env.SANITIZED_PLATFORM }} # Use the sanitized platform name
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -162,7 +162,7 @@ jobs:
         run: |
           mkdir -p outputs
           echo ${{ env.SANITIZED_PLATFORM }} >> outputs/${{ env.SANITIZED_PLATFORM }}.txt
-  
+
       - name: Artifact platform file for later
         uses: actions/upload-artifact@v3
         with:
@@ -218,7 +218,7 @@ jobs:
             "-t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }}"
             "-t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.environment }}"
           )
-          
+
           # Get the list of platforms from the build job output
           platforms="${{ steps.platforms_raw.outputs.value }}"
 
@@ -228,13 +228,13 @@ jobs:
             TAGS+=("-t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }}")
             TAGS+=("-t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.environment }}")
           done
-          
+
           # Join tags into a string
           TAGS_STRING=$(printf " %s" "${TAGS[@]}")
-          
+
           # Export the tags string to the environment for later use
           echo "TAGS_STRING=${TAGS_STRING}" >> $GITHUB_ENV
-          
+
           # Log the generated tags for debugging
           echo "Generated tags: ${TAGS_STRING}"
 
@@ -248,10 +248,10 @@ jobs:
         run: |
           # Inspect the image using the first tag from TAGS_STRING (without the leading '-t ' part)
           INSPECT_TAG=$(echo "${TAGS_STRING}" | awk '{print $2}')
-          
+
           # Log the tag being inspected
           echo "Inspecting image with tag: $INSPECT_TAG"
-          
+
           # Run the inspection
           docker buildx imagetools inspect $INSPECT_TAG
 
