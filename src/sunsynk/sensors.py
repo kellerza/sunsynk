@@ -100,6 +100,11 @@ class SensorDefinitions:
         return self.all["device_type"]
 
     @property
+    def protocol(self) -> Sensor:
+        """Get the device type."""
+        return self.all["protocol"]
+
+    @property
     def serial(self) -> Sensor:
         """Get the serial sensor."""
         return self.all["serial"]
@@ -198,11 +203,7 @@ class SerialSensor(Sensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the inverter serial number."""
-        val = ""
-        for b16 in regs:
-            val += chr(b16 >> 8)
-            val += chr(b16 & 0xFF)
-        return val
+        return "".join(chr(b16 >> 8) + chr(b16 & 0xFF) for b16 in regs)
 
 
 @attrs.define(slots=True, eq=False)
@@ -210,6 +211,8 @@ class EnumSensor(TextSensor):
     """Sensor with a set of enum values. Like a read-only SelectRWSensor"""
 
     options: dict[int, str] = attrs.field(factory=dict)
+    unknown: str | None = None
+    """Unknown value format string. Default to none, can include the register value as {}."""
     _warn: bool = True
 
     def available_values(self) -> list[str]:
@@ -221,6 +224,8 @@ class EnumSensor(TextSensor):
         regsm = self.masked(regs)
         res = self.options.get(regsm[0])
         if res is None:
+            if self.unknown:
+                return self.unknown.format(regsm[0])
             if self._warn:
                 _LOGGER.warning(
                     "%s: Unknown register value %s. "
@@ -262,7 +267,7 @@ class FaultSensor(TextSensor):
             for bit in range(16):
                 msk = 1 << bit
                 if msk & b16:
-                    msg = f"F{bit+off+1:02} " + faults.get(off + msk, "")
+                    msg = f"F{bit + off + 1:02} " + faults.get(off + msk, "")
                     err.append(msg.strip())
             off += 16
         return ", ".join(err)
@@ -314,7 +319,17 @@ class HVFaultSensor(TextSensor):
             for bit in range(16):
                 msk = 1 << bit
                 if msk & b16:
-                    msg = f"F{bit+off+1:02} " + faults.get(off + msk, "")
+                    msg = f"F{bit + off + 1:02} " + faults.get(off + msk, "")
                     err.append(msg.strip())
             off += 16
         return ", ".join(err)
+
+
+@attrs.define(slots=True, eq=False)
+class ProtocolVersionSensor(Sensor):
+    """Protocol version sensor."""
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Reg to value for communication protocol."""
+        val = regs[0]
+        return f"{val >> 8}.{val & 0xFF}"

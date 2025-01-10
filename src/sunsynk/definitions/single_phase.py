@@ -1,12 +1,7 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.definitions import (
-    DEVICE_TYPE,
-    PROG_CHARGE_OPTIONS,
-    PROG_MODE_OPTIONS,
-    SERIAL_SENSOR,
-)
+from sunsynk.definitions import COMMON, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
@@ -21,11 +16,10 @@ from sunsynk.sensors import (
     MathSensor,
     SDStatusSensor,
     Sensor,
-    SensorDefinitions,
     TempSensor,
 )
 
-SENSORS: SensorDefinitions = SensorDefinitions()
+SENSORS = COMMON.copy()
 
 ##########
 # Battery
@@ -155,16 +149,13 @@ SENSORS += (
 RATED_POWER = Sensor((16, 17), "Rated power", WATT, 0.1)
 
 SENSORS += (
-    DEVICE_TYPE,
     RATED_POWER,
-    SERIAL_SENSOR,
     FaultSensor((103, 104, 105, 106), "Fault"),
     InverterStateSensor(59, "Overall state"),
     SDStatusSensor(92, "SD Status", ""),  # type: ignore
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
-    # Sensor(194, "Grid Connected Status"),  # Remove in the future?
     BinarySensor(194, "Grid Connected"),
     SystemTimeRWSensor((22, 23, 24), "Date Time", unit=""),
 )

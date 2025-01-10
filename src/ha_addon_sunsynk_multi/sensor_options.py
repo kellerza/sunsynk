@@ -43,7 +43,7 @@ class SensorOption:
 class SensorOptions(dict[Sensor, SensorOption]):
     """A dict of sensors from the configuration."""
 
-    startup: set[Sensor] = attrs.field(factory=set)
+    startup: list[Sensor] = attrs.field(factory=list)
     _deps: set[Sensor] = attrs.field(factory=set)
 
     def _add_sensor(
@@ -71,7 +71,7 @@ class SensorOptions(dict[Sensor, SensorOption]):
             import_definitions()
         self.clear()
 
-        self.startup = {DEFS.device_type, DEFS.serial}
+        self.startup = [DEFS.device_type, DEFS.protocol, DEFS.serial]
         sensors_all = list(get_sensors(target=self, names=OPT.sensors))
         sensors_1st = list(get_sensors(target=self, names=OPT.sensors_first_inverter))
 

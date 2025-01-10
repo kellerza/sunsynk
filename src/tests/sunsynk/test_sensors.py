@@ -143,8 +143,7 @@ def test_all_groups() -> None:
 
     grplen = [len(i) for i in grp]
 
-    assert grplen[:1] == [6]
-    # assert grplen[-1:] == [1]
+    assert grplen[:1] == [7]
 
 
 def waste(groups: Iterable[list[int]]) -> Sequence[int]:

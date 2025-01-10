@@ -138,6 +138,8 @@ class AInverter:
             OPT.sensor_definitions,
         )
 
+        _LOGGER.info("Protocol version: %s", self.inv.state[DEFS.protocol])
+
         # Initial read for all sensors
         sensors = list(SOPT)
         _LOGGER.info("Reading all sensors %s", ", ".join(s.name for s in sensors))
@@ -167,7 +169,7 @@ class AInverter:
             # name=f"{OPT.manufacturer} AInverter {serial_nr}",
             name=self.opt.ha_prefix,
             # OPT.manufacturer,  # new option?
-            model=f"{int(self.rated_power/1000)}kW Inverter (**{serial_nr[-4:]})",
+            model=f"{int(self.rated_power / 1000)}kW Inverter (**{serial_nr[-4:]})",
             manufacturer=OPT.manufacturer,
         )
 
