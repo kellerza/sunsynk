@@ -1,11 +1,20 @@
 # Fault finding
 
-The addon follows the following process:
+## Startup process
 
-1. Load all your sensor definitions. The logs will show if you use any unknown or deprecated sensors
-2. Read the Inverter's serial number (and rated power)
+The addon follows the following startup process:
 
-    If this read is successful, it will display the serial number
+1. Load config, sensor definitions and schedules
+
+    The logs will show if you use any unknown or deprecated sensors, if you have anything wrong in your custom sensors, and the intended schdule for reading sensors.
+
+2. Connect to the Inverter
+
+    Connect and read the Inverter details (i.e. serial number). This is the first step to ensure the connection is working.
+
+    If this read fails, you need to follow the fault finding guide below. It could be a cabling issue, a configuration issue, or a hardware issue.
+
+    If successful, the only check is that you have the correct serial number in your config. The log will show:
 
     ```txt
     INFO    ############################################################
@@ -13,10 +22,15 @@ The addon follows the following process:
     INFO    ############################################################
     ```
 
-3. Connect to the MQQT server
-4. Publish the discovery data for Home Assistant, and also remove discovery data if required
+    If the device settings was read successfully, it will read all configured sensors to ensure you have some values at startup
 
-After which it will continue to publish sensor data.
+3. Connect to the MQTT server
+
+    Publish the discovery data for Home Assistant, and also remove discovery data if required
+
+    If this step fails, you will not see any entities in Home Assistant and you need to check your MQTT server settings.
+
+Once the startup is complete, the addon will continue to read & publish sensor data. During this process you will occasianally see read failures. As long as this does not happen on every read, you can probably continue using the addon, but can consider reducing sesnors, relaxing the read schedules, etc.
 
 If you fail to get a reply from the inverter, typically if step #2 fails, please check the following:
 
@@ -50,7 +64,7 @@ The hardware and cabling also has a big impact:
 - Re-crimp your RJ45 connector.
 - Use a good quality solid CAT5e/CAT6 cable.
 - Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking.
-  - It could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal platic RJ45 connector on the inverter side.
+  - It could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal plastic RJ45 connector on the inverter side.)
   - While fault finding use as short as possible cable, completely outside any sprague/trunking etc.
 
 ## (d) Check line voltage / termination resistor

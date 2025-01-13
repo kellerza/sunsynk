@@ -15,8 +15,8 @@ Raspberry Pi without having to install Home Assistant on it.
 In these example commands we prefix the `docker-compose build` commands with the
 environment variable definition `BUILD_FROM=...`,
 which specifies which base image is used. For a Raspberry Pi you would need to
-use `BUILD_FROM=homeassistant/armhf-base-python:3.9`, and for a 64bit PC you
-would use `BUILD_FROM=homeassistant/amd64-base-python:3.9`.
+use `BUILD_FROM=ghcr.io/home-assistant/armhf-base-python:3.12`, and for a 64bit PC you
+would use `BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12`.
 A list of available base images can be found in
 `hass-addon-sunsynk-multi/build.yaml` and `hass-addon-mbusd/build.yaml`.
 Use the one that is most appropriate for your host computer.
@@ -125,11 +125,6 @@ docker run -d --name sunsynk-multi \
 ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
 ```
 
-### Important Information on Compatibility
-
-You should use the `ghcr.io/kellerza/hass-addon-sunsynk-multi` image without specifying the platform, as the image is supported for all platforms. However, it is backwards compatible, meaning that even if you use `ghcr.io/kellerza/hass-addon-sunsynk-multi/armv6` on an x86 PC, it will still work. This offers flexibility when pulling images for different platforms.
-
-
 ## Using Environment Variables with Docker Compose
 
 If you prefer to use environment variables instead of an `options.yaml` file, you can configure the Sunsynk Multi service entirely with environment variables. All configuration options that would normally be set in the `options.yaml` file can be set as environment variables.
@@ -140,10 +135,10 @@ Here is an example of how to run the Sunsynk Multi service using environment var
 
 ```yaml
 services:
-  sunsynk-mult-amd64:
+  sunsynk-multi-amd64:
     restart: unless-stopped
     profiles: ['sunsynk-amd64']
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi/amd64:stable
+    image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
     environment:
       MQTT_HOST: mqtt
       MQTT_PORT: 1883
@@ -164,12 +159,12 @@ services:
 
 ### Explanation of Environment Variables
 
-- **MQTT_HOST**: The MQTT broker host.
-- **MQTT_PORT**: The MQTT broker port (typically 1883).
-- **MQTT_USERNAME**: The username for the MQTT broker.
-- **MQTT_PASSWORD**: The password for the MQTT broker.
-- **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes when using the `s6` init system.
-- **DRIVER**: The driver to use for modbus communication (e.g., `pymodbus`, `umodbus`).
-- **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values for `SERIAL_NR`, `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
-- **SCHEDULES**: A JSON string representing the schedules for sensor reading and reporting.
-- **Other Configuration Options**: Any other configuration option that is typically defined in `options.yaml` can be passed as an environment variable. The keys from `options.yaml` should be written in uppercase and underscores (e.g., `SENSOR_DEFINITIONS`, `READ_ALLOW_GAP`, `SENSORS`, etc.).
+* **MQTT_HOST**: The MQTT broker host.
+* **MQTT_PORT**: The MQTT broker port (typically 1883).
+* **MQTT_USERNAME**: The username for the MQTT broker.
+* **MQTT_PASSWORD**: The password for the MQTT broker.
+* **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes when using the `s6` init system.
+* **DRIVER**: The driver to use for modbus communication (e.g., `pymodbus`, `umodbus`).
+* **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values for `SERIAL_NR`, `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
+* **SCHEDULES**: A JSON string representing the schedules for sensor reading and reporting.
+* **Other Configuration Options**: Any other configuration option that is typically defined in `options.yaml` can be passed as an environment variable. The keys from `options.yaml` should be written in uppercase and underscores (e.g., `SENSOR_DEFINITIONS`, `READ_ALLOW_GAP`, `SENSORS`, etc.).

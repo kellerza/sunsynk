@@ -10,6 +10,7 @@ assignees: ''
 Existing sensor definitions can be found [here](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions/). You can test your own definitions using [custom sensors](https://kellerza.github.io/sunsynk/reference/mysensors)
 
 ### Your environment
+
 - Home Assistant version: __
 - Addon:
   - Name: **multi** / **edge**
@@ -20,7 +21,7 @@ Existing sensor definitions can be found [here](https://github.com/kellerza/suns
   - Firmware: 9.0.2.6
 - Adaptor details:
   - RS485/RS232
-  - 
+
 ### Describe the issue/bug and what you expect
 
 A clear and concise description of what the bug is.

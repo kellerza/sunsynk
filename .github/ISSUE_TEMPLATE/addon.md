@@ -19,10 +19,10 @@ A clear and concise description of what you expected to happen.
 
 ### Your environment
 
-- Home Assistant version: 2023.8.x
+- Home Assistant version: 2025.1.x
 - Addon:
   - Name: sunsynk-multi
-  - Version: 2023-08-17
+  - Version: 2025-01-11
 - Inverter:
   - Make: Sunsynk/Deye/Sol-Ark/...
   - Model: \_\_

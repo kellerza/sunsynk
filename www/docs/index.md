@@ -24,9 +24,9 @@ features:
   details: |
     Enable the Home Assistant Energy Management feature with data from your inverter.
 - icon: "⚡"
-  title: Visualise Power Flow
+  title: Visualize Power Flow
   details: |
-    Visualise the immediate power flow in your system. Reaction time as fast as 1 second.
+    Visualize the immediate power flow in your system. Reaction time as fast as 1 second.
 - icon: "⚙️"
   title: Inverter Settings
   details: |
@@ -38,5 +38,5 @@ features:
 
 
 
-footer: Apache 2.0 Licensed | Copyright © 2021-2023 Johann Kellerman
+footer: Apache 2.0 Licensed | Copyright © 2021-2025 Johann Kellerman
 ---

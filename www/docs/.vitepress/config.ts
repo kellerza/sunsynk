@@ -131,7 +131,7 @@ export default defineConfig({
 
     footer: {
       message: "",
-      copyright: "Apache 2.0 | Copyright © 2021-2023 Johann Kellerman",
+      copyright: "Apache 2.0 | Copyright © 2021-2025 Johann Kellerman",
     },
 
     algolia: {
