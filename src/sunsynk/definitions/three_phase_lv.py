@@ -6,6 +6,7 @@ from sunsynk.sensors import (
     Sensor,
     TempSensor,
 )
+from sunsynk.rwsensors import SelectRWSensor
 
 SENSORS = SENSORS.copy()
 
@@ -26,4 +27,30 @@ SENSORS.deprecated.update(
         "battery_activate": "battery_wake_up",
         "grid_connected_status": "grid_status",
     }
+)
+
+lv_battery_manufacturers = {
+    0: "HereYin",
+    1: "PYLON",
+    2: "SOLAX",
+    3: "DYNESS_L",
+    4: "CCGX",
+    5: "Alpha_ESS",
+    6: "SUNGO_CAN",
+    7: "VISION_CAN",
+    8: "WATTSONIC_CAN",
+    9: "KUNLAN",
+    10: "GSEnergy",
+    11: "GS_HUB",
+    12: "BYD_LV",
+    13: "AOBO",
+    14: "DEYE",
+    15: "CFE",
+    16: "DMEGC",
+    17: "UZENERGY",
+    18: "GROWATT",
+}
+
+SENSORS += (
+    SelectRWSensor(229, "Battery 1 Manufacturer", options=lv_battery_manufacturers),
 )

@@ -29,10 +29,10 @@ SENSORS = COMMON.copy()
 # Inverter Power
 #################
 SENSORS += (
-    Sensor(636, "Inverter power", WATT, -1),
-    Sensor(633, "Inverter L1 power", WATT, -1),
-    Sensor(634, "Inverter L2 power", WATT, -1),
-    Sensor(635, "Inverter L3 power", WATT, -1),
+    Sensor((633, 691), "Inverter L1 power", WATT, -1),
+    Sensor((634, 692), "Inverter L2 power", WATT, -1),
+    Sensor((635, 693), "Inverter L3 power", WATT, -1),
+    Sensor((636, 694), "Inverter power", WATT, -1),
     Sensor(627, "Inverter L1 voltage", VOLT, 0.1),
     Sensor(628, "Inverter L2 voltage", VOLT, 0.1),
     Sensor(629, "Inverter L3 voltage", VOLT, 0.1),
@@ -47,39 +47,57 @@ SENSORS += (
 #############
 SENSORS += (
     Sensor(609, "Grid frequency", "Hz", 0.01),
-    Sensor(625, "Grid power", WATT, -1),  # gridTotalPac
-    Sensor(622, "Grid L1 power", WATT, -1),  # aPower
-    Sensor(623, "Grid L2 power", WATT, -1),  # bPower
-    Sensor(624, "Grid L3 power", WATT, -1),  # cPower
+    Sensor((622, 687), "Grid L1 power", WATT, -1),  # aPower
+    Sensor((623, 688), "Grid L2 power", WATT, -1),  # bPower
+    Sensor((624, 689), "Grid L3 power", WATT, -1),  # cPow
+    Sensor((625, 690), "Grid power", WATT, -1),  # gridTotalPac
     Sensor(598, "Grid L1 voltage", VOLT, 0.1),  # aLineVolt
     Sensor(599, "Grid L2 voltage", VOLT, 0.1),  # bLineVolt
     Sensor(600, "Grid L3 voltage", VOLT, 0.1),  # cLineVolt
-    Sensor(604, "A Phase Power on the Inner Side of the Grid", "W"),
-    Sensor(605, "B Phase Power on the Inner Side of the Grid", "W"),
-    Sensor(606, "C Phase Power on the Inner Side of the Grid", "W"),
-    Sensor(607, "Total Active Power from Side to Side of the Grid", "W", -1),
-    Sensor(608, "Grid Side - Inside Total Apparent Power", "W"),
+    Sensor((604, 700), "A Phase Power on the Inner Side of the Grid", "W", -1),
+    Sensor((605, 701), "B Phase Power on the Inner Side of the Grid", "W", -1),
+    Sensor((606, 702), "C Phase Power on the Inner Side of the Grid", "W", -1),
+    Sensor((607, 703), "Total Active Power from Side to Side of the Grid", "W", -1),
+    Sensor((608, 704), "Grid Side - Inside Total Apparent Power", "W", -1),
     MathSensor(
-        (610, 611, 612), "Grid current", AMPS, factors=(0.01, 0.01, 0.01)
+        (610, 611, 612), "Grid current", AMPS, factors=(-0.01, -0.01, -0.01)
     ),  # iac1,iac2,iac3
-    Sensor(616, "Grid CT L1 power", WATT, -1),  # aPower
-    Sensor(617, "Grid CT L2 power", WATT, -1),  # bPower
-    Sensor(618, "Grid CT L3 power", WATT, -1),  # cPower
-    Sensor(619, "Grid CT power", WATT, -1),  # totalPower
+    Sensor((616, 705), "Grid CT L1 power", WATT, -1),  # aPower
+    Sensor((617, 706), "Grid CT L2 power", WATT, -1),  # bPower
+    Sensor((618, 707), "Grid CT L3 power", WATT, -1),  # cPower
+    Sensor((619, 708), "Grid CT power", WATT, -1),  # totalPower
+    MathSensor(
+        (613, 614, 615), "Grid CT current", AMPS, factors=(-0.01, -0.01, -0.01)
+    ),  # iac1,iac2,iac3
 )
 
 #############
 # Load Power
 #############
 SENSORS += (
-    Sensor(653, "Load power", WATT, -1),
-    Sensor(650, "Load L1 power", WATT, -1),
-    Sensor(651, "Load L2 power", WATT, -1),
-    Sensor(652, "Load L3 power", WATT, -1),
+    Sensor((650, 656), "Load L1 power", WATT, -1),
+    Sensor((651, 657), "Load L2 power", WATT, -1),
+    Sensor((652, 658), "Load L3 power", WATT, -1),
+    Sensor((653, 659), "Load power", WATT, -1),
     Sensor(644, "Load L1 voltage", VOLT, 0.1),
     Sensor(645, "Load L2 voltage", VOLT, 0.1),
     Sensor(646, "Load L3 voltage", VOLT, 0.1),
-    Sensor(655, "Load frequency", "Hz", 0.01),
+)
+
+##############
+# Gen Power
+##############
+SENSORS += (
+    Sensor(661, "Gen L1 voltage", VOLT, 0.1),
+    Sensor(662, "Gen L2 voltage", VOLT, 0.1),
+    Sensor(663, "Gen L3 voltage", VOLT, 0.1),
+    Sensor((664, 668), "Gen L1 power", WATT, -1),
+    Sensor((665, 669), "Gen L2 power", WATT, -1),
+    Sensor((666, 670), "Gen L3 power", WATT, -1),
+    Sensor((667, 671), "Gen power", WATT, -1),
+    Sensor(671, "Gen L1 current", AMPS, -0.01),
+    Sensor(672, "Gen L2 current", AMPS, -0.01),
+    Sensor(673, "Gen L3 current", AMPS, -0.01),
 )
 
 ##############
@@ -125,20 +143,6 @@ SENSORS += (  # Deye 3 Phase  only has 2 MPPT)
     Sensor(675, "PV4 power", WATT, -1),
     Sensor(682, "PV4 voltage", VOLT, 0.1),
     Sensor(683, "PV4 current", AMPS, 0.1),
-)
-
-
-###################
-# Power on Outputs (aka GEN - which has multiple modes on the deye 3 Phase )
-###################
-SENSORS += (
-    Sensor(661, "Gen L1 volts", VOLT, 0.1),
-    Sensor(662, "Gen L2 volts", VOLT, 0.1),
-    Sensor(663, "Gen L3 volts", VOLT, 0.1),
-    Sensor(664, "Gen L1 power", WATT, -1),
-    Sensor(665, "Gen L2 power", WATT, -1),
-    Sensor(666, "Gen L3 power", WATT, -1),
-    Sensor(667, "Gen power", WATT, -1),
 )
 
 ###################
@@ -195,6 +199,7 @@ SENSORS += (
 # Settings
 ###########
 SENSORS += (
+    SwitchRWSensor(80, "Inverter Power", on=1),  # 0=off, 1=on
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=240),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
     SwitchRWSensor(130, "Grid Charge enabled", on=1),
@@ -223,11 +228,13 @@ SENSORS += (
         options={0: "Use Battery Voltage", 1: "Lithium (Use BMS)", 2: "No Battery"},
     ),
     SelectRWSensor(
+        # according to docs, 0 is enabled for this one, but reported to be wrong:
+        # https://github.com/kellerza/sunsynk/issues/381#issuecomment-2568995917
         112,
         "Battery Wake Up",
-        options={0: "Enabled", 1 << 0: "Disabled"},
+        options={0: "Disabled", 1 << 0: "Enabled"},
         bitmask=1 << 0,
-    ),  # according to docs, 0 is enabled for this one
+    ),
     NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
     Sensor(114, "Battery Charge Efficiency", "%", 0.1),
     SelectRWSensor(
@@ -533,6 +540,7 @@ SENSORS += (  ### no idea why there is a "no work" option, but it's in the spec
         },
         bitmask=0b11 << 14,
     ),
+        SwitchRWSensor(235,"Track Grid Phase",on=1),
     NumberRWSensor(209, "UPS delay time", "s"),
 )
 ############
