@@ -267,7 +267,7 @@ class FaultSensor(TextSensor):
             for bit in range(16):
                 msk = 1 << bit
                 if msk & b16:
-                    msg = f"F{bit+off+1:02} " + faults.get(off + msk, "")
+                    msg = f"F{bit + off + 1:02} " + faults.get(off + msk, "")
                     err.append(msg.strip())
             off += 16
         return ", ".join(err)
