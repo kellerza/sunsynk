@@ -164,6 +164,7 @@ SENSORS += (
 # Settings
 ###########
 SENSORS += (
+    SwitchRWSensor(43, "Inverter Power", on=1),  # 0=off, 1=on
     Sensor(200, "Control Mode"),
     SwitchRWSensor(232, "Grid Charge enabled", "", bitmask=1),
     SelectRWSensor(
