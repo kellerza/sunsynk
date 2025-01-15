@@ -309,11 +309,7 @@ SENSORS += (
     ),
 )
 
-SENSORS += SelectRWSensor(
-    142,
-    "Load Limit",
-    options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
-)
+SENSORS += SwitchRWSensor(141, "Priority Load")
 
 PROG1_TIME = TimeRWSensor(148, "Prog1 Time")
 PROG2_TIME = TimeRWSensor(149, "Prog2 Time", min=PROG1_TIME)
@@ -549,14 +545,7 @@ SENSORS += (  ### no idea why there is a "no work" option, but it's in the spec
         },
         bitmask=0b11 << 14,
     ),
-        SelectRWSensor(
-        235,
-        "Track Grid Phase",
-        options={
-            0: "Disable",
-            1: "Enable",
-        },
-    ),
+        SwitchRWSensor(235,"Track Grid Phase",on=1),
     NumberRWSensor(209, "UPS delay time", "s"),
 )
 ############
