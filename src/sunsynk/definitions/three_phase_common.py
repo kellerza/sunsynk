@@ -298,18 +298,13 @@ SENSORS += (
 # System program
 #################
 
-SENSORS += (
-    SelectRWSensor(
-        141,
-        "Priority Load",
-        options={
-            0: "Battery First",
-            1: "Load First",
-        },
-    ),
-)
-
 SENSORS += SwitchRWSensor(141, "Priority Load")
+
+SENSORS += SelectRWSensor(
+    142,
+    "Load Limit",
+    options={0: "Allow Export", 1: "Essentials", 2: "Zero Export"},
+)
 
 PROG1_TIME = TimeRWSensor(148, "Prog1 Time")
 PROG2_TIME = TimeRWSensor(149, "Prog2 Time", min=PROG1_TIME)
