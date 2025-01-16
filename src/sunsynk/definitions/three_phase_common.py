@@ -199,7 +199,7 @@ SENSORS += (
 # Settings
 ###########
 SENSORS += (
-    SwitchRWSensor(80, "Inverter Power", on=1),  # 0=off, 1=on
+    SwitchRWSensor(80, "Inverter enabled", on=1),  # 0=off, 1=on
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=240),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
     SwitchRWSensor(130, "Grid Charge enabled", on=1),
