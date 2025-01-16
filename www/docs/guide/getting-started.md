@@ -26,6 +26,6 @@ The recommended version of the add-on. It supports multiple inverters and custom
 This is the recommended version of the add-on!
 :::
 
-###  Sunsynk/Deye Inverter Add-on (edge/dev)
+### Sunsynk/Deye Inverter Add-on (edge/dev)
 
 The developer version of the add-on. Contains the latest changes comitted to the Github repository.

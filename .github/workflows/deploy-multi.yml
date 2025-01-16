@@ -13,6 +13,12 @@ on:
   #   types:
   #     - completed
   workflow_dispatch: {}
+  push:
+    paths:
+      - ".github/workflows/deploy-multi.yml"
+      - "src/**"
+      - "hass-addon-sunsynk-edge/**"
+      - "hass-addon-sunsynk-multi/**"
 
 jobs:
   # https://github.com/hassio-addons/workflows/blob/main/.github/workflows/addon-deploy.yaml
