@@ -14,6 +14,7 @@ from sunsynk.helpers import (
     int_round,
     signed,
     slug,
+    make_32bit,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,11 +39,14 @@ class Sensor:
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
         regs = self.masked(regs)
-        val: NumType = regs[0]
-        if len(regs) > 1:
-            val += regs[1] << 16
-        if self.factor < 0:  # Indicates this register is signed
-            val = signed(val, bits=16 * len(regs))
+        if len(regs) == 1:
+            val = regs[0]
+            if self.factor < 0:  # Indicates this register is signed
+                val = signed(val, bits=16)
+        elif len(regs) == 2:
+            val = make_32bit(regs[0], regs[1], signed=self.factor < 0)
+        else:
+            raise ValueError(f"Unsupported register length: {len(regs)}")
         val = int_round(val * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val

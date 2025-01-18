@@ -2,7 +2,8 @@
 
 import logging
 import math
-from typing import Any
+from typing import Any, Tuple
+import struct
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,13 +50,20 @@ def as_num(val: ValType) -> float | int:
 
 
 def signed(val: int | float, bits: int = 16) -> int | float:
-    """Convert value to signed int."""
+    """Convert value to signed int using struct packing."""
+    if isinstance(val, float):
+        return val
+
+    if bits == 16:
+        return struct.unpack('h', struct.pack('H', val))[0]
+    if bits == 32:
+        return struct.unpack('i', struct.pack('I', val))[0]
+
+    # Fallback for non-standard bit lengths
     sign_bit = 1 << (bits - 1)
     if val < sign_bit:
         return val
     return val - (1 << bits)
-    # 16-bit only (old)
-    # return val if val <= 0x7FFF else val - 0x10000
 
 
 def slug(name: str) -> str:
@@ -125,3 +133,15 @@ def hex_str(regs: RegType, address: RegType | None = None) -> str:
     if address:
         res = (f"{k}={v}" for k, v in zip(address, res, strict=True))
     return f"{{{' '.join(res)}}}"
+
+
+def make_32bit(low16_value: int, high16_value: int, signed: bool = True) -> int:
+    """Convert two 16-bit registers into a 32-bit value using struct packing."""
+    fmt = '<i' if signed else '<I'
+    return struct.unpack(fmt, struct.pack('<2H', low16_value, high16_value))[0]
+
+
+def split_to_16bit(value: int, signed: bool = True) -> Tuple[int, int]:
+    """Split a 32-bit value into two 16-bit values using struct unpacking."""
+    fmt = '<i' if signed else '<I'
+    return struct.unpack('<2H', struct.pack(fmt, value))
