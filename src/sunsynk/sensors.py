@@ -136,7 +136,7 @@ class MathSensor(Sensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Calculate the math value."""
-        val = int_round(sum(signed(i) * s for i, s in zip(regs, self.factors)))
+        val = int_round(sum(unpack_value((i,), signed=True) * s for i, s in zip(regs, self.factors)))
         if self.absolute and val < 0:
             val = -val
         if self.no_negative and val < 0:

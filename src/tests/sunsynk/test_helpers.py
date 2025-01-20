@@ -55,7 +55,9 @@ def test_signed32bits() -> None:
     """Test 32-bit signed value conversion."""
     assert unpack_value((0xFFFF, 0x7FFF), signed=True) == 0x7FFFFFFF
     assert unpack_value((0xFFFF, 0xFFFF), signed=True) == -1
-    assert unpack_value((0x0000, 0x8000), signed=True) == 0x80000000 - (1 << 32)  # -2147483648
+    assert unpack_value((0x0000, 0x8000), signed=True) == 0x80000000 - (
+        1 << 32
+    )  # -2147483648
 
 
 def test_signeds() -> None:
