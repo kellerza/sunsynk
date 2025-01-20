@@ -1,18 +1,17 @@
 """Test helpers."""
 
-import pytest
-
 from sunsynk.helpers import (
     SSTime,
     as_num,
     ensure_tuple,
     hex_str,
     int_round,
-    patch_bitmask,
     pack_value,
+    patch_bitmask,
     unpack_value,
 )
 from sunsynk.sensors import Sensor
+import pytest
 
 
 def test_as_num(caplog: pytest.LogCaptureFixture) -> None:
@@ -109,11 +108,9 @@ def test_pack_unpack() -> None:
     assert pack_value(-1, bits=16, signed=True) == (0xFFFF,)
     assert pack_value(32767, bits=16, signed=True) == (0x7FFF,)
     assert pack_value(65535, bits=16, signed=False) == (0xFFFF,)
-    
     # Test 32-bit values
     assert pack_value(-1, bits=32, signed=True) == (0xFFFF, 0xFFFF)
     assert pack_value(0x7FFFFFFF, bits=32, signed=True) == (0xFFFF, 0x7FFF)
-    
     # Test round-trip
     val = -12345
     assert unpack_value(pack_value(val, bits=16, signed=True), signed=True) == val
