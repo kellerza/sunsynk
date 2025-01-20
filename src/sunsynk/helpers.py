@@ -26,9 +26,15 @@ def pack_value(value: int, bits: int = 16, signed: bool = True) -> RegType:
         For 32-bit: tuple of (low, high) register values
     """
     if bits == 16:
+        if not signed and value < 0:
+            # Convert negative value to two's complement for unsigned
+            value = value + (1 << 16)
         fmt = 'h' if signed else 'H'
         return struct.unpack('H', struct.pack(fmt, value))
     if bits == 32:
+        if not signed and value < 0:
+            # Convert negative value to two's complement for unsigned
+            value = value + (1 << 32)
         fmt = 'i' if signed else 'I'
         return struct.unpack('2H', struct.pack(fmt, value))
     raise ValueError(f"Unsupported number of bits: {bits}")
