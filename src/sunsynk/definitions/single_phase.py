@@ -311,9 +311,9 @@ SENSORS += (
 #############
 # Inverter settings
 #############
-SENSORS += NumberRWSensor(230, "Grid Charge Battery current", AMPS, min=0, max=185)
-SENSORS += NumberRWSensor(210, "Battery Max Charge current", AMPS, min=0, max=185)
-SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max=185)
+SENSORS += NumberRWSensor(230, "Grid Charge Battery current", AMPS, min=0, max=290)
+SENSORS += NumberRWSensor(210, "Battery Max Charge current", AMPS, min=0, max=290)
+SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max=290)
 
 
 #############
