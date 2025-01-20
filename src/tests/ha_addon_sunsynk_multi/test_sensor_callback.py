@@ -41,7 +41,9 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
             20: SensorRun(next_run=0, sensors={TEST1[1]}),
         }
 
+        assert ist.inv.connect.call_count == 0  # type: ignore
         await mycb.callback(1)
+        assert ist.inv.connect.call_count == 1  # type: ignore
 
         assert ist.read_sensors.call_args_list == [  # type: ignore
             call(
