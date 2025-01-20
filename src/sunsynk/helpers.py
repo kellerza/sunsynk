@@ -13,6 +13,46 @@ RegType = tuple[int, ...]
 NumType = float | int
 
 
+def pack_value(value: int, bits: int = 16, signed: bool = True) -> int | tuple[int, int]:
+    """Pack a value into register format.
+    
+    Args:
+        value: The value to pack
+        bits: Number of bits (16 or 32)
+        signed: Whether the value should be treated as signed
+    
+    Returns:
+        For 16-bit: single register value
+        For 32-bit: tuple of (low, high) register values
+    """
+    if bits == 16:
+        fmt = 'h' if signed else 'H'
+        return struct.unpack('H', struct.pack(fmt, value))[0]
+    if bits == 32:
+        fmt = 'i' if signed else 'I'
+        return struct.unpack('2H', struct.pack(fmt, value))
+    raise ValueError(f"Unsupported number of bits: {bits}")
+
+
+def unpack_value(regs: RegType, signed: bool = True) -> int:
+    """Unpack register value(s) into an integer.
+    
+    Args:
+        regs: Register values (1 or 2 registers)
+        signed: Whether to treat as signed value
+    
+    Returns:
+        Unpacked integer value
+    """
+    if len(regs) == 1:
+        fmt = 'h' if signed else 'H'
+        return struct.unpack(fmt, struct.pack('H', regs[0]))[0]
+    if len(regs) == 2:
+        fmt = 'i' if signed else 'I'
+        return struct.unpack(fmt, struct.pack('2H', regs[0], regs[1]))[0]
+    raise ValueError(f"Unsupported number of registers: {len(regs)}")
+
+
 def ensure_tuple(val: Any) -> tuple[int, ...]:
     """Return a tuple."""
     if isinstance(val, tuple):
@@ -49,26 +89,17 @@ def as_num(val: ValType) -> float | int:
     return 0
 
 
-def signed(val: int | float, bits: int = 16) -> int | float:
-    """Convert value to signed int using struct packing."""
-    if isinstance(val, float):
-        return val
-
-    if bits == 16:
-        return struct.unpack('h', struct.pack('H', val))[0]
-    if bits == 32:
-        return struct.unpack('i', struct.pack('I', val))[0]
-
-    # Fallback for non-standard bit lengths
-    sign_bit = 1 << (bits - 1)
-    if val < sign_bit:
-        return val
-    return val - (1 << bits)
-
-
 def slug(name: str) -> str:
     """Create a slug."""
     return name.lower().replace(" ", "_").replace("-", "_")
+
+
+def hex_str(regs: RegType, address: RegType | None = None) -> str:
+    """Convert register values to hex strings."""
+    res = (f"0x{r:04x}" for r in regs)
+    if address:
+        res = (f"{k}={v}" for k, v in zip(address, res, strict=True))
+    return f"{{{' '.join(res)}}}"
 
 
 class SSTime:
@@ -125,23 +156,3 @@ class SSTime:
 def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
     """Combine bitmask values."""
     return (patch & bitmask) + (value & (0xFFFF - bitmask))
-
-
-def hex_str(regs: RegType, address: RegType | None = None) -> str:
-    """Convert register values to hex strings."""
-    res = (f"0x{r:04x}" for r in regs)
-    if address:
-        res = (f"{k}={v}" for k, v in zip(address, res, strict=True))
-    return f"{{{' '.join(res)}}}"
-
-
-def make_32bit(low16_value: int, high16_value: int, signed: bool = True) -> int:
-    """Convert two 16-bit registers into a 32-bit value using struct packing."""
-    fmt = '<i' if signed else '<I'
-    return struct.unpack(fmt, struct.pack('<2H', low16_value, high16_value))[0]
-
-
-def split_to_16bit(value: int, signed: bool = True) -> Tuple[int, int]:
-    """Split a 32-bit value into two 16-bit values using struct unpacking."""
-    fmt = '<i' if signed else '<I'
-    return struct.unpack('<2H', struct.pack(fmt, value))

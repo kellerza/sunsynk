@@ -9,7 +9,15 @@ from typing import Callable, Generator
 import attrs
 from mqtt_entity.utils import BOOL_OFF, BOOL_ON
 
-from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num, hex_str, split_to_16bit
+from sunsynk.helpers import (
+    NumType,
+    RegType,
+    SSTime,
+    ValType,
+    as_num,
+    hex_str,
+    pack_value,
+)
 from sunsynk.sensors import Sensor
 
 _LOGGER = logging.getLogger(__name__)
@@ -73,12 +81,11 @@ class NumberRWSensor(RWSensor):
         minv = resolve_num(resolve, self.min, 0)
         maxv = resolve_num(resolve, self.max, 100)
         val = int(max(minv, min(maxv, fval)) / abs(self.factor))
+        
         if len(self.address) == 1:
-            if val < 0:
-                val = 0x10000 + val
-            return self.reg(val)
+            return self.reg(pack_value(val, bits=16, signed=self.factor < 0))
         if len(self.address) == 2:
-            low, high = split_to_16bit(val, signed=self.factor < 0)
+            low, high = pack_value(val, bits=32, signed=self.factor < 0)  # type: ignore
             return self.reg(low, high)
         raise NotImplementedError(f"Address length not supported: {self.address}")
 
