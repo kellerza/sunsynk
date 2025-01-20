@@ -38,7 +38,7 @@ class Sensor:
         """Return the value from the registers."""
         regs = self.masked(regs)
         val = unpack_value(regs, signed=self.factor < 0)
-        val = int_round(val * abs(self.factor))
+        val = int_round(float(val) * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
 
