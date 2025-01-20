@@ -82,12 +82,7 @@ class NumberRWSensor(RWSensor):
         maxv = resolve_num(resolve, self.max, 100)
         val = int(max(minv, min(maxv, fval)) / abs(self.factor))
         
-        if len(self.address) == 1:
-            return self.reg(pack_value(val, bits=16, signed=self.factor < 0))
-        if len(self.address) == 2:
-            low, high = pack_value(val, bits=32, signed=self.factor < 0)  # type: ignore
-            return self.reg(low, high)
-        raise NotImplementedError(f"Address length not supported: {self.address}")
+        return self.reg(*pack_value(val, bits=len(self.addrees)*16, signed=self.factor < 0))
 
 
 @attrs.define(slots=True, eq=False)

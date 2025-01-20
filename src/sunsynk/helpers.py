@@ -13,7 +13,7 @@ RegType = tuple[int, ...]
 NumType = float | int
 
 
-def pack_value(value: int, bits: int = 16, signed: bool = True) -> int | tuple[int, int]:
+def pack_value(value: int, bits: int = 16, signed: bool = True) -> RegType:
     """Pack a value into register format.
     
     Args:
@@ -27,7 +27,7 @@ def pack_value(value: int, bits: int = 16, signed: bool = True) -> int | tuple[i
     """
     if bits == 16:
         fmt = 'h' if signed else 'H'
-        return struct.unpack('H', struct.pack(fmt, value))[0]
+        return struct.unpack('H', struct.pack(fmt, value))
     if bits == 32:
         fmt = 'i' if signed else 'I'
         return struct.unpack('2H', struct.pack(fmt, value))
@@ -102,6 +102,11 @@ def hex_str(regs: RegType, address: RegType | None = None) -> str:
     return f"{{{' '.join(res)}}}"
 
 
+def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
+    """Combine bitmask values."""
+    return (patch & bitmask) + (value & (0xFFFF - bitmask))
+
+
 class SSTime:
     """Deals with inverter time format conversion complexities."""
 
@@ -151,8 +156,3 @@ class SSTime:
             self.minutes = int(hours) * 60 + int(minutes)
         except ValueError:
             _LOGGER.warning("Invalid time string: %s (expected hh:mm)", value)
-
-
-def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
-    """Combine bitmask values."""
-    return (patch & bitmask) + (value & (0xFFFF - bitmask))
