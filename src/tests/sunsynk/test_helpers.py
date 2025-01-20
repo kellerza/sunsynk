@@ -1,5 +1,7 @@
 """Test helpers."""
 
+import pytest
+
 from sunsynk.helpers import (
     SSTime,
     as_num,
@@ -11,7 +13,6 @@ from sunsynk.helpers import (
     unpack_value,
 )
 from sunsynk.sensors import Sensor
-import pytest
 
 
 def test_as_num(caplog: pytest.LogCaptureFixture) -> None:
