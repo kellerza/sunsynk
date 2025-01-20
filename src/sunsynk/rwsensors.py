@@ -77,6 +77,8 @@ class NumberRWSensor(RWSensor):
 
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
+        if not self.address:
+            raise NotImplementedError("Cannot write to a sensor with no address")
         fval = float(value)  # type:ignore
         minv = resolve_num(resolve, self.min, 0)
         maxv = resolve_num(resolve, self.max, 100)
@@ -180,6 +182,12 @@ class SwitchRWSensor(RWSensor):
 class SystemTimeRWSensor(RWSensor):
     """Read & write time sensor."""
 
+    def __attrs_post_init__(self) -> None:
+        """Run post init."""
+        super().__attrs_post_init__()
+        if len(self.address) != 3:
+            raise ValueError("SystemTimeRWSensor requires exactly 3 registers")
+
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
         # pylint: disable=invalid-name
@@ -245,6 +253,8 @@ class TimeRWSensor(RWSensor):
 
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
+        if not self.address:
+            raise NotImplementedError("Cannot write to a sensor with no address")
         return self.reg(SSTime(string=str(value)).reg_value)
 
     @staticmethod
