@@ -9,6 +9,7 @@ import attrs
 from sunsynk.helpers import (
     RegType,
     ValType,
+    NumType,
     ensure_tuple,
     int_round,
     slug,
@@ -37,7 +38,7 @@ class Sensor:
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
         regs = self.masked(regs)
-        val = unpack_value(regs, signed=self.factor < 0)
+        val: NumType = unpack_value(regs, signed=self.factor < 0)
         val = int_round(float(val) * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
