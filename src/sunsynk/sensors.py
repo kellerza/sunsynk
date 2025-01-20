@@ -7,7 +7,6 @@ import logging
 import attrs
 
 from sunsynk.helpers import (
-    NumType,
     RegType,
     ValType,
     ensure_tuple,

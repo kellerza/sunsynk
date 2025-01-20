@@ -2,7 +2,7 @@
 
 import logging
 import math
-from typing import Any, Tuple
+from typing import Any
 import struct
 
 _LOGGER = logging.getLogger(__name__)
