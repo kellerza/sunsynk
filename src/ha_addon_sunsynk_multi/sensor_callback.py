@@ -88,6 +88,8 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
 
+        await ist.inv.connect()  # Check that we are connected #395
+
         # Flush pending writes
         while ist.write_queue:
             sensor, value = ist.write_queue.popitem()
