@@ -87,10 +87,12 @@ SCHEDULES:
 ```
 
 An Example to change the battery sensor to update on all changes, including changing the read time to 30s instead of the default 15s.
+
 ```yaml
 - KEY: "%"
   READ_EVERY: 30
   REPORT_EVERY: 300
   CHANGE_ANY: true
 ```
-you can also use the sensors name 'battery_soc'
+
+you can also use the sensor name 'battery_soc'
