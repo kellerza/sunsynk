@@ -83,7 +83,7 @@ jobs:
       - name: Run tests and generate coverage report
         run: pytest --cov=./src --cov-report=xml src
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: PYTHON
