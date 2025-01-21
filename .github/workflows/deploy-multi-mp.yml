@@ -170,7 +170,7 @@ jobs:
           echo ${{ env.SANITIZED_PLATFORM }} >> outputs/${{ env.SANITIZED_PLATFORM }}.txt
 
       - name: Artifact platform file for later
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: outputs
           path: outputs/*.txt
