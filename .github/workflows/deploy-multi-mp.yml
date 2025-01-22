@@ -17,13 +17,20 @@ env:
 jobs:
   ci-failure:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: |
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'failure'
     steps:
       - run: echo 'CI failed'
+      - run: exit 1
+
   information:
     name: Gather add-on information
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'release' }}
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     outputs:
       architectures: ${{ steps.information.outputs.architectures }}
       build: ${{ steps.information.outputs.build }}
@@ -182,6 +189,10 @@ jobs:
     needs:
       - information
       - build
+    if: |
+      always() &&
+      needs.information.result == 'success' &&
+      needs.build.result != 'failure'
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -267,6 +278,11 @@ jobs:
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
     needs: [information, build, merge]
+    if: |
+      always() &&
+      needs.information.result == 'success' &&
+      needs.build.result != 'failure' &&
+      needs.merge.result == 'success'
     permissions:
       contents: write
     runs-on: ubuntu-latest
