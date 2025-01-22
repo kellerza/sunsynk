@@ -15,6 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 RETRY_ATTEMPTS = 5
+POLY = 0xA001  # Modbus CRC polynomial
 
 
 @attrs.define
@@ -44,6 +45,50 @@ class SolarmanSunsynk(Sunsynk):
             self.current_sequence_number = randrange(0x01, 0xFF)
         else:
             self.current_sequence_number = (self.current_sequence_number + 1) & 0xFF  # prevent overflow
+
+    def validate_modbus_crc(self, frame: bytes) -> bool:
+        """Validate Modbus CRC of a frame."""
+        # Calculate CRC with all but the last 2 bytes of the frame (they contain the CRC)
+        crc = 0xFFFF
+        for pos in range(len(frame) - 2):
+            crc ^= frame[pos]
+            for _ in range(8):
+                if crc & 0x0001:
+                    crc = (crc >> 1) ^ POLY
+                else:
+                    crc >>= 1
+
+        # Compare calculated CRC with the one in the frame
+        frame_crc = (frame[-1] << 8) | frame[-2]  # CRC is little-endian in frame
+        return crc == frame_crc
+
+    def validate_packet(self, packet: bytes, length: int) -> bool:
+        """Validate received packet."""
+        # Does the v5 packet start and end with what we expect?
+        if packet[0] != 0xa5 or packet[-1] != 0x15:
+            _LOGGER.warning("unexpected v5 packet start/stop")
+            return False
+
+        # Does the response match the request?
+        if packet[5] != self.current_sequence_number:
+            _LOGGER.warning("response frame contains unexpected sequence number")
+            return False
+
+        # Extract the Modbus frame from the V5 packet
+        modbus_frame = packet[12:-3]
+
+        # Is the Modbus CRC correct?
+        if not self.validate_modbus_crc(modbus_frame):
+            _LOGGER.warning("invalid modbus crc")
+            return False
+
+        # Were the expected number of registers returned?
+        actual_data_len = len(modbus_frame) - 5  # do not count slave id, function code, length or CRC bytes (2)
+        if actual_data_len != length * 2:  # each register is 2 bytes
+            _LOGGER.warning("unexpected number of registers found in response")
+            return False
+
+        return True
 
     async def connect(self) -> None:
         """Connect."""
@@ -103,9 +148,12 @@ class SolarmanSunsynk(Sunsynk):
             try:
                 await self.connect()
                 self.advance_sequence_number()  # Set sequence number for this request
-                return await self.client.read_holding_registers(
+                response = await self.client.read_holding_registers(
                     start, length, sequence_number=self.current_sequence_number
                 )
+                if not self.validate_packet(response.raw_response, length):
+                    raise IOError("Invalid response packet")
+                return response.registers
             except Exception as err:  # pylint: disable=broad-except
                 attempt += 1
                 _LOGGER.error("Error reading: %s (retry %s)", err, attempt)
