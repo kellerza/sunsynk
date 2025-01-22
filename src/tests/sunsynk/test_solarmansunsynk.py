@@ -42,46 +42,71 @@ async def test_uss_sensor(mock_disconnect: AsyncMock, mock_connect: AsyncMock) -
 
     # The sequence number will be set by advance_sequence_number()
     # We'll capture it when read_holding_registers is called
-    def read_holding_registers_side_effect(*args: tuple, **kwargs: dict[str, Any]) -> MagicMock:
-        sequence_number = kwargs.get('sequence_number', 0)
+    def read_holding_registers_side_effect(
+        *args: tuple, **kwargs: dict[str, Any]
+    ) -> MagicMock:
+        sequence_number = kwargs.get("sequence_number", 0)
         if not isinstance(sequence_number, int):
             sequence_number = 0
         # Create the Modbus frame first (without CRC)
-        modbus_frame = bytes([
-            1,                 # Slave ID
-            3,                 # Function code
-            4,                 # Data length
-            0, 1,             # First register
-            0, 2,             # Second register
-        ])
+        modbus_frame = bytes(
+            [
+                1,  # Slave ID
+                3,  # Function code
+                4,  # Data length
+                0,
+                1,  # First register
+                0,
+                2,  # Second register
+            ]
+        )
         # Calculate CRC for the Modbus frame
         crc = calculate_modbus_crc(modbus_frame)
         # Create complete Modbus frame with CRC
-        modbus_frame_with_crc = modbus_frame + bytes([
-            crc & 0xFF,        # CRC low byte
-            crc >> 8,          # CRC high byte
-        ])
+        modbus_frame_with_crc = modbus_frame + bytes(
+            [
+                crc & 0xFF,  # CRC low byte
+                crc >> 8,  # CRC high byte
+            ]
+        )
 
         _LOGGER.debug("Modbus frame: %s", " ".join(f"{b:02x}" for b in modbus_frame))
         _LOGGER.debug("Calculated CRC: %04x", crc)
-        _LOGGER.debug("Complete Modbus frame: %s", " ".join(f"{b:02x}" for b in modbus_frame_with_crc))
+        _LOGGER.debug(
+            "Complete Modbus frame: %s",
+            " ".join(f"{b:02x}" for b in modbus_frame_with_crc),
+        )
 
         # Create complete response with V5 packet framing
-        mock_response.raw_response = bytes([
-            0xa5,             # Start byte
-            0x00,             # Ver
-            0x00,             # Slave address
-            0x00,             # Control code
-            0x00,             # Function code
-            sequence_number,  # Sequence number (now guaranteed to be an int)
-            0x00, 0x00,      # Data length
-            0x00, 0x00,      # Source address
-            0x00, 0x00,      # Destination address
-        ]) + modbus_frame_with_crc + bytes([
-            0x15              # End byte
-        ])
+        mock_response.raw_response = (
+            bytes(
+                [
+                    0xA5,  # Start byte
+                    0x00,  # Ver
+                    0x00,  # Slave address
+                    0x00,  # Control code
+                    0x00,  # Function code
+                    sequence_number,  # Sequence number (now guaranteed to be an int)
+                    0x00,
+                    0x00,  # Data length
+                    0x00,
+                    0x00,  # Source address
+                    0x00,
+                    0x00,  # Destination address
+                ]
+            )
+            + modbus_frame_with_crc
+            + bytes(
+                [
+                    0x15  # End byte
+                ]
+            )
+        )
 
-        _LOGGER.debug("Complete V5 packet: %s", " ".join(f"{b:02x}" for b in mock_response.raw_response))
+        _LOGGER.debug(
+            "Complete V5 packet: %s",
+            " ".join(f"{b:02x}" for b in mock_response.raw_response),
+        )
 
         mock_response.registers = [1, 2]
         return mock_response
