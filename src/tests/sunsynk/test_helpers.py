@@ -1,5 +1,7 @@
 """Test helpers."""
 
+import struct
+
 import pytest
 
 from sunsynk.helpers import (
@@ -8,13 +10,15 @@ from sunsynk.helpers import (
     ensure_tuple,
     hex_str,
     int_round,
+    pack_value,
     patch_bitmask,
-    signed,
+    unpack_value,
 )
 from sunsynk.sensors import Sensor
 
 
 def test_as_num(caplog: pytest.LogCaptureFixture) -> None:
+    """Test as_num function."""
     assert as_num(None) == 0
     assert as_num(1.0) == 1.0
     assert as_num(1) == 1
@@ -26,6 +30,7 @@ def test_as_num(caplog: pytest.LogCaptureFixture) -> None:
 
 
 def test_ensure_tuple() -> None:
+    """Test ensure tuple."""
     assert ensure_tuple(1) == (1,)
     assert ensure_tuple((1,)) == (1,)
     assert ensure_tuple((1, 5)) == (1, 5)
@@ -33,23 +38,28 @@ def test_ensure_tuple() -> None:
 
 
 def test_int_round() -> None:
+    """Test int round."""
     res1 = int_round(1.0)
     assert isinstance(res1, int)
     assert res1 == 1
 
 
 def test_signed() -> None:
-    assert signed(0x7FFF) == 0x7FFF
-    assert signed(0xFFFF) == -1
-    assert signed(0) == 0
-    assert signed(32767) == 32767
-    assert signed(32768) == -32768
+    """Test signed value conversion."""
+    assert unpack_value((0x7FFF,), signed=True) == 0x7FFF
+    assert unpack_value((0xFFFF,), signed=True) == -1
+    assert unpack_value((0,), signed=True) == 0
+    assert unpack_value((32767,), signed=True) == 32767
+    assert unpack_value((32768,), signed=True) == -32768
 
 
 def test_signed32bits() -> None:
-    assert signed(0x7FFFFFFF, bits=32) == 0x7FFFFFFF
-    assert signed(0xFFFFFFFF, bits=32) == -1
-    assert signed(0x80000000, bits=32) == 0x80000000 - (1 << 32)
+    """Test 32-bit signed value conversion."""
+    assert unpack_value((0xFFFF, 0x7FFF), signed=True) == 0x7FFFFFFF
+    assert unpack_value((0xFFFF, 0xFFFF), signed=True) == -1
+    assert unpack_value((0x0000, 0x8000), signed=True) == 0x80000000 - (
+        1 << 32
+    )  # -2147483648
 
 
 def test_signeds() -> None:
@@ -66,6 +76,7 @@ def test_signeds() -> None:
 
 
 def test_time() -> None:
+    """Test SSTime class."""
     time = SSTime(minutes=10)
     assert time.str_value == "0:10"
     assert time.reg_value == 10
@@ -96,7 +107,29 @@ def test_time() -> None:
     assert time.minutes == just_before_midnight
 
 
+def test_pack_unpack() -> None:
+    """Test pack_value and unpack_value functions."""
+    # Test 16-bit values
+    assert pack_value(-1, bits=16, signed=True) == (0xFFFF,)
+    assert pack_value(32767, bits=16, signed=True) == (0x7FFF,)
+    assert pack_value(65535, bits=16, signed=False) == (0xFFFF,)
+    # Test 32-bit values
+    assert pack_value(-1, bits=32, signed=True) == (0xFFFF, 0xFFFF)
+    assert pack_value(0x7FFFFFFF, bits=32, signed=True) == (0xFFFF, 0x7FFF)
+    # Test round-trip
+    val = -12345
+    assert unpack_value(pack_value(val, bits=16, signed=True), signed=True) == val
+    assert unpack_value(pack_value(val, bits=32, signed=True), signed=True) == val
+
+    # Test error cases
+    with pytest.raises(struct.error):
+        pack_value(-1, bits=16, signed=False)
+    with pytest.raises(ValueError):
+        pack_value(1, bits=8)  # Invalid bit length
+
+
 def test_patch_bitmask() -> None:
+    """Test patch_bitmask function."""
     assert patch_bitmask(2, 1, 1) == 3
     assert patch_bitmask(1, 2, 2) == 3
 

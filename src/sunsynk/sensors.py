@@ -7,13 +7,13 @@ import logging
 import attrs
 
 from sunsynk.helpers import (
-    NumType,
     RegType,
     ValType,
+    NumType,
     ensure_tuple,
     int_round,
-    signed,
     slug,
+    unpack_value,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,12 +38,8 @@ class Sensor:
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
         regs = self.masked(regs)
-        val: NumType = regs[0]
-        if len(regs) > 1:
-            val += regs[1] << 16
-        if self.factor < 0:  # Indicates this register is signed
-            val = signed(val, bits=16 * len(regs))
-        val = int_round(val * abs(self.factor))
+        val: NumType = unpack_value(regs, signed=self.factor < 0)
+        val = int_round(float(val) * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
 
@@ -141,7 +137,7 @@ class MathSensor(Sensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Calculate the math value."""
-        val = int_round(sum(signed(i) * s for i, s in zip(regs, self.factors)))
+        val = int_round(sum(unpack_value((i,), signed=True) * s for i, s in zip(regs, self.factors)))
         if self.absolute and val < 0:
             val = -val
         if self.no_negative and val < 0:

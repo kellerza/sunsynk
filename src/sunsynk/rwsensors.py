@@ -9,7 +9,15 @@ from typing import Callable, Generator
 import attrs
 from mqtt_entity.utils import BOOL_OFF, BOOL_ON
 
-from sunsynk.helpers import NumType, RegType, SSTime, ValType, as_num, hex_str
+from sunsynk.helpers import (
+    NumType,
+    RegType,
+    SSTime,
+    ValType,
+    as_num,
+    hex_str,
+    pack_value,
+)
 from sunsynk.sensors import Sensor
 
 _LOGGER = logging.getLogger(__name__)
@@ -68,18 +76,14 @@ class NumberRWSensor(RWSensor):
         return [s for s in (self.min, self.max) if isinstance(s, Sensor)]
 
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
-        """Get the reg value from a display value, or the current reg value if out of range."""
+        """Get the reg value from a display value."""
+        if not self.address:
+            raise NotImplementedError("Cannot write to a sensor with no address")
         fval = float(value)  # type:ignore
         minv = resolve_num(resolve, self.min, 0)
         maxv = resolve_num(resolve, self.max, 100)
         val = int(max(minv, min(maxv, fval)) / abs(self.factor))
-        if len(self.address) == 1:
-            if val < 0:
-                val = 0x10000 + val
-            return self.reg(val)
-        if len(self.address) == 2:
-            return self.reg(val & 0xFFFF, int(val >> 16))
-        raise NotImplementedError(f"Address length not supported: {self.address}")
+        return self.reg(*pack_value(val, bits=len(self.address)*16, signed=self.factor < 0))
 
 
 @attrs.define(slots=True, eq=False)
@@ -178,6 +182,12 @@ class SwitchRWSensor(RWSensor):
 class SystemTimeRWSensor(RWSensor):
     """Read & write time sensor."""
 
+    def __attrs_post_init__(self) -> None:
+        """Run post init."""
+        super().__attrs_post_init__()
+        if len(self.address) != 3:
+            raise ValueError("SystemTimeRWSensor requires exactly 3 registers")
+
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
         # pylint: disable=invalid-name
@@ -243,6 +253,8 @@ class TimeRWSensor(RWSensor):
 
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
+        if not self.address:
+            raise NotImplementedError("Cannot write to a sensor with no address")
         return self.reg(SSTime(string=str(value)).reg_value)
 
     @staticmethod
