@@ -296,6 +296,7 @@ jobs:
             -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.environment }} \
             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
           
+          echo "Waiting 30 seconds after base manifest creation before processing platform-specific tags..."
           sleep 30  # Wait 30 seconds before processing platform-specific tags
 
           # Process each platform separately
@@ -311,6 +312,7 @@ jobs:
               $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
             
             echo "Completed manifest for $PLATFORM"
+            echo "Waiting 30 seconds before processing next platform..."
             sleep 30  # Wait 30 seconds between platforms
           done
 
@@ -340,7 +342,7 @@ jobs:
             done
           }
 
-          # Wait a bit before inspection to allow all manifests to settle
+          echo "Waiting 30 seconds for manifests to settle before starting inspections..."
           sleep 30
 
           # Inspect base image first
@@ -354,6 +356,7 @@ jobs:
           for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
             echo "Inspecting platform: $PLATFORM"
             retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }}
+            echo "Waiting 10 seconds before inspecting next platform..."
             sleep 10
           done
 
@@ -405,6 +408,7 @@ jobs:
               echo "Push failed, attempting to rebase and retry..."
               git pull --rebase origin main
             fi
+            echo "Waiting 5 seconds before next push attempt..."
             sleep 5
           done
           echo "Failed to push after 3 attempts"
