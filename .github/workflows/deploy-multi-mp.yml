@@ -17,13 +17,20 @@ env:
 jobs:
   ci-failure:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: |
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'failure'
     steps:
       - run: echo 'CI failed'
+      - run: exit 1
+
   information:
     name: Gather add-on information
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'release' }}
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     outputs:
       architectures: ${{ steps.information.outputs.architectures }}
       build: ${{ steps.information.outputs.build }}
@@ -172,14 +179,20 @@ jobs:
       - name: Artifact platform file for later
         uses: actions/upload-artifact@v4
         with:
-          name: outputs
+          name: platform-outputs-${{ env.SANITIZED_PLATFORM }}
           path: outputs/*.txt
+          if-no-files-found: error
+          retention-days: 1
 
   merge:
     runs-on: ubuntu-latest
     needs:
       - information
       - build
+    if: |
+      always() &&
+      needs.information.result == 'success' &&
+      needs.build.result != 'failure'
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -204,11 +217,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Load outputs
+      - name: Download platform outputs
         uses: actions/download-artifact@v4
         with:
-          name: outputs
+          pattern: platform-outputs-*
           path: outputs
+          merge-multiple: true
 
       - name: Load outputs to variable
         id: platforms_raw
@@ -247,37 +261,155 @@ jobs:
       - name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
-          docker buildx imagetools create $TAGS_STRING \
-            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
+          # Function to retry with exponential backoff
+          function retry_with_backoff() {
+            local max_attempts=5
+            local timeout=10  # Start with 10 seconds
+            local attempt=1
+
+            while true; do
+              echo "Attempt $attempt of $max_attempts"
+              if "$@"; then
+                return 0
+              fi
+
+              if [[ $attempt -ge $max_attempts ]]; then
+                echo "Failed after $attempt attempts"
+                return 1
+              fi
+
+              echo "Attempt $attempt failed! Retrying in $timeout seconds..."
+              sleep $timeout
+              timeout=$((timeout * 2))
+              attempt=$((attempt + 1))
+            done
+          }
+
+          # Get all digests
+          digests=($(ls))
+          echo "Found digests: ${digests[*]}"
+
+          # Create base manifest first
+          echo "Creating base manifest..."
+          retry_with_backoff docker buildx imagetools create \
+            -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }} \
+            -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.environment }} \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
+          
+          echo "Waiting 30 seconds after base manifest creation before processing platform-specific tags..."
+          sleep 30  # Wait 30 seconds before processing platform-specific tags
+
+          # Process each platform separately
+          platforms="${{ steps.platforms_raw.outputs.value }}"
+          IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
+          
+          for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
+            echo "Processing platform: $PLATFORM"
+            
+            retry_with_backoff docker buildx imagetools create \
+              -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }} \
+              -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.environment }} \
+              $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
+            
+            echo "Completed manifest for $PLATFORM"
+            echo "Waiting 30 seconds before processing next platform..."
+            sleep 30  # Wait 30 seconds between platforms
+          done
 
       - name: Inspect image
         run: |
-          # Inspect the image using the first tag from TAGS_STRING (without the leading '-t ' part)
-          INSPECT_TAG=$(echo "${TAGS_STRING}" | awk '{print $2}')
+          # Function to retry with exponential backoff
+          function retry_with_backoff() {
+            local max_attempts=5
+            local timeout=10
+            local attempt=1
 
-          # Log the tag being inspected
-          echo "Inspecting image with tag: $INSPECT_TAG"
+            while true; do
+              echo "Attempt $attempt of $max_attempts"
+              if "$@"; then
+                return 0
+              fi
 
-          # Run the inspection
-          docker buildx imagetools inspect $INSPECT_TAG
+              if [[ $attempt -ge $max_attempts ]]; then
+                echo "Failed after $attempt attempts"
+                return 1
+              fi
+
+              echo "Attempt $attempt failed! Retrying in $timeout seconds..."
+              sleep $timeout
+              timeout=$((timeout * 2))
+              attempt=$((attempt + 1))
+            done
+          }
+
+          echo "Waiting 30 seconds for manifests to settle before starting inspections..."
+          sleep 30
+
+          # Inspect base image first
+          echo "Inspecting base image..."
+          retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }}
+
+          # Inspect each platform
+          platforms="${{ steps.platforms_raw.outputs.value }}"
+          IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
+          
+          for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
+            echo "Inspecting platform: $PLATFORM"
+            retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }}
+            echo "Waiting 10 seconds before inspecting next platform..."
+            sleep 10
+          done
 
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
     needs: [information, build, merge]
+    if: |
+      always() &&
+      needs.information.result == 'success' &&
+      needs.build.result != 'failure' &&
+      needs.merge.result == 'success'
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Point edge to the new ref
-        run: |
-          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-edge/config.yaml
-      - name: Point multi to the new ref
-        if: "${{ needs.information.outputs.environment == 'stable'}}"
-        run: |
-          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-multi/config.yaml
-      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          branch: main
-          commit_user_email: kellerza@gmail.com
-          commit_message: Update addon version to ${{ needs.information.outputs.version }} [no ci]
+          fetch-depth: 0
+          ref: main
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Update versions and commit changes
+        run: |
+          # Pull latest changes with rebase strategy
+          git pull --rebase origin main
+
+          # Make the version updates
+          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-edge/config.yaml
+          if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
+            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-multi/config.yaml
+          fi
+
+          # Stage and commit changes
+          git add hass-addon-sunsynk-edge/config.yaml hass-addon-sunsynk-multi/config.yaml
+          git commit -m "Update addon version to ${{ needs.information.outputs.version }} [no ci]" || echo "No changes to commit"
+
+      - name: Push changes
+        run: |
+          # Try to push changes
+          for i in {1..3}; do
+            if git push origin main; then
+              echo "Successfully pushed changes"
+              exit 0
+            else
+              echo "Push failed, attempting to rebase and retry..."
+              git pull --rebase origin main
+            fi
+            echo "Waiting 5 seconds before next push attempt..."
+            sleep 5
+          done
+          echo "Failed to push after 3 attempts"
+          exit 1
