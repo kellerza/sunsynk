@@ -128,11 +128,11 @@ async def test_uss_sensor(mock_disconnect: AsyncMock, mock_connect: AsyncMock) -
 async def test_validate_packet_invalid_start_stop() -> None:
     """Test packet validation with invalid start/stop bytes."""
     ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number=101)
-    
+
     # Test invalid start byte
     invalid_packet = bytes([0x00]) + bytes([0] * 20) + bytes([0x15])
     assert not ss.validate_packet(invalid_packet, 2)
-    
+
     # Test invalid end byte
     invalid_packet = bytes([0xA5]) + bytes([0] * 20) + bytes([0x00])
     assert not ss.validate_packet(invalid_packet, 2)
@@ -143,7 +143,7 @@ async def test_validate_packet_invalid_sequence() -> None:
     """Test packet validation with invalid sequence number."""
     ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number=101)
     ss.current_sequence_number = 0x42
-    
+
     # Create packet with wrong sequence number
     invalid_packet = bytes([0xA5, 0, 0, 0, 0, 0x43]) + bytes([0] * 15) + bytes([0x15])
     assert not ss.validate_packet(invalid_packet, 2)
@@ -154,7 +154,7 @@ async def test_validate_packet_invalid_crc() -> None:
     """Test packet validation with invalid CRC."""
     ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number=101)
     ss.current_sequence_number = 0x42
-    
+
     # Create packet with invalid CRC
     modbus_frame = bytes([1, 3, 4, 0, 1, 0, 2, 0, 0])  # Invalid CRC at end
     packet = bytes([0xA5, 0, 0, 0, 0, 0x42]) + bytes([0] * 6) + modbus_frame + bytes([0x15])
@@ -166,13 +166,13 @@ async def test_validate_packet_invalid_length() -> None:
     """Test packet validation with wrong number of registers."""
     ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number=101)
     ss.current_sequence_number = 0x42
-    
+
     # Create valid Modbus frame but request wrong length
     modbus_frame = bytes([1, 3, 4, 0, 1, 0, 2])
     crc = calculate_modbus_crc(modbus_frame)
     modbus_frame_with_crc = modbus_frame + bytes([crc & 0xFF, crc >> 8])
     packet = bytes([0xA5, 0, 0, 0, 0, 0x42]) + bytes([0] * 6) + modbus_frame_with_crc + bytes([0x15])
-    
+
     # Test with wrong expected length
     assert not ss.validate_packet(packet, 3)  # Expect 3 registers but only 2 in frame
 
@@ -182,16 +182,16 @@ async def test_validate_packet_invalid_length() -> None:
 async def test_connect_disconnect(mock_pysolarman: AsyncMock) -> None:
     """Test connection and disconnection scenarios."""
     ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number=101)
-    
+
     # Test connect when already connected
     ss.client = AsyncMock()
     await ss.connect()
     assert not mock_pysolarman.called
-    
+
     # Test disconnect when not connected
     ss.client = None
     await ss.disconnect()
-    
+
     # Test disconnect with AttributeError
     mock_client = AsyncMock()
     mock_client.disconnect.side_effect = AttributeError()
@@ -206,13 +206,13 @@ async def test_write_register_errors() -> None:
     ss = SolarmanSunsynk(port="tcp://127.0.0.1:502", dongle_serial_number=101)
     mock_client = AsyncMock()
     ss.client = mock_client
-    
+
     # Test timeout error
     mock_client.write_multiple_holding_registers.side_effect = asyncio.TimeoutError()
     result = await ss.write_register(address=1, value=2)
     assert not result
     assert ss.timeouts == 1
-    
+
     # Test general exception
     mock_client.write_multiple_holding_registers.side_effect = Exception("Test error")
     result = await ss.write_register(address=1, value=2)
