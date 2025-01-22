@@ -264,7 +264,7 @@ jobs:
           # Function to retry with exponential backoff
           function retry_with_backoff() {
             local max_attempts=5
-            local timeout=1
+            local timeout=10  # Start with 10 seconds
             local attempt=1
 
             while true; do
@@ -285,26 +285,33 @@ jobs:
             done
           }
 
-          # Split the manifest creation into smaller batches
+          # Get all digests
           digests=($(ls))
-          batch_size=2
+          echo "Found digests: ${digests[*]}"
+
+          # Create base manifest first
+          echo "Creating base manifest..."
+          retry_with_backoff docker buildx imagetools create \
+            -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }} \
+            -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.environment }} \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
           
-          for ((i=0; i<${#digests[@]}; i+=batch_size)); do
-            batch_end=$((i + batch_size))
-            if [ $batch_end -gt ${#digests[@]} ]; then
-              batch_end=${#digests[@]}
-            fi
+          sleep 30  # Wait 30 seconds before processing platform-specific tags
+
+          # Process each platform separately
+          platforms="${{ steps.platforms_raw.outputs.value }}"
+          IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
+          
+          for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
+            echo "Processing platform: $PLATFORM"
             
-            batch_digests=("${digests[@]:i:batch_size}")
+            retry_with_backoff docker buildx imagetools create \
+              -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }} \
+              -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.environment }} \
+              $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
             
-            echo "Processing batch $((i/batch_size + 1)): ${batch_digests[*]}"
-            
-            # Create manifest for this batch
-            retry_with_backoff docker buildx imagetools create $TAGS_STRING \
-              $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${batch_digests[@]}")
-            
-            # Add a small delay between batches
-            sleep 5
+            echo "Completed manifest for $PLATFORM"
+            sleep 30  # Wait 30 seconds between platforms
           done
 
       - name: Inspect image
@@ -312,7 +319,7 @@ jobs:
           # Function to retry with exponential backoff
           function retry_with_backoff() {
             local max_attempts=5
-            local timeout=1
+            local timeout=10
             local attempt=1
 
             while true; do
@@ -333,14 +340,22 @@ jobs:
             done
           }
 
-          # Inspect the image using the first tag from TAGS_STRING (without the leading '-t ' part)
-          INSPECT_TAG=$(echo "${TAGS_STRING}" | awk '{print $2}')
+          # Wait a bit before inspection to allow all manifests to settle
+          sleep 30
 
-          # Log the tag being inspected
-          echo "Inspecting image with tag: $INSPECT_TAG"
+          # Inspect base image first
+          echo "Inspecting base image..."
+          retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }}
 
-          # Run the inspection with retry
-          retry_with_backoff docker buildx imagetools inspect $INSPECT_TAG
+          # Inspect each platform
+          platforms="${{ steps.platforms_raw.outputs.value }}"
+          IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
+          
+          for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
+            echo "Inspecting platform: $PLATFORM"
+            retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }}
+            sleep 10
+          done
 
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
