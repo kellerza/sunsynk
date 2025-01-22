@@ -157,7 +157,9 @@ async def test_validate_packet_invalid_crc() -> None:
 
     # Create packet with invalid CRC
     modbus_frame = bytes([1, 3, 4, 0, 1, 0, 2, 0, 0])  # Invalid CRC at end
-    packet = bytes([0xA5, 0, 0, 0, 0, 0x42]) + bytes([0] * 6) + modbus_frame + bytes([0x15])
+    packet = (
+        bytes([0xA5, 0, 0, 0, 0, 0x42]) + bytes([0] * 6) + modbus_frame + bytes([0x15])
+    )
     assert not ss.validate_packet(packet, 2)
 
 
@@ -171,7 +173,12 @@ async def test_validate_packet_invalid_length() -> None:
     modbus_frame = bytes([1, 3, 4, 0, 1, 0, 2])
     crc = calculate_modbus_crc(modbus_frame)
     modbus_frame_with_crc = modbus_frame + bytes([crc & 0xFF, crc >> 8])
-    packet = bytes([0xA5, 0, 0, 0, 0, 0x42]) + bytes([0] * 6) + modbus_frame_with_crc + bytes([0x15])
+    packet = (
+        bytes([0xA5, 0, 0, 0, 0, 0x42])
+        + bytes([0] * 6)
+        + modbus_frame_with_crc
+        + bytes([0x15])
+    )
 
     # Test with wrong expected length
     assert not ss.validate_packet(packet, 3)  # Expect 3 registers but only 2 in frame
