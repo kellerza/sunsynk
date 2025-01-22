@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+from random import randrange
 from typing import Sequence
 from urllib.parse import urlparse
 
@@ -22,6 +23,7 @@ class SolarmanSunsynk(Sunsynk):
 
     client: PySolarmanV5Async = None
     dongle_serial_number: int = attrs.field(kw_only=True)
+    current_sequence_number: int | None = attrs.field(default=None, init=False)
 
     @dongle_serial_number.validator
     def check_serial(self, _: attrs.Attribute, value: str) -> None:
@@ -34,6 +36,14 @@ class SolarmanSunsynk(Sunsynk):
             raise ValueError(
                 f"DONGLE_SERIAL_NUMBER must be an integer, got '{value}'"
             ) from err
+
+    def advance_sequence_number(self) -> None:
+        """Generate and advance the sequence number for packet validation."""
+        # Generate initial value randomly and increment from then forward
+        if self.current_sequence_number is None:
+            self.current_sequence_number = randrange(0x01, 0xFF)
+        else:
+            self.current_sequence_number = (self.current_sequence_number + 1) & 0xFF  # prevent overflow
 
     async def connect(self) -> None:
         """Connect."""
@@ -70,8 +80,9 @@ class SolarmanSunsynk(Sunsynk):
         try:
             _LOGGER.debug("DBG: write_register: %s ==> ...", [value])
             await self.connect()
+            self.advance_sequence_number()  # Set sequence number for this request
             res = await self.client.write_multiple_holding_registers(
-                register_addr=address, values=[value]
+                register_addr=address, values=[value], sequence_number=self.current_sequence_number
             )
             _LOGGER.debug("DBG: write_register: %s ==> %s", [value], res)
             return True
@@ -91,7 +102,10 @@ class SolarmanSunsynk(Sunsynk):
         while True:
             try:
                 await self.connect()
-                return await self.client.read_holding_registers(start, length)
+                self.advance_sequence_number()  # Set sequence number for this request
+                return await self.client.read_holding_registers(
+                    start, length, sequence_number=self.current_sequence_number
+                )
             except Exception as err:  # pylint: disable=broad-except
                 attempt += 1
                 _LOGGER.error("Error reading: %s (retry %s)", err, attempt)
