@@ -1,5 +1,7 @@
 """Test helpers."""
 
+import struct
+
 import pytest
 
 from sunsynk.helpers import (
@@ -118,6 +120,12 @@ def test_pack_unpack() -> None:
     val = -12345
     assert unpack_value(pack_value(val, bits=16, signed=True), signed=True) == val
     assert unpack_value(pack_value(val, bits=32, signed=True), signed=True) == val
+
+    # Test error cases
+    with pytest.raises(struct.error):
+        pack_value(-1, bits=16, signed=False)
+    with pytest.raises(ValueError):
+        pack_value(1, bits=8)  # Invalid bit length
 
 
 def test_patch_bitmask() -> None:
