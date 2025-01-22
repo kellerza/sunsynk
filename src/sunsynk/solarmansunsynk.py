@@ -74,12 +74,23 @@ class SolarmanSunsynk(Sunsynk):
             _LOGGER.warning("response frame contains unexpected sequence number")
             return False
 
-        # Extract the Modbus frame from the V5 packet
-        modbus_frame = packet[12:-3]
+        # Extract the Modbus frame from the V5 packet (including CRC)
+        modbus_frame = packet[12:-1]
+        _LOGGER.debug("Extracted Modbus frame: %s", " ".join(f"{b:02x}" for b in modbus_frame))
 
         # Is the Modbus CRC correct?
         if not self.validate_modbus_crc(modbus_frame):
             _LOGGER.warning("invalid modbus crc")
+            _LOGGER.debug("Frame CRC: %04x", (modbus_frame[-1] << 8) | modbus_frame[-2])
+            crc = 0xFFFF
+            for pos in range(len(modbus_frame) - 2):
+                crc ^= modbus_frame[pos]
+                for _ in range(8):
+                    if crc & 0x0001:
+                        crc = (crc >> 1) ^ POLY
+                    else:
+                        crc >>= 1
+            _LOGGER.debug("Calculated CRC: %04x", crc)
             return False
 
         # Were the expected number of registers returned?
