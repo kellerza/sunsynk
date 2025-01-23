@@ -3,6 +3,7 @@
 import logging
 import math
 import struct
+import struct
 from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,13 +45,51 @@ def unpack_value(regs: RegType, signed: bool = True) -> int:
     Returns:
         Unpacked integer value
     """
-    if len(regs) == 1:
-        fmt = "h" if signed else "H"
-        return struct.unpack(fmt, struct.pack("H", regs[0]))[0]
-    if len(regs) == 2:
-        fmt = "i" if signed else "I"
-        return struct.unpack(fmt, struct.pack("2H", regs[0], regs[1]))[0]
-    raise ValueError(f"Unsupported number of registers: {len(regs)}")
+    try:
+        # Log suspicious register values (all bits set)
+        for reg in regs:
+            if reg == 0xFFFF:
+                _LOGGER.warning(
+                    "Suspicious register value detected: 0xFFFF (all bits set)"
+                )
+
+        if len(regs) == 1:
+            fmt = "h" if signed else "H"
+            try:
+                return struct.unpack(fmt, struct.pack("H", regs[0]))[0]
+            except struct.error as e:
+                _LOGGER.warning(
+                    "Error unpacking single register %s: %s", hex(regs[0]), str(e)
+                )
+                raise
+
+        if len(regs) == 2:
+            fmt = "i" if signed else "I"
+            try:
+                val = struct.unpack(fmt, struct.pack("2H", regs[0], regs[1]))[0]
+                # Log potentially anomalous large values
+                if abs(val) > 0x7FFFFFFF:
+                    _LOGGER.warning(
+                        "Very large value detected: %s (registers: %s)",
+                        val,
+                        [hex(r) for r in regs],
+                    )
+                return val
+            except struct.error as e:
+                _LOGGER.warning(
+                    "Error unpacking double register %s,%s: %s",
+                    hex(regs[0]),
+                    hex(regs[1]),
+                    str(e),
+                )
+                raise
+
+        raise ValueError(f"Unsupported number of registers: {len(regs)}")
+    except Exception as e:
+        _LOGGER.error(
+            "Failed to unpack registers %s: %s", [hex(r) for r in regs], str(e)
+        )
+        raise
 
 
 def ensure_tuple(val: Any) -> tuple[int, ...]:
