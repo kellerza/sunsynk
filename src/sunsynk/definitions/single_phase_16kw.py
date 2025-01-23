@@ -1,7 +1,7 @@
 """Sunsynk / Deye 16kW hybrid inverter sensor definitions."""
 
 from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-from sunsynk.definitions import COMMON, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS
+from sunsynk.definitions.single_phase import SENSORS as COMMON
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
