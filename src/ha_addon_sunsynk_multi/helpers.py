@@ -2,25 +2,13 @@
 
 import logging
 import os
-import sys
 import traceback
-from importlib import import_module as _import_module
 from pathlib import Path
-from types import ModuleType
 from typing import Any
 
+from sunsynk.utils import import_module
+
 _LOGGER = logging.getLogger(__name__)
-
-
-def import_module(mod_name: str, folder: str) -> ModuleType:
-    """import_module."""
-    here = Path(os.getcwd()) / folder
-    sys.path.insert(0, str(here))
-    try:
-        mod_obj = _import_module(mod_name)
-        return mod_obj
-    finally:
-        sys.path.pop(0)
 
 
 def get_root(create: bool = False) -> Path:

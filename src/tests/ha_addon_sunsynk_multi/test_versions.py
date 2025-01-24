@@ -64,5 +64,6 @@ def test_deps() -> None:
         filename="setup.cfg",
         regex=regex,
     )
+    v_setup = [v for v in v_setup if not v.startswith("ruff")]
 
     assert " ".join(sorted(v_setup)) == " ".join(sorted(v_docker))

@@ -540,7 +540,7 @@ SENSORS += (  ### no idea why there is a "no work" option, but it's in the spec
         },
         bitmask=0b11 << 14,
     ),
-        SwitchRWSensor(235,"Track Grid Phase",on=1),
+    SwitchRWSensor(235, "Track Grid Phase", on=1),
     NumberRWSensor(209, "UPS delay time", "s"),
 )
 ############

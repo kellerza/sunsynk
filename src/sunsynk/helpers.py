@@ -2,8 +2,8 @@
 
 import logging
 import math
-from typing import Any
 import struct
+from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,41 +15,41 @@ NumType = float | int
 
 def pack_value(value: int, bits: int = 16, signed: bool = True) -> RegType:
     """Pack a value into register format.
-    
+
     Args:
         value: The value to pack
         bits: Number of bits (16 or 32)
         signed: Whether the value should be treated as signed
-    
+
     Returns:
         For 16-bit: single register value
         For 32-bit: tuple of (low, high) register values
     """
     if bits == 16:
-        fmt = 'h' if signed else 'H'
-        return struct.unpack('H', struct.pack(fmt, value))
+        fmt = "h" if signed else "H"
+        return struct.unpack("H", struct.pack(fmt, value))
     if bits == 32:
-        fmt = 'i' if signed else 'I'
-        return struct.unpack('2H', struct.pack(fmt, value))
+        fmt = "i" if signed else "I"
+        return struct.unpack("2H", struct.pack(fmt, value))
     raise ValueError(f"Unsupported number of bits: {bits}")
 
 
 def unpack_value(regs: RegType, signed: bool = True) -> int:
     """Unpack register value(s) into an integer.
-    
+
     Args:
         regs: Register values (1 or 2 registers)
         signed: Whether to treat as signed value
-    
+
     Returns:
         Unpacked integer value
     """
     if len(regs) == 1:
-        fmt = 'h' if signed else 'H'
-        return struct.unpack(fmt, struct.pack('H', regs[0]))[0]
+        fmt = "h" if signed else "H"
+        return struct.unpack(fmt, struct.pack("H", regs[0]))[0]
     if len(regs) == 2:
-        fmt = 'i' if signed else 'I'
-        return struct.unpack(fmt, struct.pack('2H', regs[0], regs[1]))[0]
+        fmt = "i" if signed else "I"
+        return struct.unpack(fmt, struct.pack("2H", regs[0], regs[1]))[0]
     raise ValueError(f"Unsupported number of registers: {len(regs)}")
 
 

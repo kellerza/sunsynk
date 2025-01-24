@@ -6,6 +6,7 @@ from sunsynk.sensors import (
     SensorDefinitions,
     SerialSensor,
 )
+from sunsynk.utils import import_module
 
 COMMON = SensorDefinitions()
 
@@ -38,3 +39,9 @@ COMMON += (
     ProtocolVersionSensor(2, "Protocol"),
     SerialSensor((3, 4, 5, 6, 7), "Serial"),
 )
+
+
+def import_defs(name: str) -> SensorDefinitions:
+    """Import defs."""
+    mod = import_module(f"sunsynk.definitions.{name}")
+    return getattr(mod, "SENSORS")
