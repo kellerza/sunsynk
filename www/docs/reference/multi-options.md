@@ -107,7 +107,7 @@ The port for RS485 communications, which can be either:
 
 ## Sensors
 
-The `SENSOR_DEFINITION` option allows you to select between `single-phase`, `three-phase` and `three-phase-hv` sensor definitions.
+The `SENSOR_DEFINITION` option allows you to select between `single-phase`,`single-phase-16Kw`, `three-phase` and `three-phase-hv` sensor definitions.
 
 The `SENSORS` accepts a list of sensors to poll. Refer to the [single](./definitions) and [three](./definitions3ph) docs
 
