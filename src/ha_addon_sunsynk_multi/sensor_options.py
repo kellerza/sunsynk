@@ -113,19 +113,8 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
 def import_definitions() -> None:
     """Load definitions according to options."""
-    DEFS.all.clear()
-    DEFS.deprecated.clear()
-
-    # Load DEFS
-    name = {
-        "three-phase": "three_phase_lv",
-    }.get(OPT.sensor_definitions) or OPT.sensor_definitions.replace("-", "_")
-    _LOGGER.info(
-        "Using the sensor definitions from https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions/%s.py",
-        name,
-    )
-    defs = import_defs(name)
-    DEFS.all = dict(defs.all)
+    defs = import_defs(OPT.sensor_definitions)
+    DEFS.all = defs.all
     DEFS.deprecated = defs.deprecated
 
     # Add custom sensors to DEFS

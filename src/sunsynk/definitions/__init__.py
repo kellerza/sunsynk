@@ -1,5 +1,7 @@
 """Sensor definitions."""
 
+import logging
+
 from sunsynk.sensors import (
     EnumSensor,
     ProtocolVersionSensor,
@@ -43,5 +45,12 @@ COMMON += (
 
 def import_defs(name: str) -> SensorDefinitions:
     """Import defs."""
-    mod = import_module(f"sunsynk.definitions.{name}")
+    libname = {"three-phase": "three_phase_lv"}.get(name) or name.replace("-", "_")
+    logging.getLogger(__name__).info(
+        "Importing sensor definitions %s (view the source online: "
+        "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions/%s.py )",
+        name,
+        libname,
+    )
+    mod = import_module(f"sunsynk.definitions.{libname}")
     return getattr(mod, "SENSORS")

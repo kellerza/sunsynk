@@ -295,22 +295,22 @@ jobs:
             -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }} \
             -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.environment }} \
             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
-          
+
           echo "Waiting 30 seconds after base manifest creation before processing platform-specific tags..."
           sleep 30  # Wait 30 seconds before processing platform-specific tags
 
           # Process each platform separately
           platforms="${{ steps.platforms_raw.outputs.value }}"
           IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
-          
+
           for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
             echo "Processing platform: $PLATFORM"
-            
+
             retry_with_backoff docker buildx imagetools create \
               -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }} \
               -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.environment }} \
               $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
-            
+
             echo "Completed manifest for $PLATFORM"
             echo "Waiting 30 seconds before processing next platform..."
             sleep 30  # Wait 30 seconds between platforms
@@ -352,7 +352,7 @@ jobs:
           # Inspect each platform
           platforms="${{ steps.platforms_raw.outputs.value }}"
           IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
-          
+
           for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
             echo "Inspecting platform: $PLATFORM"
             retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }}
@@ -363,6 +363,7 @@ jobs:
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
     needs: [information, build, merge]
+    branches: [main]
     if: |
       always() &&
       needs.information.result == 'success' &&
