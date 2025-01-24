@@ -6,9 +6,9 @@ from typing import Callable, Generator, Iterable, Iterator, Sequence, cast
 
 import attr
 
+from sunsynk.helpers import NumType
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import BinarySensor, Sensor, ValType
-from sunsynk.helpers import NumType
 
 _LOGGER = logging.getLogger(__name__)
 

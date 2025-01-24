@@ -9,9 +9,7 @@ import attrs
 from ha_addon_sunsynk_multi.helpers import import_mysensors
 from ha_addon_sunsynk_multi.options import OPT
 from ha_addon_sunsynk_multi.timer_schedule import SCHEDULES, Schedule, get_schedule
-from sunsynk.definitions.single_phase import SENSORS as SENSORS_1PH
-from sunsynk.definitions.three_phase_hv import SENSORS as SENSORS_3PHV
-from sunsynk.definitions.three_phase_lv import SENSORS as SENSORS_3PHLV
+from sunsynk.definitions import import_defs
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, SensorDefinitions
@@ -115,22 +113,9 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
 def import_definitions() -> None:
     """Load definitions according to options."""
-    DEFS.all.clear()
-    DEFS.deprecated.clear()
-
-    # Load DEFS
-    if OPT.sensor_definitions == "three-phase":
-        _LOGGER.info("Using three phase sensor definitions.")
-        DEFS.all = dict(SENSORS_3PHLV.all)
-        DEFS.deprecated = SENSORS_3PHLV.deprecated
-    elif OPT.sensor_definitions == "three-phase-hv":
-        _LOGGER.info("Using three phase HV sensor definitions.")
-        DEFS.all = dict(SENSORS_3PHV.all)
-        DEFS.deprecated = SENSORS_3PHV.deprecated
-    else:
-        _LOGGER.info("Using Single phase sensor definitions.")
-        DEFS.all = dict(SENSORS_1PH.all)
-        DEFS.deprecated = SENSORS_1PH.deprecated
+    defs = import_defs(OPT.sensor_definitions)
+    DEFS.all = defs.all
+    DEFS.deprecated = defs.deprecated
 
     # Add custom sensors to DEFS
     try:

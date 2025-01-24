@@ -2,11 +2,11 @@
 
 from sunsynk import AMPS, CELSIUS, VOLT, WATT
 from sunsynk.definitions.three_phase_common import SENSORS
+from sunsynk.rwsensors import SelectRWSensor
 from sunsynk.sensors import (
     Sensor,
     TempSensor,
 )
-from sunsynk.rwsensors import SelectRWSensor
 
 SENSORS = SENSORS.copy()
 
