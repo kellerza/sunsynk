@@ -363,7 +363,7 @@ jobs:
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
     needs: [information, build, merge]
-    branches: [main]
+    # branches: [main] - restrict?
     if: |
       always() &&
       needs.information.result == 'success' &&
