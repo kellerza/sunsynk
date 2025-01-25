@@ -37,7 +37,7 @@ If you fail to get a reply from the inverter, typically if step #2 fails, please
 ## (A) Cabling & connection
 
 While fault finding use as short as possible cable, outside any sprague/trunking. Once
-everything is working, you can switch to a more permanent, much longer cable.
+everything works, you can switch to a more permanent, much longer cable.
 
 If you cannot establish a connection, check the RS485 adaptor and cabling. Are you
 plugged into the correct port, is your connector crimped correctly?
@@ -64,12 +64,6 @@ Other factors that might impact connection, or reliability:
 
 ## (B) Configuration
 
-### Only a single connection to the serial port
-
-Ensure you only have a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon version.
-
-If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503).
-
 ### Check the Modbus Server ID
 
 Ensure the Modbus Server ID (`MODBUS_ID` config setting) matches the configured **Modbus SN** value of the inverter. This value must not be zero.
@@ -80,6 +74,12 @@ Please note that this can be reset to zero after a software upgrade on your inve
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/modbus_sn.png" width="70%">
 
+### Only a single connection to the serial port
+
+Ensure you only have a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon version.
+
+If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503).
+
 ## (C) Reducing timeouts
 
 If you get many timeouts, or if the addon does not read all your sensors on startup (i.e. you see **Retrying individual sensors** in the log), you can try the following:
@@ -88,6 +88,14 @@ If you get many timeouts, or if the addon does not read all your sensors on star
 - The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote device.
 
 Check the cabling and connection again. Use a 1m cable and stand next to the inverter while testing.
+
+### Direct serial
+
+If your RS485 adaptor is plugged directly into your host, connecting directly to the serial port `PORT: "/usb/ttyX"` might not give you the best results.
+
+Once you have a working connection (reading the serial), consider introducing **mbusd** into your setup, in this configuration mbus connects to the serial port and the addon connects via TCP, typically: `PORT: tcp://homeassistant.local:502`
+
+**mbusd** and the *pymodbus* driver gives the best results.
 
 ### Check line voltage / termination resistor
 
@@ -101,4 +109,4 @@ but this may drop to around 0.5v with the 120 ohm load.
 RS485 devices are typically multi-drop with a termination resistor on the first and last devices.
 However, the RS485 BMS port may only be intended to connect to a single device.
 
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg">
+<img src="https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg" width="70%">
