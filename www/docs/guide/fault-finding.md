@@ -6,7 +6,7 @@ The addon follows the following startup process:
 
 1. Load config, sensor definitions and schedules
 
-    The logs will show if you use any unknown or deprecated sensors, if you have anything wrong in your custom sensors, and the intended schdule for reading sensors.
+    The logs will show if you use any unknown or deprecated sensors, if you have anything wrong in your custom sensors, and the intended schedule for reading sensors.
 
 2. Connect to the Inverter
 
@@ -30,17 +30,47 @@ The addon follows the following startup process:
 
     If this step fails, you will not see any entities in Home Assistant and you need to check your MQTT server settings.
 
-Once the startup is complete, the addon will continue to read & publish sensor data. During this process you will occasianally see read failures. As long as this does not happen on every read, you can probably continue using the addon, but can consider reducing sesnors, relaxing the read schedules, etc.
+Once the startup is complete, the addon will continue to read & publish sensor data. During this process you will occasianally see read failures. As long as this does not happen on every read, you can probably continue using the addon, but can consider reducing sensors, relaxing the read schedules, etc.
 
 If you fail to get a reply from the inverter, typically if step #2 fails, please check the following:
 
-## (a) Only a single connection to the serial port
+## (A) Cabling & connection
+
+While fault finding use as short as possible cable, outside any sprague/trunking. Once
+everything is working, you can switch to a more permanent, much longer cable.
+
+If you cannot establish a connection, check the RS485 adaptor and cabling. Are you
+plugged into the correct port, is your connector crimped correctly?
+
+::: tip
+
+The newer inverters have a combined RS485 and CAN-BUS port. If your battery is already using the port for its CAN-BUS communications, you need to split the cable to connect your RS485 connector. The following articles explains the wiring of the port:
+
+- [DIY cable split](https://solarenergyconcepts.co.uk/practical-and-diy/crc-error-solar-assistant/)
+- [SolarAssistant's RJ45 splitter](https://solar-assistant.io/help/deye/2_in_1_bms_port)
+
+:::
+
+Other factors that might impact connection, or reliability:
+
+- Use a RJ45 converter with a GROUND pin. Ensure the ground is connected.
+- Re-crimp your RJ45 connector.
+- Use a good quality solid CAT5e/CAT6 cable.
+  - Ensure the data line is using a twisted pair.
+- Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking.
+  - If interference is a problem, are you using a twisted pair in the cable?
+  - If interference is a problem, it could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal plastic RJ45 connector on the inverter side.)
+- If you still fail to make a connection, test the line voltage resistor (see Reducing timeouts below)
+
+## (B) Configuration
+
+### Only a single connection to the serial port
 
 Ensure you only have a single addon connected to the serial port. The following can all potentially access the USB port: mbusd, Node RED, the normal and dev addon version.
 
 If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port. Connect all addons to mbusd (e.g. tcp://192.168.1.x:503).
 
-## (b) Check the Modbus Server ID
+### Check the Modbus Server ID
 
 Ensure the Modbus Server ID (`MODBUS_ID` config setting) matches the configured **Modbus SN** value of the inverter. This value must not be zero.
 
@@ -48,26 +78,18 @@ View/update the Modbus server ID on your inverter under "Advanced Settings" / "M
 
 Please note that this can be reset to zero after a software upgrade on your inverter, and this will stop the addon from reading data from your inverter. Resetting it to the previous value (the value the value in `MODBUS_ID` if you had this working previously), and then restarting the inverter should fix the [issue](https://powerforum.co.za/topic/15779-home-assistant-no-longer-getting-data-after-sunsynk-firmware-update-solved/).
 
-<img src="https://github.com/kellerza/sunsynk/raw/main/images/modbus_sn.png" width="80%">
+<img src="https://github.com/kellerza/sunsynk/raw/main/images/modbus_sn.png" width="70%">
 
-## (c) Reducing timeouts
+## (C) Reducing timeouts
 
 If you get many timeouts, or if the addon does not read all your sensors on startup (i.e. you see **Retrying individual sensors** in the log), you can try the following:
 
 - Set `READ_SENSORS_BATCH_SIZE` to a smaller value, i.e. 8.
 - The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote device.
 
-The hardware and cabling also has a big impact:
+Check the cabling and connection again. Use a 1m cable and stand next to the inverter while testing.
 
-- Use a RJ45 converter with a GROUND pin. Ensure the ground is connected.
-- Ensure the data line is on a twisted pair.
-- Re-crimp your RJ45 connector.
-- Use a good quality solid CAT5e/CAT6 cable.
-- Ensure your RS485 cable does not run parallel to other electrical cables (AC or DC), to reduce interference. e.g. in trunking.
-  - It could also help to use a shielded cable. Ground the shield at ONE end only (i.e. on the USB adaptor side and then just use normal plastic RJ45 connector on the inverter side.)
-  - While fault finding use as short as possible cable, completely outside any sprague/trunking etc.
-
-## (d) Check line voltage / termination resistor
+### Check line voltage / termination resistor
 
 If your RS485 adapter has a termination resistor (typically 120 ohms), try removing it.
 

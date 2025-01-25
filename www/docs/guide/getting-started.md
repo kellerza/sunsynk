@@ -28,4 +28,4 @@ This is the recommended version of the add-on!
 
 ### Sunsynk/Deye Inverter Add-on (edge/dev)
 
-The developer version of the add-on. Contains the latest changes comitted to the Github repository.
+The developer version of the add-on. Contains the latest changes committed to the Github repository.
