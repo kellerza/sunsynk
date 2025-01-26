@@ -110,3 +110,11 @@ RS485 devices are typically multi-drop with a termination resistor on the first 
 However, the RS485 BMS port may only be intended to connect to a single device.
 
 <img src="https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg" width="70%">
+
+1
+
+![RS485](//github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg =400x)
+
+2
+
+![RS485](https://github.com/kellerza/sunsynk/raw/main/images/rs485-term.jpg =400x)
