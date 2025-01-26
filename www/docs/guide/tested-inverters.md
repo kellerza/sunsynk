@@ -12,5 +12,6 @@ There are several inverters that are rebranded Deye inverters, so you might have
 | Deye 20kW 3PH HV   | Deye BOS-G            | head     | @rixxxx       | Solarman                 |
 | Turbo-E 5kW        | DIY with JKBMS        | 0.1.4    | @agtconf      | BMS485 (top left)        |
 | Deye 16Kw SA Ver.  | S-Volt , Pace BMS     | beta/all | @deondti      | BMS485 and Solarman      |
+| Deye 25Kw 3PH HV   | Dyness HV4            | edge/dev | @proggaras   | BMS485                   |
 
 For details on how to wire these inverters, see [RS485 Wiring](./wiring).
