@@ -19,7 +19,7 @@ from sunsynk.sensors import (
     TempSensor,
 )
 
-SENSORS = COMMON.copy()
+SENSORS = SENSORS.copy()
 
 
 #######
