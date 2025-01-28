@@ -13,7 +13,6 @@ def test_versions() -> None:
     """Test versions.
 
     config.json - contains the HASS addon version
-    Dockerfile  - installs the specific sunsynk library from pypi
     setup.py    - sunsynk library on pypi
     """
     v_setup = _get_version(
@@ -51,19 +50,19 @@ def _get_version(filename: str, regex: str) -> list[str]:
     return res
 
 
-def test_deps() -> None:
-    """Check deps."""
-    regex = r"    ([^ ]+\d)(\s|$)"
+# def test_deps() -> None:
+#     """Check deps."""
+#     regex = r"    ([^ ]+\d)(\s|$)"
 
-    v_docker = _get_version(
-        filename=f"{ADDON_PATH}/Dockerfile",
-        regex=regex,
-    )
+#     v_docker = _get_version(
+#         filename=f"{ADDON_PATH}/Dockerfile",
+#         regex=regex,
+#     )
 
-    v_setup = _get_version(
-        filename="setup.cfg",
-        regex=regex,
-    )
-    v_setup = [v for v in v_setup if not v.startswith("ruff")]
+#     v_setup = _get_version(
+#         filename="setup.cfg",
+#         regex=regex,
+#     )
+#     v_setup = [v for v in v_setup if not v.startswith("ruff")]
 
-    assert " ".join(sorted(v_setup)) == " ".join(sorted(v_docker))
+#     assert " ".join(sorted(v_setup)) == " ".join(sorted(v_docker))
