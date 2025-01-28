@@ -8,7 +8,9 @@ from sunsynk.rwsensors import (
 from sunsynk.sensors import (
     Sensor,
 )
+
 SENSORS = COMMON.copy()
+
 #######
 # Grid
 #######
@@ -16,6 +18,7 @@ SENSORS += (
     Sensor(169, "Grid power", WATT, -10),  # L1(167) + L2(168)
     Sensor(172, "Grid CT power", WATT, -10),
 )
+
 #############
 # Inverter settings
 #############
