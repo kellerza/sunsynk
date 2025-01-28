@@ -15,12 +15,10 @@ SENSORS = COMMON.copy()
 SENSORS += (
     Sensor(169, "Grid power", WATT, -10),  # L1(167) + L2(168)
     Sensor(172, "Grid CT power", WATT, -10),
-)   
+)
 #############
 # Inverter settings
 #############
 SENSORS += NumberRWSensor(230, "Grid Charge Battery current", AMPS, min=0, max=140)
 SENSORS += NumberRWSensor(210, "Battery Max Charge current", AMPS, min=0, max=290)
 SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max=290)
-
-
