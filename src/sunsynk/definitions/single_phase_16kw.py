@@ -4,19 +4,19 @@ from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
 from sunsynk.definitions.single_phase import SENSORS as COMMON
 from sunsynk.rwsensors import (
     NumberRWSensor,
-    SelectRWSensor,
-    SwitchRWSensor,
-    SystemTimeRWSensor,
-    TimeRWSensor,
+#    SelectRWSensor,
+#    SwitchRWSensor,
+#    SystemTimeRWSensor,
+#    TimeRWSensor,
 )
 from sunsynk.sensors import (
-    BinarySensor,
-    FaultSensor,
-    InverterStateSensor,
-    MathSensor,
-    SDStatusSensor,
+#   BinarySensor,
+#   FaultSensor,
+#   InverterStateSensor,
+#    MathSensor,
+#    SDStatusSensor,
     Sensor,
-    TempSensor,
+#    TempSensor,
 )
 
 SENSORS = COMMON.copy()
