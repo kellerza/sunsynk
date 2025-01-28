@@ -4,7 +4,7 @@
 
 You can read more Energy Management in Home Assistant [here](https://www.home-assistant.io/blog/2021/08/04/home-energy-management/) and [here](https://www.home-assistant.io/docs/energy/).
 
-![HASS Energy management](https://github.com/kellerza/sunsynk/raw/main/images/energy.png)
+![HASS Energy management](../images/energy.png)
 
 The following sensors are required as a minimum to enable the Home Assistant Energy feaure for a hybrid inverter with PV and a battery.
 

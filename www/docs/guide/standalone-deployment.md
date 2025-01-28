@@ -110,6 +110,12 @@ services:
       S6_KEEP_ENV: 1
 ```
 
+For env vars to work, you need to add one additional env var (more [here](https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour))
+
+```yaml
+S6_KEEP_ENV: 1
+```
+
 ### Docker CLI examples
 
 Below are examples using the docker CLI.

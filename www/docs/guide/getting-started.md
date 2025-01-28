@@ -10,7 +10,7 @@
 
 2. Install the "Sunsynk/Deye Inverter Add-on **(multi)**" from the **Add-On Store** and configure it through the UI.
 
-   ![Install Sunsynk Addon](https://github.com/kellerza/sunsynk/raw/main/images/addon-install.png)
+   ![Install Sunsynk Addon](../images/addon-install.png)
 
 ## Available addons
 

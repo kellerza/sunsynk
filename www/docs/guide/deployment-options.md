@@ -7,7 +7,7 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
    The Sunsynk Add-on runs on the Home Assistant OS, reads the Inverter's Modbus registers over RS-485, and publishes sensor values to the MQTT server.
    The architecture is shown below:
 
-   ![Deployment Option](https://github.com/kellerza/sunsynk/raw/main/images/deploy.png)
+   ![Deployment Option](../images/deploy.png)
 
 2. A Modbus TCP to RTU/serial gateway
 
@@ -15,13 +15,13 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
 
    You can also use a commercial Modbus gateway, like the USR-W630
 
-   ![Deployment Option Gateway](https://github.com/kellerza/sunsynk/raw/main/images/deploy-gw.png)
+   ![Deployment Option Gateway](../images/deploy-gw.png)
 
 3. Extend with an MQTT gateway
 
    This remote option runs the Sunsynk Addon close to the Inverter, and then sends MQTT messages over your network toward the MQTT server (typically on the same server as Home Assistant)
 
-   ![Deployment Option MQTT](https://github.com/kellerza/sunsynk/raw/main/images/deploy-mqtt.png)
+   ![Deployment Option MQTT](../images/deploy-mqtt.png)
 
 4. Standalone in Docker
 
@@ -29,4 +29,4 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
 
    Read more [here](./standalone-deployment).
 
-   ![Deployment Option Standalone](https://github.com/kellerza/sunsynk/raw/main/images/deploy-standalone.png)
+   ![Deployment Option Standalone](../images/deploy-standalone.png)

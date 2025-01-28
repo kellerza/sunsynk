@@ -14,7 +14,7 @@ An add-on to receive Sunsynk Inverter Values and push them to Home Assistant thr
 
 It supports Home Assistant auto-discovery for the sensors and flexible scheduling when to read and when to report.
 
-![HASS Energy management](https://github.com/kellerza/sunsynk/raw/main/images/energy.png)
+![HASS Energy management](../images/energy.png)
 
 For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk inverter. Sensors are read using the Modbus protocol and sent to a MQTT server.
 
