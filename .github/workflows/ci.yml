@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install local sunsynk package
-        run: pip install -e .[pymodbus,umodbus,solarman,tests]
+        run: pip install aiohttp .[pymodbus,umodbus,solarman,tests]
       - name: Run Pylint
         run: pylint src
 
