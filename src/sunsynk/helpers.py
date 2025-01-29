@@ -3,7 +3,6 @@
 import logging
 import math
 import struct
-import struct
 from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
