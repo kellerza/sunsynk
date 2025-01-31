@@ -72,7 +72,7 @@ View/update the Modbus server ID on your inverter under "Advanced Settings" / "M
 
 Please note that this can be reset to zero after a software upgrade on your inverter, and this will stop the addon from reading data from your inverter. Resetting it to the previous value (the value the value in `MODBUS_ID` if you had this working previously), and then restarting the inverter should fix the [issue](https://powerforum.co.za/topic/15779-home-assistant-no-longer-getting-data-after-sunsynk-firmware-update-solved/).
 
-![Modbus Server ID](../images/modbus_sn.png =70%)
+![Modbus Server ID](../images/modbus_sn.png =70%x)
 
 ### Only a single connection to the serial port
 
@@ -109,4 +109,4 @@ but this may drop to around 0.5v with the 120 ohm load.
 RS485 devices are typically multi-drop with a termination resistor on the first and last devices.
 However, the RS485 BMS port may only be intended to connect to a single device.
 
-![RS485](../images/rs485-term.jpg =70%)
+![RS485](../images/rs485-term.jpg =70%x)
