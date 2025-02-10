@@ -70,6 +70,14 @@ Other tested adaptors
 
    ![settings](../images/eth-hf5142-settings.webp =400x400)
 
+4. Waveshare RS485 TO (POE) ETH  (1x RS485 to 1x E-Port)
+
+   ![gateway](../images/eth-ws485poe.jpg)
+
+   This gateway was tested with the Deye 3 Phase Hybrid Inverter SUN-25K-SG01HP3-EU-AM2. The following serial settings were used:
+
+   ![settings](../images/eth-ws485poe-settings.png =400x400)
+
 ## Sunsynk Inverters
 
 ### Sunsynk 3.6kW Inverter
@@ -105,6 +113,12 @@ Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.
 ![Deye](../images/inv-deye-8kw.png =80%x)
 
 RS485 is the blue line - top left, as with the Sunsynk inverters. Yellow is the CAN-comms with the Pylontech batteries
+
+### Deye 25kW HV Inverter
+
+![Deye](../images/inv-deye-25kw-hv.jpg =80%x)
+
+RS485 is the grey line - bottom right. BMS1 is the CAN-comms with the Dyness batteries
 
 ## Turbo-Energy Inverter
 
