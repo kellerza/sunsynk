@@ -44,12 +44,16 @@ def unpack_value(regs: RegType, signed: bool = True) -> int:
     Returns:
         Unpacked integer value
     """
-    if len(regs) == 1:
-        fmt = "h" if signed else "H"
-        return struct.unpack(fmt, struct.pack("H", regs[0]))[0]
-    if len(regs) == 2:
-        fmt = "i" if signed else "I"
-        return struct.unpack(fmt, struct.pack("2H", regs[0], regs[1]))[0]
+    try:
+        if len(regs) == 1:
+            fmt = "h" if signed else "H"
+            return struct.unpack(fmt, struct.pack("H", regs[0]))[0]
+        if len(regs) == 2:
+            fmt = "i" if signed else "I"
+            return struct.unpack(fmt, struct.pack("2H", regs[0], regs[1]))[0]
+    except struct.error as err:
+        _LOGGER.error(str(err))
+        raise
     raise ValueError(f"Unsupported number of registers: {len(regs)}")
 
 

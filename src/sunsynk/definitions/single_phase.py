@@ -242,6 +242,13 @@ SENSORS += (
     # 0: "Don't Sell", 1: "Sell solar"
     SwitchRWSensor(247, "Solar Export", bitmask=1),
     SwitchRWSensor(248, "Use Timer", bitmask=1),
+    # Grid peak shaving settings
+    SwitchRWSensor(280, "Peak shaving", bitmask=0x0F, on=1),  # ?
+    SwitchRWSensor(280, "Gen peak shaving", bitmask=0xF0, on=0x10),
+    SwitchRWSensor(280, "Grid peak shaving", bitmask=0xF00, on=0x100),
+    SwitchRWSensor(280, "Grid always on", bitmask=0xF000, on=0x1000),  # ?
+    NumberRWSensor(292, "Gen peak shaving power", WATT, 1, min=0, max=RATED_POWER),
+    NumberRWSensor(293, "Grid peak shaving power", WATT, 1, min=0, max=RATED_POWER),
 )
 
 PROG1_TIME = TimeRWSensor(250, "Prog1 Time")

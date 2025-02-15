@@ -1,10 +1,12 @@
 """Test helpers."""
 
+import logging
 import struct
 
 import pytest
 
 from sunsynk.helpers import (
+    RegType,
     SSTime,
     as_num,
     ensure_tuple,
@@ -15,6 +17,8 @@ from sunsynk.helpers import (
     unpack_value,
 )
 from sunsynk.sensors import Sensor
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def test_as_num(caplog: pytest.LogCaptureFixture) -> None:
@@ -43,23 +47,62 @@ def test_int_round() -> None:
     assert isinstance(res1, int)
     assert res1 == 1
 
+    res1 = int_round(1.1)
+    assert isinstance(res1, float)
+    assert res1 == 1.1
 
-def test_signed() -> None:
-    """Test signed value conversion."""
-    assert unpack_value((0x7FFF,), signed=True) == 0x7FFF
-    assert unpack_value((0xFFFF,), signed=True) == -1
-    assert unpack_value((0,), signed=True) == 0
-    assert unpack_value((32767,), signed=True) == 32767
-    assert unpack_value((32768,), signed=True) == -32768
+    res1 = int_round(1.001)
+    assert isinstance(res1, int)
+    assert res1 == 1
 
 
-def test_signed32bits() -> None:
-    """Test 32-bit signed value conversion."""
-    assert unpack_value((0xFFFF, 0x7FFF), signed=True) == 0x7FFFFFFF
-    assert unpack_value((0xFFFF, 0xFFFF), signed=True) == -1
-    assert unpack_value((0x0000, 0x8000), signed=True) == 0x80000000 - (
-        1 << 32
-    )  # -2147483648
+def pack_unpack(regs: list[RegType], values: list[int], bits: int, sign: bool) -> None:
+    """Test pack & unpack."""
+    expect_regs, expect_value = regs[0], values[0]
+
+    # ensure all items in the list contain the same value
+    assert [r for r in regs if r != expect_regs] == []
+    assert [v for v in values if v != expect_value] == []
+
+    assert pack_value(expect_value, bits=bits, signed=sign) == expect_regs
+    assert unpack_value(expect_regs, signed=sign) == expect_value
+
+
+def test_pack_unpack_16bits() -> None:
+    """Test pack & unpack, 32-bit."""
+    tests: tuple[tuple[list, list], ...] = (
+        ([(0x7FFF,), (32767,)], [0x7FFF, 32767]),
+        ([(0xFFFF,), (65535,)], [-1]),
+        ([(0x0,)], [0]),
+        ([(0x8000,), (32768,)], [-32768]),
+    )
+    for idx, (regs, values) in enumerate(tests):
+        _LOGGER.info("Test 16-bit %d - %s", idx, (regs, values))
+        pack_unpack(regs, values, bits=16, sign=True)
+
+
+def test_pack_unpack_32bits() -> None:
+    """Test pack & unpack, 32-bit."""
+    tests: list[tuple[RegType, int]] = [
+        ((0x0000, 0x0000), 0),
+        ((0x0001, 0x0000), 1),
+        ((0xFFFF, 0xFFFF), -1),
+        ((0xFFFF, 0x7FFF), 0x7FFFFFFF),
+        # ([(0x0000, 0xFFFF), 0xFFFF0000- 1]),
+        ((0x8000, 0xFFFF), -32768),
+        ((0xFFFF, 0x0000), 0xFFFF),
+        ((0xFFFF, 0x0000), 65535),
+        ((0x8000, 0x0000), 32768),
+        ((0x1B, 0xFFFF), -0xFFE5),
+        ((0x1B, 0xFFFF), -65509),
+        #
+        ((0x0000, 0x8000), 0x80000000 - (1 << 32)),
+        ((0x0000, 0x8000), -2147483648),
+    ]
+
+    for idx, (regs, values) in enumerate(tests):
+        _LOGGER.info("Test 32-bit %d - %s", idx, (regs, values))
+        pack_unpack([regs], [values], bits=32, sign=True)
 
 
 def test_signeds() -> None:

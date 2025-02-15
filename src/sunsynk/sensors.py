@@ -39,6 +39,9 @@ class Sensor:
         """Return the value from the registers."""
         regs = self.masked(regs)
         val: NumType = unpack_value(regs, signed=self.factor < 0)
+        if val > 65000 or val < -65000 or any(r >= 0xFFFF for r in regs):
+            vals = ", ".join(f"#{r}={hex(v)}" for r, v in zip(self.address, regs))
+            _LOGGER.warning("High value %s=%s (%s)", self.id, val, vals)
         val = int_round(float(val) * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
