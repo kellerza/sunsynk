@@ -26,31 +26,39 @@ def pack_value(value: int, bits: int = 16, signed: bool = True) -> RegType:
         For 32-bit: tuple of (low, high) register values
     """
     if bits == 16:
-        fmt = "h" if signed else "H"
-        return struct.unpack("H", struct.pack(fmt, value))
+        fmt = "<h" if signed else "<H"
+        return struct.unpack("<H", struct.pack(fmt, value))
     if bits == 32:
-        fmt = "i" if signed else "I"
-        return struct.unpack("2H", struct.pack(fmt, value))
+        fmt = "<i" if signed else "<I"
+        return struct.unpack("<2H", struct.pack(fmt, value))
     raise ValueError(f"Unsupported number of bits: {bits}")
 
 
-def unpack_value(regs: RegType, signed: bool = True) -> int:
+def unpack_value(regs: RegType, *, signed: bool = True, maybe16: bool = False) -> int:
     """Unpack register value(s) into an integer.
 
     Args:
         regs: Register values (1 or 2 registers)
         signed: Whether to treat as signed value
+        maybe16: If 2 registers, treat as 16-bit if the second register is 0
 
     Returns:
         Unpacked integer value
     """
+    # All inverters are little-endian <
+    # h = short, H = unsigned short, i = int, I = unsigned int
+
+    # If we always use maybe16, an incorrect result is expected between
+    # the values of 32768 and 65535 (0x8000 and 0xffff), everything else is ok.
+    # 32768 error      0x8000 0x0     -32768
+    # 65535 error      0xffff 0x0     -1
     try:
-        if len(regs) == 1:
-            fmt = "h" if signed else "H"
-            return struct.unpack(fmt, struct.pack("H", regs[0]))[0]
+        if len(regs) == 1 or (maybe16 and len(regs) == 2 and regs[1] == 0):
+            fmt = "<h" if signed else "<H"
+            return struct.unpack(fmt, struct.pack("<H", regs[0]))[0]
         if len(regs) == 2:
-            fmt = "i" if signed else "I"
-            return struct.unpack(fmt, struct.pack("2H", regs[0], regs[1]))[0]
+            fmt = "<i" if signed else "<I"
+            return struct.unpack(fmt, struct.pack("<2H", regs[0], regs[1]))[0]
     except struct.error as err:
         _LOGGER.error(str(err))
         raise

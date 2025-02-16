@@ -39,9 +39,6 @@ class Sensor:
         """Return the value from the registers."""
         regs = self.masked(regs)
         val: NumType = unpack_value(regs, signed=self.factor < 0)
-        if val > 65000 or val < -65000 or any(r >= 0xFFFF for r in regs):
-            vals = ", ".join(f"#{r}={hex(v)}" for r, v in zip(self.address, regs))
-            _LOGGER.warning("High value %s=%s (%s)", self.id, val, vals)
         val = int_round(float(val) * abs(self.factor))
         _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
@@ -61,6 +58,36 @@ class Sensor:
         if not isinstance(other, Sensor):
             raise TypeError(str(type(other)))
         return self.id == other.id
+
+
+@attrs.define(slots=True, eq=False)
+class Sensor16(Sensor):
+    """Sensor with a 16-bit/32-bit register registers."""
+
+    maybe16: bool = True
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Return the value from the registers."""
+        regs = self.masked(regs)
+        if regs[1] > 0:
+            _LOGGER.info(
+                "Sensor %s reported a 32-bit value: %s",
+                self.name,
+                [hex(v) for v in regs],
+            )
+            self.maybe16 = False
+        val: NumType = unpack_value(regs, signed=self.factor < 0, maybe16=self.maybe16)
+        # if False:
+        #     if val > 65000 or val < -65000 or any(r >= 0xFFFF for r in regs):
+        #         vals = ", ".join(f"#{r}={hex(v)}" for r, v in zip(self.address, regs))
+        #         _LOGGER.warning("High value %s=%s (%s)", self.id, val, vals)
+        val = int_round(float(val) * abs(self.factor))
+        _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
+        return val
+
+    def __attrs_post_init__(self) -> None:
+        """Ensure correct parameters."""
+        assert len(self.address) == 2
 
 
 @attrs.define(slots=True, eq=False)

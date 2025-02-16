@@ -1,6 +1,7 @@
 """Test helpers."""
 
 import logging
+import re
 import struct
 
 import pytest
@@ -56,53 +57,57 @@ def test_int_round() -> None:
     assert res1 == 1
 
 
-def pack_unpack(regs: list[RegType], values: list[int], bits: int, sign: bool) -> None:
-    """Test pack & unpack."""
-    expect_regs, expect_value = regs[0], values[0]
-
-    # ensure all items in the list contain the same value
-    assert [r for r in regs if r != expect_regs] == []
-    assert [v for v in values if v != expect_value] == []
-
-    assert pack_value(expect_value, bits=bits, signed=sign) == expect_regs
-    assert unpack_value(expect_regs, signed=sign) == expect_value
+def extract_ints(text: str) -> list[int]:
+    """Extract numbers from a string."""
+    val_arr = re.sub(r"\s+", " ", text.strip()).split(" ")
+    return [int(v, 16 if "0x" in v else 10) for v in val_arr]
 
 
 def test_pack_unpack_16bits() -> None:
     """Test pack & unpack, 32-bit."""
-    tests: tuple[tuple[list, list], ...] = (
-        ([(0x7FFF,), (32767,)], [0x7FFF, 32767]),
-        ([(0xFFFF,), (65535,)], [-1]),
-        ([(0x0,)], [0]),
-        ([(0x8000,), (32768,)], [-32768]),
-    )
-    for idx, (regs, values) in enumerate(tests):
-        _LOGGER.info("Test 16-bit %d - %s", idx, (regs, values))
-        pack_unpack(regs, values, bits=16, sign=True)
+    tests: list[tuple[str, RegType]] = [
+        ("  32767   0x7fff", (0x7FFF,)),
+        ("     -1         ", (0xFFFF,)),
+        ("      0         ", (0,)),
+        (" -32768  -0x8000", (0x8000,)),
+    ]
+    for idx, (text, regs) in enumerate(tests):
+        vals = extract_ints(text)
+        _LOGGER.info("Test 16-bit %d - %s", idx, (regs, vals))
+        val = vals[0]
+        for j in vals:
+            assert j == val
+
+        assert pack_value(val, bits=16, signed=True) == regs
+        assert unpack_value(regs, signed=True) == val
 
 
 def test_pack_unpack_32bits() -> None:
     """Test pack & unpack, 32-bit."""
-    tests: list[tuple[RegType, int]] = [
-        ((0x0000, 0x0000), 0),
-        ((0x0001, 0x0000), 1),
-        ((0xFFFF, 0xFFFF), -1),
-        ((0xFFFF, 0x7FFF), 0x7FFFFFFF),
-        # ([(0x0000, 0xFFFF), 0xFFFF0000- 1]),
-        ((0x8000, 0xFFFF), -32768),
-        ((0xFFFF, 0x0000), 0xFFFF),
-        ((0xFFFF, 0x0000), 65535),
-        ((0x8000, 0x0000), 32768),
-        ((0x1B, 0xFFFF), -0xFFE5),
-        ((0x1B, 0xFFFF), -65509),
-        #
-        ((0x0000, 0x8000), 0x80000000 - (1 << 32)),
-        ((0x0000, 0x8000), -2147483648),
+    tests: list[tuple[str, RegType]] = [
+        ("-2147483648           ", (0x0000, 0x8000)),
+        ("     -65510           ", (0x001A, 0xFFFF)),
+        ("     -65509    -0xFFE5", (0x001B, 0xFFFF)),
+        ("     -32768           ", (0x8000, 0xFFFF)),
+        ("         -1           ", (0xFFFF, 0xFFFF)),
+        ("          0           ", (0x0000, 0x0000)),
+        ("          1           ", (0x0001, 0x0000)),
+        ("      32767           ", (0x7FFF, 0x0000)),
+        ("      32768           ", (0x8000, 0x0000)),
+        ("      32769           ", (0x8001, 0x0000)),
+        ("      65535     0xFFFF", (0xFFFF, 0x0000)),
+        ("            0x7FFFFFFF", (0xFFFF, 0x7FFF)),
     ]
 
-    for idx, (regs, values) in enumerate(tests):
-        _LOGGER.info("Test 32-bit %d - %s", idx, (regs, values))
-        pack_unpack([regs], [values], bits=32, sign=True)
+    for idx, (text, regs) in enumerate(tests):
+        vals = extract_ints(text)
+        _LOGGER.info("Test 32-bit #%d: %s = %s", idx, vals, regs)
+        val = vals[0]
+        for j in vals:
+            assert j == val
+
+        assert pack_value(val, bits=32, signed=True) == regs
+        assert unpack_value(regs, signed=True) == val
 
 
 def test_signeds() -> None:

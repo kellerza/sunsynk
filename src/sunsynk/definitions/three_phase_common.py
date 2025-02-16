@@ -20,6 +20,7 @@ from sunsynk.sensors import (
     InverterStateSensor,
     MathSensor,
     Sensor,
+    Sensor16,
     TempSensor,
 )
 
@@ -29,10 +30,10 @@ SENSORS = COMMON.copy()
 # Inverter Power
 #################
 SENSORS += (
-    Sensor((633, 691), "Inverter L1 power", WATT, -1),
-    Sensor((634, 692), "Inverter L2 power", WATT, -1),
-    Sensor((635, 693), "Inverter L3 power", WATT, -1),
-    Sensor((636, 694), "Inverter power", WATT, -1),
+    Sensor16((633, 691), "Inverter L1 power", WATT, -1),
+    Sensor16((634, 692), "Inverter L2 power", WATT, -1),
+    Sensor16((635, 693), "Inverter L3 power", WATT, -1),
+    Sensor16((636, 694), "Inverter power", WATT, -1),
     Sensor(627, "Inverter L1 voltage", VOLT, 0.1),
     Sensor(628, "Inverter L2 voltage", VOLT, 0.1),
     Sensor(629, "Inverter L3 voltage", VOLT, 0.1),
@@ -47,25 +48,25 @@ SENSORS += (
 #############
 SENSORS += (
     Sensor(609, "Grid frequency", "Hz", 0.01),
-    Sensor((622, 687), "Grid L1 power", WATT, -1),  # aPower
-    Sensor((623, 688), "Grid L2 power", WATT, -1),  # bPower
-    Sensor((624, 689), "Grid L3 power", WATT, -1),  # cPow
-    Sensor((625, 690), "Grid power", WATT, -1),  # gridTotalPac
+    Sensor16((622, 687), "Grid L1 power", WATT, -1),  # aPower
+    Sensor16((623, 688), "Grid L2 power", WATT, -1),  # bPower
+    Sensor16((624, 689), "Grid L3 power", WATT, -1),  # cPow
+    Sensor16((625, 690), "Grid power", WATT, -1),  # gridTotalPac
     Sensor(598, "Grid L1 voltage", VOLT, 0.1),  # aLineVolt
     Sensor(599, "Grid L2 voltage", VOLT, 0.1),  # bLineVolt
     Sensor(600, "Grid L3 voltage", VOLT, 0.1),  # cLineVolt
-    Sensor((604, 700), "A Phase Power on the Inner Side of the Grid", "W", -1),
-    Sensor((605, 701), "B Phase Power on the Inner Side of the Grid", "W", -1),
-    Sensor((606, 702), "C Phase Power on the Inner Side of the Grid", "W", -1),
-    Sensor((607, 703), "Total Active Power from Side to Side of the Grid", "W", -1),
-    Sensor((608, 704), "Grid Side - Inside Total Apparent Power", "W", -1),
+    Sensor16((604, 700), "A Phase Power on the Inner Side of the Grid", "W", -1),
+    Sensor16((605, 701), "B Phase Power on the Inner Side of the Grid", "W", -1),
+    Sensor16((606, 702), "C Phase Power on the Inner Side of the Grid", "W", -1),
+    Sensor16((607, 703), "Total Active Power from Side to Side of the Grid", "W", -1),
+    Sensor16((608, 704), "Grid Side - Inside Total Apparent Power", "W", -1),
     MathSensor(
         (610, 611, 612), "Grid current", AMPS, factors=(-0.01, -0.01, -0.01)
     ),  # iac1,iac2,iac3
-    Sensor((616, 705), "Grid CT L1 power", WATT, -1),  # aPower
-    Sensor((617, 706), "Grid CT L2 power", WATT, -1),  # bPower
-    Sensor((618, 707), "Grid CT L3 power", WATT, -1),  # cPower
-    Sensor((619, 708), "Grid CT power", WATT, -1),  # totalPower
+    Sensor16((616, 705), "Grid CT L1 power", WATT, -1),  # aPower
+    Sensor16((617, 706), "Grid CT L2 power", WATT, -1),  # bPower
+    Sensor16((618, 707), "Grid CT L3 power", WATT, -1),  # cPower
+    Sensor16((619, 708), "Grid CT power", WATT, -1),  # totalPower
     MathSensor(
         (613, 614, 615), "Grid CT current", AMPS, factors=(-0.01, -0.01, -0.01)
     ),  # iac1,iac2,iac3
@@ -75,10 +76,10 @@ SENSORS += (
 # Load Power
 #############
 SENSORS += (
-    Sensor((650, 656), "Load L1 power", WATT, -1),
-    Sensor((651, 657), "Load L2 power", WATT, -1),
-    Sensor((652, 658), "Load L3 power", WATT, -1),
-    Sensor((653, 659), "Load power", WATT, -1),
+    Sensor16((650, 656), "Load L1 power", WATT, -1),
+    Sensor16((651, 657), "Load L2 power", WATT, -1),
+    Sensor16((652, 658), "Load L3 power", WATT, -1),
+    Sensor16((653, 659), "Load power", WATT, -1),
     Sensor(644, "Load L1 voltage", VOLT, 0.1),
     Sensor(645, "Load L2 voltage", VOLT, 0.1),
     Sensor(646, "Load L3 voltage", VOLT, 0.1),
@@ -91,10 +92,10 @@ SENSORS += (
     Sensor(661, "Gen L1 voltage", VOLT, 0.1),
     Sensor(662, "Gen L2 voltage", VOLT, 0.1),
     Sensor(663, "Gen L3 voltage", VOLT, 0.1),
-    Sensor((664, 668), "Gen L1 power", WATT, -1),
-    Sensor((665, 669), "Gen L2 power", WATT, -1),
-    Sensor((666, 670), "Gen L3 power", WATT, -1),
-    Sensor((667, 671), "Gen power", WATT, -1),
+    Sensor16((664, 668), "Gen L1 power", WATT, -1),
+    Sensor16((665, 669), "Gen L2 power", WATT, -1),
+    Sensor16((666, 670), "Gen L3 power", WATT, -1),
+    Sensor16((667, 671), "Gen power", WATT, -1),
     Sensor(671, "Gen L1 current", AMPS, -0.01),
     Sensor(672, "Gen L2 current", AMPS, -0.01),
     Sensor(673, "Gen L3 current", AMPS, -0.01),

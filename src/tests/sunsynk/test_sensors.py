@@ -13,6 +13,7 @@ from sunsynk.sensors import (
     MathSensor,
     SDStatusSensor,
     Sensor,
+    Sensor16,
     SerialSensor,
     TempSensor,
 )
@@ -93,6 +94,17 @@ def test_sensor_hash() -> None:
     b = BinarySensor((0,), "b1")
     ss = {s, m, b}
     assert len(ss) == 3
+
+
+def test_sensor16() -> None:
+    with pytest.raises(Exception):
+        Sensor16((1,), "nope")
+    s = Sensor16((1, 2), "power", "W", -1)
+    assert s.maybe16 is True
+    assert s.reg_to_value((0xFFFF, 0x0)) == -1
+    assert s.reg_to_value((0x0, 0x1)) == 0x10000
+    assert s.maybe16 is False
+    assert s.reg_to_value((0xFFFF, 0x0)) == 0xFFFF
 
 
 def test_group() -> None:
