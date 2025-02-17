@@ -1,7 +1,7 @@
 """Sunsynk/Deye hybrid 3-phase high voltage (HV) inverter sensor definitions."""
 
 from sunsynk import AMPS, CELSIUS, VOLT, WATT
-from sunsynk.definitions.three_phase_common import SENSORS
+from sunsynk.definitions.three_phase_common import RATED_POWER, SENSORS
 from sunsynk.rwsensors import (
     NumberRWSensor,
     SelectRWSensor,
@@ -57,8 +57,6 @@ SENSORS += (
 ##########
 # General
 ##########
-RATED_POWER = Sensor((20, 21), "Rated power", WATT, 0.1)
-
 SENSORS += (
     HVFaultSensor((555, 556, 557, 558), "Fault"),
     EnumSensor(

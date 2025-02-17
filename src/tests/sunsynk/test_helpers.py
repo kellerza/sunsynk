@@ -42,6 +42,16 @@ def test_ensure_tuple() -> None:
     assert ensure_tuple("a") == ("a",)
 
 
+def test_hex_str() -> None:
+    """Test hex str."""
+    assert hex_str((1, 2)) == "{0x0001 0x0002}"
+    assert hex_str((1, 2), address=(10, 20)) == "{10=0x0001 20=0x0002}"
+    with pytest.raises(ValueError):
+        assert hex_str((1, 2), address=(10,))
+    with pytest.raises(TypeError):
+        assert hex_str(1, address=(10, 12))  # type: ignore
+
+
 def test_int_round() -> None:
     """Test int round."""
     res1 = int_round(1.0)
@@ -78,8 +88,8 @@ def test_pack_unpack_16bits() -> None:
         for j in vals:
             assert j == val
 
-        assert pack_value(val, bits=16, signed=True) == regs
-        assert unpack_value(regs, signed=True) == val
+        assert pack_value(val, bits=16) == regs
+        assert unpack_value(regs) == val
 
 
 def test_pack_unpack_32bits() -> None:
@@ -89,6 +99,7 @@ def test_pack_unpack_32bits() -> None:
         ("     -65510           ", (0x001A, 0xFFFF)),
         ("     -65509    -0xFFE5", (0x001B, 0xFFFF)),
         ("     -32768           ", (0x8000, 0xFFFF)),
+        ("         -2           ", (0xFFFE, 0xFFFF)),
         ("         -1           ", (0xFFFF, 0xFFFF)),
         ("          0           ", (0x0000, 0x0000)),
         ("          1           ", (0x0001, 0x0000)),
@@ -106,8 +117,50 @@ def test_pack_unpack_32bits() -> None:
         for j in vals:
             assert j == val
 
-        assert pack_value(val, bits=32, signed=True) == regs
-        assert unpack_value(regs, signed=True) == val
+        assert pack_value(val, bits=32) == regs
+        assert unpack_value(regs) == val
+
+
+def test_pack_unpack_maybe16() -> None:
+    """Test maybe16."""
+    for m16 in [True, False]:
+        assert unpack_value((0x7FFF, 0x0000), maybe16=m16) == 32767
+        assert unpack_value((0xFFFF, 0xFFFF), maybe16=m16) == -1
+
+        assert unpack_value((0xFFFF,), maybe16=m16) == -1
+    assert unpack_value((0xFFFF, 0x0000), maybe16=True) == -1
+    assert unpack_value((0xFFFF, 0x0000), maybe16=False) == 0xFFFF
+
+
+def test_pack_unpack() -> None:
+    """Test pack_value and unpack_value functions."""
+    # Test 16-bit values
+    assert pack_value(-1, bits=16) == (0xFFFF,)
+    assert pack_value(32767, bits=16) == (0x7FFF,)
+    assert pack_value(65535, bits=16, signed=False) == (0xFFFF,)
+    # Test 32-bit values
+    assert pack_value(-1, bits=32) == (0xFFFF, 0xFFFF)
+    assert pack_value(0x7FFFFFFF, bits=32) == (0xFFFF, 0x7FFF)
+    # Test round-trip
+    val = -12345
+    assert unpack_value(pack_value(val, bits=16)) == val
+    assert unpack_value(pack_value(val, bits=32)) == val
+
+    # Test error cases
+    with pytest.raises(struct.error):
+        pack_value(-1, bits=16, signed=False)
+    with pytest.raises(ValueError):
+        pack_value(1, bits=8)  # Invalid bit length
+
+
+def test_patch_bitmask() -> None:
+    """Test patch_bitmask function."""
+    assert patch_bitmask(2, 1, 1) == 3
+    assert patch_bitmask(1, 2, 2) == 3
+
+    assert patch_bitmask(0xFFF, 0, 1) == 0xFFE
+    assert patch_bitmask(0xFFFF, 0, 1) == 0xFFFE
+    assert patch_bitmask(0xFFF, 0, 2) == 0xFFD
 
 
 def test_signeds() -> None:
@@ -153,44 +206,3 @@ def test_time() -> None:
     assert time.minutes == just_before_midnight
     time.reg_value = 2359
     assert time.minutes == just_before_midnight
-
-
-def test_pack_unpack() -> None:
-    """Test pack_value and unpack_value functions."""
-    # Test 16-bit values
-    assert pack_value(-1, bits=16, signed=True) == (0xFFFF,)
-    assert pack_value(32767, bits=16, signed=True) == (0x7FFF,)
-    assert pack_value(65535, bits=16, signed=False) == (0xFFFF,)
-    # Test 32-bit values
-    assert pack_value(-1, bits=32, signed=True) == (0xFFFF, 0xFFFF)
-    assert pack_value(0x7FFFFFFF, bits=32, signed=True) == (0xFFFF, 0x7FFF)
-    # Test round-trip
-    val = -12345
-    assert unpack_value(pack_value(val, bits=16, signed=True), signed=True) == val
-    assert unpack_value(pack_value(val, bits=32, signed=True), signed=True) == val
-
-    # Test error cases
-    with pytest.raises(struct.error):
-        pack_value(-1, bits=16, signed=False)
-    with pytest.raises(ValueError):
-        pack_value(1, bits=8)  # Invalid bit length
-
-
-def test_patch_bitmask() -> None:
-    """Test patch_bitmask function."""
-    assert patch_bitmask(2, 1, 1) == 3
-    assert patch_bitmask(1, 2, 2) == 3
-
-    assert patch_bitmask(0xFFF, 0, 1) == 0xFFE
-    assert patch_bitmask(0xFFFF, 0, 1) == 0xFFFE
-    assert patch_bitmask(0xFFF, 0, 2) == 0xFFD
-
-
-def test_hex_str() -> None:
-    """Test hex str."""
-    assert hex_str((1, 2)) == "{0x0001 0x0002}"
-    assert hex_str((1, 2), address=(10, 20)) == "{10=0x0001 20=0x0002}"
-    with pytest.raises(ValueError):
-        assert hex_str((1, 2), address=(10,))
-    with pytest.raises(TypeError):
-        assert hex_str(1, address=(10, 12))  # type: ignore

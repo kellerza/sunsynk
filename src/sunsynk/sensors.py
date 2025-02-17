@@ -11,6 +11,7 @@ from sunsynk.helpers import (
     RegType,
     ValType,
     ensure_tuple,
+    hex_str,
     int_round,
     slug,
     unpack_value,
@@ -65,24 +66,28 @@ class Sensor16(Sensor):
     """Sensor with a 16-bit/32-bit register registers."""
 
     maybe16: bool = True
+    rated_power: int = 65000
+    log: int = 50
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
         regs = self.masked(regs)
-        if regs[1] > 0:
-            _LOGGER.info(
-                "Sensor %s reported a 32-bit value: %s",
-                self.name,
-                [hex(v) for v in regs],
-            )
-            self.maybe16 = False
         val: NumType = unpack_value(regs, signed=self.factor < 0, maybe16=self.maybe16)
-        # if False:
-        #     if val > 65000 or val < -65000 or any(r >= 0xFFFF for r in regs):
-        #         vals = ", ".join(f"#{r}={hex(v)}" for r, v in zip(self.address, regs))
-        #         _LOGGER.warning("High value %s=%s (%s)", self.id, val, vals)
         val = int_round(float(val) * abs(self.factor))
-        _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
+
+        msg = f"{self.id}={val} {hex_str(regs, address=self.address)}"
+        if self.maybe16 and regs[1] > 0:
+            msg += " 32-bit"
+            self.maybe16 = False
+            self.log = max(1, self.log)
+        if val > self.rated_power or val < -self.rated_power:
+            msg += f" >{self.rated_power}"
+        if self.log > 0:
+            self.log -= 1
+            _LOGGER.info(msg)
+        else:
+            _LOGGER.debug(msg)
+
         return val
 
     def __attrs_post_init__(self) -> None:

@@ -174,7 +174,6 @@ class AInverter:
             manufacturer=OPT.manufacturer,
         )
 
-        expect_16bit_power = self.rated_power > 0x8000  # See issue #398
         ents: list[Entity] = []
         for s in self.ss.values():
             if not s.visible_on(self):
@@ -184,8 +183,8 @@ class AInverter:
             except Exception as err:  # pylint:disable=broad-except
                 _LOGGER.error("Could not create MQTT entity for %s: %s", s, err)
 
-            if expect_16bit_power and isinstance(s.opt.sensor, Sensor16):
-                s.opt.sensor.maybe16 = False
+            if isinstance(s.opt.sensor, Sensor16):
+                s.opt.sensor.rated_power = int(self.rated_power)
         ents.extend(self.create_stats_entities(dev))
         await MQTT.connect(OPT)
         await MQTT.publish_discovery_info(entities=ents)
