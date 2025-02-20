@@ -96,18 +96,20 @@ def test_pack_unpack_32bits() -> None:
     """Test pack & unpack, 32-bit."""
     tests: list[tuple[str, RegType]] = [
         ("-2147483648           ", (0x0000, 0x8000)),
-        ("     -65510           ", (0x001A, 0xFFFF)),
+        ("     -65536   -0x10000", (0x0000, 0xFFFF)),
+        ("     -65535    -0xFFFF", (0x0001, 0xFFFF)),
+        ("     -65510    -0xFFE6", (0x001A, 0xFFFF)),
         ("     -65509    -0xFFE5", (0x001B, 0xFFFF)),
         ("     -32768           ", (0x8000, 0xFFFF)),
         ("         -2           ", (0xFFFE, 0xFFFF)),
         ("         -1           ", (0xFFFF, 0xFFFF)),
         ("          0           ", (0x0000, 0x0000)),
         ("          1           ", (0x0001, 0x0000)),
-        ("      32767           ", (0x7FFF, 0x0000)),
-        ("      32768           ", (0x8000, 0x0000)),
-        ("      32769           ", (0x8001, 0x0000)),
+        ("      32767     0x7FFF", (0x7FFF, 0x0000)),
+        ("      32768     0x8000", (0x8000, 0x0000)),
+        ("      32769     0x8001", (0x8001, 0x0000)),
         ("      65535     0xFFFF", (0xFFFF, 0x0000)),
-        ("            0x7FFFFFFF", (0xFFFF, 0x7FFF)),
+        (" 2147483647 0x7FFFFFFF", (0xFFFF, 0x7FFF)),
     ]
 
     for idx, (text, regs) in enumerate(tests):
