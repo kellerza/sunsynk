@@ -143,3 +143,5 @@ dmypy.json
 .vscode/
 
 .ruff_cache/
+.venv/
+cov.xml
