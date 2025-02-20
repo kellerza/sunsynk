@@ -112,7 +112,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags')
     needs:
       - pytest
-      - lint
+      - pylint
       - mypy
     permissions:
       id-token: write # used for trusted publishing
