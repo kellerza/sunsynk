@@ -152,7 +152,7 @@ class SensorDefinitions:
         if isinstance(item, Sensor):
             self.all[item.id] = item
             return self
-        if isinstance(item, (tuple, list)):
+        if isinstance(item, (tuple | list)):
             for itm in item:
                 self.all[itm.id] = itm
         return self
@@ -173,7 +173,10 @@ class MathSensor(Sensor):
     def reg_to_value(self, regs: RegType) -> ValType:
         """Calculate the math value."""
         val = int_round(
-            sum(unpack_value((i,), signed=True) * s for i, s in zip(regs, self.factors))
+            sum(
+                unpack_value((i,), signed=True) * s
+                for i, s in zip(regs, self.factors, strict=False)
+            )
         )
         if self.absolute and val < 0:
             val = -val
@@ -241,7 +244,7 @@ class SerialSensor(Sensor):
 
 @attrs.define(slots=True, eq=False)
 class EnumSensor(TextSensor):
-    """Sensor with a set of enum values. Like a read-only SelectRWSensor"""
+    """Sensor with a set of enum values. Like a read-only SelectRWSensor."""
 
     options: dict[int, str] = attrs.field(factory=dict)
     unknown: str | None = None

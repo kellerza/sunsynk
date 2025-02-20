@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 from urllib import parse
 
 import attrs
@@ -52,7 +52,7 @@ class USunsynk(Sunsynk):
                 timeout=self.timeout,
             )
             return True
-        except asyncio.TimeoutError:
+        except TimeoutError:
             _LOGGER.error("timeout writing register %s=%s", address, value)
         self.timeouts += 1
         return False

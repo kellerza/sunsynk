@@ -166,7 +166,7 @@ def test_patch_bitmask() -> None:
 
 
 def test_signeds() -> None:
-    """Signed sensors have a -1 factor"""
+    """Signed sensors have a -1 factor."""
     s = Sensor(1, "", "", factor=-1)
     assert s.reg_to_value((1,)) == 1
     assert s.reg_to_value((0xFFFE,)) == -2

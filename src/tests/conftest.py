@@ -1,6 +1,5 @@
 """Global fixtures."""
 
-import os
 import sys
 from importlib import import_module as _import_module
 from pathlib import Path
@@ -36,6 +35,7 @@ def pytest_configure(config: Any) -> None:
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
+    """Skip tests."""
     for mrk in MARKERS:
         if not config.getoption(f"--{mrk}", None):
             skip_mrk = pytest.mark.skip(reason=f"need --{mrk} option to run")
@@ -46,7 +46,7 @@ def pytest_collection_modifyitems(
 
 def import_module(mod_name: str, folder: str) -> ModuleType:
     """import_module."""
-    here = Path(os.getcwd()) / folder
+    here = Path.cwd() / folder
     sys.path.insert(0, str(here))
     try:
         mod_obj = _import_module(mod_name)

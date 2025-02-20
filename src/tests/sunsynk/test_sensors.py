@@ -1,7 +1,8 @@
 """Sunsynk sensor tests."""
 
 import logging
-from typing import Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from itertools import pairwise
 
 import pytest
 
@@ -23,6 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def test_binary_sensor(state: InverterState) -> None:
+    """Tests."""
     a = Sensor(194, "Grid Connected Status")  # Remove in the future?
     b = BinarySensor(194, "Grid Connected")
     state.track(a)
@@ -34,7 +36,7 @@ def test_binary_sensor(state: InverterState) -> None:
     assert b.reg_to_value((255,)) is True
 
     state.update({194: 2})
-    assert a.__hash__() != b.__hash__()
+    assert hash(a) != hash(b)
     assert state.get(a) == 2
     assert state.get(b) is True
 
@@ -63,6 +65,7 @@ def test_binary_sensor(state: InverterState) -> None:
 
 
 def test_sen() -> None:
+    """Tests."""
     s = Sensor(0, "S 1")
     a = [s]
     assert a[0] == s
@@ -84,6 +87,7 @@ def test_sen() -> None:
 
 
 def test_sensor_hash() -> None:
+    """Tests."""
     ss = {Sensor(0, "S 1"), Sensor(0, "S 1")}
     assert len(ss) == 1
     ss = {Sensor(0, "S 1"), Sensor(0, "S 2")}
@@ -97,7 +101,8 @@ def test_sensor_hash() -> None:
 
 
 def test_sensor16() -> None:
-    with pytest.raises(Exception):
+    """Tests."""
+    with pytest.raises(AssertionError):
         Sensor16((1,), "nope")
     s = Sensor16((1, 2), "power", "W", -1)
     assert s.maybe16 is True
@@ -108,6 +113,7 @@ def test_sensor16() -> None:
 
 
 def test_group() -> None:
+    """Tests."""
     sen = [
         Sensor(10, "10"),
         Sensor(11, "11"),
@@ -121,6 +127,7 @@ def test_group() -> None:
 
 
 def test_group_max_size() -> None:
+    """Tests."""
     sen = [
         Sensor(10, "10"),
         Sensor(11, "11"),
@@ -147,6 +154,7 @@ def test_group_max_size() -> None:
 
 
 def test_all_groups() -> None:
+    """Tests."""
     s = [SENSORS.all[s] for s in SENSORS.all]
     for i in range(2, 6):
         _LOGGER.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
@@ -160,16 +168,17 @@ def test_all_groups() -> None:
 
 def waste(groups: Iterable[list[int]]) -> Sequence[int]:
     """Calculate amount of unused registers in this grouping."""
-    return [sum(b - a for a, b in zip(g[:-1], g[1:])) for g in groups]
+    return [sum(b - a for a, b in pairwise(g)) for g in groups]
 
 
 def test_ids() -> None:
+    """Tests."""
     for name, sen in SENSORS.all.items():
         assert name == sen.id
 
         try:
             if sen.factor and sen.factor < 0 and len(sen.address) > 1:
-                assert False, "only single signed supported"
+                raise AssertionError("only single signed supported")
         except TypeError:
             _LOGGER.error("Sensor %s, factor=%s", name, sen.factor)
             raise
@@ -183,6 +192,7 @@ def test_ids() -> None:
 
 
 def test_other_sensors() -> None:
+    """Tests."""
     s: Sensor = TempSensor(1, "", "", 0.1)
     assert s.reg_to_value((1000,)) == 0
 
@@ -196,11 +206,12 @@ def test_other_sensors() -> None:
 
 
 def test_math() -> None:
+    """Tests."""
     s = MathSensor((1, 2), "", "", factors=(1, -1))
     assert s.reg_to_value((1000, 800)) == 200
 
     with pytest.raises(AssertionError):
-        MathSensor((0, 1), "", "", factors=(1))
+        MathSensor((0, 1), "", "", factors=(1,))
 
     with pytest.raises(AssertionError):
         MathSensor((0, 1), "", "", factors="aaa")
@@ -219,6 +230,7 @@ def test_math() -> None:
 
 
 def test_update_func() -> None:
+    """Tests."""
     s = SerialSensor(1, "", "")
     regs = (0x4148, 0x3738)
     assert s.reg_to_value(regs) == "AH78"
@@ -237,6 +249,7 @@ def test_update_func() -> None:
 
 
 def test_decode_fault() -> None:
+    """Tests."""
     s = FaultSensor(1, "", "")
     regs = (0x01, 0x0, 0x0, 0x0)
     assert s.reg_to_value(regs) == "F01"

@@ -11,7 +11,6 @@ from sunsynk.usunsynk import USunsynk
 
 def test_init() -> None:
     """Test init."""
-
     with pytest.raises(ValueError):
         OPT.driver = "bad"
         init_driver(OPT)

@@ -3,8 +3,8 @@
 import asyncio
 import logging
 from collections import defaultdict
+from collections.abc import Iterable
 from textwrap import wrap
-from typing import Iterable
 
 import attrs
 from prettytable import PrettyTable
@@ -84,7 +84,7 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:
     read_s, report_s = _build_schedules(ist.index)
 
     async def callback_sensor(now: int) -> None:
-        """read or write sensors"""
+        """Read or write sensors."""
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
 
@@ -166,7 +166,7 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:
                 srun.next_run = now + sec
 
         if pub:
-            asyncio.create_task(ist.publish_sensors(states=pub))
+            asyncio.create_task(ist.publish_sensors(states=pub))  # noqa
 
     return AsyncCallback(
         name=f"read {ist.opt.ha_prefix}",

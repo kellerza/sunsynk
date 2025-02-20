@@ -53,4 +53,4 @@ def import_defs(name: str) -> SensorDefinitions:
         libname,
     )
     mod = import_module(f"sunsynk.definitions.{libname}")
-    return getattr(mod, "SENSORS")
+    return mod.SENSORS

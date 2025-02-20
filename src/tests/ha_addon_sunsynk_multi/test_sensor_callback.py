@@ -1,3 +1,5 @@
+"""Test sensor callbacks."""
+
 from asyncio import iscoroutinefunction
 from collections import defaultdict
 from unittest.mock import Mock, call, patch
@@ -30,7 +32,7 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
     ):
         mycb = build_callback_schedule(ist)
         if not iscoroutinefunction(mycb.callback):
-            assert False, "Callback is not a coroutine"
+            raise AssertionError("Callback is not a coroutine")
 
         assert mycb is not None
         assert read_s == {

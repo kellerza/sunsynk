@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 from urllib.parse import urlparse
 
 import attrs
@@ -75,7 +75,7 @@ class SolarmanSunsynk(Sunsynk):
             )
             _LOGGER.debug("DBG: write_register: %s ==> %s", [value], res)
             return True
-        except asyncio.TimeoutError:
+        except TimeoutError:
             _LOGGER.error("timeout writing register %s=%s", address, value)
             await self.disconnect()
         except Exception as err:  # pylint: disable=broad-except
@@ -97,5 +97,5 @@ class SolarmanSunsynk(Sunsynk):
                 _LOGGER.error("Error reading: %s (retry %s)", err, attempt)
                 await self.disconnect()
                 if attempt >= RETRY_ATTEMPTS:
-                    raise IOError(f"Failed to read register {start}") from err
+                    raise OSError(f"Failed to read register {start}") from err
                 await asyncio.sleep(2)

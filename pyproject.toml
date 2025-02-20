@@ -53,6 +53,17 @@ tests = [
 disallow_untyped_defs = true
 ignore_missing_imports = true
 
+[tool.pylint]
+extension-pkg-whitelist = ["orjson"]
+
+[tool.pylint.'MESSAGES CONTROL']
+good-names = ["db", "fr", "cr", "k", "i", "ui"]
+enable = ["W", "E", "F"]
+disable = ["R", "unused-argument", "line-too-long"]
+
+[tool.pylint.design]
+max-returns = 8
+
 [tool.pytest.ini_options]
 pythonpath = [".", "src"]
 filterwarnings = "ignore:.+@coroutine.+deprecated.+"
@@ -64,8 +75,6 @@ asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
 [tool.ruff]
-line-length = 121
-indent-width = 4
 target-version = "py311"
 src = ["src", "test"]
 include = ["src/tests/*.py", "src/**/*.pyi"]
@@ -79,8 +88,21 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint]
-select = ["F", "E", "W", "I001"]
-ignore = ["E203", "E501"]
+select = [
+    "B",   # bugbear
+    "D",   # pydocstyle
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # isort
+    "PIE", # flake8-pie
+    "PTH", # flake8-pathlib
+    "PYI", # flake8-pyi
+    "RUF", # ruff
+    "UP",  # pyupgrade
+    "W",   # pycodestyle
+]
+#select = ["F", "E", "W", "I001"]
+ignore = ["E203", "E501", "D203"]
 
 [tool.setuptools]
 license-files = [] # https://github.com/astral-sh/uv/issues/9513

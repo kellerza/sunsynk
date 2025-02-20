@@ -18,7 +18,7 @@ HASS_DISCOVERY_INFO_UPDATE_QUEUE: set[Sensor] = set()
 
 
 async def callback_discovery_info(now: int) -> None:
-    """Called every tick to update HASS discovery & write RWSensors."""
+    """Update HASS discovery & write RWSensors."""
     # Flush any pending discovery info updates
     if HASS_DISCOVERY_INFO_UPDATE_QUEUE:
         for ist in STATE:
@@ -49,7 +49,7 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
 
 
 def init_driver(opt: Options) -> None:
-    """Setup the Sunsynk drivers for each inverter and inits STATE."""
+    """Init Sunsynk driver for each inverter."""
     # pylint: disable=import-outside-toplevel
 
     factory = Sunsynk

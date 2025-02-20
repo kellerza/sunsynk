@@ -1,6 +1,6 @@
 """Addon fixtures."""
 
-from unittest.mock import AsyncMock, MagicMock, Mock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from mqtt_entity import Device  # type: ignore
@@ -23,12 +23,9 @@ def mqtt_device() -> Device:
 @pytest.fixture
 def ist() -> AInverter:
     """Return an MQTT device and ensure there is a HA prefix for create_entities."""
-    ist = MagicMock(spec_set=AInverter)
-    ist.inv = Mock()
-    ist.inv.connect = AsyncMock()
-    ist.inv.state = MagicMock(spec_set=InverterState)
-    ist.opt = InverterOptions(ha_prefix="ss1")
-    return ist
-    # inv = Mock()
-    # inv.state = {}
-    # return AInverter(inv=inv, opt=InverterOptions(ha_prefix="ss1"), ss={})
+    inv = MagicMock(spec_set=AInverter)
+    # inv.inv = Mock()
+    inv.inv.connect = AsyncMock()
+    inv.inv.state = MagicMock(spec_set=InverterState)
+    inv.opt = InverterOptions(ha_prefix="ss1")
+    return inv

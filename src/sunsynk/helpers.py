@@ -24,6 +24,7 @@ def pack_value(value: int, bits: int = 16, signed: bool = True) -> RegType:
     Returns:
         For 16-bit: single register value
         For 32-bit: tuple of (low, high) register values
+
     """
     if bits == 16:
         fmt = "<h" if signed else "<H"
@@ -44,6 +45,7 @@ def unpack_value(regs: RegType, *, signed: bool = True, maybe16: bool = False) -
 
     Returns:
         Unpacked integer value
+
     """
     # All inverters are little-endian <
     # h = short, H = unsigned short, i = int, I = unsigned int
@@ -86,7 +88,7 @@ def int_round(val: NumType) -> NumType:
 
 def as_num(val: ValType) -> float | int:
     """Convert to float."""
-    if isinstance(val, (float, int)):
+    if isinstance(val, (float | int)):
         return val
     if val is None:
         return 0

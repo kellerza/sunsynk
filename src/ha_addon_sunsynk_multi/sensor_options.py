@@ -2,7 +2,7 @@
 
 import logging
 import traceback
-from typing import Generator, Iterable
+from collections.abc import Generator, Iterable
 
 import attrs
 

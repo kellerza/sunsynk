@@ -1,6 +1,5 @@
 """Sunsync Modbus interface."""
 
-import asyncio
 import logging
 import typing
 from urllib.parse import urlparse
@@ -87,7 +86,7 @@ class PySunsynk(Sunsynk):
             if res.function_code < 0x80:  # test that we are not an error
                 return True
             _LOGGER.error("failed to write register %s=%s", address, value)
-        except (asyncio.TimeoutError, TimeoutError):
+        except TimeoutError:
             _LOGGER.error("timeout writing register %s=%s", address, value)
         self.timeouts += 1
         return False
@@ -101,7 +100,7 @@ class PySunsynk(Sunsynk):
             address=start, count=length, slave=self.server_id
         )
         if res.function_code >= 0x80:  # test that we are not an error
-            raise IOError(
+            raise OSError(
                 f"failed to read register {start} - function code: {res.function_code}"
             )
         return res.registers

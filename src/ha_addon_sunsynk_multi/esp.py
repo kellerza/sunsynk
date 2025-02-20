@@ -95,7 +95,7 @@ class ESP:
         self.statefile.write_text(json.dumps(val, indent=2), encoding="utf-8")
 
     async def callback(self, _now: int) -> None:
-        """Callback for ESP."""
+        """ESP callback."""
         try:
             if not self.state:
                 await self.init()

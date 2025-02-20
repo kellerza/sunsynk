@@ -11,6 +11,7 @@ from sunsynk.state import InverterState
 
 @pytest.mark.asyncio
 async def test_pyss() -> None:
+    """Tests."""
     ss = PySunsynk()
     with pytest.raises(ConnectionError):
         await ss.connect()
@@ -45,6 +46,7 @@ async def test_ss_tcp_connect(
     async_connect: PropertyMock,
     state: InverterState,
 ) -> None:
+    """Tests."""
     ss = PySunsynk(port="tcp://1.1.1.1")
     ss.state = state
 
@@ -77,6 +79,7 @@ async def test_ss_tcp_read(
     async_connect: PropertyMock,
     state: InverterState,
 ) -> None:
+    """Tests."""
     ss = PySunsynk(port="tcp://1.1.1.1")
     ss.state = state
 
@@ -111,6 +114,7 @@ async def test_ss_tcp_write(
     state: InverterState,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    """Tests."""
     ss = PySunsynk(port="tcp://1.1.1.1")
     ss.state = state
 
@@ -142,6 +146,7 @@ async def test_ss_tcp_write(
 @pytest.mark.asyncio
 @patch("sunsynk.pysunsynk.AsyncModbusSerialClient", async_connected=PropertyMock)
 async def test_ss_serial(serialc: MagicMock, state: InverterState) -> None:
+    """Tests."""
     ss = PySunsynk(port="/dev/tty0")
     ss.state = state
 

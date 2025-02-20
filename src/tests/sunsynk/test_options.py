@@ -9,6 +9,7 @@ from ha_addon_sunsynk_multi.options import OPT, Schedule
 
 
 def test_load() -> None:
+    """Tests."""
     OPT.prog_time_interval = 15
     assert OPT.prog_time_interval != 30
     OPT.load({"PROG_TIME_interval": "30"})
@@ -16,6 +17,7 @@ def test_load() -> None:
 
 
 def test_load_env() -> None:
+    """Tests."""
     OPT.prog_time_interval = 15
     assert OPT.prog_time_interval != 30
     test_environ = {
@@ -36,6 +38,7 @@ def test_load_env() -> None:
 
 
 def test_load_env_bad() -> None:
+    """Tests."""
     OPT.prog_time_interval = 15
     assert OPT.prog_time_interval != 30
     test_environ = {

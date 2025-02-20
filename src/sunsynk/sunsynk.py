@@ -3,7 +3,8 @@
 import asyncio
 import logging
 import time
-from typing import Iterable, Sequence, TypedDict
+from collections.abc import Iterable, Sequence
+from typing import TypedDict
 
 import attrs
 
@@ -102,7 +103,7 @@ class Sunsynk:
                     grp[0],
                     f"{perf:.2f}",
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 errs.append(f"timeout reading {glen} registers from {grp[0]}")
                 self.timeouts += 1
                 continue
@@ -131,7 +132,7 @@ class Sunsynk:
 
         self.state.update(new_regs)
         if errs:
-            raise IOError("; ".join(errs))
+            raise OSError("; ".join(errs))
 
 
 class SunsynkInitParameters(TypedDict):

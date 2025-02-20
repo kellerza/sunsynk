@@ -34,6 +34,7 @@ async def test_uss_schemes() -> None:
 
 @pytest.mark.asyncio
 async def test_uss_sensor() -> None:
+    """Tests."""
     ss = USunsynk(port="tcp://127.0.0.1:502")
     await ss.connect()
 

@@ -61,7 +61,7 @@ class Options:
         except Exception as exc:
             msg = "Error loading config: " + "\n".join(transform_error(exc))
             _LOGGER.error(msg)
-            raise ValueError(msg)  # pylint:disable=raise-missing-from
+            raise ValueError(msg) from None
         for key in value:
             setattr(self, key.lower(), getattr(val, key.lower()))
 
@@ -124,7 +124,7 @@ def init_options() -> None:
 CONVERTER = Converter(forbid_extra_keys=True)
 
 
-def structure_ensure_lowercase_keys(cls: t.Type) -> t.Callable[[t.Any, t.Any], t.Any]:
+def structure_ensure_lowercase_keys(cls: type) -> t.Callable[[t.Any, t.Any], t.Any]:
     """Convert any uppercase keys to lowercase."""
     struct = make_dict_structure_fn(cls, CONVERTER)  # type: ignore
 

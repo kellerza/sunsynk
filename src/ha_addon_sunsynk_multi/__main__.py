@@ -23,7 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def main_loop() -> None:
-    """Main async loop."""
+    """Entry point."""
     asyncio.get_event_loop().set_debug(OPT.debug > 0)
 
     # MQTT availability will always use first inverter's serial
@@ -42,8 +42,7 @@ async def main_loop() -> None:
         except (ConnectionError, ValueError) as err:
             ist.log_bold(str(err))
             _LOGGER.critical(
-                "This Add-On will terminate in 30 seconds, "
-                "use the Supervisor Watchdog to restart automatically."
+                "This Add-On will terminate in 30 seconds, use the Supervisor Watchdog to restart automatically."
             )
             await asyncio.sleep(30)
             return
@@ -56,7 +55,7 @@ async def main_loop() -> None:
 
 
 def main() -> None:
-    """Main."""
+    """Entry point."""
     init_options()
     try:
         _LOGGER.info("sunsynk library version: %s", VERSION)
