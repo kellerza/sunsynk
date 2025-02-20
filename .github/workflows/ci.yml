@@ -22,7 +22,7 @@ on:
 env:
   RUFF_VERSION: 0.9.7
   UV_VERSION: 0.6.2
-  PIP_INSTALL: uv pip install aiohttp .[pymodbus,umodbus,solarman,tests]
+  PIP_INSTALL: aiohttp .[pymodbus,umodbus,solarman,tests]
 
 jobs:
   ruff:
