@@ -96,7 +96,7 @@ jobs:
         run: |
           mkdir -p hass-addon-sunsynk-multi/sunsynk
           cp -r src hass-addon-sunsynk-multi/sunsynk/
-          cp setup.* README.md hass-addon-sunsynk-multi/sunsynk/
+          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock LI hass-addon-sunsynk-multi/sunsynk/
 
       - name: Set up the correct base image based on platform
         run: |
