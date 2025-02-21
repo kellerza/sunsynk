@@ -2,6 +2,18 @@ FROM ghcr.io/kellerza/hass-addon-sunsynk-multi:0.8.2
 
 # Install sunsynk from local source
 COPY sunsynk sunsynk
-RUN pip3 install -e ./sunsynk[pymodbus,umodbus,solarman] --no-cache-dir --disable-pip-version-check
+
+RUN set -x \
+    # && apk add --no-cache --virtual .build-deps \
+    #     build-base \
+    && curl -LsSf https://astral.sh/uv/0.6.2/install.sh | sh \
+    && export PATH="$HOME/.local/bin:$PATH" \
+    && uv venv \
+    && uv pip install --index-strategy unsafe-best-match \
+        aiohttp \
+        ./sunsynk[umodbus,solarman] \
+    # && apk del .build-deps
+
+    && true
 
 COPY rootfs /

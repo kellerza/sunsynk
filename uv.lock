@@ -501,13 +501,11 @@ dependencies = [
     { name = "jmespath" },
     { name = "mqtt-entity" },
     { name = "prettytable" },
+    { name = "pymodbus", extra = ["serial"] },
     { name = "pyyaml" },
 ]
 
 [package.optional-dependencies]
-pymodbus = [
-    { name = "pymodbus", extra = ["serial"] },
-]
 solarman = [
     { name = "pysolarmanv5" },
 ]
@@ -538,7 +536,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'tests'" },
     { name = "prettytable", specifier = "==3.14.0" },
     { name = "pylint", marker = "extra == 'tests'", specifier = "==3.3.4" },
-    { name = "pymodbus", extras = ["serial"], marker = "extra == 'pymodbus'", specifier = "==3.8.6" },
+    { name = "pymodbus", extras = ["serial"], specifier = "==3.8.6" },
     { name = "pysolarmanv5", marker = "extra == 'solarman'", specifier = "==3.0.6" },
     { name = "pytest", marker = "extra == 'tests'" },
     { name = "pytest-asyncio", marker = "extra == 'tests'" },
@@ -549,7 +547,7 @@ requires-dist = [
     { name = "types-pyyaml", marker = "extra == 'tests'" },
     { name = "umodbus", marker = "extra == 'umodbus'", specifier = "==1.0.4" },
 ]
-provides-extras = ["umodbus", "pymodbus", "solarman", "tests"]
+provides-extras = ["umodbus", "solarman", "tests"]
 
 [[package]]
 name = "tomli"

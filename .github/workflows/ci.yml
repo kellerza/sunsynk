@@ -22,7 +22,7 @@ on:
 env:
   RUFF_VERSION: 0.9.7
   UV_VERSION: 0.6.2
-  PIP_INSTALL: aiohttp .[pymodbus,umodbus,solarman,tests]
+  PIP_INSTALL: aiohttp .[umodbus,solarman,tests]
 
 jobs:
   ruff:
@@ -50,7 +50,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          version: "0.6.2"
+          version: ${{ env.UV_VERSION }}
       - name: Install Requirements
         run: uv pip install --system ${{ env.PIP_INSTALL }}
       - name: Run Pylint
@@ -69,7 +69,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          version: "0.6.2"
+          version: ${{ env.UV_VERSION }}
       - name: Install Requirements
         run: uv pip install --system ${{ env.PIP_INSTALL }}
       - name: Run mypy

@@ -7,9 +7,12 @@ COPY sunsynk sunsynk
 RUN set -x \
     && apk add --no-cache --virtual .build-deps \
         build-base \
-    && pip3 install --no-cache-dir --disable-pip-version-check \
+    && curl -LsSf https://astral.sh/uv/0.6.2/install.sh | sh \
+    && export PATH="$HOME/.local/bin:$PATH" \
+    && uv venv \
+    && uv pip install --index-strategy unsafe-best-match \
         aiohttp \
-        ./sunsynk[pymodbus,umodbus,solarman] \
+        ./sunsynk[umodbus,solarman] \
     && apk del .build-deps
 
 COPY rootfs /
