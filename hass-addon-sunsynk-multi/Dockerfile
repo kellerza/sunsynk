@@ -5,7 +5,7 @@ FROM ${BUILD_FROM}
 LABEL maintainer="Johann Kellerman <kellerza@gmail.com>"
 
 # The installer requires curl (and certificates) to download the release archive
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+# RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
 
 # Download the latest installer
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
