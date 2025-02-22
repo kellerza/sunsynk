@@ -105,4 +105,6 @@ select = [
 ignore = ["E203", "E501", "D203"]
 
 [tool.setuptools]
-license-files = [] # https://github.com/astral-sh/uv/issues/9513
+license-files = []                               # https://github.com/astral-sh/uv/issues/9513
+package-dir = { "" = "src" }
+packages = ["sunsynk", "ha_addon_sunsynk_multi"]

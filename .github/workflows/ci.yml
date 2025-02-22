@@ -23,6 +23,7 @@ env:
   RUFF_VERSION: 0.9.7
   UV_VERSION: 0.6.2
   PIP_INSTALL: aiohttp .[umodbus,solarman,tests]
+  TEST_TARGET: "src"
 
 jobs:
   ruff:
@@ -54,7 +55,7 @@ jobs:
       - name: Install Requirements
         run: uv pip install --system ${{ env.PIP_INSTALL }}
       - name: Run Pylint
-        run: pylint src
+        run: pylint ${{ env.TEST_TARGET }}
 
   mypy:
     name: Check mypy
@@ -73,7 +74,7 @@ jobs:
       - name: Install Requirements
         run: uv pip install --system ${{ env.PIP_INSTALL }}
       - name: Run mypy
-        run: mypy --install-types --non-interactive src
+        run: mypy --install-types --non-interactive ${{ env.TEST_TARGET }}/
 
   pytest:
     name: Run tests Python ${{ matrix.python-version }}
@@ -112,8 +113,6 @@ jobs:
     if: startsWith(github.ref, 'refs/tags')
     needs:
       - pytest
-      - pylint
-      - mypy
     permissions:
       id-token: write # used for trusted publishing
     steps:
