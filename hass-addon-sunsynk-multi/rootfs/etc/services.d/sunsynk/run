@@ -5,4 +5,4 @@
 # Addon example: https://github.com/home-assistant/addons-example
 # ==============================================================================
 
-python3 -m ha_addon_sunsynk_multi
+uv run python -m ha_addon_sunsynk_multi
