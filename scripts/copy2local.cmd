@@ -6,9 +6,6 @@ rem xcopy /Y hass-addon-mbusd \\192.168.1.7\addons\hass-addon-mbusd\
 EXIT /B %ERRORLEVEL%
 
 :copy2
-echo # Copy local Dockerfile
-xcopy /Y %~1\Dockerfile.local %~2\Dockerfile
-
 echo # Modify Config for local testing
 set cf=%~1\config.localtest.yaml
 cp %~1\config.yaml %cf%

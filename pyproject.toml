@@ -38,6 +38,13 @@ Homepage = "https://kellerza.github.io/sunsynk/"
 [project.optional-dependencies]
 umodbus = ["async_modbus==0.2.2", "connio==0.2.0", "umodbus==1.0.4"]
 solarman = ["pysolarmanv5==3.0.6"]
+addon = [
+    "aiohttp==3.11.12",
+    "async_modbus==0.2.2",
+    "connio==0.2.0",
+    "pysolarmanv5==3.0.6",
+    "umodbus==1.0.4",
+]
 tests = [
     "mypy",
     "pylint==3.3.4",
@@ -105,6 +112,4 @@ select = [
 ignore = ["E203", "E501", "D203"]
 
 [tool.setuptools]
-license-files = []                               # https://github.com/astral-sh/uv/issues/9513
-package-dir = { "" = "src" }
-packages = ["sunsynk", "ha_addon_sunsynk_multi"]
+license-files = [] # https://github.com/astral-sh/uv/issues/9513
