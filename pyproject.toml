@@ -47,7 +47,7 @@ addon = [
 ]
 tests = [
     "mypy",
-    "pylint==3.3.4",
+    "pylint==3.3.6",
     "pytest-asyncio",
     "pytest-cov",
     "pytest-github-actions-annotate-failures",
