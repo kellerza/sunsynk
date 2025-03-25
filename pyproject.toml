@@ -26,7 +26,7 @@ dependencies = [
     "cattrs==24.1.2",
     "jmespath==1.0.1",
     "mqtt-entity==0.0.4",
-    "prettytable==3.15.1",
+    "prettytable==3.16.0",
     "pymodbus[serial]==3.8.6",
     "pyyaml==6.0.2",
 ]
