@@ -39,7 +39,7 @@ Homepage = "https://kellerza.github.io/sunsynk/"
 umodbus = ["async_modbus==0.2.2", "connio==0.2.0", "umodbus==1.0.4"]
 solarman = ["pysolarmanv5==3.0.6"]
 addon = [
-    "aiohttp==3.11.14",
+    "aiohttp==3.11.15",
     "async_modbus==0.2.2",
     "connio==0.2.0",
     "pysolarmanv5==3.0.6",
