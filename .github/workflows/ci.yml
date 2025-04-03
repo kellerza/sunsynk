@@ -54,7 +54,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run Pylint
-        run: pylint ${{ env.TEST_TARGET }}
+        run: uv run pylint ${{ env.TEST_TARGET }}
 
   mypy:
     name: Check mypy
@@ -73,7 +73,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run mypy
-        run: mypy --install-types --non-interactive ${{ env.TEST_TARGET }}/
+        run: uv run mypy --install-types --non-interactive ${{ env.TEST_TARGET }}/
 
   pytest:
     name: Run tests Python ${{ matrix.python-version }}
@@ -98,7 +98,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run tests and generate coverage report
-        run: pytest
+        run: uv run pytest
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
