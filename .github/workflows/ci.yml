@@ -54,7 +54,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run Pylint
-        run: uv run pylint ${{ env.TEST_TARGET }}
+        run: uv run pylint ${{ env.TEST_TARGET }} -sn
 
   mypy:
     name: Check mypy
