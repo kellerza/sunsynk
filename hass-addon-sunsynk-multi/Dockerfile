@@ -13,9 +13,7 @@ RUN set -x \
     # && apk add --no-cache --virtual .build-deps \
     #     build-base \
     && curl -LsSf https://astral.sh/uv/0.6.2/install.sh | sh \
-    && uv venv \
-    && uv pip install --index-strategy unsafe-best-match \
-        ./sunsynk[addon]
+    && uv sync --frozen --no-dev --all-extras
     # && apk del .build-deps
 
 COPY rootfs /

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from statistics import mean
 
 import attrs
 
@@ -11,7 +12,6 @@ from sunsynk.helpers import (
     RegType,
     ValType,
     ensure_tuple,
-    hex_str,
     int_round,
     slug,
     unpack_value,
@@ -65,29 +65,28 @@ class Sensor:
 class Sensor16(Sensor):
     """Sensor with a 16-bit/32-bit register registers."""
 
-    maybe16: bool = True
-    rated_power: int = 65000
-    log: int = 50
+    history1: list[int] = attrs.field(factory=list)
+    """History of reg[1]. If last 10 are all > 0, unpack as 32-bit, else only 16-bit."""
+    history0: list[int] = attrs.field(factory=list)
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
         regs = self.masked(regs)
-        val: NumType = unpack_value(regs, signed=self.factor < 0, maybe16=self.maybe16)
+        self.history1.append(regs[1])
+        self.history0.append(regs[0])
+        if len(self.history1) > 10:
+            self.history1.pop(0)
+            self.history0.pop(0)
+        # _LOGGER.debug("%s %s", hex_str(regs), mean(self.history0))
+        if (
+            any(r == 0 for r in self.history1)  # reg[1] between negative and positive
+            or (  # a big drop in reg[0] could also be close to a neg to pos transition
+                regs[1] == 0xFFFF and mean(self.history0) - regs[0] > 10000
+            )
+        ):
+            regs = (regs[0],)
+        val: NumType = unpack_value(regs, signed=self.factor < 0)
         val = int_round(float(val) * abs(self.factor))
-
-        msg = f"{self.id}={val} {hex_str(regs, address=self.address)}"
-        if self.maybe16 and regs[1] > 0:
-            msg += " 32-bit"
-            self.maybe16 = False
-            self.log = max(1, self.log)
-        if val > self.rated_power or val < -self.rated_power:
-            msg += f" >{self.rated_power}"
-        if self.log > 0:
-            self.log -= 1
-            _LOGGER.info(msg)
-        else:
-            _LOGGER.debug(msg)
-
         return val
 
     def __attrs_post_init__(self) -> None:

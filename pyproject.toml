@@ -20,11 +20,12 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "attrs==25.3.0",
     "cattrs==24.1.3",
     "jmespath==1.0.1",
+    "attrs==25.1.0",
     "mqtt-entity==0.0.4",
     "prettytable==3.16.0",
     "pymodbus[serial]==3.8.6",
@@ -45,7 +46,9 @@ addon = [
     "pysolarmanv5==3.0.6",
     "umodbus==1.0.4",
 ]
-tests = [
+
+[dependency-groups]
+dev = [
     "mypy",
     "pylint==3.3.6",
     "pytest-asyncio",

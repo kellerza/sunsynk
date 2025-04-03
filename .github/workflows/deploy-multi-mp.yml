@@ -296,8 +296,8 @@ jobs:
             -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.environment }} \
             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
 
-          echo "Waiting 30 seconds after base manifest creation before processing platform-specific tags..."
-          sleep 30  # Wait 30 seconds before processing platform-specific tags
+          echo "Waiting 20 seconds after base manifest creation before processing platform-specific tags..."
+          sleep 20
 
           # Process each platform separately
           platforms="${{ steps.platforms_raw.outputs.value }}"
@@ -312,8 +312,8 @@ jobs:
               $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
 
             echo "Completed manifest for $PLATFORM"
-            echo "Waiting 30 seconds before processing next platform..."
-            sleep 30  # Wait 30 seconds between platforms
+            echo "Waiting 10 seconds before processing next platform..."
+            sleep 10
           done
 
       - name: Inspect image
@@ -342,8 +342,8 @@ jobs:
             done
           }
 
-          echo "Waiting 30 seconds for manifests to settle before starting inspections..."
-          sleep 30
+          echo "Waiting 20 seconds for manifests to settle before starting inspections..."
+          sleep 20
 
           # Inspect base image first
           echo "Inspecting base image..."

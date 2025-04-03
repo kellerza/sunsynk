@@ -16,7 +16,6 @@ from ha_addon_sunsynk_multi.sensor_options import DEFS, SOPT
 from ha_addon_sunsynk_multi.timer_callback import Callback
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import Sensor16
 from sunsynk.sunsynk import Sensor, Sunsynk, ValType
 
 _LOGGER = logging.getLogger(__name__)
@@ -183,7 +182,7 @@ class AInverter:
             except Exception as err:  # pylint:disable=broad-except
                 _LOGGER.error("Could not create MQTT entity for %s: %s", s, err)
 
-            if isinstance(s.opt.sensor, Sensor16):
+            if hasattr(s.opt.sensor, "rated_power"):
                 s.opt.sensor.rated_power = int(self.rated_power)
         ents.extend(self.create_stats_entities(dev))
         await MQTT.connect(OPT)

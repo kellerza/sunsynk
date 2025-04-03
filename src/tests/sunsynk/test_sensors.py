@@ -105,11 +105,23 @@ def test_sensor16() -> None:
     with pytest.raises(AssertionError):
         Sensor16((1,), "nope")
     s = Sensor16((1, 2), "power", "W", -1)
-    assert s.maybe16 is True
     assert s.reg_to_value((0xFFFF, 0x0)) == -1
+    # since val transitioned the +/- boundary, interpret 10 values as 16-bit only
+    for i in range(9):
+        assert s.reg_to_value((i, 0x1)) == i
+    # Then back to 32-bit
     assert s.reg_to_value((0x0, 0x1)) == 0x10000
-    assert s.maybe16 is False
-    assert s.reg_to_value((0xFFFF, 0x0)) == 0xFFFF
+    # once we have a 0, then it's 16-bit again
+    assert s.reg_to_value((0xFFFF, 0x0)) == -1
+    assert s.reg_to_value((0xFFFF, 0xFFFF)) == -1
+    for i in range(8):
+        assert s.reg_to_value((i, 0x1)) == i
+    assert s.reg_to_value((0xFFFF, 0x1)) == 0x1FFFF
+
+    # Test neg to po transition on reg[0]
+    for _ in range(10):
+        assert s.reg_to_value((0xFFFF, 0xFFFF)) == -1
+    assert s.reg_to_value((0x0, 0xFFFF)) == 0
 
 
 def test_group() -> None:

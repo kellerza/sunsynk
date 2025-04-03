@@ -22,7 +22,6 @@ on:
 env:
   RUFF_VERSION: 0.9.7
   UV_VERSION: 0.6.2
-  PIP_INSTALL: aiohttp .[umodbus,solarman,tests]
   TEST_TARGET: "src"
 
 jobs:
@@ -53,7 +52,7 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
       - name: Install Requirements
-        run: uv pip install --system ${{ env.PIP_INSTALL }}
+        run: uv sync --frozen --all-extras
       - name: Run Pylint
         run: pylint ${{ env.TEST_TARGET }}
 
@@ -72,7 +71,7 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
       - name: Install Requirements
-        run: uv pip install --system ${{ env.PIP_INSTALL }}
+        run: uv sync --frozen --all-extras
       - name: Run mypy
         run: mypy --install-types --non-interactive ${{ env.TEST_TARGET }}/
 
@@ -97,7 +96,7 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
       - name: Install Requirements
-        run: uv pip install --system ${{ env.PIP_INSTALL }}
+        run: uv sync --frozen --all-extras
       - name: Run tests and generate coverage report
         run: pytest
       - name: Upload coverage to Codecov
