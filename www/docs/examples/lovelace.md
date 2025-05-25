@@ -8,7 +8,7 @@ The Sunsynk Power Flow card can be installed by adding a custom Lovelace reposit
 
 [![Open your Home Assistant instance and open slipx's repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=sunsynk-power-flow-card&category=plugin&owner=slipx06)
 
-![Power Flow Card](../images/power-flow.webp =500x600)
+![Power Flow Card](../images/power-flow.png =500x600)
 
 ```yaml
 SENSORS:
@@ -19,47 +19,107 @@ SENSORS:
 
 ```yaml
 type: custom:sunsynk-power-flow-card
-cardstyle: full
-show_solar: true
+cardstyle: compact
 large_font: true
+show_solar: true
+inverter:
+  modern: true
+  autarky: power
 battery:
-  energy: 11000
-  shutdown_soc: 20
-  invert_power: false
-  colour: var(--energy-battery-in-color)
-  show_daily: false
+  energy: 10640
+  shutdown_soc: 15
+  show_daily: true
+  animation_speed: 6
+  max_power: 4100
+  show_absolute: true
+  show_remaining_energy: true
+  animate: true
 solar:
-  colour: var(--energy-solar-color)
-  show_daily: false
-  mppts: 1
+  show_daily: true
+  mppts: 2
+  animation_speed: 9
+  max_power: 5500
+  display_mode: 2
+  pv1_max_power: 2250
+  pv2_max_power: 2250
+  efficiency: 3
+load:
+  show_daily: true
+  show_aux: false
+  load1_name: Geyser
+  load1_icon: boiler
+  animation_speed: 8
+  max_power: 8000
+  dynamic_colour: true
+  dynamic_icon: true
+  path_threshold: 90
+grid:
+  show_daily_buy: true
+  no_grid_colour:
+    - 125
+    - 125
+    - 125
+  show_nonessential: false
+  animation_speed: 8
+  max_power: 8000
+  grid_off_colour:
+    - 220
+    - 4
+    - 4
+  grid_name: " "
 entities:
   use_timer_248: switch.ss_use_timer
   priority_load_243: switch.ss_priority_load
-  inverter_voltage_154: sensor.ss_grid_voltage
-  inverter_load_freq_192: sensor.ss_grid_frequency
+  inverter_voltage_154: sensor.ss_inverter_voltage
+  load_frequency_192: sensor.ss_load_frequency
   inverter_current_164: sensor.ss_inverter_current
   inverter_power_175: sensor.ss_inverter_power
   grid_connected_status_194: binary_sensor.ss_grid_connected
   inverter_status_59: sensor.ss_overall_state
-  batchargeday_70: sensor.ss_day_battery_charge
-  batdischargeday_71: sensor.ss_day_battery_discharge
+  day_battery_charge_70: sensor.ss_day_battery_charge
+  day_battery_discharge_71: sensor.ss_day_battery_discharge
   battery_voltage_183: sensor.ss_battery_voltage
   battery_soc_184: sensor.ss_battery_soc
   battery_power_190: sensor.ss_battery_power
   battery_current_191: sensor.ss_battery_current
   grid_power_169: sensor.ss_grid_power
-  grid_buy_day_76: sensor.ss_day_grid_import
-  grid_sell_day_77: sensor.ss_day_grid_export
-  grid_ct_power_172: sensor.ss_grid_ct_power
-  loadday_84: sensor.ss_day_load_energy
-  load_frequency_192: sensor.ss_load_frequency
-  essential_power: sensor.ss_essential_power
-  nonessential_power: sensor.ss_non_essential_power
-  aux_power_166: sensor.ss_aux_power
-  solarday_108: sensor.ss_day_pv_energy
+  day_grid_import_76: sensor.ss_day_grid_import
+  grid_ct_power_172: sensor.ss_grid_power
+  day_load_energy_84: sensor.ss_day_load_energy
+  essential_power: sensor.ss_essential_1_power
+  nonessential_power: none
+  aux_power_166: none
+  day_pv_energy_108: sensor.ss_day_pv_energy
   pv1_power_186: sensor.ss_pv1_power
-  pv1_v_109: sensor.ss_pv1_voltage
-  pv1_i_110: sensor.ss_pv1_current
+  pv2_power_187: sensor.ss_pv2_power
+  pv1_voltage_109: sensor.ss_pv1_voltage
+  pv1_current_110: sensor.ss_pv1_current
+  pv2_voltage_111: sensor.ss_pv2_voltage
+  pv2_current_112: sensor.ss_pv2_current
+  prog1_time: select.ss_prog1_time
+  prog1_capacity: number.ss_prog1_capacity
+  prog1_charge: select.ss_prog1_charge
+  prog2_time: select.ss_prog2_time
+  prog2_capacity: number.ss_prog2_capacity
+  prog2_charge: select.ss_prog2_charge
+  prog3_time: select.ss_prog3_time
+  prog3_capacity: number.ss_prog3_capacity
+  prog3_charge: select.ss_prog3_charge
+  prog4_time: select.ss_prog4_time
+  prog4_capacity: number.ss_prog4_capacity
+  prog4_charge: select.ss_prog4_charge
+  prog5_time: select.ss_prog5_time
+  prog5_capacity: number.ss_prog5_capacity
+  prog5_charge: select.ss_prog5_charge
+  prog6_time: select.ss_prog6_time
+  prog6_capacity: number.ss_prog6_capacity
+  prog6_charge: select.ss_prog6_charge
+  radiator_temp_91: sensor.ss_radiator_temperature
+  dc_transformer_temp_90: sensor.ss_dc_transformer_temperature
+  total_pv_generation: sensor.ss_total_pv_energy
+  remaining_solar: sensor.energy_production_today_remaining
+dynamic_line_width: true
+min_line_width: 2
 ```
 
 :::
