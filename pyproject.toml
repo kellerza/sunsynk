@@ -27,7 +27,7 @@ dependencies = [
     "jmespath==1.0.1",
     "mqtt-entity==0.0.4",
     "prettytable==3.16.0",
-    "pymodbus[serial]==3.8.6",
+    "pymodbus[serial]==3.9.2",
     "pyyaml==6.0.2",
 ]
 license = { text = "Apache-2.0" }
