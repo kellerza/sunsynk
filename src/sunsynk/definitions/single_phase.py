@@ -1,6 +1,6 @@
 """Sunsynk 5kW&8kW hybrid inverter sensor definitions."""
 
-from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
+from sunsynk import AMPS, CELSIUS, HZ, KWH, VOLT, WATT
 from sunsynk.definitions import COMMON, PROG_CHARGE_OPTIONS, PROG_MODE_OPTIONS
 from sunsynk.rwsensors import (
     NumberRWSensor,
@@ -31,8 +31,8 @@ SENSORS += (
     Sensor(190, "Battery power", WATT, -1),
     Sensor(191, "Battery current", AMPS, -0.01),
     # Charge and Discharge limit vary based on temperature and SoC
-    Sensor(314, "Battery Charge Limit current", AMPS, -1),  # #327
-    Sensor(315, "Battery Discharge Limit current", AMPS, -1),  # #327
+    Sensor(314, "Battery charge limit current", AMPS, -1),  # #327
+    Sensor(315, "Battery discharge limit current", AMPS, -1),  # #327
 )
 
 ###########
@@ -42,14 +42,14 @@ SENSORS += (
     Sensor(175, "Inverter power", WATT, -1),
     Sensor(154, "Inverter voltage", VOLT, 0.1),
     Sensor(164, "Inverter current", AMPS, 0.01),
-    Sensor(193, "Inverter frequency", "Hz", 0.01),
+    Sensor(193, "Inverter frequency", HZ, 0.01),
 )
 
 #######
 # Grid
 #######
 SENSORS += (
-    Sensor(79, "Grid frequency", "Hz", 0.01),
+    Sensor(79, "Grid frequency", HZ, 0.01),
     Sensor(169, "Grid power", WATT, -1),  # L1(167) + L2(168)
     Sensor(167, "Grid LD power", WATT, -1),  # L1 seems to be LD
     Sensor(168, "Grid L2 power", WATT, -1),
@@ -65,7 +65,17 @@ SENSORS += (
     Sensor(178, "Load power", WATT, -1),  # L1(176) + L2(177)
     Sensor(176, "Load L1 power", WATT, -1),
     Sensor(177, "Load L2 power", WATT, -1),
-    Sensor(192, "Load frequency", "Hz", 0.01),
+    Sensor(192, "Load frequency", HZ, 0.01),
+)
+
+#################
+# AUX / Generator
+#################
+SENSORS += (
+    Sensor(166, "AUX power", WATT, -1),
+    # Sensor(166, "Generator Power", WATT, -1),
+    Sensor(181, "AUX voltage", VOLT, 0.1),
+    Sensor(196, "AUX frequency", HZ, 0.1),
 )
 
 #############
@@ -99,7 +109,6 @@ SENSORS += (
 # Power on Outputs
 ###################
 SENSORS += (
-    Sensor(166, "AUX power", WATT, -1),
     # Essential power
     # - https://powerforum.co.za/topic/8646-my-sunsynk-8kw-data-collection-setup/?do=findComment&comment=147591
     # Essential 1 power
@@ -112,7 +121,7 @@ SENSORS += (
         (175, 169, 166), "Essential 2 power", WATT, factors=(1, 1, -1), absolute=True
     ),
     MathSensor(
-        (172, 167), "Non-Essential power", WATT, factors=(1, -1), no_negative=True
+        (172, 167), "Non-essential power", WATT, factors=(1, -1), no_negative=True
     ),
 )
 
@@ -120,27 +129,27 @@ SENSORS += (
 # Energy
 #########
 SENSORS += (
-    Sensor(60, "Day Active Energy", KWH, -0.1),
-    Sensor(70, "Day Battery Charge", KWH, 0.1),
-    Sensor(71, "Day Battery Discharge", KWH, 0.1),
-    Sensor(76, "Day Grid Import", KWH, 0.1),
-    Sensor(77, "Day Grid Export", KWH, 0.1),
-    Sensor(84, "Day Load Energy", KWH, 0.1),
-    Sensor(108, "Day PV Energy", KWH, 0.1),
-    Sensor(61, "Day Reactive Energy", "kVarh", -0.1),
-    Sensor(67, "Month Grid Energy", KWH, 0.1),
-    Sensor(66, "Month Load Energy", KWH, 0.1),
-    Sensor(65, "Month PV Energy", KWH, 0.1),
-    Sensor((63, 64), "Total Active Energy", KWH, 0.1),  # signed?
-    Sensor((72, 73), "Total Battery Charge", KWH, 0.1),
-    Sensor((74, 75), "Total Battery Discharge", KWH, 0.1),
-    Sensor((81, 82), "Total Grid Export", KWH, 0.1),
-    Sensor((78, 80), "Total Grid Import", KWH, 0.1),
-    Sensor((85, 86), "Total Load Energy", KWH, 0.1),
-    Sensor((96, 97), "Total PV Energy", KWH, 0.1),
-    Sensor((98, 99), "Year Grid Export", KWH, 0.1),
-    Sensor((87, 88), "Year Load Energy", KWH, 0.1),
-    Sensor((68, 69), "Year PV Energy", KWH, 0.1),
+    Sensor(60, "Day active energy", KWH, -0.1),
+    Sensor(70, "Day battery charge", KWH, 0.1),
+    Sensor(71, "Day battery Discharge", KWH, 0.1),
+    Sensor(76, "Day grid import", KWH, 0.1),
+    Sensor(77, "Day grid export", KWH, 0.1),
+    Sensor(84, "Day load energy", KWH, 0.1),
+    Sensor(108, "Day PV energy", KWH, 0.1),
+    Sensor(61, "Day reactive energy", "kVarh", -0.1),
+    Sensor(67, "Month grid energy", KWH, 0.1),
+    Sensor(66, "Month load energy", KWH, 0.1),
+    Sensor(65, "Month PV energy", KWH, 0.1),
+    Sensor((63, 64), "Total active energy", KWH, 0.1),  # signed?
+    Sensor((72, 73), "Total battery charge", KWH, 0.1),
+    Sensor((74, 75), "Total battery discharge", KWH, 0.1),
+    Sensor((81, 82), "Total grid export", KWH, 0.1),
+    Sensor((78, 80), "Total grid import", KWH, 0.1),
+    Sensor((85, 86), "Total load energy", KWH, 0.1),
+    Sensor((96, 97), "Total PV energy", KWH, 0.1),
+    Sensor((98, 99), "Year grid export", KWH, 0.1),
+    Sensor((87, 88), "Year load energy", KWH, 0.1),
+    Sensor((68, 69), "Year PV energy", KWH, 0.1),
 )
 
 ##########
@@ -152,12 +161,12 @@ SENSORS += (
     RATED_POWER,
     FaultSensor((103, 104, 105, 106), "Fault"),
     InverterStateSensor(59, "Overall state"),
-    SDStatusSensor(92, "SD Status", ""),  # type: ignore
+    SDStatusSensor(92, "SD status", ""),  # type: ignore
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),
-    BinarySensor(194, "Grid Connected"),
-    SystemTimeRWSensor((22, 23, 24), "Date Time", unit=""),
+    BinarySensor(194, "Grid connected"),
+    SystemTimeRWSensor((22, 23, 24), "Date time", unit=""),
 )
 
 ###########
@@ -165,8 +174,8 @@ SENSORS += (
 ###########
 SENSORS += (
     SwitchRWSensor(43, "Inverter enabled", on=1),  # 0=off, 1=on
-    Sensor(200, "Control Mode"),
-    SwitchRWSensor(232, "Grid Charge enabled", "", bitmask=1),
+    Sensor(200, "Control mode"),
+    SwitchRWSensor(232, "Grid charge enabled", "", bitmask=1),
     SelectRWSensor(
         235, "Generator input", "", options={0: "Disable", 1: "Output", 2: "Input"}
     ),
@@ -176,13 +185,13 @@ SENSORS += (
 )
 
 # Battery capacity (if managed by BMS)
-BATTERY_LOW_CAP = NumberRWSensor(219, "Battery Low Capacity", "%", max=50)
+BATTERY_LOW_CAP = NumberRWSensor(219, "Battery low capacity", "%", max=50)
 BATTERY_SHUTDOWN_CAP = NumberRWSensor(
-    217, "Battery Shutdown Capacity", "%", max=BATTERY_LOW_CAP
+    217, "Battery shutdown capacity", "%", max=BATTERY_LOW_CAP
 )
 BATTERY_LOW_CAP.min = BATTERY_SHUTDOWN_CAP
 BATTERY_RESTART_CAP = NumberRWSensor(
-    218, "Battery Restart Capacity", "%", min=BATTERY_SHUTDOWN_CAP
+    218, "Battery restart capacity", "%", min=BATTERY_SHUTDOWN_CAP
 )
 
 # Absolute min and max voltage based on Deye inverter
@@ -191,13 +200,13 @@ MAX_VOLT = 60
 
 # Battery voltage (if managed by voltage only)
 BATTERY_SHUTDOWN_VOLT = NumberRWSensor(
-    220, "Battery Shutdown voltage", VOLT, 0.01, min=MIN_VOLT
+    220, "Battery shutdown voltage", VOLT, 0.01, min=MIN_VOLT
 )
 BATTERY_LOW_VOLT = NumberRWSensor(
-    222, "Battery Low voltage", VOLT, 0.01, min=BATTERY_SHUTDOWN_VOLT, max=MAX_VOLT
+    222, "Battery low voltage", VOLT, 0.01, min=BATTERY_SHUTDOWN_VOLT, max=MAX_VOLT
 )
 BATTERY_RESTART_VOLT = NumberRWSensor(
-    221, "Battery Restart voltage", VOLT, 0.01, max=MAX_VOLT, min=BATTERY_SHUTDOWN_VOLT
+    221, "Battery restart voltage", VOLT, 0.01, max=MAX_VOLT, min=BATTERY_SHUTDOWN_VOLT
 )
 
 
@@ -322,6 +331,31 @@ SENSORS += NumberRWSensor(230, "Grid Charge Battery current", AMPS, min=0, max=1
 SENSORS += NumberRWSensor(210, "Battery Max Charge current", AMPS, min=0, max=185)
 SENSORS += NumberRWSensor(211, "Battery Max Discharge current", AMPS, min=0, max=185)
 
+
+BMS_protocol = {
+    0: "PYLON CAN",
+    1: "SACRED SUN RS485",
+    2: "02",
+    3: "DYNESS CAN",
+    4: "04",
+    5: "05",
+    6: "GenixGreen RS485",
+    7: "07",
+    8: "08",
+    9: "09",
+    10: "10",
+    11: "11",
+    12: "PYLON RS485",
+    13: "VISION CAN",
+    14: "WATTSONIC RS485",
+    15: "UNIPOWER RS485",
+    16: "16",
+    17: "LD RS485",
+    18: "18",
+    19: "UNKNOWN RS485",
+}
+
+SENSORS += SelectRWSensor(325, "BMS Protocol", options=BMS_protocol)
 
 #############
 # Deprecated

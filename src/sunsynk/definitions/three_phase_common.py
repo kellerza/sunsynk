@@ -1,6 +1,6 @@
 """Sunsynk 5kW&8kW hybrid 3-phase inverter sensor definitions."""
 
-from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
+from sunsynk import AMPS, CELSIUS, HZ, KWH, VOLT, WATT
 from sunsynk.definitions import (
     COMMON,
     PROG_CHARGE_OPTIONS,
@@ -40,14 +40,14 @@ SENSORS += (
     Sensor(630, "Inverter L1 current", AMPS, -0.01),
     Sensor(631, "Inverter L2 current", AMPS, -0.01),
     Sensor(632, "Inverter L3 current", AMPS, -0.01),
-    Sensor(638, "Inverter frequency", "Hz", 0.01),
+    Sensor(638, "Inverter frequency", HZ, 0.01),
 )
 
 #############
 # Grid Power
 #############
 SENSORS += (
-    Sensor(609, "Grid frequency", "Hz", 0.01),
+    Sensor(609, "Grid frequency", HZ, 0.01),
     Sensor16((622, 687), "Grid L1 power", WATT, -1),  # aPower
     Sensor16((623, 688), "Grid L2 power", WATT, -1),  # bPower
     Sensor16((624, 689), "Grid L3 power", WATT, -1),  # cPow
@@ -442,7 +442,7 @@ SENSORS += (
 )
 
 SENSORS += (
-    NumberRWSensor(131, "Generator AC Couple Frz High", "Hz", 0.01),
+    NumberRWSensor(131, "Generator AC Couple Frz High", HZ, 0.01),
     NumberRWSensor(135, "Generator Off SOC", "%"),
     NumberRWSensor(137, "Generator On SOC", "%"),
     NumberRWSensor(121, "Generator Max Operating Time", "Hours", 0.1),

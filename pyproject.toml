@@ -104,8 +104,7 @@ select = [
     "UP",  # pyupgrade
     "W",   # pycodestyle
 ]
-#select = ["F", "E", "W", "I001"]
-ignore = ["E203", "E501", "D203"]
+ignore = ["E203", "E501", "D203", "D213"]
 
 [tool.setuptools]
 license-files = [] # https://github.com/astral-sh/uv/issues/9513

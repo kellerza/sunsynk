@@ -14,8 +14,9 @@ from .sunsynk import Sunsynk
 
 VERSION = "0.8.2"
 
-CELSIUS: Final = "°C"
-KWH: Final = "kWh"
 AMPS: Final = "A"
+CELSIUS: Final = "°C"
+HZ: Final = "Hz"
+KWH: Final = "kWh"
 VOLT: Final = "V"
 WATT: Final = "W"

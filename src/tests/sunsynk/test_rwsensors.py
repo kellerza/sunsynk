@@ -4,6 +4,7 @@ import logging
 
 import pytest
 
+from sunsynk import HZ
 from sunsynk.rwsensors import (
     NumberRWSensor,
     RWSensor,
@@ -121,7 +122,7 @@ def test_number_rw(state: InverterState) -> None:
 def test_number_rw2(state: InverterState) -> None:
     """Test fractional RW."""
     # https://github.com/kellerza/sunsynk/issues/186
-    s = NumberRWSensor(290, "Grid frequency min", "Hz", 0.01)
+    s = NumberRWSensor(290, "Grid frequency min", HZ, 0.01)
     state.track(s)
 
     state.update({290: 4850})
