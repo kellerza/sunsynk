@@ -211,7 +211,7 @@ SENSORS += (
     NumberRWSensor(109, "Battery Max Discharge current", AMPS, max=240),
     NumberRWSensor(102, "Battery Capacity current", AMPS, max=2000),
     NumberRWSensor(191, "Grid Peak Shaving power", WATT, max=100000),
-    NumberRWSensor(340, "Max Solar power", WATT, max=12000),
+    NumberRWSensor(340, "Max Solar POWER", WATT, max=32000),
 )
 
 # Additional optional sensors
