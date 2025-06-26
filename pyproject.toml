@@ -79,8 +79,7 @@ addopts = "--cov=src --cov-report xml:cov.xml"
 
 [tool.ruff]
 target-version = "py311"
-src = ["src", "test"]
-include = ["src/tests/*.py", "src/**/*.pyi"]
+include = ["src/**/*.py"]
 
 [tool.ruff.format]
 quote-style = "double"

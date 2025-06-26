@@ -1,4 +1,4 @@
-name: Deploy hass-addon-sunsynk-multi to ghcr.io
+name: Deploy addon to ghcr.io
 
 on:
   release:
@@ -12,7 +12,10 @@ on:
   workflow_dispatch: {}
 
 env:
-  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi
+  ADDON_SLUG: hass-addon-sunsynk-multi
+  ADDON_SLUG_EDGE: hass-sunsynk-edge
+  PKG_NAME: sunsynk
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/sunsynk
 
 jobs:
   ci-failure:
@@ -47,7 +50,7 @@ jobs:
         id: information
         uses: frenck/action-addon-information@v1.4
         with:
-          path: ./hass-addon-sunsynk-multi
+          path: ./${{ env.ADDON_SLUG }}
       - name: ℹ️ Gather version and environment
         id: release
         run: |
@@ -94,17 +97,17 @@ jobs:
 
       - name: Prepare Files for Build
         run: |
-          mkdir -p hass-addon-sunsynk-multi/sunsynk
-          cp -r src hass-addon-sunsynk-multi/sunsynk/
-          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock hass-addon-sunsynk-multi/sunsynk/
+          mkdir -p ${{ env.ADDON_SLUG }}/${{ env.PKG_NAME }}
+          cp -r src ${{ env.ADDON_SLUG }}/${{ env.PKG_NAME }}/
+          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ env.ADDON_SLUG }}/${{ env.PKG_NAME }}/
 
       - name: Set up the correct base image based on platform
         run: |
           case "${{ matrix.platform }}" in
             linux/amd64)  echo "BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
-            linux/arm64)  echo "BUILD_FROM=ghcr.io/home-assistant/aarch64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
             linux/arm/v6) echo "BUILD_FROM=ghcr.io/home-assistant/armhf-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
             linux/arm/v7) echo "BUILD_FROM=ghcr.io/home-assistant/armv7-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
+            linux/arm64)  echo "BUILD_FROM=ghcr.io/home-assistant/aarch64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
             linux/i386)   echo "BUILD_FROM=ghcr.io/home-assistant/i386-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
           esac
 
@@ -146,8 +149,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ./hass-addon-sunsynk-multi # Specify the directory containing your Dockerfile
-          file: ./hass-addon-sunsynk-multi/Dockerfile # Specify the Dockerfile path within the context
+          context: ./${{ env.ADDON_SLUG }} # Specify the directory containing your Dockerfile
+          file: ./${{ env.ADDON_SLUG }}/Dockerfile # Specify the Dockerfile path within the context
           platforms: ${{ matrix.platform }}
           cache-from: type=local,src=/tmp/.buildx-cache # Use cache for build
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max # Save cache
@@ -389,13 +392,13 @@ jobs:
           git pull --rebase origin main
 
           # Make the version updates
-          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-edge/config.yaml
+          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG_EDGE }}/config.yaml
           if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
-            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-multi/config.yaml
+            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG }}/config.yaml
           fi
 
           # Stage and commit changes
-          git add hass-addon-sunsynk-edge/config.yaml hass-addon-sunsynk-multi/config.yaml
+          git add ${{ env.ADDON_SLUG_EDGE }}/config.yaml ${{ env.ADDON_SLUG }}/config.yaml
           git commit -m "Update addon version to ${{ needs.information.outputs.version }} [no ci]" || echo "No changes to commit"
 
       - name: Push changes

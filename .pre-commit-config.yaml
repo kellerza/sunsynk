@@ -12,39 +12,27 @@ repos:
       - id: codespell
         files: "src/.*.py"
         args:
-          - -L
+          - "--ignore-words-list"
           - HASS,hass,Hass,ist
           - --skip
           - "package-lock.json,*.map,www/docs/.vitepress/cache/*"
-      # - id: codespell
-      #   files: "hass-addon-sunsynk-multi/.*.py"
-      #   args:
-      #     - -L
-      #     - HASS,hass,Hass
-      #     - --skip
-      #     - "package-lock.json,*.map,www/docs/.vitepress/cache/*"
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
-    hooks:
-      # - id: mypy
-      #   files: "^(sunsynk|hass-addon-multi)/"
-      #   additional_dependencies:
-      #     ["types-attrs", "attrs>21", "types-PyYAML", "pymodbus"]
-      - id: mypy
-        files: "src/.*.py"
-        additional_dependencies: ["attrs>24", "types-PyYAML", "pymodbus"]
 
   - repo: local
     hooks:
+      - id: mypy
+        name: mypy
+        entry: uv run mypy . --config-file pyproject.toml
+        language: system
+        types: [python]
+        pass_filenames: false
+
       - id: pylint
         name: pylint
-        entry: pylint
+        entry: uv run pylint src
         language: system
         types: [python]
         pass_filenames: false
         args: [
-            "src",
             "-rn", # Only display messages
             "-sn", # Don't display the score
           ]
