@@ -45,12 +45,12 @@ Homepage = "https://kellerza.github.io/sunsynk/"
 [project.optional-dependencies]
 umodbus = ["async_modbus==0.2.2", "connio==0.2.0", "umodbus==1.0.4"]
 solarman = ["pysolarmanv5==3.0.6"]
-addon = ["aiohttp==3.12.13"]
+addon = ["aiohttp>3.12,<4"]
 
 [dependency-groups]
 dev = [
     "mypy",
-    "pylint==3.3.6",
+    "pylint",
     "pytest-asyncio",
     "pytest-cov",
     "pytest-github-actions-annotate-failures",
