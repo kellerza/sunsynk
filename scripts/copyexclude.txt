@@ -5,5 +5,3 @@ __pycache__
 
 config.localtest.yaml
 config.yaml
-Dockerfile
-Dockerfile.local

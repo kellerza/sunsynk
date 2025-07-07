@@ -19,13 +19,13 @@ def test_init() -> None:
     inv_option = {"inverters": [{"port": inv_port, "modbus_id": 1}]}
 
     OPT.driver = "pymodbus"
-    OPT.load(inv_option)
+    OPT.load_dict(inv_option)
     init_driver(OPT)
     assert len(STATE) == 1
     assert STATE[0].inv == PySunsynk(port=inv_port, state=STATE[0].inv.state)
 
     OPT.driver = "umodbus"
-    OPT.load(inv_option)
+    OPT.load_dict(inv_option)
     init_driver(OPT)
     assert len(STATE) == 1
     assert STATE[0].inv == USunsynk(port=inv_port, state=STATE[0].inv.state)
@@ -34,7 +34,7 @@ def test_init() -> None:
         "inverters": [{"port": inv_port, "modbus_id": 1, "dongle_serial_number": "101"}]
     }
     OPT.driver = "solarman"
-    OPT.load(inv_option)
+    OPT.load_dict(inv_option)
     init_driver(OPT)
     assert len(STATE) == 1
     assert STATE[0].inv == SolarmanSunsynk(

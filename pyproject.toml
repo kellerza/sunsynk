@@ -1,36 +1,43 @@
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
-# requires = ["uv-build"] # >=0.5.15,<0.6
+[tool.setuptools]
+license-files = [] # https://github.com/astral-sh/uv/issues/9513
+
+# [build-system] # https://docs.astral.sh/uv/concepts/build-backend/
+# requires = ["uv_build>=0.7.13,<0.8.0"]
 # build-backend = "uv_build"
+# [tool.uv.build-backend]
+# module-name = "sunsynk"
+# module-root = "src"
 
 [project]
 name = "sunsynk"
-version = "0.8.4"
+version = "0.9.0"
 description = "Library to interface Deye/Sunsynk Hybrid Inverters"
 keywords = ["sunsynk", "deye", "inverter", "modbus", "asyncio"]
 readme = "README.md"
 authors = [{ name = "Johann Kellerman", email = "kellerza@gmail.com" }]
+license = { text = "Apache-2.0" }
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
-    "attrs==25.3.0",
-    "cattrs==24.1.3",
+    "attrs>=25,<26",
+    "cattrs>=25,<26",
     "jmespath==1.0.1",
-    "mqtt-entity==0.0.4",
+    "mqtt-entity>=1,<2",
     "prettytable==3.16.0",
     "pymodbus[serial]==3.9.2",
     "pyyaml==6.0.2",
 ]
-license = { text = "Apache-2.0" }
 
 [project.urls]
 Homepage = "https://kellerza.github.io/sunsynk/"
@@ -79,7 +86,7 @@ asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 include = ["src/**/*.py"]
 
 [tool.ruff.format]
@@ -105,6 +112,3 @@ select = [
     "W",   # pycodestyle
 ]
 ignore = ["E203", "E501", "D203", "D213"]
-
-[tool.setuptools]
-license-files = [] # https://github.com/astral-sh/uv/issues/9513

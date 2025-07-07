@@ -1,19 +1,16 @@
 name: Deploy addon to ghcr.io
 
 on:
-  release:
-    types:
-      - published
-  workflow_run:
-    workflows: ["CI"]
-    branches: [main]
-    types:
-      - completed
+  push:
+    paths:
+      - "src/ha_addon_esp"
+      - "hass-addon-esp/**"
+      - ".github/workflows/deploy-esp.yml"
   workflow_dispatch: {}
 
 env:
-  ADDON_SLUG: hass-addon-sunsynk-multi
-  ADDON_SLUG_EDGE: hass-addon-sunsynk-edge
+  ADDON_SLUG: hass-addon-esp
+  ADDON_SLUG_EDGE: hass-sunsynk-esp
   PKG_NAME: sunsynk
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/sunsynk
 

@@ -6,13 +6,14 @@ from collections.abc import Generator, Iterable
 
 import attrs
 
-from ha_addon_sunsynk_multi.helpers import import_mysensors
-from ha_addon_sunsynk_multi.options import OPT
-from ha_addon_sunsynk_multi.timer_schedule import SCHEDULES, Schedule, get_schedule
 from sunsynk.definitions import import_defs
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, SensorDefinitions
+
+from .helpers import import_mysensors
+from .options import OPT
+from .timer_schedule import SCHEDULES, Schedule, get_schedule
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -120,12 +121,12 @@ def import_definitions() -> None:
     # Add custom sensors to DEFS
     try:
         mysensors = import_mysensors()
+        if mysensors:
+            DEFS.all.update(mysensors)
+            SENSOR_GROUPS["mysensors"] = list(mysensors)
     except ImportError:
         _LOGGER.error("Unable to import import mysensors.py")
         traceback.print_exc()
-    if mysensors:
-        DEFS.all.update(mysensors)
-        SENSOR_GROUPS["mysensors"] = list(mysensors)
 
 
 SOPT = SensorOptions()

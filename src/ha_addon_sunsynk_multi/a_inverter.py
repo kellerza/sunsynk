@@ -6,17 +6,16 @@ import traceback
 from collections.abc import Callable, Iterable
 
 import attrs
-from mqtt_entity import Device, Entity, SensorEntity  # type: ignore[import]
-from mqtt_entity.helpers import set_attributes  # type: ignore[import]
-from mqtt_entity.utils import tostr  # type: ignore[import]
+from mqtt_entity import MQTTDevice, MQTTSensorEntity
 
-from ha_addon_sunsynk_multi.a_sensor import MQTT, SS_TOPIC, ASensor
-from ha_addon_sunsynk_multi.options import OPT, InverterOptions
-from ha_addon_sunsynk_multi.sensor_options import DEFS, SOPT
-from ha_addon_sunsynk_multi.timer_callback import Callback
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sunsynk import Sensor, Sunsynk, ValType
+
+from .a_sensor import MQTT, SS_TOPIC, ASensor
+from .options import OPT, InverterOptions
+from .sensor_options import DEFS, SOPT
+from .timer_callback import Callback
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,14 +32,19 @@ class AInverter:
     ss: dict[str, ASensor] = attrs.field(factory=dict)
     """Sensor states."""
 
+    mqtt_dev: MQTTDevice = attrs.field(
+        factory=lambda: MQTTDevice(components={}, identifiers=[""])
+    )
+    """MQTT Device for the inverter."""
+
     read_errors: int = attrs.field(default=0, init=False)
 
     write_queue: dict[Sensor, str | int | float | bool] = attrs.field(factory=dict)
     """Write queue for RWSensors."""
 
     # Reporting stats
-    entity_timeout: SensorEntity = attrs.field(init=False)
-    entity_cbstats: SensorEntity = attrs.field(init=False)
+    entity_timeout: MQTTSensorEntity = attrs.field(init=False)
+    entity_cbstats: MQTTSensorEntity = attrs.field(init=False)
     cb: Callback = attrs.field(init=False)
 
     @property
@@ -159,34 +163,45 @@ class AInverter:
         _LOGGER.info(f"{msg:^60}".rstrip())
         _LOGGER.info("#" * 60)
 
-    async def hass_discover_sensors(self) -> bool:
-        """Discover all sensors."""
+    def hass_create_discovery_info(self) -> None:
+        """Create discovery info for the inverter."""
         serial_nr = self.opt.serial_nr
 
-        dev = Device(
-            identifiers=[serial_nr],
-            # https://github.com/kellerza/sunsynk/issues/165
-            # name=f"{OPT.manufacturer} AInverter {serial_nr}",
-            name=self.opt.ha_prefix,
-            # OPT.manufacturer,  # new option?
-            model=f"{int(self.rated_power / 1000)}kW Inverter (**{serial_nr[-4:]})",
-            manufacturer=OPT.manufacturer,
-        )
+        ids = list(self.mqtt_dev.components)
 
-        ents: list[Entity] = []
+        if self.mqtt_dev.id == "":
+            self.mqtt_dev = MQTTDevice(
+                identifiers=[serial_nr],
+                # https://github.com/kellerza/sunsynk/issues/165
+                # name=f"{OPT.manufacturer} AInverter {serial_nr}",
+                name=self.opt.ha_prefix,
+                model=f"{int(self.rated_power / 1000)}kW Inverter (**{serial_nr[-4:]})",
+                manufacturer=OPT.manufacturer,
+                components={},
+            )
+            MQTT.devs.append(self.mqtt_dev)
+            self.create_stats_entities()
+            for s in self.ss.values():
+                if s.visible_on(self):
+                    ids.append(s.opt.sensor.id)
+
         for s in self.ss.values():
-            if not s.visible_on(self):
+            if s.opt.sensor.id not in ids:
                 continue
             try:
-                ents.append(s.create_entity(dev, ist=self))
+                s.entity = s.create_entity(serial_nr, ist=self)
+                self.mqtt_dev.components[s.opt.sensor.id] = s.entity
             except Exception as err:  # pylint:disable=broad-except
                 _LOGGER.error("Could not create MQTT entity for %s: %s", s, err)
 
             if hasattr(s.opt.sensor, "rated_power"):
-                s.opt.sensor.rated_power = int(self.rated_power)
-        ents.extend(self.create_stats_entities(dev))
+                s.opt.sensor.rated_power = int(self.rated_power)  # type:ignore
+
+    async def hass_discover_sensors(self) -> bool:
+        """Discover all sensors."""
+        self.hass_create_discovery_info()
         await MQTT.connect(OPT)
-        await MQTT.publish_discovery_info(entities=ents)
+        MQTT.publish_discovery_info()
         return True
 
     def init_sensors(self) -> None:
@@ -201,43 +216,35 @@ class AInverter:
             self.inv.state.track(sen)
             self.ss[sen.id] = ASensor(opt=sopt, retain=isinstance(sen, RWSensor))
 
-    def create_stats_entities(self, dev: Device) -> list[SensorEntity]:
+    def create_stats_entities(self) -> None:
         """Create entities."""
+        dev_id = self.mqtt_dev.id
         name = "timeout"
-        self.entity_timeout = SensorEntity(
+        self.entity_timeout = MQTTSensorEntity(
             name="RS485 timeout",
-            unique_id=f"{dev.id}_{name}",
+            unique_id=f"{dev_id}_{name}",
             unit_of_measurement=" ",
-            state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
+            state_topic=f"{SS_TOPIC}/{dev_id}/{name}",
             entity_category="diagnostic",
-            device=dev,
-            discovery_extra={
-                "object_id": slug(f"{self.opt.ha_prefix} {name}".strip()),
-            },
+            object_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
         )
+        self.mqtt_dev.components[name] = self.entity_timeout
         name = "cb_stats"
-        self.entity_cbstats = SensorEntity(
+        self.entity_cbstats = MQTTSensorEntity(
             name="Callback stats",
-            unique_id=f"{dev.id}_{name}",
+            unique_id=f"{self.mqtt_dev.id}_{name}",
             unit_of_measurement=" ",
-            state_topic=f"{SS_TOPIC}/{dev.id}/{name}",
-            json_attributes_topic=f"{SS_TOPIC}/{dev.id}/{name}_attr",
+            state_topic=f"{SS_TOPIC}/{dev_id}/{name}",
+            json_attributes_topic=f"{SS_TOPIC}/{dev_id}/{name}_attr",
             entity_category="diagnostic",
-            device=dev,
-            discovery_extra={
-                "object_id": slug(f"{self.opt.ha_prefix} {name}".strip()),
-            },
+            object_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
         )
-        return [self.entity_cbstats, self.entity_timeout]
+        self.mqtt_dev.components[name] = self.entity_cbstats
 
     async def publish_stats(self, period: int) -> None:
         """Publish stats."""
         await MQTT.connect(OPT)
-        await MQTT.publish(
-            topic=self.entity_timeout.state_topic,
-            payload=tostr(self.inv.timeouts),
-            retain=False,
-        )
+        await self.entity_timeout.send_state(MQTT, self.inv.timeouts)
 
         # calc stats
         lc_avg, lc_i = stats(self.cb.stat_time, include=lambda x: x > self.cb.every)
@@ -250,12 +257,8 @@ class AInverter:
             "slips_avg": f"{slip_a}s",
             "busy": self.cb.stat_busy,
         }
-        await MQTT.publish(
-            topic=self.entity_cbstats.state_topic,
-            payload=tostr(len(self.cb.stat_time)),
-            retain=False,
-        )
-        await set_attributes(attr, entity=self.entity_cbstats, client=MQTT)
+        await self.entity_cbstats.send_state(MQTT, len(self.cb.stat_time))
+        await self.entity_cbstats.send_json_attributes(MQTT, attr)
 
         self.cb.stat_busy = 0
         self.cb.stat_time.clear()

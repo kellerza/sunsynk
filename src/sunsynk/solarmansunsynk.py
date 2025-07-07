@@ -20,25 +20,22 @@ RETRY_ATTEMPTS = 5
 class SolarmanSunsynk(Sunsynk):
     """Sunsynk class using PySolarmanV5."""
 
-    client: PySolarmanV5Async = None
-    dongle_serial_number: int = attrs.field(kw_only=True)
-
-    @dongle_serial_number.validator
-    def check_serial(self, _: attrs.Attribute, value: str) -> None:
-        """Check if the dongle serial number is valid."""
-        _LOGGER.debug("DBG: check_serial: %s %s", _, value)
-        try:
-            if int(value) == 0:
-                raise ValueError("DONGLE_SERIAL_NUMBER not set")
-        except ValueError as err:
-            raise ValueError(
-                f"DONGLE_SERIAL_NUMBER must be an integer, got '{value}'"
-            ) from err
+    client: PySolarmanV5Async = attrs.field(default=None, repr=False)
+    dongle_serial_number: int = attrs.field(default=0, kw_only=True)
 
     async def connect(self) -> None:
         """Connect."""
         if self.client:
             return
+
+        try:
+            if int(self.dongle_serial_number) == 0:
+                raise ValueError("DONGLE_SERIAL_NUMBER not set")
+        except ValueError as err:
+            raise ValueError(
+                f"DONGLE_SERIAL_NUMBER must be an integer, got '{self.dongle_serial_number}'"
+            ) from err
+
         url = urlparse(f"{self.port}")
         self.allow_gap = 10
         self.client = PySolarmanV5Async(
@@ -63,7 +60,7 @@ class SolarmanSunsynk(Sunsynk):
         except AttributeError:
             pass
         finally:
-            self.client = None
+            self.client = None  # type:ignore
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""

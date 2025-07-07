@@ -1,0 +1,16 @@
+configuration:
+  AREAS:
+    name: A list of ESP areas to query
+    description: '
+      Query one or more areas.
+
+      HA_PREFIX should be unique for each area (this is used for the entity ID).
+      '
+
+  SEARCH_AREA:
+    name: Search for an ESP area_id using text.
+    description: '
+      Search for an area.
+
+      The result will be printed in the log on startup.
+      '

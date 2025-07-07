@@ -2,13 +2,13 @@
 
 from typing import Final
 
-from .helpers import NumType, ValType
-from .rwsensors import RWSensor
-
 # pylint: disable=unused-import
 # flake8: noqa
-from .sensors import Sensor
-from .sunsynk import Sunsynk
+
+from sunsynk.helpers import NumType, ValType
+from sunsynk.rwsensors import RWSensor
+from sunsynk.sensors import Sensor
+from sunsynk.sunsynk import Sunsynk
 
 # pylint: enable=unused-import
 

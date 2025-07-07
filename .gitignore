@@ -3,6 +3,7 @@
 .data/*
 .data
 .id
+.venv
 # private config
 options.yaml
 

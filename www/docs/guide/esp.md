@@ -1,20 +1,22 @@
-# ESP integration
+# ESP add-on
 
-The ESP integration uses a combination of mysensors + Frontend
+ESP (EskomSePush) allows you to fetch the loadshedding schedules in South Africa through an API.
 
-Init your ESP sensor with the following **mysensors.py** entry
+You need your own API key, get it here: <https://eskomsepush.gumroad.com/l/api>
 
-```python
-try:
-    from ha_addon_sunsynk_multi.esp import ESP
-    ESP(
-        api_key="xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx",
-        area_id="jhbcitypower2-2-victorypark",
-        ha_prefix="eskom_vp",
-    )
-except ImportError:
-    pass
-```
+::: tip
+
+The EskomSePush API is limited to 50 requests per day. Request results are cached to reduce calls to the API.
+
+:::
+
+For each AREA, you need the following:
+
+- `API_KEY`
+- `HA_PREFIX`
+- `AREA_ID` *
+
+You can search for the AREA_ID using the `SEARCH_AREA` configuration option. The search result will be printed in the addon log
 
 The following should be saved in you HA config folder `/config/custom_templates/loadshed.jinja`
 

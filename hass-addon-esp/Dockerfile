@@ -15,7 +15,7 @@ RUN set -x \
     && curl -LsSf https://astral.sh/uv/0.7.19/install.sh | sh \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
-        ./sunsynk[umodbus,solarman]
+        ./sunsynk[addon]
     # && uv sync --frozen --no-dev --all-extras
     # && apk del .build-deps
 

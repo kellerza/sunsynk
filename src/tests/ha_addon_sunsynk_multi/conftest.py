@@ -3,7 +3,7 @@
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from mqtt_entity import Device  # type: ignore
+from mqtt_entity import MQTTDevice
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter, InverterOptions
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
@@ -13,9 +13,9 @@ NOSCHEDULE = Schedule("no_unit", read_every=1, report_every=1)
 
 
 @pytest.fixture
-def mqtt_device() -> Device:
+def mqtt_device() -> MQTTDevice:
     """Return an MQTT device and ensure there is a HA prefix for create_entities."""
-    dev = Device(["888"])
+    dev = MQTTDevice(identifiers=["888"], components={})
     # SENSOR_PREFIX[dev.id] = "ss1"
     return dev
 

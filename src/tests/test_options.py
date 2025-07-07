@@ -12,7 +12,7 @@ def test_load() -> None:
     """Tests."""
     OPT.prog_time_interval = 15
     assert OPT.prog_time_interval != 30
-    OPT.load({"PROG_TIME_interval": "30"})
+    OPT.load_dict({"PROG_TIME_interval": "30"})
     assert OPT.prog_time_interval == 30
 
 
