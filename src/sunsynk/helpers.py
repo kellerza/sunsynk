@@ -7,10 +7,10 @@ from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
 
-ValType = float | int | str | bool | None
-RegType = tuple[int, ...]
+type ValType = float | int | str | bool | None
+type RegType = tuple[int, ...]
 """Register addresses or values."""
-NumType = float | int
+type NumType = float | int
 
 
 def pack_value(value: int, bits: int = 16, signed: bool = True) -> RegType:

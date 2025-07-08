@@ -4,7 +4,6 @@ import asyncio
 import logging
 import time
 from collections.abc import Iterable, Sequence
-from typing import TypedDict
 
 import attrs
 
@@ -54,7 +53,7 @@ class Sunsynk:
             _LOGGER.debug("r_r - %s", r_r)
             val0 = r_r[0]
             regs0 = patch_bitmask(val0, val1, sensor.bitmask)
-            regs = (regs0,) + regs[1:]
+            regs = (regs0, *regs[1:])
             msg = f"[Register {val0}-->{val1}]"
 
         _LOGGER.info(
@@ -133,13 +132,3 @@ class Sunsynk:
         self.state.update(new_regs)
         if errs:
             raise OSError("; ".join(errs))
-
-
-class SunsynkInitParameters(TypedDict):
-    """Sunsynk typing parameters."""
-
-    port: str
-    server_id: int
-    timeout: int
-    read_sensors_batch_size: int
-    allow_gap: int

@@ -20,8 +20,8 @@ on:
       - ".github/workflows/ci.yml"
 
 env:
-  RUFF_VERSION: 0.11.3
-  UV_VERSION: 0.7.8
+  RUFF_VERSION: 0.12.2
+  UV_VERSION: 0.7.19
   TEST_TARGET: "src"
 
 jobs:
@@ -82,7 +82,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13"]
     env:
       PYTHON: ${{ matrix.python-version }}
     steps:

@@ -3,28 +3,25 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
+from typing import TYPE_CHECKING
 
 import attrs
-from mqtt_entity import (  # type: ignore[import]
-    BinarySensorEntity,
-    Device,
-    Entity,
+from mqtt_entity import (
+    MQTTBinarySensorEntity,
     MQTTClient,
-    NumberEntity,
-    RWEntity,
-    SelectEntity,
-    SensorEntity,
-    SwitchEntity,
+    MQTTEntity,
+    MQTTNumberEntity,
+    MQTTSelectEntity,
+    MQTTSensorEntity,
+    MQTTSwitchEntity,
+    MQTTTextEntity,
 )
-from mqtt_entity.helpers import (  # type: ignore[import]
+from mqtt_entity.helpers import (
+    MQTTEntityOptions,
     hass_default_rw_icon,
     hass_device_class,
 )
-from mqtt_entity.utils import tostr  # type: ignore[import]
 
-from ha_addon_sunsynk_multi.options import OPT
-from ha_addon_sunsynk_multi.sensor_options import SensorOption
 from sunsynk.helpers import ValType, slug
 from sunsynk.rwsensors import (
     NumberRWSensor,
@@ -35,33 +32,20 @@ from sunsynk.rwsensors import (
     TimeRWSensor,
     resolve_num,
 )
-from sunsynk.sensors import BinarySensor, EnumSensor, TextSensor
+from sunsynk.sensors import BinarySensor, EnumSensor
+
+from .options import OPT
+from .sensor_options import SensorOption
 
 if TYPE_CHECKING:
-    from ha_addon_sunsynk_multi.a_inverter import AInverter
+    from .a_inverter import AInverter
 
 
-SS_TOPIC = "SUNSYNK/status"
+SS_TOPIC = "SS"
 _LOGGER = logging.getLogger(__name__)
 """An array of the Sunsynk driver instances."""
-MQTT = MQTTClient()
+MQTT = MQTTClient(devs=[])
 """The MQTTClient instance."""
-
-
-# NotRequired need Python 3.11 - Already standard in HASS
-class MqttEntityOptions(TypedDict):
-    """Shared MQTTEntity options."""
-
-    name: str
-    state_topic: str
-    unique_id: str
-    device_class: NotRequired[str]
-    state_class: NotRequired[str]
-    icon: NotRequired[str]
-    entity_category: NotRequired[str]
-    unit_of_measurement: str
-    # command_topic: str
-    discovery_extra: dict[str, Any]
 
 
 @attrs.define(slots=True)
@@ -70,7 +54,7 @@ class ASensor:
 
     opt: SensorOption
     # istate: int = attrs.field()
-    entity: Entity | None = None
+    entity: MQTTEntity | None = None
     "The entity will be None if hidden."
 
     def __hash__(self) -> int:
@@ -101,11 +85,7 @@ class ASensor:
         if self._last == val and self.retain:
             return
         await MQTT.connect(OPT)
-        await MQTT.publish(
-            topic=self.entity.state_topic,
-            payload=tostr(val),
-            retain=self.retain,
-        )
+        await self.entity.send_state(MQTT, val, retain=self.retain)
         self._last = val
 
     @property
@@ -127,43 +107,32 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, dev: Device | Entity | None, *, ist: AInverter) -> Entity:
+    def create_entity(self, ist: AInverter, /) -> MQTTEntity:
         """Create HASS entity."""
+        dev_id = ist.opt.serial_nr
         # pylint: disable=too-many-branches,too-many-return-statements
         if not self.visible_on(ist):
             raise ValueError("Entity not visible")
         if self.opt.sensor is None:
             raise ValueError(f"Cannot create entity if no sensor specified: {self}")
-        if dev is None:
+        if not dev_id:
             raise ValueError(f"No device specified for create_entity: {self}")
-        if isinstance(dev, Entity):
-            dev = dev.device
 
         sensor = self.opt.sensor
 
-        state_topic = f"{SS_TOPIC}/{dev.id}/{sensor.id}"
+        state_topic = f"{SS_TOPIC}/{ist.opt.ha_prefix}/{sensor.id}"
         command_topic = f"{state_topic}_set"
 
-        discovery_extra: dict[str, str | int] = {
-            "object_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
-            "suggested_display_precision": 1,
-        }
-
-        ent: MqttEntityOptions = {
+        ent: MQTTEntityOptions = {
             "name": sensor.name,
+            "object_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
             "state_topic": state_topic,
-            "unique_id": f"{dev.id}_{sensor.id}",
+            "unique_id": f"{dev_id}_{sensor.id}",
             "unit_of_measurement": sensor.unit,
-            # https://github.com/kellerza/sunsynk/issues/165
-            "discovery_extra": discovery_extra,
         }
-
-        if isinstance(sensor, TextSensor):
-            discovery_extra.pop("suggested_display_precision")
 
         if isinstance(sensor, EnumSensor):
-            self.entity = SensorEntity(
-                device=dev,
+            self.entity = MQTTSensorEntity(
                 **ent,
                 # options=sensor.available_values(),
             )
@@ -172,11 +141,11 @@ class ASensor:
         if not isinstance(sensor, RWSensor):
             ent["device_class"] = hass_device_class(unit=sensor.unit)
             if isinstance(sensor, BinarySensor):
-                self.entity = BinarySensorEntity(device=dev, **ent)
+                self.entity = MQTTBinarySensorEntity(**ent)
             else:
                 if self.is_measurement(sensor.unit):
                     ent["state_class"] = "measurement"
-                self.entity = SensorEntity(device=dev, **ent)
+                self.entity = MQTTSensorEntity(**ent, suggested_display_precision=1)
             return self.entity
 
         async def on_change(val: float | str | bool) -> None:
@@ -189,57 +158,51 @@ class ASensor:
         ent["icon"] = hass_default_rw_icon(unit=sensor.unit)
 
         if isinstance(sensor, NumberRWSensor):
-            self.entity = NumberEntity(
-                device=dev,
+            self.entity = MQTTNumberEntity(
                 **ent,
                 command_topic=command_topic,
                 min=resolve_num(ist.get_state, sensor.min, 0),
                 max=resolve_num(ist.get_state, sensor.max, 100),
                 mode=OPT.number_entity_mode,
                 step=0.1 if sensor.factor < 1 else 1,
-                on_change=on_change,
+                suggested_display_precision=1,
+                on_command=on_change,
             )
             return self.entity
 
         if isinstance(sensor, (SwitchRWSensor | SwitchRWSensor0)):
-            self.entity = SwitchEntity(
-                device=dev,
+            self.entity = MQTTSwitchEntity(
                 **ent,
                 command_topic=command_topic,
-                on_change=on_change,
+                on_command=on_change,
             )
             return self.entity
 
         if isinstance(sensor, SelectRWSensor):
-            self.entity = SelectEntity(
-                device=dev,
+            self.entity = MQTTSelectEntity(
                 **ent,
                 command_topic=command_topic,
                 options=sensor.available_values(),
-                on_change=on_change,
+                on_command=on_change,
             )
             return self.entity
 
         if isinstance(sensor, TimeRWSensor):
             ent["icon"] = "mdi:clock"
-            self.entity = SelectEntity(
-                device=dev,
+            self.entity = MQTTSelectEntity(
                 **ent,
                 command_topic=command_topic,
                 options=sensor.available_values(OPT.prog_time_interval, ist.get_state),
-                on_change=on_change,
+                on_command=on_change,
             )
             return self.entity
 
-        RWEntity._path = "text"  # pylint: disable=protected-access
-
         ent["entity_category"] = "diagnostic"
 
-        self.entity = RWEntity(
-            device=dev,
+        self.entity = MQTTTextEntity(
             **ent,
             command_topic=command_topic,
-            on_change=on_change,
+            on_command=on_change,
         )
         return self.entity
 
@@ -248,20 +211,16 @@ class ASensor:
 class TimeoutState(ASensor):
     """Entity definition for the timeout sensor."""
 
-    retain = True
-
-    def create_entity(self, dev: Device | Entity | None, *, ist: AInverter) -> Entity:
+    def create_entity(self, ist: AInverter, /) -> MQTTEntity:
         """MQTT entities for stats."""
-        if dev is None:
+        dev_id = ist.opt.serial_nr
+        if not dev_id:
             raise ValueError(f"No device specified for create_entity! {self}")
-        if isinstance(dev, Entity):
-            dev = dev.device
 
-        self.entity = SensorEntity(
+        self.entity = MQTTSensorEntity(
             name="RS485 timeouts",
-            unique_id=f"{dev.id}_timeouts",
-            state_topic=f"{SS_TOPIC}/{dev.id}/timeouts",
+            unique_id=f"{dev_id}_timeouts",
+            state_topic=f"{SS_TOPIC}/{ist.opt.ha_prefix}/timeouts",
             entity_category="config",
-            device=dev,
         )
         return self.entity

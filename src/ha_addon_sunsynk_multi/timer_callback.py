@@ -8,8 +8,9 @@ from math import modf
 
 import attrs
 
-from ha_addon_sunsynk_multi.errors import log_error
 from sunsynk.helpers import slug
+
+from .errors import log_error
 
 _LOGGER = logging.getLogger(__name__)
 

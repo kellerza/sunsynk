@@ -3,21 +3,24 @@
 import logging
 
 import pytest
-from mqtt_entity import Device, Entity  # type: ignore
+from mqtt_entity import MQTTEntity
+from mqtt_entity.helpers import discovery_dict
 
-from ha_addon_sunsynk_multi.a_inverter import STATE, AInverter
+from ha_addon_sunsynk_multi.a_inverter import STATE
 from ha_addon_sunsynk_multi.a_sensor import ASensor
 from ha_addon_sunsynk_multi.sensor_options import SensorOption
 from sunsynk.helpers import slug
 from sunsynk.sensors import Sensor
 
-from .conftest import NOSCHEDULE
+from .conftest import NOSCHEDULE, ist_factory
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def test_create_entity(mqtt_device: Device, ist: AInverter) -> None:
+def test_create_entity() -> None:
     """Create entity."""
+    serial, ha_prefix = "888", "ss1"
+    ist = ist_factory(serial, ha_prefix, 1)
     STATE.append(ist)
 
     st = ASensor(
@@ -29,23 +32,26 @@ def test_create_entity(mqtt_device: Device, ist: AInverter) -> None:
     assert st.name == "one"
 
     # Create the mqtt entity
-    ent: Entity = st.create_entity(mqtt_device, ist=ist)
-    entd: dict = ent.asdict
+    ent: MQTTEntity = st.create_entity(ist)
+    entd: dict = discovery_dict(ent)
     assert entd == {
-        "device": {"identifiers": ["888"]},
+        "p": "sensor",
         "name": "one",
-        "object_id": "ss1_one",
-        "state_class": "measurement",
-        "state_topic": "SUNSYNK/status/888/one",
-        "suggested_display_precision": 1,
-        "unique_id": "888_one",
-        "unit_of_measurement": "W",
-        "device_class": "power",
+        "obj_id": "ss1_one",
+        "stat_cla": "measurement",
+        "stat_t": f"SS/{ha_prefix}/one",
+        "sug_dsp_prc": 1,
+        "uniq_id": f"{serial}_one",
+        "unit_of_meas": "W",
+        "dev_cla": "power",
     }
 
 
-def test_create_entity2(mqtt_device: Device, ist: AInverter) -> None:
+def test_create_entity2() -> None:
     """Create entity."""
+    serial, ha_prefix = "888", "ss1"
+    ist = ist_factory(serial, ha_prefix, 1)
+
     # Create the state
     nme = "the energy"
     slugn = slug(nme)
@@ -58,24 +64,28 @@ def test_create_entity2(mqtt_device: Device, ist: AInverter) -> None:
         )
     )
 
+    serial = "888"
+
     # Create the mqtt entity
-    ent: Entity = st.create_entity(mqtt_device, ist=ist)
-    entd: dict = ent.asdict
+    ent: MQTTEntity = st.create_entity(ist)
+    entd: dict = discovery_dict(ent)
     assert entd == {
-        "device": {"identifiers": ["888"]},
+        "p": "sensor",
         "name": nme,
-        "object_id": f"ss1_{slugn}",
-        "state_topic": f"SUNSYNK/status/888/{slugn}",
-        "suggested_display_precision": 1,
-        "unique_id": f"888_{slugn}",
-        "unit_of_measurement": "kWh",
-        "state_class": "total_increasing",
-        "device_class": "energy",
+        "obj_id": f"{ha_prefix}_{slugn}",
+        "stat_t": f"SS/{ha_prefix}/{slugn}",
+        "sug_dsp_prc": 1,
+        "uniq_id": f"{serial}_{slugn}",
+        "unit_of_meas": "kWh",
+        "stat_cla": "total_increasing",
+        "dev_cla": "energy",
     }
 
 
-def test_create_fail(mqtt_device: Device, ist: AInverter) -> None:
+def test_create_fail() -> None:
     """Create entity."""
+    serial, ha_prefix = "888", "ss1"
+    ist = ist_factory(serial, ha_prefix, 1)
     STATE.append(ist)
 
     st = ASensor(
@@ -87,8 +97,8 @@ def test_create_fail(mqtt_device: Device, ist: AInverter) -> None:
 
     # Create the mqtt entity
     ist.index = 0
-    st.create_entity(mqtt_device, ist=ist)
+    st.create_entity(ist)
 
     ist.index = 1
     with pytest.raises(ValueError):
-        st.create_entity(mqtt_device, ist=ist)
+        st.create_entity(ist)
