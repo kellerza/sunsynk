@@ -13,10 +13,11 @@ on:
       - ".github/workflows/ci.yml"
   pull_request:
     paths:
-      - "setup.*"
+      - "pyproject.toml"
+      - "uv.lock"
       - "src/**"
       - "hass-addon-sunsynk-multi/**"
-      - ".github/workflows/deploy-multi.yml"
+      - ".github/workflows/deploy-sunsynk.yml"
       - ".github/workflows/ci.yml"
 
 env:

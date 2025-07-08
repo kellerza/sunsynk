@@ -15,7 +15,7 @@ env:
   ADDON_SLUG: hass-addon-sunsynk-multi
   ADDON_SLUG_EDGE: hass-addon-sunsynk-edge
   PKG_NAME: sunsynk
-  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/sunsynk
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi
 
 jobs:
   information:
@@ -69,10 +69,11 @@ jobs:
 
           # Log the outputs
           cat "$GITHUB_OUTPUT" >> $GITHUB_STEP_SUMMARY
+
   build:
     name: 👷 Build & Deploy ${{ matrix.platform }} ${{ needs.information.outputs.environment }}/${{ needs.information.outputs.version }}
     runs-on: ubuntu-latest
-    needs: information
+    needs: [information]
     strategy:
       fail-fast: false
       matrix:
@@ -179,13 +180,7 @@ jobs:
 
   merge:
     runs-on: ubuntu-latest
-    needs:
-      - information
-      - build
-    if: |
-      always() &&
-      needs.information.result == 'success' &&
-      needs.build.result != 'failure'
+    needs: [information, build]
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -357,11 +352,6 @@ jobs:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
     needs: [information, build, merge]
     # branches: [main] - restrict?
-    if: |
-      always() &&
-      needs.information.result == 'success' &&
-      needs.build.result != 'failure' &&
-      needs.merge.result == 'success'
     permissions:
       contents: write
     runs-on: ubuntu-latest
