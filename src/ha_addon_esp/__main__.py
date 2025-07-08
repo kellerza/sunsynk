@@ -4,7 +4,7 @@ import asyncio
 import logging
 
 import attrs
-from mqtt_entity import MQTTClient, MQTTOrigin
+from mqtt_entity import MQTTClient
 from mqtt_entity.options import MQTTOptions
 
 from .esp import ESP, search_area
@@ -25,7 +25,7 @@ async def main_loop() -> None:
     client = MQTTClient(
         availability_topic="ESP/availability",
         devs=[],
-        origin=MQTTOrigin(name="ESP sensors for Home Assistant"),
+        origin_name="ESP sensors for Home Assistant",
     )
     for area in opt.areas:
         devs.append(
@@ -39,7 +39,7 @@ async def main_loop() -> None:
     client.devs.extend([d.mqtt_dev for d in devs])
 
     await client.connect(opt)
-    client.publish_discovery_info()
+    client.publish_discovery_info_when_online()
     _LOGGER.info("Connected to MQTT broker")
 
     # wait a bit for discovery

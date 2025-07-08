@@ -201,7 +201,7 @@ class AInverter:
         """Discover all sensors."""
         self.hass_create_discovery_info()
         await MQTT.connect(OPT)
-        MQTT.publish_discovery_info()
+        MQTT.publish_discovery_info_when_online()
         return True
 
     def init_sensors(self) -> None:

@@ -295,15 +295,15 @@ wheels = [
 
 [[package]]
 name = "mqtt-entity"
-version = "1.0.10"
+version = "1.0.11"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "paho-mqtt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cb/32/aa3f8d8bd65d8eea8109bce678bbc227d44a4ef57715810300727ebf97ed/mqtt_entity-1.0.10.tar.gz", hash = "sha256:1ec8b050b1dc286b002881f9b6151488ff66fcb7225dd1b510ab8d72e17109e8", size = 13694 }
+sdist = { url = "https://files.pythonhosted.org/packages/dc/0c/38e806a3da3a9b0c498dbf5e0889c510d5a2232addb444379e840adb4b92/mqtt_entity-1.0.11.tar.gz", hash = "sha256:62468ee3809b6d866c522e6fe284cdec7735fc3538e06a9e5e3484209c1c956e", size = 13753 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/62/9a/a0e955e276e390057cf20b95c7d8e6f5a0ac26e42c06fe67d5b14888f48b/mqtt_entity-1.0.10-py3-none-any.whl", hash = "sha256:883b1a03eac5c7c4ecc79f0197287216645cc3020cef472e92cfad29ffe0aed0", size = 15517 },
+    { url = "https://files.pythonhosted.org/packages/83/30/c206749ab3136761ce2e1e830781beaa95f4a8616fee9a6b470908073f84/mqtt_entity-1.0.11-py3-none-any.whl", hash = "sha256:35e6e6a9a0d6245cccc69814ef80ad0840e382b6ed7deb1599932d4fa5a2f13f", size = 15560 },
 ]
 
 [[package]]

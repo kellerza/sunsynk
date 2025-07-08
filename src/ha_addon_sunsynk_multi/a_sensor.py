@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 SS_TOPIC = "SS"
 _LOGGER = logging.getLogger(__name__)
 """An array of the Sunsynk driver instances."""
-MQTT = MQTTClient(devs=[])
+MQTT = MQTTClient(devs=[], origin_name="Sunsynk Add-on")
 """The MQTTClient instance."""
 
 
