@@ -23,7 +23,7 @@ async def main_loop() -> None:
     asyncio.get_event_loop().set_debug(opt.debug > 0)
     devs = list[ESP]()
     client = MQTTClient(
-        availability_topic="ESP/online",
+        availability_topic="ESP/availability",
         devs=[],
         origin=MQTTOrigin(name="ESP sensors for Home Assistant"),
     )
@@ -43,7 +43,7 @@ async def main_loop() -> None:
     _LOGGER.info("Connected to MQTT broker")
 
     # wait a bit for discovery
-    await asyncio.sleep(30)
+    await asyncio.sleep(10)
 
     for dev in devs:
         await dev.init()

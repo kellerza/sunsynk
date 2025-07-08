@@ -189,7 +189,7 @@ class AInverter:
             if s.opt.sensor.id not in ids:
                 continue
             try:
-                s.entity = s.create_entity(serial_nr, ist=self)
+                s.entity = s.create_entity(self)
                 self.mqtt_dev.components[s.opt.sensor.id] = s.entity
             except Exception as err:  # pylint:disable=broad-except
                 _LOGGER.error("Could not create MQTT entity for %s: %s", s, err)
@@ -224,7 +224,7 @@ class AInverter:
             name="RS485 timeout",
             unique_id=f"{dev_id}_{name}",
             unit_of_measurement=" ",
-            state_topic=f"{SS_TOPIC}/{dev_id}/{name}",
+            state_topic=f"{SS_TOPIC}/{self.opt.ha_prefix}/{name}",
             entity_category="diagnostic",
             object_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
         )
@@ -234,8 +234,8 @@ class AInverter:
             name="Callback stats",
             unique_id=f"{self.mqtt_dev.id}_{name}",
             unit_of_measurement=" ",
-            state_topic=f"{SS_TOPIC}/{dev_id}/{name}",
-            json_attributes_topic=f"{SS_TOPIC}/{dev_id}/{name}_attr",
+            state_topic=f"{SS_TOPIC}/{self.opt.ha_prefix}/{name}",
+            json_attributes_topic=f"{SS_TOPIC}/{self.opt.ha_prefix}/{name}_attr",
             entity_category="diagnostic",
             object_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
         )

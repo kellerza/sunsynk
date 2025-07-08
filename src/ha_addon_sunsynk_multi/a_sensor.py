@@ -107,8 +107,9 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, dev_id: str, *, ist: AInverter) -> MQTTEntity:
+    def create_entity(self, ist: AInverter, /) -> MQTTEntity:
         """Create HASS entity."""
+        dev_id = ist.opt.serial_nr
         # pylint: disable=too-many-branches,too-many-return-statements
         if not self.visible_on(ist):
             raise ValueError("Entity not visible")
@@ -119,7 +120,7 @@ class ASensor:
 
         sensor = self.opt.sensor
 
-        state_topic = f"{SS_TOPIC}/{dev_id}/{sensor.id}"
+        state_topic = f"{SS_TOPIC}/{ist.opt.ha_prefix}/{sensor.id}"
         command_topic = f"{state_topic}_set"
 
         ent: MQTTEntityOptions = {
@@ -210,17 +211,16 @@ class ASensor:
 class TimeoutState(ASensor):
     """Entity definition for the timeout sensor."""
 
-    retain = True
-
-    def create_entity(self, dev_id: str, *, ist: AInverter) -> MQTTEntity:
+    def create_entity(self, ist: AInverter, /) -> MQTTEntity:
         """MQTT entities for stats."""
+        dev_id = ist.opt.serial_nr
         if not dev_id:
             raise ValueError(f"No device specified for create_entity! {self}")
 
         self.entity = MQTTSensorEntity(
             name="RS485 timeouts",
             unique_id=f"{dev_id}_timeouts",
-            state_topic=f"{SS_TOPIC}/{dev_id}/timeouts",
+            state_topic=f"{SS_TOPIC}/{ist.opt.ha_prefix}/timeouts",
             entity_category="config",
         )
         return self.entity

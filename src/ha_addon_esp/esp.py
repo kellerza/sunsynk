@@ -55,14 +55,16 @@ class ESP:
             with self.statefile.open(encoding="utf-8") as jsf:
                 self.state = json.load(jsf)
 
-        name_sensor = JMESSensor(name="Area", state_expr="info.name", attr_expr="info")
+        name_sensor = JMESSensor(
+            name="Area",
+            state_expr="info.name",
+            attr_expr="{region: info.region, events: events, schedule: schedule}",
+        )
         self.sensors = [
             name_sensor,
             JMESSensor(
                 name="Next", state_expr="events[0].start", attr_expr="events[0]"
             ),
-            JMESSensor(name="Events", state_expr="info.name", attr_expr="events"),
-            JMESSensor(name="Schedule", state_expr="info.name", attr_expr="schedule"),
             AllowanceSensor(name="Allowance"),
         ]
 
@@ -75,7 +77,7 @@ class ESP:
 
     def id(self) -> str:
         """Return the identifiers for the ESP."""
-        return self.api_key[-8:] + slug(self.area_id)
+        return f"eskomsp_{slug(self.area_id)}"
 
     async def query(self, uri: str, params: dict[str, Any]) -> dict[str, Any]:
         """Query the API."""

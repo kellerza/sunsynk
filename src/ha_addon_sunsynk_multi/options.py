@@ -24,8 +24,9 @@ class InverterOptions:
     serial_nr: str = ""
     dongle_serial_number: int = 0
 
-    def check(self) -> None:
+    def __attrs_post_init__(self) -> None:
         """Do some checks."""
+        self.ha_prefix = self.ha_prefix.lower().strip()
         if self.dongle_serial_number:
             if self.port:
                 _LOGGER.warning(
@@ -71,5 +72,9 @@ def init_options() -> None:
     """Load the options & setup the logger."""
     OPT.init_addon()
 
+    # check ha_prefix is unique
+    all_prefix = set()
     for inv in OPT.inverters:
-        inv.check()
+        if inv.ha_prefix in all_prefix:
+            raise ValueError("HA_PREFIX should be unique")
+        all_prefix.add(inv.ha_prefix)

@@ -6,16 +6,18 @@ from unittest.mock import Mock, call, patch
 
 import pytest
 
-from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.sensor_callback import SensorRun, build_callback_schedule
 from ha_addon_sunsynk_multi.sensor_options import SOPT, Sensor, SensorOption
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
 
+from .conftest import ist_factory
+
 pytestmark = pytest.mark.asyncio
 
 
-async def test_build_callback_schedule(ist: AInverter) -> None:
+async def test_build_callback_schedule() -> None:
     """Test build_callback_schedule."""
+    ist = ist_factory("888", "ss1", 1)
     SOPT.clear()
     SOPT.update({s.sensor: s for s in TEST1})
 
@@ -27,9 +29,7 @@ async def test_build_callback_schedule(ist: AInverter) -> None:
     ist.write_queue = {}
     ist.index = 0
 
-    with (
-        patch("ha_addon_sunsynk_multi.sensor_callback.defaultdict", dds),
-    ):
+    with patch("ha_addon_sunsynk_multi.sensor_callback.defaultdict", dds):
         mycb = build_callback_schedule(ist)
         if not iscoroutinefunction(mycb.callback):
             raise AssertionError("Callback is not a coroutine")

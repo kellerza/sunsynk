@@ -12,20 +12,19 @@ from sunsynk.sunsynk import InverterState
 NOSCHEDULE = Schedule("no_unit", read_every=1, report_every=1)
 
 
-@pytest.fixture
-def mqtt_device() -> MQTTDevice:
-    """Return an MQTT device and ensure there is a HA prefix for create_entities."""
-    dev = MQTTDevice(identifiers=["888"], components={})
-    # SENSOR_PREFIX[dev.id] = "ss1"
-    return dev
+def ist_factory(serial: str, ha_prefix: str, modbus_id: int) -> AInverter:
+    """Return an inverter test instance."""
+    res = MagicMock(spec_set=AInverter)
+    res.inv.connect = AsyncMock()
+    res.inv.state = MagicMock(spec_set=InverterState)
+    res.opt = InverterOptions(
+        ha_prefix=ha_prefix, serial_nr=serial, modbus_id=modbus_id
+    )
+    res.mqtt_dev = MQTTDevice(identifiers=[serial], components={})
+    return res
 
 
 @pytest.fixture
 def ist() -> AInverter:
     """Return an MQTT device and ensure there is a HA prefix for create_entities."""
-    inv = MagicMock(spec_set=AInverter)
-    # inv.inv = Mock()
-    inv.inv.connect = AsyncMock()
-    inv.inv.state = MagicMock(spec_set=InverterState)
-    inv.opt = InverterOptions(ha_prefix="ss1")
-    return inv
+    return ist_factory("888", "ss1", 1)
