@@ -10,7 +10,7 @@ on:
 
 env:
   ADDON_SLUG: hass-addon-esp
-  ADDON_SLUG_EDGE: hass-sunsynk-esp
+  ADDON_SLUG_EDGE: hass-addon-esp
   PKG_NAME: sunsynk
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/sunsynk
 
@@ -30,7 +30,7 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'release' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'failure')
     outputs:
       architectures: ${{ steps.information.outputs.architectures }}
       build: ${{ steps.information.outputs.build }}
