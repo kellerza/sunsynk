@@ -1,6 +1,6 @@
 ---
 name: ESP Add-on
-version: "8914418"
+version: "7509f46"
 slug: hass-addon-esp
 description: Add-on to query the EskomSePush API
 image: ghcr.io/kellerza/hass-addon-esp
