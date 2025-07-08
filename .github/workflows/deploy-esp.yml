@@ -15,7 +15,7 @@ env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/sunsynk
 
 jobs:
-  ci-failure:
+  ci-run-failed:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'workflow_run' &&
@@ -26,11 +26,9 @@ jobs:
 
   information:
     name: Gather add-on information
+    needs: [ci-run-failed]
+    if: always() && !failure() && !cancelled()  # https://stackoverflow.com/a/77066140
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'release' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'failure')
     outputs:
       architectures: ${{ steps.information.outputs.architectures }}
       build: ${{ steps.information.outputs.build }}
