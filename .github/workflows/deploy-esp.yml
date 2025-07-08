@@ -15,19 +15,11 @@ env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/sunsynk
 
 jobs:
-  ci-run-failed:
-    runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'failure'
-    steps:
-      - run: echo 'CI failed'
-      - run: exit 1
-
   information:
     name: Gather add-on information
-    needs: [ci-run-failed]
-    if: always() && !failure() && !cancelled()  # https://stackoverflow.com/a/77066140
+    if:
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion != 'failure'
     runs-on: ubuntu-latest
     outputs:
       architectures: ${{ steps.information.outputs.architectures }}
