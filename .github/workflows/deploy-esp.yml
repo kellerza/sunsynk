@@ -1,4 +1,4 @@
-name: Deploy addon to ghcr.io
+name: Deploy esp addon to ghcr.io
 
 on:
   push:
