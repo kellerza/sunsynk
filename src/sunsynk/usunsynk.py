@@ -6,8 +6,8 @@ from collections.abc import Sequence
 from urllib import parse
 
 import attrs
-from async_modbus import AsyncClient, modbus_for_url  # type: ignore
-from connio import SERIAL_SCHEMES, SOCKET_SCHEMES  # type: ignore
+from async_modbus import AsyncClient, modbus_for_url  # type: ignore[]
+from connio import SERIAL_SCHEMES, SOCKET_SCHEMES  # type: ignore[]
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 class USunsynk(Sunsynk):
     """Sunsynk class using umodbus."""
 
-    client: AsyncClient = None
+    client: AsyncClient = None  # type:ignore[arg-type]
 
     async def connect(self) -> None:
         """Connect."""

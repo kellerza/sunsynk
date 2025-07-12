@@ -110,7 +110,7 @@ class ESP:
             await self.query_api()
             for sen in self.sensors:
                 await sen.get_state(self)
-        except Exception:  # pylint:disable=broad-except
+        except Exception:
             traceback.print_exc()
             raise
 

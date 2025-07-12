@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from urllib.parse import urlparse
 
 import attrs
-from pysolarmanv5 import PySolarmanV5Async  # type: ignore
+from pysolarmanv5 import PySolarmanV5Async  # type: ignore[]
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -60,7 +60,7 @@ class SolarmanSunsynk(Sunsynk):
         except AttributeError:
             pass
         finally:
-            self.client = None  # type:ignore
+            self.client = None  # type:ignore[]
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""

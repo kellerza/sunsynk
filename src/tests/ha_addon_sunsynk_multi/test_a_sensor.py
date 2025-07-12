@@ -4,7 +4,7 @@ import logging
 
 import pytest
 from mqtt_entity import MQTTEntity
-from mqtt_entity.helpers import discovery_dict
+from mqtt_entity.helpers import hass_abbreviate
 
 from ha_addon_sunsynk_multi.a_inverter import STATE
 from ha_addon_sunsynk_multi.a_sensor import ASensor
@@ -33,7 +33,7 @@ def test_create_entity() -> None:
 
     # Create the mqtt entity
     ent: MQTTEntity = st.create_entity(ist)
-    entd: dict = discovery_dict(ent)
+    entd: dict = hass_abbreviate(ent.as_discovery_dict)
     assert entd == {
         "p": "sensor",
         "name": "one",
@@ -68,7 +68,7 @@ def test_create_entity2() -> None:
 
     # Create the mqtt entity
     ent: MQTTEntity = st.create_entity(ist)
-    entd: dict = discovery_dict(ent)
+    entd: dict = hass_abbreviate(ent.as_discovery_dict)
     assert entd == {
         "p": "sensor",
         "name": nme,

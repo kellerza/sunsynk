@@ -161,7 +161,7 @@ SENSORS += (
     RATED_POWER,
     FaultSensor((103, 104, 105, 106), "Fault"),
     InverterStateSensor(59, "Overall state"),
-    SDStatusSensor(92, "SD status", ""),  # type: ignore
+    SDStatusSensor(92, "SD status", ""),
     TempSensor(90, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(95, "Environment temperature", CELSIUS, 0.1),
     TempSensor(91, "Radiator temperature", CELSIUS, 0.1),

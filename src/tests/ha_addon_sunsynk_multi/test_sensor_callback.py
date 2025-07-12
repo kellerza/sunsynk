@@ -43,18 +43,18 @@ async def test_build_callback_schedule() -> None:
             20: SensorRun(next_run=0, sensors={TEST1[1]}),
         }
 
-        assert ist.inv.connect.call_count == 0  # type: ignore
+        assert ist.inv.connect.call_count == 0  # type: ignore[attr-defined]
         await mycb.callback(1)
-        assert ist.inv.connect.call_count == 1  # type: ignore
+        assert ist.inv.connect.call_count == 1  # type: ignore[attr-defined]
 
-        assert ist.read_sensors.call_args_list == [  # type: ignore
+        assert ist.read_sensors.call_args_list == [  # type: ignore[attr-defined]
             call(
                 sensors={TEST1[0].sensor, TEST1[1].sensor},
                 msg="poll_need_to_read",
             )
         ]
-        ist.read_sensors.call_args_list.clear()  # type: ignore
-        assert ist.publish_sensors.call_count == 0  # type: ignore
+        ist.read_sensors.call_args_list.clear()  # type: ignore[attr-defined]
+        assert ist.publish_sensors.call_count == 0  # type: ignore[attr-defined]
         assert read_s == {
             1: SensorRun(next_run=2, sensors={TEST1[0], TEST1[1]}),
         }
@@ -65,7 +65,7 @@ async def test_build_callback_schedule() -> None:
 
         await mycb.callback(10)
 
-        assert ist.read_sensors.call_args_list == [  # type: ignore
+        assert ist.read_sensors.call_args_list == [  # type: ignore[attr-defined]
             call(
                 sensors={TEST1[0].sensor, TEST1[1].sensor},
                 msg="poll_need_to_read",
@@ -96,7 +96,7 @@ async def test_build_callback_schedule() -> None:
             10: SensorRun(next_run=30, sensors={TEST1[0]}),
             20: SensorRun(next_run=40, sensors={TEST1[1]}),
         }
-        assert ist.publish_sensors.call_count == 0  # type: ignore
+        assert ist.publish_sensors.call_count == 0  # type: ignore[attr-defined]
 
 
 TEST1 = (

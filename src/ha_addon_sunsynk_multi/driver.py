@@ -24,7 +24,7 @@ async def callback_discovery_info(now: int) -> None:
     if HASS_DISCOVERY_INFO_UPDATE_QUEUE:
         for ist in STATE:
             ist.hass_create_discovery_info()
-        await MQTT.publish_discovery_info_now()
+        await MQTT.publish_discovery_info()
         HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
 
     # Publish statistics
@@ -47,24 +47,22 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
 
 def init_driver(opt: Options) -> None:
     """Init Sunsynk driver for each inverter."""
-    # pylint: disable=import-outside-toplevel
-
     factory = Sunsynk
     port_prefix = ""
 
     if opt.driver == "pymodbus":
-        from sunsynk.pysunsynk import PySunsynk
+        from sunsynk.pysunsynk import PySunsynk  # noqa: PLC0415
 
         factory = PySunsynk
     elif opt.driver == "umodbus":
-        from sunsynk.usunsynk import USunsynk
+        from sunsynk.usunsynk import USunsynk  # noqa: PLC0415
 
         factory = USunsynk
         port_prefix = "serial://"
     elif opt.driver == "solarman":
-        from sunsynk.solarmansunsynk import SolarmanSunsynk
+        from sunsynk.solarmansunsynk import SolarmanSunsynk  # noqa: PLC0415
 
-        factory = SolarmanSunsynk  # type: ignore
+        factory = SolarmanSunsynk  # type: ignore[]
         port_prefix = "tcp://"
     else:
         raise ValueError(
@@ -82,7 +80,7 @@ def init_driver(opt: Options) -> None:
             allow_gap=opt.read_allow_gap,
         )
         if hasattr(suns, "dongle_serial_number"):
-            suns.dongle_serial_number = inv.dongle_serial_number  # type: ignore
+            suns.dongle_serial_number = inv.dongle_serial_number  # type: ignore[]
         _LOGGER.debug("Driver: %s - inv:%s", suns, inv)
         suns.state.onchange = sensor_on_update
 

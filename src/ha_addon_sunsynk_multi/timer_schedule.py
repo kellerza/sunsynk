@@ -68,9 +68,9 @@ def get_schedule(sensor: Sensor, schedules: dict[str, Schedule]) -> Schedule:
         ("Any unit", SCH_ANY_UNIT if sensor.unit != "" else None),
         ("No unit", SCH_NO_UNIT if sensor.unit == "" else None),
     )
-    for reason, key in search_keys:
-        if key:
-            key = slug(key)
+    for reason, fkey in search_keys:
+        if fkey:
+            key = slug(fkey)
             if key in schedules:
                 _LOGGER.debug(
                     "Schedule %s used for %s (reason: %s)", key, sensor.name, reason

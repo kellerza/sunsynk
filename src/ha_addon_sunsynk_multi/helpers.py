@@ -33,7 +33,7 @@ def import_mysensors() -> dict[str, Any] | None:
     _LOGGER.info("Importing %s...", pth)
     try:
         mod = import_module("mysensors", str(root))
-    except Exception as err:  # pylint:disable=broad-except
+    except Exception as err:
         traceback.print_exc()
         _LOGGER.error("Error importing %s: %s", pth, err)
         return None

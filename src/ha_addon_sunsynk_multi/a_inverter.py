@@ -24,8 +24,6 @@ _LOGGER = logging.getLogger(__name__)
 class AInverter:
     """Addon Inverter state (per inverter)."""
 
-    # pylint:disable=too-many-instance-attributes
-
     index: int
     inv: Sunsynk
     opt: InverterOptions
@@ -59,7 +57,7 @@ class AInverter:
             await self.inv.read_sensors(sensors)
             self.read_errors = 0
         except (
-            Exception,  # pylint:disable=broad-except
+            Exception,
             asyncio.exceptions.CancelledError,
         ) as err:
             self.read_errors += 1
@@ -79,7 +77,7 @@ class AInverter:
                 return True
             except asyncio.exceptions.CancelledError as err:
                 _LOGGER.error("Timeout %s", err)
-            except Exception as err:  # pylint:disable=broad-except
+            except Exception as err:
                 _LOGGER.error("%s", err)
             await asyncio.sleep(0.1)
             if self.read_errors > 2:
@@ -107,8 +105,9 @@ class AInverter:
             if not state.entity:
                 continue
             if value is None:
-                value = self.inv.state[state.opt.sensor]
-            await state.publish(value)
+                await state.publish(self.inv.state[state.opt.sensor])
+            else:
+                await state.publish(value)
 
     async def connect(self) -> None:
         """Connect."""
@@ -153,7 +152,7 @@ class AInverter:
     def rated_power(self) -> float:
         """Return the inverter power."""
         try:
-            return float(self.inv.state[DEFS.rated_power])  # type:ignore
+            return float(self.inv.state[DEFS.rated_power])  # type:ignore[arg-type]
         except (ValueError, TypeError):
             return 0
 
@@ -191,17 +190,17 @@ class AInverter:
             try:
                 s.entity = s.create_entity(self)
                 self.mqtt_dev.components[s.opt.sensor.id] = s.entity
-            except Exception as err:  # pylint:disable=broad-except
+            except Exception as err:
                 _LOGGER.error("Could not create MQTT entity for %s: %s", s, err)
 
             if hasattr(s.opt.sensor, "rated_power"):
-                s.opt.sensor.rated_power = int(self.rated_power)  # type:ignore
+                s.opt.sensor.rated_power = int(self.rated_power)  # type:ignore[]
 
     async def hass_discover_sensors(self) -> bool:
         """Discover all sensors."""
         self.hass_create_discovery_info()
         await MQTT.connect(OPT)
-        MQTT.publish_discovery_info_when_online()
+        MQTT.monitor_homeassistant_status()
         return True
 
     def init_sensors(self) -> None:
@@ -243,7 +242,7 @@ class AInverter:
 
     async def publish_stats(self, period: int) -> None:
         """Publish stats."""
-        await MQTT.connect(OPT)
+        # await MQTT.connect(OPT)
         await self.entity_timeout.send_state(MQTT, self.inv.timeouts)
 
         # calc stats

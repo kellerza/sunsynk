@@ -23,7 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 class PySunsynk(Sunsynk):
     """Sunsync Modbus class."""
 
-    client: ModbusBaseClient = None  # type:ignore
+    client: ModbusBaseClient = None  # type:ignore[assignment]
 
     def _new_client(self) -> ModbusBaseClient:
         """Create a new client."""
@@ -80,7 +80,7 @@ class PySunsynk(Sunsynk):
         try:
             res = await self.client.write_registers(
                 address=address,
-                values=[value],  # type:ignore
+                values=[value],  # type:ignore[]
                 slave=self.server_id,
             )
             if res.function_code < 0x80:  # test that we are not an error
@@ -96,7 +96,7 @@ class PySunsynk(Sunsynk):
     ) -> typing.Sequence[int]:
         """Read a holding register."""
         await self.connect()
-        res = await self.client.read_holding_registers(  # type:ignore
+        res = await self.client.read_holding_registers(  # type:ignore[]
             address=start, count=length, slave=self.server_id
         )
         if res.function_code >= 0x80:  # test that we are not an error

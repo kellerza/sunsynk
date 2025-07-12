@@ -10,7 +10,7 @@ echo # Modify Config for local testing
 set cf=%~1\config.localtest.yaml
 cp %~1\config.yaml %cf%
 sed -i 's/image:/# image:/' %cf%
-sed -i 's/name: /name: LOCAL /' %cf%
+sed -i 's/name: /name: A_LOCAL /' %cf%
 xcopy /Y %cf% %~2\config.yaml
 
 echo # Copy '%~1' to '%~2'

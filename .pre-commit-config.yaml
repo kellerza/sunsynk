@@ -25,14 +25,3 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-
-      - id: pylint
-        name: pylint
-        entry: uv run pylint src
-        language: system
-        types: [python]
-        pass_filenames: false
-        args: [
-            "-rn", # Only display messages
-            "-sn", # Don't display the score
-          ]

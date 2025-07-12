@@ -80,7 +80,7 @@ SENSORS += (
         options={0: "No Warning", 1 << 15: "Warning"},
         bitmask=1 << 15,
     ),
-    # SDStatusSensor(0, "SD Status", ""),  # type: ignore
+    # SDStatusSensor(0, "SD Status", ""),
     BinarySensor(552, "Grid Connected", bitmask=1 << 2),
 )
 

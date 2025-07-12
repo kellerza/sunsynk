@@ -39,7 +39,7 @@ async def main_loop() -> None:
     client.devs.extend([d.mqtt_dev for d in devs])
 
     await client.connect(opt)
-    client.publish_discovery_info_when_online()
+    client.monitor_homeassistant_status()
     _LOGGER.info("Connected to MQTT broker")
 
     # wait a bit for discovery
@@ -58,7 +58,7 @@ async def main_loop() -> None:
         except asyncio.CancelledError:
             _LOGGER.info("Shutting down ESP sensors")
             break
-        except Exception as ex:  # pylint: disable=broad-exception-caught
+        except Exception as ex:
             _LOGGER.error("Error in main loop: %s", ex, exc_info=True)
         wait = 60 * 60  # Update every hour
 

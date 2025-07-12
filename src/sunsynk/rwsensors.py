@@ -79,7 +79,7 @@ class NumberRWSensor(RWSensor):
         """Get the reg value from a display value."""
         if not self.address:
             raise NotImplementedError("Cannot write to a sensor with no address")
-        fval = float(value)  # type:ignore
+        fval = float(value)  # type:ignore[arg-type]
         minv = resolve_num(resolve, self.min, 0)
         maxv = resolve_num(resolve, self.max, 100)
         val = int(max(minv, min(maxv, fval)) / abs(self.factor))
@@ -114,7 +114,7 @@ class SelectRWSensor(RWSensor):
             return self.reg(regs[0])
         _LOGGER.warning("Unknown %s", value)
         current = resolve(self, None) if resolve else 0
-        return self.value_to_reg(current, None)  # type:ignore
+        return self.value_to_reg(current, None)  # type:ignore[attr-defined]
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the register."""

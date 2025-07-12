@@ -84,7 +84,7 @@ class ASensor:
             return
         if self._last == val and self.retain:
             return
-        await MQTT.connect(OPT)
+        # await MQTT.connect(OPT)
         await self.entity.send_state(MQTT, val, retain=self.retain)
         self._last = val
 
@@ -107,10 +107,9 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, ist: AInverter, /) -> MQTTEntity:
+    def create_entity(self, ist: AInverter, /) -> MQTTEntity:  # noqa: PLR0911
         """Create HASS entity."""
         dev_id = ist.opt.serial_nr
-        # pylint: disable=too-many-branches,too-many-return-statements
         if not self.visible_on(ist):
             raise ValueError("Entity not visible")
         if self.opt.sensor is None:

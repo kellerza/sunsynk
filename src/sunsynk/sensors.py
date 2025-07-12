@@ -198,7 +198,7 @@ class TempSensor(Sensor):
         """Decode the temperature (offset)."""
         try:
             val = regs[0]
-            return int_round((float(val) * abs(self.factor)) - self.offset)  # type: ignore
+            return int_round((float(val) * abs(self.factor)) - self.offset)  # type: ignore[]
         except (TypeError, ValueError) as err:
             _LOGGER.error("Could not decode temperature: %s", err)
         return None

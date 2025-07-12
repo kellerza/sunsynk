@@ -79,12 +79,12 @@ def _print_table(
     _LOGGER.info("%s\n%s", title, tab.get_string())
 
 
-def build_callback_schedule(ist: AInverter) -> AsyncCallback:
+def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
     """Build the callback schedule."""
-    # pylint: disable=too-many-branches,too-many-statements
     read_s, report_s = _build_schedules(ist.index)
+    atsk = None
 
-    async def callback_sensor(now: int) -> None:
+    async def callback_sensor(now: int) -> None:  # noqa: PLR0915 PLR0912
         """Read or write sensors."""
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
@@ -167,7 +167,8 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:
                 srun.next_run = now + sec
 
         if pub:
-            asyncio.create_task(ist.publish_sensors(states=pub))  # noqa
+            nonlocal atsk
+            atsk = asyncio.create_task(ist.publish_sensors(states=pub))
 
     return AsyncCallback(
         name=f"read {ist.opt.ha_prefix}",

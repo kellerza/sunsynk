@@ -49,7 +49,7 @@ def test_hex_str() -> None:
     with pytest.raises(ValueError):
         assert hex_str((1, 2), address=(10,))
     with pytest.raises(TypeError):
-        assert hex_str(1, address=(10, 12))  # type: ignore
+        assert hex_str(1, address=(10, 12))  # type: ignore[arg-type]
 
 
 def test_int_round() -> None:

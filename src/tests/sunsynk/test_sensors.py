@@ -135,7 +135,7 @@ def test_group() -> None:
     g = list(group_sensors(sen))
     assert g == [[10, 11, 12], [20]]
 
-    assert len(list(group_sensors(None))) == 0  # type: ignore
+    assert len(list(group_sensors(None))) == 0  # type: ignore[arg-type]
 
 
 def test_group_max_size() -> None:

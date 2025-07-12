@@ -16,7 +16,7 @@ async def test_pyss() -> None:
     with pytest.raises(ConnectionError):
         await ss.connect()
 
-    ss.client = None  # type: ignore
+    ss.client = None  # type: ignore[assignment]
     with pytest.raises(NotImplementedError):
         ss.port = "xcp://localhost:10"
         await ss.connect()

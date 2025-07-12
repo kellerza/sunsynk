@@ -70,10 +70,10 @@ def unpack_value(regs: RegType, *, signed: bool = True, maybe16: bool = False) -
 def ensure_tuple(val: Any) -> tuple[int, ...]:
     """Return a tuple."""
     if isinstance(val, tuple):
-        return val  # type: ignore
+        return val  # type: ignore[]
     if isinstance(val, int):
         return (val,)
-    return tuple(val)  # type: ignore
+    return tuple(val)  # type: ignore[]
 
 
 def int_round(val: NumType) -> NumType:
