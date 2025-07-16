@@ -15,7 +15,7 @@ env:
   ADDON_SLUG: hass-addon-sunsynk-multi
   ADDON_SLUG_EDGE: hass-addon-sunsynk-edge
   PYTHON_PKG_NAME: sunsynk
-  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.ADDON_SLUG }}
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi
 
 jobs:
   information:
