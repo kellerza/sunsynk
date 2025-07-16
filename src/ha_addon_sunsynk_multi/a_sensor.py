@@ -11,11 +11,13 @@ from mqtt_entity import (
     MQTTClient,
     MQTTEntity,
     MQTTNumberEntity,
+    MQTTRWEntity,
     MQTTSelectEntity,
     MQTTSensorEntity,
     MQTTSwitchEntity,
     MQTTTextEntity,
 )
+from mqtt_entity.client import TopicCallback
 from mqtt_entity.helpers import (
     MQTTEntityOptions,
     hass_default_rw_icon,
@@ -147,11 +149,18 @@ class ASensor:
                 self.entity = MQTTSensorEntity(**ent, suggested_display_precision=1)
             return self.entity
 
-        async def on_change(val: float | str | bool) -> None:
-            """On change callback."""
-            _LOGGER.info("Queue update %s=%s", sensor.id, val)
-            ist.write_queue.update({sensor: val})
-            await self.publish(val)
+        def on_change_factory() -> TopicCallback:
+            if old_ent := ist.mqtt_dev.components.get(sensor.id):
+                if isinstance(old_ent, MQTTRWEntity) and old_ent.on_command is not None:
+                    return old_ent.on_command
+
+            async def on_change(val: float | str | bool) -> None:
+                """On change callback."""
+                _LOGGER.info("Queue update %s=%s", sensor.id, val)
+                ist.write_queue.update({sensor: val})
+                await self.publish(val)
+
+            return on_change
 
         ent["entity_category"] = "config"
         ent["icon"] = hass_default_rw_icon(unit=sensor.unit)
@@ -165,7 +174,7 @@ class ASensor:
                 mode=OPT.number_entity_mode,
                 step=0.1 if sensor.factor < 1 else 1,
                 suggested_display_precision=1,
-                on_command=on_change,
+                on_command=on_change_factory(),
             )
             return self.entity
 
@@ -173,7 +182,7 @@ class ASensor:
             self.entity = MQTTSwitchEntity(
                 **ent,
                 command_topic=command_topic,
-                on_command=on_change,
+                on_command=on_change_factory(),
             )
             return self.entity
 
@@ -182,7 +191,7 @@ class ASensor:
                 **ent,
                 command_topic=command_topic,
                 options=sensor.available_values(),
-                on_command=on_change,
+                on_command=on_change_factory(),
             )
             return self.entity
 
@@ -192,7 +201,7 @@ class ASensor:
                 **ent,
                 command_topic=command_topic,
                 options=sensor.available_values(OPT.prog_time_interval, ist.get_state),
-                on_command=on_change,
+                on_command=on_change_factory(),
             )
             return self.entity
 
@@ -201,7 +210,7 @@ class ASensor:
         self.entity = MQTTTextEntity(
             **ent,
             command_topic=command_topic,
-            on_command=on_change,
+            on_command=on_change_factory(),
         )
         return self.entity
 

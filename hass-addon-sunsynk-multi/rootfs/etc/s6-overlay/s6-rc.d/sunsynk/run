@@ -1,0 +1,5 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+
+bashio::log.info "Starting the QSUSB64 add-on"
+uv run python -m ha_addon_sunsynk_multi

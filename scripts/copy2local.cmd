@@ -1,7 +1,5 @@
 @echo off
-rem xcopy /Y hass-addon-mbusd \\192.168.1.7\addons\hass-addon-mbusd\
 CALL :copy2 hass-addon-sunsynk-multi,\\192.168.1.8\addons\hass-addon-sunsynk-multi\
-CALL :copy2 hass-addon-esp,\\192.168.1.8\addons\hass-addon-esp\
 
 EXIT /B %ERRORLEVEL%
 

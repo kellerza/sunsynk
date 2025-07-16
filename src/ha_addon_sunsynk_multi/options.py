@@ -68,9 +68,9 @@ class Options(MQTTOptions):
 OPT = Options()
 
 
-def init_options() -> None:
+async def init_options() -> None:
     """Load the options & setup the logger."""
-    OPT.init_addon()
+    await OPT.init_addon()
 
     # check ha_prefix is unique
     all_prefix = set()

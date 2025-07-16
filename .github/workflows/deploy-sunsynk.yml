@@ -14,8 +14,8 @@ on:
 env:
   ADDON_SLUG: hass-addon-sunsynk-multi
   ADDON_SLUG_EDGE: hass-addon-sunsynk-edge
-  PKG_NAME: sunsynk
-  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi
+  PYTHON_PKG_NAME: sunsynk
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.ADDON_SLUG }}
 
 jobs:
   information:
@@ -88,9 +88,9 @@ jobs:
 
       - name: Prepare Files for Build
         run: |
-          mkdir -p ${{ env.ADDON_SLUG }}/${{ env.PKG_NAME }}
-          cp -r src ${{ env.ADDON_SLUG }}/${{ env.PKG_NAME }}/
-          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ env.ADDON_SLUG }}/${{ env.PKG_NAME }}/
+          mkdir -p ${{ env.ADDON_SLUG }}/${{ env.PYTHON_PKG_NAME }}
+          cp -r src ${{ env.ADDON_SLUG }}/${{ env.PYTHON_PKG_NAME }}/
+          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ env.ADDON_SLUG }}/${{ env.PYTHON_PKG_NAME }}/
 
       - name: Set up the correct base image based on platform
         run: |
@@ -277,32 +277,12 @@ jobs:
           digests=($(ls))
           echo "Found digests: ${digests[*]}"
 
-          # Create base manifest first
+          # Create base manifest
           echo "Creating base manifest..."
           retry_with_backoff docker buildx imagetools create \
             -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }} \
             -t ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.environment }} \
             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
-
-          echo "Waiting 20 seconds after base manifest creation before processing platform-specific tags..."
-          sleep 20
-
-          # Process each platform separately
-          platforms="${{ steps.platforms_raw.outputs.value }}"
-          IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
-
-          for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
-            echo "Processing platform: $PLATFORM"
-
-            retry_with_backoff docker buildx imagetools create \
-              -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }} \
-              -t ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.environment }} \
-              $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' "${digests[@]}")
-
-            echo "Completed manifest for $PLATFORM"
-            echo "Waiting 10 seconds before processing next platform..."
-            sleep 10
-          done
 
       - name: Inspect image
         run: |
@@ -333,20 +313,9 @@ jobs:
           echo "Waiting 20 seconds for manifests to settle before starting inspections..."
           sleep 20
 
-          # Inspect base image first
+          # Inspect base image
           echo "Inspecting base image..."
           retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ needs.information.outputs.version }}
-
-          # Inspect each platform
-          platforms="${{ steps.platforms_raw.outputs.value }}"
-          IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
-
-          for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
-            echo "Inspecting platform: $PLATFORM"
-            retry_with_backoff docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}/${PLATFORM}:${{ needs.information.outputs.version }}
-            echo "Waiting 10 seconds before inspecting next platform..."
-            sleep 10
-          done
 
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
