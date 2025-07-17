@@ -36,7 +36,7 @@ SENSORS:
   - battery_soc
 ```
 
-You can find the details of the definitions [here](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions) and definitions are selected in the configuration with one of the following options:
+You can find the details of the definitions [on Github](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions) and definitions are selected in the configuration with one of the following options:
 
 ```yaml
 SENSOR_DEFINITIONS: single-phase / three-phase [low voltage] / three-phase-hv [high voltage]
@@ -330,75 +330,11 @@ SENSORS:
 
 ### My Sensors
 
-You can create custom sensors by defining them in a file called `mysensors.py` in the `/share/hass-addon-sunsynk/` directory. This allows you to add sensors that are not included in the default definitions.
-
-To create custom sensors:
-
-1. Create the directory and file:
-
-   ```bash
-   /share/hass-addon-sunsynk/mysensors.py
-   ```
-
-2. Define your sensors in the file. Here's a basic example:
-
-   ```python
-   from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
-   from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor
-   from sunsynk.sensors import Sensor, SensorDefinitions, MathSensor
-
-   # Initialize the sensor definitions
-   SENSORS = SensorDefinitions()
-
-   # Add your custom sensors
-   SENSORS += (
-       # Basic sensor example
-       Sensor(178, "My Custom Power Sensor", WATT, -1),
-
-       # Math sensor example (combining multiple registers)
-       MathSensor((175, 172), "Custom Combined Power", WATT, factors=(1, 1)),
-
-       # Read/Write sensor example
-       NumberRWSensor(130, "Custom Control Setting", "%", min=0, max=100),
-   )
-   ```
-
-3. Add your custom sensors to your configuration using either individual sensors or the `mysensors` group:
-
-   ```yaml
-   SENSORS:
-     - mysensors  # Adds all custom sensors
-     # Or add specific sensors:
-     - my_custom_power_sensor
-     - custom_combined_power
-     - custom_control_setting
-   ```
-
-The sensor definition parameters are:
-
-- First parameter: Register number(s)
-- Second parameter: Sensor name
-- Third parameter: Unit (WATT, VOLT, AMPS, etc.)
-- Last parameter: Scale factor (optional)
-
-You can create different types of sensors:
-
-- `Sensor`: Basic read-only sensor
-- `MathSensor`: Combines multiple registers with mathematical operations
-- `NumberRWSensor`: Read/write sensor for configurable values
-- `SelectRWSensor`: Read/write sensor with predefined options
-- `SwitchRWSensor`: Read/write sensor for boolean values
-
-Once defined, your custom sensors will be loaded automatically when the addon starts, and you'll see them listed in the startup logs:
-
-```log
-INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
-INFO      custom sensors: my_custom_power_sensor, custom_combined_power, custom_control_setting
-```
-
-All your [custom sensors](mysensors) can be added to the configuration using the `mysensors` group:
+All your [Custom sensors](mysensors) can be added to the configuration using the **mysensors** group:
 
 ```yaml
 SENSORS:
   - mysensors
 ```
+
+Refer to [Custom Sensors](mysensors) for more information.

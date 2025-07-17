@@ -1,6 +1,6 @@
 # Custom Sensors
 
-You can add custom sensors by creating a sensors definition file called in `/share/hass-addon-sunsynk/mysensors.py`.
+You can create custom sensors by defining them in a file called `mysensors.py` in the `/share/hass-addon-sunsynk/` directory. This allows you to add sensors that are not included in the default definitions.
 
 In it's most basic form a sensor the RS486 register and a name. You can find the RS485 protocol document at various places online, search the [Power Forum](https://www.powerforum.co.za) or [Github issue #59](https://github.com/kellerza/sunsynk/issues/59)
 
@@ -11,19 +11,40 @@ This is a Python file and follows the same logic as the definitions.py & definit
 An example `mysensors.py` file:
 
 ```python
-from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
+from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT, Sensor, SensorDefinitions
 from sunsynk.rwsensors import NumberRWSensor, SelectRWSensor, TimeRWSensor
-from sunsynk.sensors import (
-    MathSensor,
-    Sensor,
-    SensorDefinitions,
-    TempSensor,
-)
+from sunsynk.sensors import MathSensor, TempSensor
 
+# Initialize the sensor definitions
 SENSORS = SensorDefinitions()
 
-SENSORS += Sensor(178, "My Custom Sensor", WATT, -1)
+# Add your custom sensors
+SENSORS += (
+    # Basic sensor example
+    Sensor(178, "My Custom Power Sensor", WATT, -1),
+
+    # Math sensor example (combining multiple registers)
+    MathSensor((175, 172), "Custom Combined Power", WATT, factors=(1, 1)),
+
+    # Read/Write sensor example
+    NumberRWSensor(130, "Custom Control Setting", "%", min=0, max=100),
+)
 ```
+
+The sensor definition parameters are:
+
+- First parameter: Register number(s)
+- Second parameter: Sensor name
+- Third parameter: Unit (WATT, VOLT, AMPS, etc.)
+- Last parameter: Scale factor (optional)
+
+You can create different types of sensors:
+
+- `Sensor`: Basic read-only sensor
+- `MathSensor`: Combines multiple registers with mathematical operations
+- `NumberRWSensor`: Read/write sensor for configurable values
+- `SelectRWSensor`: Read/write sensor with predefined options
+- `SwitchRWSensor`: Read/write sensor for boolean values
 
 An example of adding a custom selling load sensor, the takes the ct power off the inverter output is
 
@@ -31,11 +52,11 @@ An example of adding a custom selling load sensor, the takes the ct power off th
 MathSensor((175, 172), "Selling Load Power direct", WATT, factors=(1, 1)),
 ```
 
-Once you have a file, you will see it in your addon's startup log:
+Once defined, your custom sensors will be loaded automatically when the addon starts, and you'll see them listed in the startup logs:
 
-```txt
-2023-03-19 16:25:00,156 INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
-2023-03-19 16:25:00,158 INFO      custom sensors: my_custom_sensor
+```log
+INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
+INFO      custom sensors: my_custom_power_sensor, custom_combined_power, custom_control_setting
 ```
 
 ## Using the sensor
@@ -44,7 +65,8 @@ Once a sensor is loaded, you still have to add it to your configuration:
 
 ```yaml
 SENSORS:
- - my_custom_sensor
+ - my_custom_sensor_1
+ - my_custom_sensor_2
 ```
 
 You can also add **all** the custom sensors, using the special group called `mysensors`.
@@ -56,6 +78,32 @@ SENSORS:
 
 ## More examples
 
+### Python based sensor
+
+This sensors divides 2 registers (reg 10/reg 20)
+
+```python
+import attrs
+from sunsynk import Sensor, SensorDefinitions, WATT
+from sunsynk.helpers import unpack_value
+
+@attrs.define(slots=True, eq=False)
+class MyCustomSensor(Sensor):
+    """Custom sensor, using multiple registers."""
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Calculate the value."""
+        val1 = unpack_value((regs[0],), signed=True)
+        val2 = unpack_value((regs[1],), signed=True)
+        return val1 / val2
+
+
+SENSORS = SensorDefinition()
+
+# Use the class above with register 10 and 20
+SENSORS += MyCustomSensor((10, 20), "Mysensor1", WATT)
+```
+
 ### Time sensor
 
 ::: info
@@ -65,17 +113,16 @@ Write is only partially implemented in the example below
 ::: details
 
 ```python
-import attr
+import attrs
 import re
 
-# from sunsynk import AMPS, CELSIUS, KWH, VOLT, WATT
+from sunsynk import RegType, ValType, SensorDefinitions
 from sunsynk.rwsensors import RWSensor, ResolveType
-from sunsynk.sensors import RegType, ValType, SensorDefinitions
 
 SENSORS = SensorDefinitions()
 
 
-@attr.define(slots=True, eq=False)
+@attrs.define(slots=True, eq=False)
 class SystemTimeRWSensor(RWSensor):
     """Read & write time sensor."""
 
