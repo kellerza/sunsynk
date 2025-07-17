@@ -1,0 +1,29 @@
+name: Trigger sync-remotes on kellerza/hass-addons
+
+on:
+  workflow_run:
+    workflows: ["Deploy sunsynk addon to ghcr.io"]
+    branches: [main]
+    types:
+      - completed
+  workflow_dispatch: {}
+
+jobs:
+  sync-remotes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invoke workflow "Sync add-ons from remote repositories"
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.HASS_ADDONS_PERSONAL_TOKEN }}" \
+            https://api.github.com/repos/kellerza/hass-addons/actions/workflows/sync-remotes.yml/dispatches \
+            -d '{"ref":"main","inputs":{}}'
+        # uses: the-actions-org/workflow-dispatch@v4
+        # with:
+        #   repo: kellerza/hass-addons
+        #   workflow: sync-remotes.yml
+        #   token: ${{ secrets.HASS_ADDONS_PERSONAL_TOKEN }}
+        #   wait-for-completion: false
+        #   ref: main

@@ -6,17 +6,20 @@ on:
       - published
   push:
     paths:
-      - "setup.*"
+      - "uv.lock"
+      - "pyproject.toml"
       - "src/**"
       - "hass-addon-sunsynk-multi/**"
-      - ".github/workflows/deploy-multi.yml"
+      - "hass-addon-sunsynk-edge/**"
+      - ".github/workflows/deploy-sunsynk.yml"
       - ".github/workflows/ci.yml"
   pull_request:
     paths:
-      - "pyproject.toml"
       - "uv.lock"
+      - "pyproject.toml"
       - "src/**"
       - "hass-addon-sunsynk-multi/**"
+      - "hass-addon-sunsynk-edge/**"
       - ".github/workflows/deploy-sunsynk.yml"
       - ".github/workflows/ci.yml"
 
