@@ -468,9 +468,9 @@ SENSORS += (
         "Parallel Phase",
         options={
             0b00 << 8: "Phase A",
-            0b01 << 8: "Phase B", 
+            0b01 << 8: "Phase B",
             0b10 << 8: "Phase C",
-            0b11 << 8: "Void"
+            0b11 << 8: "Void",
         },
         bitmask=0b11 << 8,
     ),
