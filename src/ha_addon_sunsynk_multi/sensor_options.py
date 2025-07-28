@@ -304,6 +304,12 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "battery_type",
         "battery_wake_up",
     ],
+    "parallel": [
+        "parallel_bat1_bat2",
+        "parallel_mode",
+        "parallel_phase",
+        "parallel_modbus_sn",
+    ],
 }
 
 
