@@ -32,6 +32,7 @@ SENSORS += (
     Sensor(594, "Battery 2 current", AMPS, -0.01),
     Sensor(595, "Battery 2 power", WATT, -10),
     TempSensor(596, "Battery 2 temperature", CELSIUS, 0.1),
+    SwitchRWSensor(110, "Parallel Bat1&Bat2", on=1),
 )
 
 ##############
