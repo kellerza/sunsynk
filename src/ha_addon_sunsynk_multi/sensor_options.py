@@ -303,12 +303,13 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "battery_shutdown_voltage",
         "battery_type",
         "battery_wake_up",
+        "parallel_bat1_bat2",
     ],
     "parallel": [
-        "parallel_bat1_bat2",
+        "parallel_enable",
         "parallel_mode",
         "parallel_phase",
-        "parallel_modbus_sn",
+        "parallel_modbus_sn",  # TODO: add to 1st inverter only
     ],
 }
 
