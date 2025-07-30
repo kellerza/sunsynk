@@ -348,6 +348,7 @@ SENSORS:
 
 ```yaml
 SENSORS:
+  - ups_delay_time
   - ups_load_l1_power
   - ups_load_l2_power
   - ups_load_l3_power
