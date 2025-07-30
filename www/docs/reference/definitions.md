@@ -328,6 +328,34 @@ SENSORS:
 
 :::
 
+### UPS / Backup Load
+
+Sensors used for monitoring UPS (Uninterruptible Power Supply) or backup load power consumption. These sensors provide power readings for each phase (L1, L2, L3) and total power consumption during backup operation.
+
+```yaml
+SENSORS:
+  - ups
+```
+
+You can also use the alias `backup_load` which includes the same sensors:
+
+```yaml
+SENSORS:
+  - backup_load
+```
+
+::: details Sensors included
+
+```yaml
+SENSORS:
+  - ups_load_l1_power
+  - ups_load_l2_power
+  - ups_load_l3_power
+  - ups_load_total_power
+```
+
+:::
+
 ### My Sensors
 
 All your [Custom sensors](mysensors) can be added to the configuration using the **mysensors** group:
