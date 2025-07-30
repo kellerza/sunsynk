@@ -324,6 +324,28 @@ SENSORS:
   - battery_shutdown_voltage
   - battery_type
   - battery_wake_up
+  - parallel_bat1_bat2
+```
+
+:::
+
+### Parallel
+
+Sensors used for parallel inverter configuration and management.
+
+```yaml
+SENSORS:
+  - parallel
+```
+
+::: details Sensors included
+
+```yaml
+SENSORS:
+  - parallel_enable
+  - parallel_mode
+  - parallel_phase
+  - parallel_modbus_sn
 ```
 
 :::
