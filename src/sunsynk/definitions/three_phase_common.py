@@ -453,6 +453,31 @@ SENSORS += (
 )
 
 #################
+# Parallel Configuration
+#################
+SENSORS += (
+    SwitchRWSensor(336, "Parallel Enable", on=1 << 0, bitmask=1 << 0),
+    SelectRWSensor(
+        336,
+        "Parallel Mode",
+        options={0: "Slave", 1 << 1: "Master"},
+        bitmask=1 << 1,
+    ),
+    SelectRWSensor(
+        336,
+        "Parallel Phase",
+        options={
+            0b00 << 8: "Phase A",
+            0b01 << 8: "Phase B",
+            0b10 << 8: "Phase C",
+            0b11 << 8: "Void",
+        },
+        bitmask=0b11 << 8,
+    ),
+    NumberRWSensor(336, "Parallel Modbus SN", "", bitmask=0b111111 << 10, max=63),
+)
+
+#################
 # Advanced Grid Configuration Settings
 #################
 SENSORS += (
