@@ -337,13 +337,6 @@ SENSORS:
   - ups
 ```
 
-You can also use the alias `backup_load` which includes the same sensors:
-
-```yaml
-SENSORS:
-  - backup_load
-```
-
 ::: details Sensors included
 
 ```yaml

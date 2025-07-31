@@ -311,13 +311,6 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "ups_load_l3_power",
         "ups_load_total_power",
     ],
-    "backup_load": [
-        "ups_delay_time",
-        "ups_load_l1_power",
-        "ups_load_l2_power",
-        "ups_load_l3_power",
-        "ups_load_total_power",
-    ],
 }
 
 
