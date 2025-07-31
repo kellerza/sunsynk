@@ -101,6 +101,16 @@ SENSORS += (
     Sensor(673, "Gen L3 current", AMPS, -0.01),
 )
 
+####################
+# UPS / Backup Load Power
+####################
+SENSORS += (
+    Sensor16((640, 696), "UPS Load L1 power", WATT, 1),
+    Sensor16((641, 697), "UPS Load L2 power", WATT, 1),
+    Sensor16((642, 698), "UPS Load L3 power", WATT, 1),
+    Sensor16((643, 699), "UPS Load total power", WATT, 1),
+)
+
 ##############
 # Solar Power
 ##############

@@ -311,6 +311,13 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "parallel_phase",
         "parallel_modbus_sn",  # TODO: add to 1st inverter only
     ],
+    "ups": [
+        "ups_delay_time",
+        "ups_load_l1_power",
+        "ups_load_l2_power",
+        "ups_load_l3_power",
+        "ups_load_total_power",
+    ],
 }
 
 
