@@ -28,7 +28,7 @@ dependencies = [
     "cattrs>=25,<26",
     "mqtt-entity[options]>=1,<2",
     "prettytable==3.16.0",
-    "pymodbus[serial]==3.9.2",
+    "pymodbus[serial]==3.10.0",
 ]
 
 [project.urls]
