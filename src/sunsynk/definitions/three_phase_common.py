@@ -211,7 +211,8 @@ SENSORS += (
 ###########
 SENSORS += (
     SwitchRWSensor(80, "Inverter enabled", on=1),  # 0=off, 1=on
-    NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=240),
+    NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=185),
+    NumberRWSensor(126, "Grid Charge Start Battery Voltage", VOLT, 0.01, max=6300),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
     SwitchRWSensor(130, "Grid Charge enabled", on=1),
     SwitchRWSensor(146, "Use Timer"),
@@ -232,6 +233,9 @@ SENSORS += (
     NumberRWSensor(104, "System Zero Export power", WATT, -1, min=-500, max=500),
     NumberRWSensor(105, "Battery Equalization Days", "days", -1),
     NumberRWSensor(106, "Battery Equalization Hours", "h", -1),  # 1 = 0.5 hours
+    NumberRWSensor(125, "Generator Charge Battery current", AMPS, max=185),
+    NumberRWSensor(123, "Generator Charge Start Battery Voltage", VOLT, 0.01, max=6300),
+    NumberRWSensor(124, "Generator Charge Start Battery SOC", "%"),
     SwitchRWSensor(129, "Generator Charge enabled"),
     SelectRWSensor(
         111,

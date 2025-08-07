@@ -218,6 +218,7 @@ SENSORS:
   - date_time
   - grid_charge_battery_current
   - grid_charge_start_battery_soc
+  - grid_charge_start_battery_voltage
   - grid_standard
   - track_grid_phase
   - ups_delay_time
@@ -242,6 +243,7 @@ SENSORS:
   - generator_charge_battery_current
   - generator_charge_enabled
   - generator_charge_start_battery_soc
+  - generator_charge_start_battery_voltage
   - generator_cooling_time
   - generator_max_operating_time
   - generator_off_soc
