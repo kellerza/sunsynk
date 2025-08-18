@@ -35,7 +35,7 @@ jobs:
       version: ${{ steps.release.outputs.version }}
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: 🚀 Run add-on information
         id: information
         uses: frenck/action-addon-information@v1.4
@@ -84,7 +84,7 @@ jobs:
           - linux/arm64
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare Files for Build
         run: |
@@ -325,7 +325,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: main
