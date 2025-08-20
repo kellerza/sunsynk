@@ -97,8 +97,6 @@ SENSORS += (
 # Additional optional sensors
 SENSORS += (
     NumberRWSensor(104, "System Zero Export power", WATT, -10, min=-500, max=500),
-    NumberRWSensor(124, "Generator Charge Start Battery SOC", "%"),
-    NumberRWSensor(125, "Generator Charge Battery current", AMPS),
     SwitchRWSensor(110, "Parallel Battery 1 and 2"),
     SelectRWSensor(
         112,
