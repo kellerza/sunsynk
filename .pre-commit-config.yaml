@@ -1,37 +1,45 @@
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.7.21
+    rev: 0.8.19
     hooks:
       - id: uv-lock
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.2
-    hooks:
-      - id: ruff-check
-        args: [--fix, --exit-non-zero-on-fix]
-      - id: ruff-format
-
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
-    hooks:
-      - id: codespell
-        files: "src/.*.py"
-        args:
-          - "--ignore-words-list"
-          - HASS,hass,Hass,ist
-          - --skip
-          - "package-lock.json,*.map,www/docs/.vitepress/cache/*"
-      - id: codespell
-        files: "hass-addon-[a-z]+/.*"
-        args:
-          - -L
-          - HASS,hass,Hass
-
   - repo: local
     hooks:
+      - id: pyproject-fmt
+        name: pyproject-fmt
+        entry: uv run pyproject-fmt pyproject.toml
+        language: system
+        pass_filenames: false
+
+      - id: ruff-check
+        name: ruff-check
+        entry: uv run ruff check --fix --exit-non-zero-on-fix
+        language: system
+        pass_filenames: false
+
+      - id: ruff-format
+        name: ruff-format
+        entry: uv run ruff format --exit-non-zero-on-fix
+        language: system
+        pass_filenames: false
+
+      - id: codespell
+        name: codespell
+        entry: uv run codespell --toml pyproject.toml
+        language: system
+        pass_filenames: false
+
       - id: mypy
         name: mypy
         entry: uv run mypy . --config-file pyproject.toml
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: pytest
+        name: pytest
+        entry: uv run pytest
         language: system
         types: [python]
         pass_filenames: false

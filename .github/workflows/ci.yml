@@ -24,8 +24,8 @@ on:
       - ".github/workflows/ci.yml"
 
 env:
-  RUFF_VERSION: 0.12.2
-  UV_VERSION: 0.7.21
+  RUFF_VERSION: 0.12.12
+  UV_VERSION: 0.8.19
   TEST_TARGET: "src"
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version-file: "pyproject.toml"
       - name: Install uv
@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install uv
@@ -102,7 +102,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version-file: "pyproject.toml"
       - name: Install uv

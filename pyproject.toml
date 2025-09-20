@@ -1,95 +1,93 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-license-files = [] # https://github.com/astral-sh/uv/issues/9513
+requires = [ "setuptools", "setuptools-scm" ]
 
 [project]
 name = "sunsynk"
 version = "0.9.0"
 description = "Library to interface Deye/Sunsynk Hybrid Inverters"
-keywords = ["sunsynk", "deye", "inverter", "modbus", "asyncio"]
 readme = "README.md"
-authors = [{ name = "Johann Kellerman", email = "kellerza@gmail.com" }]
+keywords = [ "asyncio", "deye", "inverter", "modbus", "sunsynk" ]
 license = { text = "Apache-2.0" }
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "Natural Language :: English",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-]
+authors = [ { name = "Johann Kellerman", email = "kellerza@gmail.com" } ]
 requires-python = ">=3.12"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
 dependencies = [
-    "attrs>=25,<26",
-    "cattrs>=25,<26",
-    "mqtt-entity[options]>=1,<2",
-    "prettytable==3.16.0",
-    "pymodbus[serial]==3.9.2",
+  "attrs>=25,<26",
+  "cattrs>=25,<26",
+  "mqtt-entity[options]>=1,<2",
+  "prettytable==3.16",
+  "pymodbus[serial]==3.11.2",
 ]
 
-[project.urls]
-Homepage = "https://kellerza.github.io/sunsynk/"
-
-[project.optional-dependencies]
-umodbus = ["async_modbus==0.2.2", "connio==0.2.0", "umodbus==1.0.4"]
-solarman = ["pysolarmanv5==3.0.6"]
+optional-dependencies.solarman = [ "pysolarmanv5==3.0.6" ]
+optional-dependencies.umodbus = [ "async-modbus==0.2.2", "connio==0.2", "umodbus==1.0.4" ]
+urls.Homepage = "https://kellerza.github.io/sunsynk/"
 
 [dependency-groups]
 dev = [
-    "mypy",
-    "pytest-asyncio",
-    "pytest-cov",
-    "pytest-github-actions-annotate-failures",
-    "pytest",
-    "types-PyYAML",
+  "codespell>=2.4.1",
+  "mypy",
+  "pyproject-fmt>=2.6",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
+  "pytest-github-actions-annotate-failures",
+  "types-pyyaml",
 ]
 
-[tool.mypy]
-disallow_untyped_defs = true
-ignore_missing_imports = true
-exclude = "build/.*"
-enable_error_code = ["ignore-without-code"]
+[tool.setuptools]
+license-files = [  ] # https://github.com/astral-sh/uv/issues/9513
+
+[tool.ruff]
+include = [ "src/**/*.py" ]
+
+format.line-ending = "lf"
+format.docstring-code-format = true
+lint.select = [
+  "A",     # flake8-builtins
+  "ASYNC", # flake8-async
+  "B",     # bugbear
+  "D",     # pydocstyle
+  "E",     # pycodestyle
+  "F",     # pyflakes
+  "I",     # isort
+  "PGH",   # pygrep-hooks
+  "PIE",   # flake8-pie
+  "PL",    # pylint
+  "PTH",   # flake8-pathlib
+  "PYI",   # flake8-pyi
+  "RUF",   # ruff
+  "UP",    # pyupgrade
+  "W",     # pycodestyle
+]
+lint.ignore = [ "D203", "D213", "E203", "E501", "PLR2004" ]
+lint.pylint.max-args = 7
+
+[tool.codespell]
+skip = "data,*.map,package-lock.json,*.map,www/docs/.vitepress/cache/*"
+ignore-words-list = "HASS,hass,Hass,ist"
 
 [tool.pytest.ini_options]
-pythonpath = [".", "src"]
+pythonpath = [ ".", "src" ]
 filterwarnings = "ignore:.+@coroutine.+deprecated.+"
 testpaths = "src\tests"
-norecursedirs = [".git", "modules"]
+norecursedirs = [ ".git", "modules" ]
 log_cli = true
 log_cli_level = "DEBUG"
 asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
-[tool.ruff]
-include = ["src/**/*.py"]
-
-[tool.ruff.format]
-line-ending = "lf"
-docstring-code-format = true
-
-[tool.ruff.lint]
-select = [
-    "A",     # flake8-builtins
-    "ASYNC", # flake8-async
-    "B",     # bugbear
-    "D",     # pydocstyle
-    "E",     # pycodestyle
-    "F",     # pyflakes
-    "I",     # isort
-    "PGH",   # pygrep-hooks
-    "PIE",   # flake8-pie
-    "PL",    # pylint
-    "PTH",   # flake8-pathlib
-    "PYI",   # flake8-pyi
-    "RUF",   # ruff
-    "UP",    # pyupgrade
-    "W",     # pycodestyle
-]
-ignore = ["E203", "E501", "D203", "D213", "PLR2004"]
-
-[tool.ruff.lint.pylint]
-max-args = 7
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+exclude = "build/.*"
+enable_error_code = [ "ignore-without-code" ]
