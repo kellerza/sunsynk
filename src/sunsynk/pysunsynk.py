@@ -81,7 +81,7 @@ class PySunsynk(Sunsynk):
             res = await self.client.write_registers(
                 address=address,
                 values=[value],  # type:ignore[]
-                slave=self.server_id,
+                device_id=self.server_id,
             )
             if res.function_code < 0x80:  # test that we are not an error
                 return True
@@ -96,8 +96,8 @@ class PySunsynk(Sunsynk):
     ) -> typing.Sequence[int]:
         """Read a holding register."""
         await self.connect()
-        res = await self.client.read_holding_registers(  # type:ignore[]
-            address=start, count=length, slave=self.server_id
+        res = await self.client.read_holding_registers(
+            address=start, count=length, device_id=self.server_id
         )
         if res.function_code >= 0x80:  # test that we are not an error
             raise OSError(
