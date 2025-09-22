@@ -25,6 +25,7 @@
     "clipboard": "^2.0.11"
   },
   "devDependencies": {
+    "@types/node": "^24.5.2",
     "js-yaml": "^4.1.0",
     "markdown-it-deflist": "^3.0.0",
     "markdown-it-imsize": "^2.0.1",
