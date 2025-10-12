@@ -1,7 +1,7 @@
 """Test sensor callbacks."""
 
-from asyncio import iscoroutinefunction
 from collections import defaultdict
+from inspect import iscoroutinefunction
 from unittest.mock import Mock, call, patch
 
 import pytest
