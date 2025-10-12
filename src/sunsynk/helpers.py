@@ -5,7 +5,7 @@ import math
 import struct
 from typing import Any
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 type ValType = float | int | str | bool | None
 type RegType = tuple[int, ...]
@@ -62,7 +62,7 @@ def unpack_value(regs: RegType, *, signed: bool = True, maybe16: bool = False) -
             fmt = "<i" if signed else "<I"
             return struct.unpack(fmt, struct.pack("<2H", regs[0], regs[1]))[0]
     except struct.error as err:
-        _LOGGER.error(str(err))
+        _LOG.error(str(err))
         raise
     raise ValueError(f"Unsupported number of registers: {len(regs)}")
 
@@ -99,7 +99,7 @@ def as_num(val: ValType) -> float | int:
     try:
         return float(val)
     except ValueError as err:
-        _LOGGER.error(str(err))
+        _LOG.error(str(err))
     return 0
 
 
@@ -169,4 +169,4 @@ class SSTime:
             (hours, _, minutes) = value.partition(":")
             self.minutes = int(hours) * 60 + int(minutes)
         except ValueError:
-            _LOGGER.warning("Invalid time string: %s (expected hh:mm)", value)
+            _LOG.warning("Invalid time string: %s (expected hh:mm)", value)

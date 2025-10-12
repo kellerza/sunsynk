@@ -16,7 +16,7 @@ from .a_sensor import ASensor, SensorOption
 from .sensor_options import SOPT
 from .timer_callback import AsyncCallback
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define(slots=True)
@@ -76,7 +76,7 @@ def _print_table(
         tab.add_row([key, wrapped[0]])
         for more in wrapped[1:]:
             tab.add_row(["", more])
-    _LOGGER.info("%s\n%s", title, tab.get_string())
+    _LOG.info("%s\n%s", title, tab.get_string())
 
 
 def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
@@ -109,7 +109,7 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
                 srun.next_run = now + sec
         # perform the read
         if sensors_to_read:
-            _LOGGER.debug("Read: %s", len(sensors_to_read))
+            _LOG.debug("Read: %s", len(sensors_to_read))
             await ist.read_sensors(
                 sensors=sensors_to_read,
                 msg="poll_need_to_read",
@@ -163,7 +163,7 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
                     try:
                         pub[asen] = ist.inv.state.history_average(sensor)
                     except ValueError:
-                        _LOGGER.warning("No history for %s", sensor)
+                        _LOG.warning("No history for %s", sensor)
                 srun.next_run = now + sec
 
         if pub:

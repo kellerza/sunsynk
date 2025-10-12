@@ -20,7 +20,7 @@ from sunsynk.sensors import (
 )
 from sunsynk.state import InverterState, group_sensors
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 def test_binary_sensor(state: InverterState) -> None:
@@ -169,7 +169,7 @@ def test_all_groups() -> None:
     """Tests."""
     s = [SENSORS.all[s] for s in SENSORS.all]
     for i in range(2, 6):
-        _LOGGER.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
+        _LOG.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
 
     grp = group_sensors(s)
 
@@ -192,7 +192,7 @@ def test_ids() -> None:
             if sen.factor and sen.factor < 0 and len(sen.address) > 1:
                 raise AssertionError("only single signed supported")
         except TypeError:
-            _LOGGER.error("Sensor %s, factor=%s", name, sen.factor)
+            _LOG.error("Sensor %s, factor=%s", name, sen.factor)
             raise
 
         if sen.id in SENSORS.deprecated:

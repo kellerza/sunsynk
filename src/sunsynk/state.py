@@ -11,7 +11,7 @@ from sunsynk.helpers import NumType
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import BinarySensor, Sensor, ValType
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attr.define()
@@ -71,7 +71,7 @@ class InverterState:
                 regs = (regs[0] & sen.bitmask,)
 
             newv = sen.reg_to_value(regs)
-            _LOGGER.debug("register %s = %s (old=%s)", self.registers, oldv, newv)
+            _LOG.debug("register %s = %s (old=%s)", self.registers, oldv, newv)
             if oldv != newv:
                 self.values[sen] = newv
                 changed[sen] = (newv, oldv)

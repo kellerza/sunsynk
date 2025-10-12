@@ -1,7 +1,7 @@
 """Sunsync Modbus interface."""
 
 import logging
-import typing
+from collections.abc import Sequence
 from urllib.parse import urlparse
 
 import attrs
@@ -16,7 +16,7 @@ from pymodbus.framer import FramerType
 
 from sunsynk.sunsynk import Sunsynk
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define
@@ -51,10 +51,10 @@ class PySunsynk(Sunsynk):
                         "Unknown scheme {url.scheme}: Only tcp and serial-tcp are supported"
                     )
 
-            _LOGGER.info("PyModbus %s %s: %s:%s", version, url.scheme, host, port)
+            _LOG.info("PyModbus %s %s: %s:%s", version, url.scheme, host, port)
             return client
 
-        _LOGGER.info("PyModbus %s Serial: %s", version, self.port)
+        _LOG.info("PyModbus %s Serial: %s", version, self.port)
         return AsyncModbusSerialClient(
             port=self.port,
             baudrate=self.baudrate,
@@ -85,15 +85,13 @@ class PySunsynk(Sunsynk):
             )
             if res.function_code < 0x80:  # test that we are not an error
                 return True
-            _LOGGER.error("failed to write register %s=%s", address, value)
+            _LOG.error("failed to write register %s=%s", address, value)
         except TimeoutError:
-            _LOGGER.error("timeout writing register %s=%s", address, value)
+            _LOG.error("timeout writing register %s=%s", address, value)
         self.timeouts += 1
         return False
 
-    async def read_holding_registers(
-        self, start: int, length: int
-    ) -> typing.Sequence[int]:
+    async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read a holding register."""
         await self.connect()
         res = await self.client.read_holding_registers(

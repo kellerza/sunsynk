@@ -19,7 +19,7 @@ async def test_uss_sensor(connect: Any) -> None:
     ss.client = AsyncMock()
     rhr = ss.client.read_holding_registers = AsyncMock()
 
-    # _LOGGER.warning("%s", dir(ss.client))
+    # _LOG.warning("%s", dir(ss.client))
     assert not rhr.called
     await ss.read_holding_registers(1, 2)
     assert rhr.called

@@ -10,7 +10,7 @@ from pysolarmanv5 import PySolarmanV5Async  # type: ignore[]
 
 from sunsynk.sunsynk import Sunsynk
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 RETRY_ATTEMPTS = 5
@@ -65,18 +65,18 @@ class SolarmanSunsynk(Sunsynk):
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
-            _LOGGER.debug("DBG: write_register: %s ==> ...", [value])
+            _LOG.debug("DBG: write_register: %s ==> ...", [value])
             await self.connect()
             res = await self.client.write_multiple_holding_registers(
                 register_addr=address, values=[value]
             )
-            _LOGGER.debug("DBG: write_register: %s ==> %s", [value], res)
+            _LOG.debug("DBG: write_register: %s ==> %s", [value], res)
             return True
         except TimeoutError:
-            _LOGGER.error("timeout writing register %s=%s", address, value)
+            _LOG.error("timeout writing register %s=%s", address, value)
             await self.disconnect()
         except Exception as err:  # pylint: disable=broad-except
-            _LOGGER.error("Error writing register %s: %s", address, err)
+            _LOG.error("Error writing register %s: %s", address, err)
             await self.disconnect()
 
         self.timeouts += 1
@@ -91,7 +91,7 @@ class SolarmanSunsynk(Sunsynk):
                 return await self.client.read_holding_registers(start, length)
             except Exception as err:  # pylint: disable=broad-except
                 attempt += 1
-                _LOGGER.error("Error reading: %s (retry %s)", err, attempt)
+                _LOG.error("Error reading: %s (retry %s)", err, attempt)
                 await self.disconnect()
                 if attempt >= RETRY_ATTEMPTS:
                     raise OSError(f"Failed to read register {start}") from err

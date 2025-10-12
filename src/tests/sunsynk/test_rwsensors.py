@@ -16,7 +16,7 @@ from sunsynk.rwsensors import (
 )
 from sunsynk.state import InverterState
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 def test_bitmask(caplog: pytest.LogCaptureFixture, state: InverterState) -> None:

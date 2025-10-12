@@ -8,7 +8,7 @@ from typing import Any
 
 from sunsynk.utils import import_module
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 def get_root(create: bool = False) -> Path:
@@ -30,20 +30,20 @@ def import_mysensors() -> dict[str, Any] | None:
     pth = root / f"{modn}.py"
     if not pth.exists():
         return None
-    _LOGGER.info("Importing %s...", pth)
+    _LOG.info("Importing %s...", pth)
     try:
         mod = import_module("mysensors", str(root))
     except Exception as err:
         traceback.print_exc()
-        _LOGGER.error("Error importing %s: %s", pth, err)
+        _LOG.error("Error importing %s: %s", pth, err)
         return None
     sensors = getattr(mod, "SENSORS", None)
     if not sensors:
-        _LOGGER.error("No SENSORS variable found in mysensors.py")
+        _LOG.error("No SENSORS variable found in mysensors.py")
         return None
     res: dict[str, Any] = getattr(sensors, "all", {})
     if res:
-        _LOGGER.info("  custom sensors: %s", ", ".join(res))
+        _LOG.info("  custom sensors: %s", ", ".join(res))
     else:
-        _LOGGER.warning("  no custom sensors")
+        _LOG.warning("  no custom sensors")
     return res

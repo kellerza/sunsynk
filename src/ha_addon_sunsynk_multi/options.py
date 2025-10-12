@@ -1,17 +1,13 @@
 """Addon options."""
 
 import logging
-import typing as t
 
 import attrs
 from mqtt_entity.options import MQTTOptions
 
 from .timer_schedule import Schedule
 
-_LOGGER = logging.getLogger(__name__)
-
-
-T = t.TypeVar("T", str, int, list)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define()
@@ -29,20 +25,18 @@ class InverterOptions:
         self.ha_prefix = self.ha_prefix.lower().strip()
         if self.dongle_serial_number:
             if self.port:
-                _LOGGER.warning(
-                    "%s: No port expected when you specify a serial number."
-                )
+                _LOG.warning("%s: No port expected when you specify a serial number.")
             return
         if self.port == "":
-            _LOGGER.warning(
+            _LOG.warning(
                 "%s: Using port from debug_device: %s", self.serial_nr, OPT.debug_device
             )
             self.port = OPT.debug_device
         ddev = self.port == ""
         if ddev:
-            _LOGGER.warning("Empty port, will use the debug device")
+            _LOG.warning("Empty port, will use the debug device")
         if ddev or self.port.lower().startswith(("serial:", "/dev")):
-            _LOGGER.warning("Use mbusd instead of connecting directly to a serial port")
+            _LOG.warning("Use mbusd instead of connecting directly to a serial port")
 
 
 @attrs.define()

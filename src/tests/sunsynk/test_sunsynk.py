@@ -13,7 +13,7 @@ from sunsynk.state import InverterState
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 async def test_ss_not_implemented() -> None:

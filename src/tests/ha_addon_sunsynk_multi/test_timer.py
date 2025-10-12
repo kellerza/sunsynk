@@ -12,7 +12,7 @@ from ha_addon_sunsynk_multi.timer_callback import (
 )
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
@@ -23,13 +23,13 @@ async def test_timer() -> None:
 
     async def run1(now: int) -> None:
         run[1] += 1
-        _LOGGER.info("now=%s: cnt=%s", now, run[1])
+        _LOG.info("now=%s: cnt=%s", now, run[1])
         if run[1] == 17:
             cbs.clear()
 
     def run2(now: int) -> None:
         run[2] += 1
-        _LOGGER.info("now=%s:      cnt2=%s", now, run[2])
+        _LOG.info("now=%s:      cnt2=%s", now, run[2])
         assert now % 2 == 0
 
     cbs = [
@@ -39,7 +39,7 @@ async def test_timer() -> None:
 
     with patch("ha_addon_sunsynk_multi.timer_callback.modf") as mock_time:
         lst = [(0.99, s) for s in range(2, 20)]
-        _LOGGER.info(lst)
+        _LOG.info(lst)
         mock_time.side_effect = lst
         # mock_time.return_value = 0
         await run_callbacks(cbs)

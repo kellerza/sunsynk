@@ -20,7 +20,7 @@ from sunsynk.helpers import (
 )
 from sunsynk.sensors import Sensor
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 ResolveType = Callable[[Sensor, ValType], ValType] | None
 
 
@@ -31,7 +31,7 @@ class RWSensor(Sensor):
     def reg(self, *regs: int, msg: str = "") -> RegType:
         """Check the registers are within the bitmask."""
         if self.bitmask and regs[0] != (regs[0] & self.bitmask):
-            _LOGGER.error(
+            _LOG.error(
                 "Trying to set a register value outside the sensor's bitmask! sensor:%s regvalue:%s %s",
                 self.name,
                 regs,
@@ -51,7 +51,7 @@ class RWSensor(Sensor):
     def __attrs_post_init__(self) -> None:
         """Run post init."""
         if self.bitmask > 0 and len(self.address) != 1:
-            _LOGGER.fatal(
+            _LOG.fatal(
                 "Sensors with a bitmask should reference a single register! %s [registers=%s]",
                 self.name,
                 self.address,
@@ -112,7 +112,7 @@ class SelectRWSensor(RWSensor):
         regs = [r for r, v in self.options.items() if v == value]
         if regs:
             return self.reg(regs[0])
-        _LOGGER.warning("Unknown %s", value)
+        _LOG.warning("Unknown %s", value)
         current = resolve(self, None) if resolve else 0
         return self.value_to_reg(current, None)  # type:ignore[attr-defined]
 
@@ -121,7 +121,7 @@ class SelectRWSensor(RWSensor):
         regsm = self.masked(regs)
         res = self.options.get(regsm[0])
         if res is None:
-            _LOGGER.warning("%s: Unknown register value %s", self.id, regsm[0])
+            _LOG.warning("%s: Unknown register value %s", self.id, regsm[0])
         return res
 
 
@@ -176,7 +176,7 @@ class SwitchRWSensor(RWSensor):
         if value == BOOL_ON:
             return (self.on,) if self.on else self.masked((0xFF,))
         if value != BOOL_OFF:
-            _LOGGER.warning("%s: ON/OFF expected, got %s", self.name, value)
+            _LOG.warning("%s: ON/OFF expected, got %s", self.name, value)
         return (self.off,)
 
 
@@ -207,7 +207,7 @@ class SystemTimeRWSensor(RWSensor):
         msg = f"20{y:02}-{m:02}-{d:02} {h:02}:{mn:02}:{s:02}"
         msg += f"==> Registers(ym, dh, ms):{hex_str(regs, address=self.address)}"
         assert len(regs) == len(self.address)
-        _LOGGER.debug("Set date_time = %s", msg)
+        _LOG.debug("Set date_time = %s", msg)
         return regs
 
     def reg_to_value(self, regs: RegType) -> ValType:

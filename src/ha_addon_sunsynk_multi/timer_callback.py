@@ -12,7 +12,7 @@ from sunsynk.helpers import slug
 
 from .errors import log_error
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define(slots=True)

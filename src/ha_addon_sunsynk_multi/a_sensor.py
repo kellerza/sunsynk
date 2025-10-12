@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 
 
 SS_TOPIC = "SS"
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 """An array of the Sunsynk driver instances."""
 MQTT = MQTTClient(devs=[], origin_name="Sunsynk Add-on")
 """The MQTTClient instance."""
@@ -79,10 +79,10 @@ class ASensor:
     async def publish(self, val: ValType) -> None:
         """Set the value through MQTT."""
         if self.entity is None:
-            _LOGGER.error("no entity %s", self.name)
+            _LOG.error("no entity %s", self.name)
             return
         if val is None:
-            _LOGGER.debug("Cannot publish %s: value is None", self.name)
+            _LOG.debug("Cannot publish %s: value is None", self.name)
             return
         if self._last == val and self.retain:
             return
@@ -156,7 +156,7 @@ class ASensor:
 
             async def on_change(val: float | str | bool) -> None:
                 """On change callback."""
-                _LOGGER.info("Queue update %s=%s", sensor.id, val)
+                _LOG.info("Queue update %s=%s", sensor.id, val)
                 ist.write_queue.update({sensor: val})
                 await self.publish(val)
 

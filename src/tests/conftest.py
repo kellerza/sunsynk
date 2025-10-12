@@ -1,9 +1,5 @@
 """Global fixtures."""
 
-import sys
-from importlib import import_module as _import_module
-from pathlib import Path
-from types import ModuleType
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -11,10 +7,7 @@ import pytest
 
 from sunsynk.state import InverterState
 
-#
 # Pytest Mark: https://stackoverflow.com/a/61193490
-#
-
 MARKERS = ("mqtt",)
 
 
@@ -42,17 +35,6 @@ def pytest_collection_modifyitems(
             for item in items:
                 if mrk in item.keywords:
                     item.add_marker(skip_mrk)
-
-
-def import_module(mod_name: str, folder: str) -> ModuleType:
-    """import_module."""
-    here = Path.cwd() / folder
-    sys.path.insert(0, str(here))
-    try:
-        mod_obj = _import_module(mod_name)
-        return mod_obj
-    finally:
-        sys.path.pop(0)
 
 
 @pytest.fixture

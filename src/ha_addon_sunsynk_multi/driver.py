@@ -11,7 +11,7 @@ from .a_sensor import MQTT
 from .options import Options
 from .sensor_options import SOPT
 
-_LOGGER = logging.getLogger(":")
+_LOG = logging.getLogger(":")
 
 
 HASS_DISCOVERY_INFO_UPDATE_QUEUE: set[Sensor] = set()
@@ -37,7 +37,7 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
     """React to sensor updates."""
     if sen not in SOPT or not SOPT[sen].affects:
         return
-    _LOGGER.debug(
+    _LOG.debug(
         "%s changed: Enqueue discovery info updates for %s",
         sen.name,
         ", ".join(s.id for s in SOPT[sen].affects),
@@ -81,7 +81,7 @@ def init_driver(opt: Options) -> None:
         )
         if hasattr(suns, "dongle_serial_number"):
             suns.dongle_serial_number = inv.dongle_serial_number  # type: ignore[]
-        _LOGGER.debug("Driver: %s - inv:%s", suns, inv)
+        _LOG.debug("Driver: %s - inv:%s", suns, inv)
         suns.state.onchange = sensor_on_update
 
         STATE.append(AInverter(inv=suns, ss={}, opt=inv, index=idx))

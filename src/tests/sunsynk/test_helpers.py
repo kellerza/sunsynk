@@ -19,7 +19,7 @@ from sunsynk.helpers import (
 )
 from sunsynk.sensors import Sensor
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 def test_as_num(caplog: pytest.LogCaptureFixture) -> None:
@@ -83,7 +83,7 @@ def test_pack_unpack_16bits() -> None:
     ]
     for idx, (text, regs) in enumerate(tests):
         vals = extract_ints(text)
-        _LOGGER.info("Test 16-bit %d - %s", idx, (regs, vals))
+        _LOG.info("Test 16-bit %d - %s", idx, (regs, vals))
         val = vals[0]
         for j in vals:
             assert j == val
@@ -114,7 +114,7 @@ def test_pack_unpack_32bits() -> None:
 
     for idx, (text, regs) in enumerate(tests):
         vals = extract_ints(text)
-        _LOGGER.info("Test 32-bit #%d: %s = %s", idx, vals, regs)
+        _LOG.info("Test 32-bit #%d: %s = %s", idx, vals, regs)
         val = vals[0]
         for j in vals:
             assert j == val

@@ -11,7 +11,7 @@ from connio import SERIAL_SCHEMES, SOCKET_SCHEMES  # type: ignore[]
 
 from sunsynk.sunsynk import Sunsynk
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define
@@ -53,7 +53,7 @@ class USunsynk(Sunsynk):
             )
             return True
         except TimeoutError:
-            _LOGGER.error("timeout writing register %s=%s", address, value)
+            _LOG.error("timeout writing register %s=%s", address, value)
         self.timeouts += 1
         return False
 

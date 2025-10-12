@@ -10,7 +10,7 @@ from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import EnumSensor
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 SCH_RWSENSOR = "rw"
 SCH_ENUMSENSOR = "enum"
@@ -72,7 +72,7 @@ def get_schedule(sensor: Sensor, schedules: dict[str, Schedule]) -> Schedule:
         if fkey:
             key = slug(fkey)
             if key in schedules:
-                _LOGGER.debug(
+                _LOG.debug(
                     "Schedule %s used for %s (reason: %s)", key, sensor.name, reason
                 )
                 return schedules[key]
@@ -112,10 +112,10 @@ def init_schedules(schedules: list[Schedule]) -> None:
     for sch in schedules:
         if sch.key in SCHEDULES:
             source[sch.key] = "*"
-            # _LOGGER.info("Replaced %s", sch)
+            # _LOG.info("Replaced %s", sch)
         else:
             source[sch.key] = "+"
-            # _LOGGER.info("Added    %s", sch)
+            # _LOG.info("Added    %s", sch)
         SCHEDULES[sch.key] = sch
 
     tab = PrettyTable()
@@ -131,7 +131,7 @@ def init_schedules(schedules: list[Schedule]) -> None:
 
     for schn, sch in SCHEDULES.items():
         # if schn not in updated:
-        #     _LOGGER.info("Default  %s", sch)
+        #     _LOG.info("Default  %s", sch)
         tab.add_row(
             [
                 schn,
@@ -145,4 +145,4 @@ def init_schedules(schedules: list[Schedule]) -> None:
         )
 
     # tab.add_rows([e, [s.sensor.id for s in r.sensors]] for e, r in report_s.items())
-    _LOGGER.info("Schedules:\n%s", tab.get_string())
+    _LOG.info("Schedules:\n%s", tab.get_string())

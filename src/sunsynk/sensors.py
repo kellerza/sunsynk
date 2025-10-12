@@ -17,7 +17,7 @@ from sunsynk.helpers import (
     unpack_value,
 )
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define(slots=True, eq=False)
@@ -41,7 +41,7 @@ class Sensor:
         regs = self.masked(regs)
         val: NumType = unpack_value(regs, signed=self.factor < 0)
         val = int_round(float(val) * abs(self.factor))
-        _LOGGER.debug("%s=%s%s %s", self.id, val, self.unit, regs)
+        _LOG.debug("%s=%s%s %s", self.id, val, self.unit, regs)
         return val
 
     def masked(self, regs: RegType) -> RegType:
@@ -77,7 +77,7 @@ class Sensor16(Sensor):
         if len(self.history1) > 10:
             self.history1.pop(0)
             self.history0.pop(0)
-        # _LOGGER.debug("%s %s", hex_str(regs), mean(self.history0))
+        # _LOG.debug("%s %s", hex_str(regs), mean(self.history0))
         if (
             any(r == 0 for r in self.history1)  # reg[1] between negative and positive
             or (  # a big drop in reg[0] could also be close to a neg to pos transition
@@ -200,7 +200,7 @@ class TempSensor(Sensor):
             val = regs[0]
             return int_round((float(val) * abs(self.factor)) - self.offset)  # type: ignore[]
         except (TypeError, ValueError) as err:
-            _LOGGER.error("Could not decode temperature: %s", err)
+            _LOG.error("Could not decode temperature: %s", err)
         return None
 
 
@@ -262,7 +262,7 @@ class EnumSensor(TextSensor):
             if self.unknown:
                 return self.unknown.format(regsm[0])
             if self._warn:
-                _LOGGER.warning(
+                _LOG.warning(
                     "%s: Unknown register value %s. "
                     "Consider extending the definition with a PR. "
                     "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions",

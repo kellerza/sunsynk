@@ -12,7 +12,7 @@ from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import Sensor, ValType
 from sunsynk.state import InverterState, group_sensors, register_map
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define
@@ -45,18 +45,18 @@ class Sunsynk:
         regs = sensor.value_to_reg(value, self.state.get)
         # if bitmask we should READ the register first!!!
         if sensor.bitmask:
-            _LOGGER.debug("0 - %s", regs)
+            _LOG.debug("0 - %s", regs)
             regs = sensor.reg(*regs, msg=f"while setting value = {value}")
-            _LOGGER.debug("1 - %s", regs)
+            _LOG.debug("1 - %s", regs)
             val1 = regs[0]
             r_r = await self.read_holding_registers(sensor.address[0], 1)
-            _LOGGER.debug("r_r - %s", r_r)
+            _LOG.debug("r_r - %s", r_r)
             val0 = r_r[0]
             regs0 = patch_bitmask(val0, val1, sensor.bitmask)
             regs = (regs0, *regs[1:])
             msg = f"[Register {val0}-->{val1}]"
 
-        _LOGGER.info(
+        _LOG.info(
             "Writing sensor %s=%s Registers:%s %s",
             sensor.id,
             value,
@@ -79,7 +79,7 @@ class Sunsynk:
         assert self.state is not None
         for sen in sensors:
             if sen not in self.state.values:
-                _LOGGER.warning("sensor %s not being tracked", sen.id)
+                _LOG.warning("sensor %s not being tracked", sen.id)
 
         new_regs: dict[int, int] = {}
         errs: list[str] = []
@@ -96,7 +96,7 @@ class Sunsynk:
                     self.read_holding_registers(grp[0], glen), timeout=self.timeout + 1
                 )
                 perf = time.perf_counter() - perf
-                _LOGGER.debug(
+                _LOG.debug(
                     "Time taken to fetch %s registers starting at %s : %ss",
                     glen,
                     grp[0],
@@ -116,11 +116,9 @@ class Sunsynk:
             new_regs.update(regs)
 
             if len(r_r) != glen:
-                _LOGGER.warning(
-                    "Did not complete read, only read %s/%s", len(r_r), glen
-                )
+                _LOG.warning("Did not complete read, only read %s/%s", len(r_r), glen)
 
-            _LOGGER.debug(
+            _LOG.debug(
                 "Request registers: %s glen=%d. Response %s len=%d. regs=%s",
                 grp,
                 glen,

@@ -17,7 +17,7 @@ from .options import OPT, InverterOptions
 from .sensor_options import DEFS, SOPT
 from .timer_callback import Callback
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define(slots=True, kw_only=True)
@@ -76,9 +76,9 @@ class AInverter:
                 await self.read_sensors(sensors=sensors, msg=msg)
                 return True
             except asyncio.exceptions.CancelledError as err:
-                _LOGGER.error("Timeout %s", err)
+                _LOG.error("Timeout %s", err)
             except Exception as err:
-                _LOGGER.error("%s", err)
+                _LOG.error("%s", err)
             await asyncio.sleep(0.1)
             if self.read_errors > 2:
                 break
@@ -86,7 +86,7 @@ class AInverter:
         if len(sensors) == 1:
             return False
 
-        _LOGGER.warning("Retrying individual sensors: %s", [s.id for s in sensors])
+        _LOG.warning("Retrying individual sensors: %s", [s.id for s in sensors])
         errs = []
         for sen in sensors:
             await asyncio.sleep(0.02)
@@ -94,7 +94,7 @@ class AInverter:
                 errs.append(sen.name)
 
         if errs:
-            _LOGGER.critical("Could not read sensors: %s", errs)
+            _LOG.critical("Could not read sensors: %s", errs)
             return False
         return True
 
@@ -111,7 +111,7 @@ class AInverter:
 
     async def connect(self) -> None:
         """Connect."""
-        _LOGGER.info("Connecting to %s", self.inv.port)
+        _LOG.info("Connecting to %s", self.inv.port)
         try:
             await self.inv.connect()
         except ConnectionError as exc:
@@ -120,7 +120,7 @@ class AInverter:
             ) from exc
 
         sensors = list(SOPT.startup)
-        _LOGGER.info("Reading startup sensors %s", ", ".join(s.name for s in sensors))
+        _LOG.info("Reading startup sensors %s", ", ".join(s.name for s in sensors))
 
         if not await self.read_sensors_retry(sensors=sensors):
             raise ConnectionError(
@@ -135,17 +135,17 @@ class AInverter:
             )
         self.log_bold(f"Inverter serial number '****{actual_ser[-4:]}'")
 
-        _LOGGER.info(
+        _LOG.info(
             "Device type: %s, using the %s sensor definitions",
             self.inv.state[DEFS.device_type],
             OPT.sensor_definitions,
         )
 
-        _LOGGER.info("Protocol version: %s", self.inv.state[DEFS.protocol])
+        _LOG.info("Protocol version: %s", self.inv.state[DEFS.protocol])
 
         # Initial read for all sensors
         sensors = list(SOPT)
-        _LOGGER.info("Reading all sensors %s", ", ".join(s.name for s in sensors))
+        _LOG.info("Reading all sensors %s", ", ".join(s.name for s in sensors))
         await self.read_sensors(sensors=sensors)
 
     @property
@@ -158,9 +158,9 @@ class AInverter:
 
     def log_bold(self, msg: str) -> None:
         """Log a message."""
-        _LOGGER.info("#" * 60)
-        _LOGGER.info(f"{msg:^60}".rstrip())
-        _LOGGER.info("#" * 60)
+        _LOG.info("#" * 60)
+        _LOG.info(f"{msg:^60}".rstrip())
+        _LOG.info("#" * 60)
 
     def hass_create_discovery_info(self) -> None:
         """Create discovery info for the inverter."""
@@ -191,7 +191,7 @@ class AInverter:
                 s.entity = s.create_entity(self)
                 self.mqtt_dev.components[s.opt.sensor.id] = s.entity
             except Exception as err:
-                _LOGGER.error("Could not create MQTT entity for %s: %s", s, err)
+                _LOG.error("Could not create MQTT entity for %s: %s", s, err)
 
             if hasattr(s.opt.sensor, "rated_power"):
                 s.opt.sensor.rated_power = int(self.rated_power)  # type:ignore[]

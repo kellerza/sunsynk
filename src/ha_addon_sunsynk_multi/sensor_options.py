@@ -15,7 +15,7 @@ from .helpers import import_mysensors
 from .options import OPT
 from .timer_schedule import SCHEDULES, Schedule, get_schedule
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 DEFS = SensorDefinitions()
 """Sensor definitions (1ph / 3ph)."""
@@ -100,7 +100,7 @@ class SensorOptions(dict[Sensor, SensorOption]):
 
         # Display hidden sensors
         if hidden := [s.sensor.name for s in self.values() if not s.visible]:
-            _LOGGER.info(
+            _LOG.info(
                 "Added hidden sensors as other sensors depend on it: %s",
                 ", ".join(hidden),
             )
@@ -125,7 +125,7 @@ def import_definitions() -> None:
             DEFS.all.update(mysensors)
             SENSOR_GROUPS["mysensors"] = list(mysensors)
     except ImportError:
-        _LOGGER.error("Unable to import import mysensors.py")
+        _LOG.error("Unable to import import mysensors.py")
         traceback.print_exc()
 
 
@@ -331,7 +331,7 @@ def get_sensors(
 
     for sensor_def in names:
         if ":" in sensor_def:
-            _LOGGER.error("Modifiers was replaced by schedules: %s", sensor_def)
+            _LOG.error("Modifiers was replaced by schedules: %s", sensor_def)
             continue
 
         name = slug(sensor_def)
@@ -344,7 +344,7 @@ def get_sensors(
         # Warn on deprecated
         if name in DEFS.deprecated:
             if warn:
-                _LOGGER.error(
+                _LOG.error(
                     "Your config includes deprecated sensors. Replace %s with %s",
                     name,
                     DEFS.deprecated[name],
@@ -352,13 +352,13 @@ def get_sensors(
             continue
 
         if name in [t.name for t in target] and warn:
-            _LOGGER.warning("Sensor %s only allowed once", name)
+            _LOG.warning("Sensor %s only allowed once", name)
             continue
 
         sen = DEFS.all.get(name)
         if not isinstance(sen, Sensor):
             if warn:
-                _LOGGER.error("Unknown sensor specified: %s", name)
+                _LOG.error("Unknown sensor specified: %s", name)
             continue
 
         yield sen

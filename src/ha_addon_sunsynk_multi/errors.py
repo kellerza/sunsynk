@@ -5,7 +5,7 @@ from collections import defaultdict
 from traceback import format_exception
 
 ERRLIST: dict[str, int] = defaultdict(int)
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 def log_error(msg: str, exc: Exception | None = None) -> None:
@@ -14,9 +14,9 @@ def log_error(msg: str, exc: Exception | None = None) -> None:
     if ERRLIST[msg] > 1:
         return
     if exc:
-        _LOGGER.error("%s\n%s", msg, "\n".join(format_exception(exc)))
+        _LOG.error("%s\n%s", msg, "\n".join(format_exception(exc)))
     else:
-        _LOGGER.error(msg)
+        _LOG.error(msg)
 
 
 def print_errors(_: int) -> None:
@@ -26,7 +26,7 @@ def print_errors(_: int) -> None:
     errs = [(c, m) for m, c in ERRLIST.items() if c > 1]
     errs.sort(reverse=True)
     for count, msg in errs:
-        _LOGGER.error("(%s in 5 min) %s", count - 1, msg)
+        _LOG.error("(%s in 5 min) %s", count - 1, msg)
 
     for key in ERRLIST:
         ERRLIST[key] = 1

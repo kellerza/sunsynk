@@ -8,7 +8,7 @@ import pytest
 
 from sunsynk.usunsynk import USunsynk
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @pytest.mark.asyncio
@@ -22,7 +22,7 @@ async def test_uss_schemes() -> None:
         try:
             await ss.connect()
         except ModuleNotFoundError as err:  # not working on windows
-            _LOGGER.error("usunsynk could not connect to %s: %s", port, err)
+            _LOG.error("usunsynk could not connect to %s: %s", port, err)
             if os.name == "posix":
                 raise
 
@@ -40,7 +40,7 @@ async def test_uss_sensor() -> None:
 
     rhr = ss.client.read_holding_registers = AsyncMock()
 
-    _LOGGER.warning("%s", dir(ss.client))
+    _LOG.warning("%s", dir(ss.client))
     assert not rhr.called
     await ss.read_holding_registers(1, 2)
     assert rhr.called

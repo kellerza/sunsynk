@@ -14,7 +14,7 @@ from sunsynk.sensors import Sensor
 
 from .conftest import NOSCHEDULE, ist_factory
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 def test_create_entity() -> None:
