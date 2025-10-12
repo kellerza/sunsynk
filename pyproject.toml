@@ -18,6 +18,7 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
   "attrs>=25,<26",
@@ -41,6 +42,9 @@ dev = [
   "pytest-github-actions-annotate-failures",
   "types-pyyaml",
 ]
+
+[tool.uv.build-backend]
+module-name = [ "sunsynk", "ha_addon_sunsynk_multi" ]
 
 [tool.ruff]
 include = [ "src/**/*.py" ]
@@ -85,6 +89,3 @@ disallow_untyped_defs = true
 ignore_missing_imports = true
 exclude = [ "build" ]
 enable_error_code = [ "ignore-without-code" ]
-
-[tool.uv.build-backend]
-module-name = [ "sunsynk", "ha_addon_sunsynk_multi" ]
