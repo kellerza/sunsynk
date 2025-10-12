@@ -2,12 +2,8 @@
 
 import logging
 
-from sunsynk.sensors import (
-    EnumSensor,
-    ProtocolVersionSensor,
-    SensorDefinitions,
-    SerialSensor,
-)
+from sunsynk import EnumSensor, SensorDefinitions
+from sunsynk.sensors import ProtocolVersionSensor, SerialSensor
 from sunsynk.utils import import_module
 
 COMMON = SensorDefinitions()

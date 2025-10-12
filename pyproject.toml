@@ -32,9 +32,9 @@ urls.Homepage = "https://kellerza.github.io/sunsynk/"
 
 [dependency-groups]
 dev = [
-  "codespell>=2.4.1",
+  "codespell",
   "mypy",
-  "pyproject-fmt>=2.6",
+  "pyproject-fmt",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
@@ -44,7 +44,6 @@ dev = [
 
 [tool.ruff]
 include = [ "src/**/*.py" ]
-
 format.line-ending = "lf"
 format.docstring-code-format = true
 lint.select = [
