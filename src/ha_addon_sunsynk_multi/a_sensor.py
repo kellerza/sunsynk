@@ -34,7 +34,7 @@ from sunsynk.rwsensors import (
     TimeRWSensor,
     resolve_num,
 )
-from sunsynk.sensors import BinarySensor, EnumSensor
+from sunsynk.sensors import BinarySensor, EnumSensor, TextSensor
 
 from .options import OPT
 from .sensor_options import SensorOption
@@ -109,7 +109,7 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, ist: AInverter, /) -> MQTTEntity:  # noqa: PLR0911
+    def create_entity(self, ist: AInverter, /) -> MQTTEntity:  # noqa: PLR0911, PLR0912
         """Create HASS entity."""
         dev_id = ist.opt.serial_nr
         if not self.visible_on(ist):
@@ -143,6 +143,8 @@ class ASensor:
             ent["device_class"] = hass_device_class(unit=sensor.unit)
             if isinstance(sensor, BinarySensor):
                 self.entity = MQTTBinarySensorEntity(**ent)
+            elif isinstance(sensor, TextSensor):
+                self.entity = MQTTSensorEntity(**ent)
             else:
                 if self.is_measurement(sensor.unit):
                     ent["state_class"] = "measurement"
