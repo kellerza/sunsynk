@@ -13,6 +13,8 @@ def test_init() -> None:
     """Test init."""
     with pytest.raises(ValueError):
         OPT.driver = "bad"
+        inv_option = {"inverters": [{"port": "tcp://127.0.0.1:123", "modbus_id": 1}]}
+        OPT.load_dict(inv_option)
         init_driver(OPT)
 
     inv_port = "tcp://127.0.0.1:123"

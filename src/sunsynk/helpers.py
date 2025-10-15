@@ -3,14 +3,14 @@
 import logging
 import math
 import struct
-from typing import Any
+from typing import Any, Union
 
 _LOG = logging.getLogger(__name__)
 
-type ValType = float | int | str | bool | None
-type RegType = tuple[int, ...]
+ValType = Union[float, int, str, bool, None]  # noqa: UP007
+RegType = tuple[int, ...]
 """Register addresses or values."""
-type NumType = float | int
+NumType = Union[float, int]  # noqa: UP007
 
 
 def pack_value(value: int, bits: int = 16, signed: bool = True) -> RegType:

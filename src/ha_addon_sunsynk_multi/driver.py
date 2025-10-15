@@ -7,7 +7,9 @@ from sunsynk import Sensor, Sunsynk, ValType
 
 from .a_inverter import STATE, AInverter
 from .a_sensor import MQTT
-from .options import Options
+from .connector_manager import ConnectorManager
+from .inverter_wrapper import InverterWrapper
+from .options import InverterOptions, Options
 from .sensor_options import SOPT
 
 _LOG = logging.getLogger(":")
@@ -46,7 +48,35 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
 
 def init_driver(opt: Options) -> None:
     """Init Sunsynk driver for each inverter."""
-    factory: type[Sunsynk]
+    STATE.clear()
+
+    # Initialize connector manager for shared connections
+    connector_manager = ConnectorManager()
+
+    for idx, inv in enumerate(opt.inverters):
+        if inv.connector:
+            # Use shared connector
+            connector = connector_manager.get_connector(inv.connector)
+            suns: Sunsynk = InverterWrapper(
+                connector=connector, server_id=inv.modbus_id
+            )
+            _LOG.info(
+                "Using shared connector '%s' for inverter %s",
+                inv.connector,
+                inv.serial_nr,
+            )
+        else:
+            # Legacy: direct port connection
+            suns = _create_legacy_connection(inv, opt)
+            _LOG.info("Using direct port connection for inverter %s", inv.serial_nr)
+
+        suns.state.onchange = sensor_on_update
+        STATE.append(AInverter(inv=suns, ss={}, opt=inv, index=idx))
+
+
+def _create_legacy_connection(inv: InverterOptions, opt: Options) -> Sunsynk:
+    """Create legacy direct connection for backwards compatibility."""
+    factory = Sunsynk
     port_prefix = ""
     kwargs = {}
 
@@ -62,7 +92,7 @@ def init_driver(opt: Options) -> None:
     elif opt.driver == "solarman":
         from sunsynk.solarmansunsynk import SolarmanSunsynk  # noqa: PLC0415
 
-        factory = SolarmanSunsynk
+        factory = SolarmanSunsynk  # type: ignore[]
         port_prefix = "tcp://"
         kwargs["dongle_serial_number"] = 0
     else:
@@ -70,22 +100,16 @@ def init_driver(opt: Options) -> None:
             f"Invalid DRIVER: {opt.driver}. Expected umodbus, pymodbus, solarman"
         )
 
-    STATE.clear()
+    suns = factory(
+        port=inv.port if inv.port else port_prefix + opt.debug_device,
+        server_id=inv.modbus_id,
+        timeout=opt.timeout,
+        read_sensors_batch_size=opt.read_sensors_batch_size,
+        allow_gap=opt.read_allow_gap,
+    )
 
-    for idx, inv in enumerate(opt.inverters):
-        if "dongle_serial_number" in kwargs:
-            kwargs["dongle_serial_number"] = inv.dongle_serial_number
-        elif inv.dongle_serial_number:
-            _LOG.warning("Ignoring dongle_serial_number for non-solarman driver")
-        suns = factory(
-            port=inv.port if inv.port else port_prefix + opt.debug_device,
-            server_id=inv.modbus_id,
-            timeout=opt.timeout,
-            read_sensors_batch_size=opt.read_sensors_batch_size,
-            allow_gap=opt.read_allow_gap,
-            **kwargs,  # type:ignore[arg-type]
-        )
-        _LOG.debug("Driver: %s - inv:%s", suns, inv)
-        suns.state.onchange = sensor_on_update
+    if hasattr(suns, "dongle_serial_number"):
+        suns.dongle_serial_number = inv.dongle_serial_number  # type: ignore[]
 
-        STATE.append(AInverter(inv=suns, ss={}, opt=inv, index=idx))
+    _LOG.debug("Legacy driver: %s - inv:%s", suns, inv)
+    return suns

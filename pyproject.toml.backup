@@ -1,19 +1,18 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.9,<0.10" ]
+requires = [ "uv-build>=0.8.20,<0.9" ]
 
 [project]
 name = "sunsynk"
-version = "0.9.3"
+version = "0.9.0"
 description = "Library to interface Deye/Sunsynk Hybrid Inverters"
 readme = "README.md"
 keywords = [ "asyncio", "deye", "inverter", "modbus", "sunsynk" ]
-license = "Apache-2.0"
-license-files = [ "LICENSE" ]
+license = { text = "Apache-2.0" }
 authors = [ { name = "Johann Kellerman", email = "kellerza@gmail.com" } ]
 requires-python = ">=3.12"
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Natural Language :: English",
   "Programming Language :: Python :: 3 :: Only",
@@ -25,19 +24,18 @@ dependencies = [
   "attrs>=25,<26",
   "cattrs>=25,<26",
   "mqtt-entity[options]>=1,<2",
-  "prettytable>=3.17,<4",
-  "pymodbus[serial]==3.11.4",
+  "prettytable==3.16",
+  "pymodbus[serial]==3.11.3",
 ]
 optional-dependencies.solarman = [ "pysolarmanv5==3.0.6" ]
-optional-dependencies.umodbus = [ "async-modbus==0.2.3", "connio==0.2", "umodbus==1.0.4" ]
+optional-dependencies.umodbus = [ "async-modbus==0.2.2", "connio==0.2", "umodbus==1.0.4" ]
 urls.Homepage = "https://kellerza.github.io/sunsynk/"
-urls.Source = "https://github.com/kellerza/sunsynk"
 
 [dependency-groups]
 dev = [
   "codespell",
+  "mypy",
   "pyproject-fmt",
-  "pyright",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
@@ -49,10 +47,12 @@ dev = [
 module-name = [ "sunsynk", "ha_addon_sunsynk_multi" ]
 
 [tool.ruff]
+target-version = "py311"
+line-length = 88
 include = [ "src/**/*.py" ]
-format.line-ending = "lf"
-format.docstring-code-format = true
-lint.select = [
+
+[tool.ruff.lint]
+select = [
   "A",     # flake8-builtins
   "ASYNC", # flake8-async
   "B",     # bugbear
@@ -69,8 +69,8 @@ lint.select = [
   "UP",    # pyupgrade
   "W",     # pycodestyle
 ]
-lint.ignore = [ "D203", "D213", "E203", "E501", "PLR2004" ]
-lint.pylint.max-args = 7
+ignore = [ "D203", "D213", "E203", "E501", "PLR2004" ]
+fixable = [ "I" ]
 
 [tool.codespell]
 skip = "data,*.map,package-lock.json,*.map,**/cache/*,**/node_modules/*"
@@ -86,8 +86,8 @@ log_cli_level = "DEBUG"
 asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
-# [tool.mypy]
-# disallow_untyped_defs = true
-# ignore_missing_imports = true
-# exclude = [ "build" ]
-# enable_error_code = [ "ignore-without-code" ]
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+exclude = [ "build" ]
+enable_error_code = [ "ignore-without-code" ]
