@@ -3,8 +3,7 @@
 
 import logging
 
-from sunsynk.helpers import ValType
-from sunsynk.sunsynk import Sensor, Sunsynk
+from sunsynk import Sensor, Sunsynk, ValType
 
 from .a_inverter import STATE, AInverter
 from .a_sensor import MQTT
@@ -47,8 +46,9 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
 
 def init_driver(opt: Options) -> None:
     """Init Sunsynk driver for each inverter."""
-    factory = Sunsynk
+    factory: type[Sunsynk]
     port_prefix = ""
+    kwargs = {}
 
     if opt.driver == "pymodbus":
         from sunsynk.pysunsynk import PySunsynk  # noqa: PLC0415
@@ -62,8 +62,9 @@ def init_driver(opt: Options) -> None:
     elif opt.driver == "solarman":
         from sunsynk.solarmansunsynk import SolarmanSunsynk  # noqa: PLC0415
 
-        factory = SolarmanSunsynk  # type: ignore[]
+        factory = SolarmanSunsynk
         port_prefix = "tcp://"
+        kwargs["dongle_serial_number"] = 0
     else:
         raise ValueError(
             f"Invalid DRIVER: {opt.driver}. Expected umodbus, pymodbus, solarman"
@@ -72,15 +73,18 @@ def init_driver(opt: Options) -> None:
     STATE.clear()
 
     for idx, inv in enumerate(opt.inverters):
+        if "dongle_serial_number" in kwargs:
+            kwargs["dongle_serial_number"] = inv.dongle_serial_number
+        elif inv.dongle_serial_number:
+            _LOG.warning("Ignoring dongle_serial_number for non-solarman driver")
         suns = factory(
             port=inv.port if inv.port else port_prefix + opt.debug_device,
             server_id=inv.modbus_id,
             timeout=opt.timeout,
             read_sensors_batch_size=opt.read_sensors_batch_size,
             allow_gap=opt.read_allow_gap,
+            **kwargs,  # type:ignore[arg-type]
         )
-        if hasattr(suns, "dongle_serial_number"):
-            suns.dongle_serial_number = inv.dongle_serial_number  # type: ignore[]
         _LOG.debug("Driver: %s - inv:%s", suns, inv)
         suns.state.onchange = sensor_on_update
 

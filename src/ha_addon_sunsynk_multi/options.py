@@ -58,6 +58,11 @@ class Options(MQTTOptions):
     manufacturer: str = "Sunsynk"
     debug_device: str = ""
 
+    def __attrs_post_init__(self) -> None:
+        """Do some checks."""
+        if self.driver == "umodbus":
+            _LOG.warning("Try *pymodbus* if your encounter any issues with *umodbus*")
+
 
 OPT = Options()
 

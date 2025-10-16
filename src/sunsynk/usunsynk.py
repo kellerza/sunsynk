@@ -43,14 +43,12 @@ class USunsynk(Sunsynk):
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
-            await asyncio.wait_for(
-                self.client.write_registers(
+            async with asyncio.timeout(self.timeout):
+                await self.client.write_registers(
                     slave_id=self.server_id,
                     starting_address=address,
                     values=(value,),
-                ),
-                timeout=self.timeout,
-            )
+                )
             return True
         except TimeoutError:
             _LOG.error("timeout writing register %s=%s", address, value)

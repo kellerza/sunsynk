@@ -225,7 +225,7 @@ class AInverter:
             unit_of_measurement=" ",
             state_topic=f"{SS_TOPIC}/{self.opt.ha_prefix}/{name}",
             entity_category="diagnostic",
-            object_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
+            default_entity_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
         )
         self.mqtt_dev.components[name] = self.entity_timeout
         name = "cb_stats"
@@ -236,7 +236,7 @@ class AInverter:
             state_topic=f"{SS_TOPIC}/{self.opt.ha_prefix}/{name}",
             json_attributes_topic=f"{SS_TOPIC}/{self.opt.ha_prefix}/{name}_attr",
             entity_category="diagnostic",
-            object_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
+            default_entity_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
         )
         self.mqtt_dev.components[name] = self.entity_cbstats
 

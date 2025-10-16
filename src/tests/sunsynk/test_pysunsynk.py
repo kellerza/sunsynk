@@ -1,6 +1,5 @@
 """PyModbus."""
 
-import asyncio
 from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
 
 import pytest
@@ -53,7 +52,7 @@ async def test_ss_tcp_connect(
     # Connect raises an exception
     async_connect.side_effect = [0]
     connect.side_effect = TypeError
-    with pytest.raises(TypeError):
+    with pytest.raises(ConnectionError):
         await ss.connect()
 
     # Connect fails
@@ -66,7 +65,7 @@ async def test_ss_tcp_connect(
     async_connect.side_effect = [0, 1, 888]
     connect.side_effect = None
     await ss.connect()
-    assert ss.client.connected == 888
+    assert ss.client and ss.client.connected == 888
 
 
 @pytest.mark.asyncio
@@ -136,7 +135,7 @@ async def test_ss_tcp_write(
 
     # Timeout
     write_registers.return_value = None
-    write_registers.side_effect = asyncio.TimeoutError
+    write_registers.side_effect = TimeoutError
     assert "timeout writing" not in caplog.text
     res = await ss.write_register(address=1, value=1)
     assert res is False

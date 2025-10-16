@@ -34,6 +34,7 @@ def test_init() -> None:
         "inverters": [{"port": inv_port, "modbus_id": 1, "dongle_serial_number": "101"}]
     }
     OPT.driver = "solarman"
+    OPT.inverters = []
     OPT.load_dict(inv_option)
     init_driver(OPT)
     assert len(STATE) == 1

@@ -1,5 +1,6 @@
 """Sunsync Modbus interface."""
 
+import asyncio
 import logging
 from collections.abc import Sequence
 from urllib.parse import urlparse
@@ -19,11 +20,11 @@ from sunsynk.sunsynk import Sunsynk
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class PySunsynk(Sunsynk):
     """Sunsync Modbus class."""
 
-    client: ModbusBaseClient = None  # type:ignore[assignment]
+    client: ModbusBaseClient | None = attrs.field(default=None, repr=False)
 
     def _new_client(self) -> ModbusBaseClient:
         """Create a new client."""
@@ -63,42 +64,60 @@ class PySunsynk(Sunsynk):
             bytesize=8,
         )
 
-    async def connect(self) -> None:
-        """Connect. Will create a new client if required."""
+    async def connected_client(self) -> ModbusBaseClient:
+        """Get client, connect if needed."""
         if not self.client:
             self.client = self._new_client()
-
+        if self.client.connected:
+            return self.client
+        try:
+            async with asyncio.timeout(self.timeout):
+                await self.client.connect()
+        except TimeoutError:
+            raise ConnectionError("Failed to connect: timeout") from None
+        except Exception as err:
+            raise ConnectionError(f"Failed to connect: {err}") from err
         if not self.client.connected:
-            await self.client.connect()
+            raise ConnectionError("Failed to connect")
+        return self.client
 
-        if not self.client.connected:
-            raise ConnectionError
+    async def connect(self) -> None:
+        """Connect. Will create a new client if required."""
+        await self.connected_client()
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
-        await self.connect()
         try:
-            res = await self.client.write_registers(
-                address=address,
-                values=[value],  # type:ignore[]
-                device_id=self.server_id,
-            )
+            client = await self.connected_client()
+            async with asyncio.timeout(self.timeout):
+                res = await client.write_registers(
+                    address=address,
+                    values=[value],
+                    device_id=self.server_id,
+                )
             if res.function_code < 0x80:  # test that we are not an error
                 return True
             _LOG.error("failed to write register %s=%s", address, value)
         except TimeoutError:
             _LOG.error("timeout writing register %s=%s", address, value)
-        self.timeouts += 1
+            self.timeouts += 1
         return False
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read a holding register."""
         await self.connect()
-        res = await self.client.read_holding_registers(
-            address=start, count=length, device_id=self.server_id
-        )
-        if res.function_code >= 0x80:  # test that we are not an error
-            raise OSError(
-                f"failed to read register {start} - function code: {res.function_code}"
-            )
+        try:
+            client = await self.connected_client()
+            async with asyncio.timeout(self.timeout):
+                res = await client.read_holding_registers(
+                    address=start, count=length, device_id=self.server_id
+                )
+            if res.function_code >= 0x80:  # test that we are not an error
+                raise OSError(
+                    f"failed to read register {start} - function code: {res.function_code}"
+                ) from None
+        except TimeoutError:
+            self.timeouts += 1
+            raise OSError(f"timeout reading register {start}") from None
+
         return res.registers

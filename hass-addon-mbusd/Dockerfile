@@ -4,7 +4,7 @@ FROM ${BUILD_FROM}
 RUN \
     apk --no-cache add  --virtual .build-deps \
         make cmake gcc g++ git pkgconf \
-    && git clone --depth 1 --branch v0.5.1 \
+    && git clone --depth 1 --branch v0.5.2 \
         https://github.com/3cky/mbusd.git /usr/src \
     && cd /usr/src \
     && ls \

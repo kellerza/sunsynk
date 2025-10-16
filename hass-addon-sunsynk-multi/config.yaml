@@ -4,11 +4,13 @@ description: Add-on for a Sunsynk/Deye branded Inverter
 version: "0.9.1"
 slug: hass-addon-sunsynk-multi
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
-url: "https://github.com/kellerza/sunsynk"
+url: "https://kellerza.github.io/sunsynk"
 services: ["mqtt:need"]
 hassio_api: true
+hassio_role: homeassistant
 init: false
 uart: true
+apparmor: true
 arch:
   - aarch64
   - amd64
@@ -16,6 +18,8 @@ arch:
   - armv7
   - i386
 map:
+  - share:rw
+  - addon_config:rw
   - share:rw
 options:
   DRIVER: "pymodbus"
@@ -44,10 +48,6 @@ options:
       CHANGE_PERCENT: 0
   NUMBER_ENTITY_MODE: "auto"
   PROG_TIME_INTERVAL: 15
-  MQTT_HOST: core-mosquitto
-  MQTT_PORT: 1883
-  MQTT_USERNAME: hass
-  MQTT_PASSWORD: ""
 schema:
   DRIVER: list(pymodbus|umodbus|solarman)
   INVERTERS:

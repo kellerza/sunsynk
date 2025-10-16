@@ -15,11 +15,9 @@ from sunsynk.state import InverterState, group_sensors, register_map
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class Sunsynk:
     """Sunsync Modbus class."""
-
-    # pylint: disable=too-many-instance-attributes
 
     state: InverterState = attrs.field(factory=InverterState)
     port: str = "/dev/tty0"
@@ -82,7 +80,7 @@ class Sunsynk:
                 _LOG.warning("sensor %s not being tracked", sen.id)
 
         new_regs: dict[int, int] = {}
-        errs: list[str] = []
+        errs: list[Exception] = []
         groups = group_sensors(
             sensors,
             allow_gap=self.allow_gap,
@@ -92,9 +90,8 @@ class Sunsynk:
             glen = grp[-1] - grp[0] + 1
             try:
                 perf = time.perf_counter()
-                r_r = await asyncio.wait_for(
-                    self.read_holding_registers(grp[0], glen), timeout=self.timeout + 1
-                )
+                async with asyncio.timeout(self.timeout + 1):
+                    r_r = await self.read_holding_registers(grp[0], glen)
                 perf = time.perf_counter() - perf
                 _LOG.debug(
                     "Time taken to fetch %s registers starting at %s : %ss",
@@ -103,12 +100,16 @@ class Sunsynk:
                     f"{perf:.2f}",
                 )
             except TimeoutError:
-                errs.append(f"timeout reading {glen} registers from {grp[0]}")
+                errs.append(
+                    TimeoutError(f"timeout reading {glen} registers from {grp[0]}")
+                )
                 self.timeouts += 1
                 continue
-            except Exception as err:  # pylint: disable=broad-except
+            except Exception as err:
                 errs.append(
-                    f"{err.__class__.__name__} reading {glen} registers from {grp[0]}: {err}"
+                    err.__class__(
+                        f"{err.__class__.__name__} reading {glen} registers from {grp[0]}: {err}"
+                    )
                 )
                 continue
 
@@ -128,5 +129,7 @@ class Sunsynk:
             )
 
         self.state.update(new_regs)
+        if len(errs) > 1:
+            raise ExceptionGroup("Errors reading sensors", errs) from None
         if errs:
-            raise OSError("; ".join(errs))
+            raise errs[0] from None

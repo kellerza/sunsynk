@@ -37,7 +37,7 @@ def test_create_entity() -> None:
     assert entd == {
         "p": "sensor",
         "name": "one",
-        "obj_id": "ss1_one",
+        "def_ent_id": f"sensor.{ha_prefix}_one",
         "stat_cla": "measurement",
         "stat_t": f"SS/{ha_prefix}/one",
         "sug_dsp_prc": 1,
@@ -72,7 +72,7 @@ def test_create_entity2() -> None:
     assert entd == {
         "p": "sensor",
         "name": nme,
-        "obj_id": f"{ha_prefix}_{slugn}",
+        "def_ent_id": f"sensor.{ha_prefix}_{slugn}",
         "stat_t": f"SS/{ha_prefix}/{slugn}",
         "sug_dsp_prc": 1,
         "uniq_id": f"{serial}_{slugn}",

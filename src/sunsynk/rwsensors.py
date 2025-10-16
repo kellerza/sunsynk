@@ -192,7 +192,6 @@ class SystemTimeRWSensor(RWSensor):
 
     def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
         """Get the reg value from a display value."""
-        # pylint: disable=invalid-name
         redt = re.compile(r"(2\d{3})-(\d{2})-(\d{2}) ([012]?\d{1}):(\d{2}):(\d{2})")
         match = redt.fullmatch(str(value).strip())
         if not match:
@@ -212,7 +211,6 @@ class SystemTimeRWSensor(RWSensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the register."""
-        # pylint: disable=invalid-name
         y = ((regs[0] & 0xFF00) >> 8) + 2000
         m = regs[0] & 0xFF
         d = (regs[1] & 0xFF00) >> 8

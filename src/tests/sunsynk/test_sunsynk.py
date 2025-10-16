@@ -1,13 +1,14 @@
 """Test sunsynk library."""
 
 import logging
+from collections.abc import Sequence
 from unittest.mock import MagicMock, call, patch
 
 import pytest
 
-# from sunsynk.definitions.single import serial
 from sunsynk import Sunsynk
 from sunsynk.rwsensors import NumberRWSensor
+from sunsynk.sensors import Sensor
 from sunsynk.state import InverterState
 
 # All test coroutines will be treated as marked.
@@ -100,14 +101,39 @@ async def test_ss_read_sensors(rhr: MagicMock, state: InverterState) -> None:
     """Tests."""
     ss = Sunsynk()
     ss.state = state
-    sen = NumberRWSensor((1,), "", min=1, max=10)
-    ss.state.track(sen)
+    sensors = [
+        NumberRWSensor((1,), "One", min=1, max=10),
+        Sensor((10, 11), "Two"),
+    ]
+    for sen in sensors:
+        ss.state.track(sen)
 
-    rhr.return_value = (1,)
-    assert ss.state[sen] is None
-    await ss.read_sensors([sen])
-    assert ss.state[sen] == 1
+    assert ss.state[sensors[0]] is None
+    assert ss.state[sensors[1]] is None
 
-    rhr.side_effect = ValueError("a")
-    with pytest.raises(OSError):
-        await ss.read_sensors([sen])
+    def rhr_side_effect1(start: int, length: int) -> Sequence[int]:
+        """Return values."""
+        return {
+            (1, 1): [1],
+            (10, 2): [0, 1],
+        }[(start, length)]
+
+    rhr.side_effect = rhr_side_effect1
+    await ss.read_sensors(sensors)
+    states = [ss.state[s] for s in sensors]
+    assert states == [1, 65536]
+
+    def rhr_side_effect2(start: int, length: int) -> Sequence[int]:
+        """Return values."""
+        match (start, length):
+            case (1, 1):
+                raise OSError("a")
+            case (10, 2):
+                raise ValueError("b")
+            case _:
+                raise RuntimeError("x")
+
+    rhr.side_effect = rhr_side_effect2
+    with pytest.raises(ExceptionGroup) as excinfo:
+        await ss.read_sensors(sensors)
+    assert len(excinfo.value.exceptions) == 2

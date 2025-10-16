@@ -24,7 +24,6 @@ _LOG = logging.getLogger(__name__)
 class Sensor:
     """Sunsynk sensor."""
 
-    # pylint: disable=too-many-instance-attributes
     address: RegType = attrs.field(converter=ensure_tuple)
     name: str
     unit: str = ""

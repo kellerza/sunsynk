@@ -16,29 +16,32 @@ _LOG = logging.getLogger(__name__)
 RETRY_ATTEMPTS = 5
 
 
-@attrs.define
+@attrs.define(kw_only=True)
 class SolarmanSunsynk(Sunsynk):
     """Sunsynk class using PySolarmanV5."""
 
-    client: PySolarmanV5Async = attrs.field(default=None, repr=False)
-    dongle_serial_number: int = attrs.field(default=0, kw_only=True)
+    client: PySolarmanV5Async | None = attrs.field(default=None, repr=False)
+    dongle_serial_number: int = 0
 
-    async def connect(self) -> None:
-        """Connect."""
-        if self.client:
-            return
-
+    def __attrs_post_init__(self) -> None:
+        """Post init."""
+        self.allow_gap = self.allow_gap or 10
         try:
-            if int(self.dongle_serial_number) == 0:
+            self.dongle_serial_number = int(self.dongle_serial_number)
+            if self.dongle_serial_number == 0:
                 raise ValueError("DONGLE_SERIAL_NUMBER not set")
         except ValueError as err:
             raise ValueError(
                 f"DONGLE_SERIAL_NUMBER must be an integer, got '{self.dongle_serial_number}'"
             ) from err
 
+    async def connected_client(self) -> PySolarmanV5Async:
+        """Get client, connect if needed."""
+        if self.client:
+            return self.client
+
         url = urlparse(f"{self.port}")
-        self.allow_gap = 10
-        self.client = PySolarmanV5Async(
+        self.client = client = PySolarmanV5Async(
             address=url.hostname,
             serial=int(self.dongle_serial_number),
             port=url.port,
@@ -49,7 +52,21 @@ class SolarmanSunsynk(Sunsynk):
             v5_error_correction=True,
             error_correction=True,  # bug?
         )
-        await self.client.connect()
+        try:
+            async with asyncio.timeout(self.timeout):
+                await client.connect()
+        except TimeoutError:
+            self.client = None
+            raise ConnectionError("Failed to connect: timeout") from None
+        except Exception as err:
+            self.client = None
+            raise ConnectionError(f"Failed to connect: {err}") from err
+
+        return self.client
+
+    async def connect(self) -> None:
+        """Connect."""
+        await self.connected_client()
 
     async def disconnect(self) -> None:
         """Disconnect."""
@@ -60,26 +77,27 @@ class SolarmanSunsynk(Sunsynk):
         except AttributeError:
             pass
         finally:
-            self.client = None  # type:ignore[]
+            self.client = None
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk supports modbus function 0x10."""
         try:
+            client = await self.connected_client()
             _LOG.debug("DBG: write_register: %s ==> ...", [value])
-            await self.connect()
-            res = await self.client.write_multiple_holding_registers(
-                register_addr=address, values=[value]
-            )
+            async with asyncio.timeout(self.timeout):
+                res = await client.write_multiple_holding_registers(
+                    register_addr=address, values=[value]
+                )
             _LOG.debug("DBG: write_register: %s ==> %s", [value], res)
             return True
         except TimeoutError:
-            _LOG.error("timeout writing register %s=%s", address, value)
+            _LOG.error("Timeout writing register %s=%s", address, value)
             await self.disconnect()
-        except Exception as err:  # pylint: disable=broad-except
+            self.timeouts += 1
+        except Exception as err:
             _LOG.error("Error writing register %s: %s", address, err)
             await self.disconnect()
 
-        self.timeouts += 1
         return False
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
@@ -87,9 +105,9 @@ class SolarmanSunsynk(Sunsynk):
         attempt = 0
         while True:
             try:
-                await self.connect()
-                return await self.client.read_holding_registers(start, length)
-            except Exception as err:  # pylint: disable=broad-except
+                client = await self.connected_client()
+                return await client.read_holding_registers(start, length)
+            except Exception as err:
                 attempt += 1
                 _LOG.error("Error reading: %s (retry %s)", err, attempt)
                 await self.disconnect()

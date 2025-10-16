@@ -19,7 +19,6 @@ _LOG = logging.getLogger(__name__)
 class Callback:
     """A callback."""
 
-    # pylint: disable=too-few-public-methods, too-many-instance-attributes
     name: str = attrs.field(converter=slug)
     every: int = attrs.field()
     """Run every <every> seconds."""
@@ -63,7 +62,7 @@ class SyncCallback(Callback):
             if self.keep_stats:
                 t_1 = time.perf_counter()
                 self.stat_time.append(t_1 - t_0)
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             log_error(f"{exc.__class__.__name__} in callback {self.name}: {exc}\n", exc)
             self.next_run = now  # re run!
 
@@ -83,7 +82,7 @@ class AsyncCallback(Callback):
             if self.keep_stats:
                 t_1 = time.perf_counter()
                 self.stat_time.append(t_1 - t_0)
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             log_error(f"{exc.__class__.__name__} in callback {self.name}: {exc}\n", exc)
             self.next_run = int(time.time())  # re run!
 

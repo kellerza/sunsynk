@@ -126,7 +126,7 @@ class ASensor:
 
         ent: MQTTEntityOptions = {
             "name": sensor.name,
-            "object_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
+            "default_entity_id": slug(f"{ist.opt.ha_prefix} {sensor.name}".strip()),
             "state_topic": state_topic,
             "unique_id": f"{dev_id}_{sensor.id}",
             "unit_of_measurement": sensor.unit,
