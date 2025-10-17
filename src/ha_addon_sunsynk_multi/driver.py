@@ -78,7 +78,6 @@ def _create_legacy_connection(inv: InverterOptions, opt: Options) -> Sunsynk:
     """Create legacy direct connection for backwards compatibility."""
     factory = Sunsynk
     port_prefix = ""
-    kwargs = {}
 
     if opt.driver == "pymodbus":
         from sunsynk.pysunsynk import PySunsynk  # noqa: PLC0415
@@ -94,22 +93,29 @@ def _create_legacy_connection(inv: InverterOptions, opt: Options) -> Sunsynk:
 
         factory = SolarmanSunsynk  # type: ignore[]
         port_prefix = "tcp://"
-        kwargs["dongle_serial_number"] = 0
     else:
         raise ValueError(
             f"Invalid DRIVER: {opt.driver}. Expected umodbus, pymodbus, solarman"
         )
 
-    suns = factory(
-        port=inv.port if inv.port else port_prefix + opt.debug_device,
-        server_id=inv.modbus_id,
-        timeout=opt.timeout,
-        read_sensors_batch_size=opt.read_sensors_batch_size,
-        allow_gap=opt.read_allow_gap,
-    )
-
-    if hasattr(suns, "dongle_serial_number"):
-        suns.dongle_serial_number = inv.dongle_serial_number  # type: ignore[]
+    if opt.driver == "solarman":
+        # Type ignore needed because mypy doesn't understand the factory is SolarmanSunsynk here
+        suns = factory(  # type: ignore[call-arg]
+            port=inv.port if inv.port else port_prefix + opt.debug_device,
+            server_id=inv.modbus_id,
+            timeout=opt.timeout,
+            read_sensors_batch_size=opt.read_sensors_batch_size,
+            allow_gap=opt.read_allow_gap,
+            dongle_serial_number=inv.dongle_serial_number,
+        )
+    else:
+        suns = factory(
+            port=inv.port if inv.port else port_prefix + opt.debug_device,
+            server_id=inv.modbus_id,
+            timeout=opt.timeout,
+            read_sensors_batch_size=opt.read_sensors_batch_size,
+            allow_gap=opt.read_allow_gap,
+        )
 
     _LOG.debug("Legacy driver: %s - inv:%s", suns, inv)
     return suns

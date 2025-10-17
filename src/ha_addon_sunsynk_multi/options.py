@@ -13,10 +13,36 @@ from .timer_schedule import Schedule
 _LOG = logging.getLogger(__name__)
 
 
-def _convert_connectors(data: list) -> "list[ConnectorOptions]":
-    """Convert list of dicts to list of ConnectorOptions."""
-    if not isinstance(data, list):
-        raise ValueError(f"Expected list, got {type(data)}")
+def _convert_connectors(data: list | dict) -> "list[ConnectorOptions]":
+    """Convert list of dicts or dict of dicts to list of ConnectorOptions."""
+    _LOG.debug("_convert_connectors called with: %s (type: %s)", data, type(data))
+
+    if isinstance(data, dict):
+        # Convert dict format to list format
+        # e.g., {"tcp_gateway": {...}} -> [{"name": "tcp_gateway", ...}]
+        connector_list = []
+        for name, config in data.items():
+            connector_config = config.copy()
+            connector_config["name"] = name  # Add the name from the key
+            connector_list.append(connector_config)
+        data = connector_list
+        _LOG.debug("Converted dict to list format: %s", data)
+    elif not isinstance(data, list):
+        _LOG.error("Expected list or dict, got %s: %s", type(data), data)
+        raise ValueError(f"Expected list or dict, got {type(data)}")
+
+    # Debug logging
+    _LOG.debug("Converting connectors: %s", data)
+    for i, item in enumerate(data):
+        _LOG.debug("Connector[%d]: %s (type: %s)", i, item, type(item))
+        if not isinstance(item, dict):
+            _LOG.error(
+                "Connector[%d] is not a dict: %s (type: %s)", i, item, type(item)
+            )
+            raise ValueError(
+                f"Connector[{i}] is not a dict: {item} (type: {type(item)})"
+            )
+
     return [cattrs.structure(item, ConnectorOptions) for item in data]
 
 
@@ -24,14 +50,70 @@ def _convert_inverters(data: list) -> "list[InverterOptions]":
     """Convert list of dicts to list of InverterOptions."""
     if not isinstance(data, list):
         raise ValueError(f"Expected list, got {type(data)}")
-    return [cattrs.structure(item, InverterOptions) for item in data]
+
+    # Normalize field names within each inverter config
+    normalized_data = []
+    for item in data:
+        if isinstance(item, dict):
+            # Create a copy and normalize field names
+            normalized_item = item.copy()
+
+            # Map uppercase field names to lowercase
+            field_mapping = {
+                "SERIAL_NR": "serial_nr",
+                "HA_PREFIX": "ha_prefix",
+                "MODBUS_ID": "modbus_id",
+                "DONGLE_SERIAL_NUMBER": "dongle_serial_number",
+            }
+
+            for upper_key, lower_key in field_mapping.items():
+                if upper_key in normalized_item and lower_key not in normalized_item:
+                    normalized_item[lower_key] = normalized_item.pop(upper_key)
+                    _LOG.debug(
+                        "Normalized inverter field: %s -> %s", upper_key, lower_key
+                    )
+
+            normalized_data.append(normalized_item)
+        else:
+            normalized_data.append(item)
+
+    return [cattrs.structure(item, InverterOptions) for item in normalized_data]
 
 
 def _convert_schedules(data: list) -> "list[Schedule]":
     """Convert list of dicts to list of Schedule."""
     if not isinstance(data, list):
         raise ValueError(f"Expected list, got {type(data)}")
-    return [cattrs.structure(item, Schedule) for item in data]
+
+    # Normalize field names within each schedule config
+    normalized_data = []
+    for item in data:
+        if isinstance(item, dict):
+            # Create a copy and normalize field names
+            normalized_item = item.copy()
+
+            # Map uppercase field names to lowercase
+            field_mapping = {
+                "KEY": "key",
+                "READ_EVERY": "read_every",
+                "REPORT_EVERY": "report_every",
+                "CHANGE_ANY": "change_any",
+                "CHANGE_BY": "change_by",
+                "CHANGE_PERCENT": "change_percent",
+            }
+
+            for upper_key, lower_key in field_mapping.items():
+                if upper_key in normalized_item and lower_key not in normalized_item:
+                    normalized_item[lower_key] = normalized_item.pop(upper_key)
+                    _LOG.debug(
+                        "Normalized schedule field: %s -> %s", upper_key, lower_key
+                    )
+
+            normalized_data.append(normalized_item)
+        else:
+            normalized_data.append(item)
+
+    return [cattrs.structure(item, Schedule) for item in normalized_data]
 
 
 @attrs.define()
@@ -170,8 +252,25 @@ class Options(MQTTOptions):
         # Create a copy to avoid modifying the original
         config = value.copy()
 
+        # Normalize field names - convert uppercase to lowercase for complex fields
+        field_mapping = {
+            "CONNECTORS": "connectors",
+            "INVERTERS": "inverters",
+            "SCHEDULES": "schedules",
+        }
+
+        for upper_key, lower_key in field_mapping.items():
+            if upper_key in config and lower_key not in config:
+                config[lower_key] = config.pop(upper_key)
+                _LOG.debug("Normalized field name: %s -> %s", upper_key, lower_key)
+
         # Handle connectors conversion
         if "connectors" in config:
+            _LOG.debug(
+                "Raw connectors data: %s (type: %s)",
+                config["connectors"],
+                type(config["connectors"]),
+            )
             config["connectors"] = _convert_connectors(config["connectors"])
 
         # Handle inverters conversion
@@ -182,7 +281,7 @@ class Options(MQTTOptions):
         if "schedules" in config:
             config["schedules"] = _convert_schedules(config["schedules"])
 
-        # Use cattrs to structure the configuration, but exclude already-converted fields
+        # Use cattrs to structure the remaining configuration (excluding complex fields)
         try:
             # Create a copy without the complex types for cattrs processing
             simple_config = {
@@ -190,20 +289,39 @@ class Options(MQTTOptions):
                 for k, v in config.items()
                 if k not in ("connectors", "inverters", "schedules")
             }
-            val = CONVERTER.structure(simple_config, self.__class__)
+
+            # Create a temporary class without the complex fields for cattrs
+            @attrs.define()
+            class SimpleOptions(MQTTOptions):
+                """Temporary options class without complex fields."""
+
+                number_entity_mode: str = "auto"
+                prog_time_interval: int = 15
+                sensor_definitions: str = "single-phase"
+                sensors: list[str] = attrs.field(factory=list)
+                sensors_first_inverter: list[str] = attrs.field(factory=list)
+                read_allow_gap: int = 2
+                read_sensors_batch_size: int = 20
+                timeout: int = 10
+                debug: int = 0
+                driver: str = "pymodbus"
+                manufacturer: str = "Sunsynk"
+                debug_device: str = ""
+
+            val = CONVERTER.structure(simple_config, SimpleOptions)
         except Exception as exc:
             msg = "Error loading config: " + "\n".join(transform_error(exc))
             _LOG.error(msg)
             raise ValueError(msg) from None
 
-        # Set attributes from the structured object
-        for key in config:
-            if key in ("connectors", "inverters", "schedules"):
-                # Use our pre-converted values
+        # Set attributes from the structured object (excluding already set complex fields)
+        for key in simple_config:
+            setattr(self, key.lower(), getattr(val, key.lower()))
+
+        # Set the complex fields directly
+        for key in ("connectors", "inverters", "schedules"):
+            if key in config:
                 setattr(self, key.lower(), config[key])
-            else:
-                # Use cattrs-converted values
-                setattr(self, key.lower(), getattr(val, key.lower()))
 
         # Handle sensor overrides
         if isinstance(self.sensor_overrides, list):
