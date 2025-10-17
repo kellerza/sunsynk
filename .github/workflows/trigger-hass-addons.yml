@@ -7,6 +7,14 @@ on:
     types:
       - completed
   workflow_dispatch: {}
+  push:
+    paths:
+      - "hass-addon-mbusd/**"
+      - ".github/workflows/trigger-hass-addons.yml"
+  pull_request:
+    paths:
+      - "hass-addon-mbusd/**"
+      - ".github/workflows/trigger-hass-addons.yml"
 
 jobs:
   sync-remotes:
