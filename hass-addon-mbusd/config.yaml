@@ -1,11 +1,12 @@
 name: Modbus TCP to Modbus RTU Gateway Add-on
 slug: hass-addon-mbusd
 description: Add-on for a Modbus TCP to Modbus RTU Gateway using mbusd
-version: "0.5.2"
+version: "0.5.2b"
 startup: services
 boot: auto
 url: 'https://kellerza.github.io/sunsynk/guide/mbusd'
 uart: true
+apparmor: true
 arch:
   - aarch64
   - amd64
@@ -16,7 +17,7 @@ ports:
   '502': 502
 ports_description:
   '502': Modbus
-host_network: true
+# host_network: true
 options:
   DEVICE: /dev/ttyUSB0
   BAUDRATE: 9600

@@ -22,4 +22,4 @@ fi
 
 bashio::log.info "Starting mbusd -d -L - -v $LOGLEVEL -p $DEVICE -s $BAUDRATE -m $MODE -P 502"
 
-exec /usr/src/mbusd -d -L - -v $LOGLEVEL -p $DEVICE -s $BAUDRATE -m $MODE -P 502 -T $TIMEOUT
+exec /usr/bin/mbusd -d -L - -v $LOGLEVEL -p $DEVICE -s $BAUDRATE -m $MODE -P 502 -T $TIMEOUT
