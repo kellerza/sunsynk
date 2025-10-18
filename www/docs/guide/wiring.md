@@ -60,7 +60,7 @@ Other tested adaptors
 
    > NOTE: The resistor legs should be trimmed to a more reasonable length to ensure they don't accidentally short together.
 
-   ![120ohm](../images/usr-w630-120ohm.jpg)
+   ![120ohm](../images/usr-w630-120ohm.jpg =200x200)
 
 
    #### USR-W630 Configuration (Wi-Fi)
