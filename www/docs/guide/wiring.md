@@ -69,7 +69,9 @@ Other tested adaptors
    ![working mode configuration](../images/usr-w630-01.png)
    2. Ensure "Modbus Polling" is disabled:
    ![modbus polling](../images/usr-w630-02.png)
-   3. Configure the TCP server for the add-on to connect to:
+   3. The add-on connects to `tcp://<server>:<port>`
+      - The server address of the USR-W630 was obtained through DHCP. You can allocate a fixed IP on your router's DHCP settings.
+   ![tcp server](../images/usr-w630-03.png =400x400)
    ![tcp server](../images/usr-w630-03.png)
       - This port is used in the addon configuration when adding the inverter connection.
       - The server address of the USR-W630 is determined when the network connection was established, the greyed out value here is irrelevant.
