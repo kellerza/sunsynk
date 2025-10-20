@@ -110,9 +110,9 @@ def slug(name: str) -> str:
 
 def hex_str(regs: RegType, address: RegType | None = None) -> str:
     """Convert register values to hex strings."""
-    res = (f"0x{r:04x}" for r in regs)
+    res = (f"{r:04x}" for r in regs)
     if address:
-        res = (f"{k}={v}" for k, v in zip(address, res, strict=True))
+        res = (f"{k}=0x{v}" for k, v in zip(address, res, strict=True))
     return f"{{{' '.join(res)}}}"
 
 

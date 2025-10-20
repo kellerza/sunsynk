@@ -44,7 +44,7 @@ def test_ensure_tuple() -> None:
 
 def test_hex_str() -> None:
     """Test hex str."""
-    assert hex_str((1, 2)) == "{0x0001 0x0002}"
+    assert hex_str((1, 2)) == "{0001 0002}"
     assert hex_str((1, 2), address=(10, 20)) == "{10=0x0001 20=0x0002}"
     with pytest.raises(ValueError):
         assert hex_str((1, 2), address=(10,))
