@@ -56,6 +56,26 @@ Other tested adaptors
 
    Requires `READ_SENSORS_BATCH_SIZE` set to 8 or less
 
+   A 120 Ohm (brown-red-brown) resistor may be required for data communication between the adapter and inveter to occur without corruption. The resistor should be added between the A+B lines, such as in the example below.
+
+   > NOTE: The resistor legs should be trimmed to a more reasonable length to ensure they don't accidentally short together.
+
+   ![120ohm](../images/usr-w630-120ohm.jpg =200x200)
+
+
+   #### USR-W630 Configuration (Wi-Fi)
+   1. Connect the USR-W630 to your home network using the STA Interface Settings.
+   2. Set Working Mode Configuration to `Modbus TCP<=>Modbus RTU`:
+   ![working mode configuration](../images/usr-w630-01.png)
+   2. Ensure "Modbus Polling" is disabled:
+   ![modbus polling](../images/usr-w630-02.png)
+   3. The add-on connects to `tcp://<server>:<port>`
+      - The server address of the USR-W630 was obtained through DHCP. You can allocate a fixed IP on your router's DHCP settings.
+   ![tcp server](../images/usr-w630-03.png =400x400)
+   ![tcp server](../images/usr-w630-03.png)
+      - This port is used in the addon configuration when adding the inverter connection.
+      - The server address of the USR-W630 is determined when the network connection was established, the greyed out value here is irrelevant.
+
 2. USR-W610 Wifi-to-RS485
 
    This is a tested Wifi-to-RS485 gateway. Usually significantly cheaper than the W630, however it does not include a GND.
