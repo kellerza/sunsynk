@@ -46,19 +46,30 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
     HASS_DISCOVERY_INFO_UPDATE_QUEUE.update(SOPT[sen].affects)
 
 
+# Global connector manager instance
+_CONNECTOR_MANAGER: ConnectorManager | None = None
+
+
 def init_driver(opt: Options) -> None:
     """Init Sunsynk driver for each inverter."""
+    global _CONNECTOR_MANAGER  # noqa: PLW0603
     STATE.clear()
 
     # Initialize connector manager for shared connections
-    connector_manager = ConnectorManager()
+    _CONNECTOR_MANAGER = ConnectorManager()
+    # Make it accessible from inverter_wrapper module
+    from . import inverter_wrapper  # noqa: PLC0415
+
+    inverter_wrapper.CONNECTOR_MANAGER = _CONNECTOR_MANAGER
 
     for idx, inv in enumerate(opt.inverters):
         if inv.connector:
             # Use shared connector
-            connector = connector_manager.get_connector(inv.connector)
+            connector = _CONNECTOR_MANAGER.get_connector(inv.connector)
             suns: Sunsynk = InverterWrapper(
-                connector=connector, server_id=inv.modbus_id
+                connector=connector,
+                connector_name=inv.connector,
+                server_id=inv.modbus_id,
             )
             _LOG.info(
                 "Using shared connector '%s' for inverter %s",

@@ -1,5 +1,6 @@
 """Connector management for shared connections."""
 
+import asyncio
 import logging
 
 import attrs
@@ -21,11 +22,21 @@ class ConnectorManager:
     connectors: dict[str, Sunsynk] = attrs.field(factory=dict, init=False)
     """Active connector instances."""
 
+    locks: dict[str, asyncio.Lock] = attrs.field(factory=dict, init=False)
+    """Locks for synchronizing access to each connector."""
+
     def get_connector(self, name: str) -> Sunsynk:
         """Get or create a connector instance."""
         if name not in self.connectors:
             self.connectors[name] = self._create_connector(name)
+            self.locks[name] = asyncio.Lock()
         return self.connectors[name]
+
+    def get_lock(self, name: str) -> asyncio.Lock:
+        """Get the lock for a connector."""
+        if name not in self.locks:
+            self.locks[name] = asyncio.Lock()
+        return self.locks[name]
 
     def _create_connector(self, name: str) -> Sunsynk:
         """Create a new connector instance."""

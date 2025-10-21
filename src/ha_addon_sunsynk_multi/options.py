@@ -145,7 +145,7 @@ class InverterOptions:
 
     connector: str = ""  # Reference to connector name
     port: str = ""  # Legacy: direct port (backwards compatibility)
-    modbus_id: int = 0
+    modbus_id: int = 1
     ha_prefix: str = ""
     serial_nr: str = ""
     dongle_serial_number: int = 0
