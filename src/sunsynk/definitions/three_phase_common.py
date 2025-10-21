@@ -464,6 +464,8 @@ SENSORS += (
     NumberRWSensor(139, "Min PV Power for Gen Start", WATT),
     SwitchRWSensor(140, "Grid Signal On", on=1 << 0, bitmask=1 << 0),
     SwitchRWSensor(140, "Gen Signal On", on=1 << 1, bitmask=1 << 1),
+    SwitchRWSensor(132, "Force on generator as load function", on=1),
+    SwitchRWSensor(189, "Generator connected to grid input", on=1),
 )
 
 #################
