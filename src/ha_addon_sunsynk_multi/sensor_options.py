@@ -249,6 +249,8 @@ SENSOR_GROUPS: dict[str, list[str]] = {
     ],
     "generator": [
         "gen_signal_on",
+        "force_on_generator_as_load_function",
+        "generator_connected_to_grid_input",
         "generator_charge_battery_current",
         "generator_charge_enabled",
         "generator_charge_start_battery_soc",
