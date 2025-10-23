@@ -111,14 +111,15 @@ wheels = [
 
 [[package]]
 name = "async-modbus"
-version = "0.2.2"
+version = "0.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "connio" },
     { name = "umodbus" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/a5/9b/3f03426e98532717234910ff2de3dd6036d3a6a5859bdf5eb652ba713716/async_modbus-0.2.3.tar.gz", hash = "sha256:c1dc66834209d4682b664a4e951bdd00333a8d98ff15e8d6ff5f541d437b18d8", size = 11820, upload-time = "2025-10-22T08:18:32.694Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/87/8d/c18aa8328cebfa6231e6536b2c910c5e966911ed3ce9332ce57c02e881a6/async_modbus-0.2.2-py3-none-any.whl", hash = "sha256:85743a80b8cca18912e2aa2b91741cc479097e0c286137f2d80848444f5e6efa", size = 10912, upload-time = "2024-12-12T09:22:50.452Z" },
+    { url = "https://files.pythonhosted.org/packages/38/10/f35879eae908a45017f6c9c5a8717bafbb39d7b45ef0fedb782ead8d495a/async_modbus-0.2.3-py3-none-any.whl", hash = "sha256:1de256788cd51f9e1b2d818ad9f186a09e402c9edd55fb800d65a370caf187e5", size = 8767, upload-time = "2025-10-22T08:18:31.01Z" },
 ]
 
 [[package]]
@@ -877,7 +878,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "async-modbus", marker = "extra == 'umodbus'", specifier = "==0.2.2" },
+    { name = "async-modbus", marker = "extra == 'umodbus'", specifier = "==0.2.3" },
     { name = "attrs", specifier = ">=25,<26" },
     { name = "cattrs", specifier = ">=25,<26" },
     { name = "connio", marker = "extra == 'umodbus'", specifier = "==0.2" },
