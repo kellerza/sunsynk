@@ -1,7 +1,7 @@
 ---
 name: Sunsynk or Deye Inverter add-on (multi)
 description: Add-on for a Sunsynk/Deye branded Inverter
-version: "0.9.1"
+version: "0.9.2"
 slug: hass-addon-sunsynk-multi
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
 url: "https://kellerza.github.io/sunsynk"
