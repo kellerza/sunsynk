@@ -6,6 +6,12 @@ repos:
 
   - repo: local
     hooks:
+      - id: gen_sensors
+        name: Generate sensor docs
+        entry: uv run scripts/gen_sensors.py
+        language: system
+        pass_filenames: false
+
       - id: pyproject-fmt
         name: pyproject-fmt
         entry: uv run pyproject-fmt pyproject.toml

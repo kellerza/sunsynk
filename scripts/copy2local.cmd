@@ -1,5 +1,5 @@
 @echo off
-@rem CALL :copy_ss hass-addon-sunsynk-multi,\\192.168.1.8\addons\hass-addon-sunsynk-multi
+CALL :copy_ss hass-addon-sunsynk-multi,\\192.168.1.8\addons\hass-addon-sunsynk-multi
 CALL :copy_addon hass-addon-mbusd,\\192.168.1.8\addons\hass-addon-mbusd
 
 EXIT /B %ERRORLEVEL%

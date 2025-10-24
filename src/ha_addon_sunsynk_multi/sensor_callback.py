@@ -3,13 +3,11 @@
 import asyncio
 import logging
 from collections import defaultdict
-from collections.abc import Iterable
-from textwrap import wrap
 
 import attrs
-from prettytable import PrettyTable
 
 from sunsynk import RWSensor, Sensor, ValType
+from sunsynk.utils import pretty_table
 
 from .a_inverter import AInverter
 from .a_sensor import ASensor, SensorOption
@@ -46,37 +44,18 @@ def _build_schedules(idx: int) -> tuple[dict[int, SensorRun], dict[int, SensorRu
     if idx > 1:
         return read_s, report_s
 
-    _print_table(
-        data=(
-            (e, ", ".join(s.sensor.id for s in r.sensors)) for e, r in read_s.items()
-        ),
-        field_names=["s", "Sensors"],
-        title=f"Read every (inverter {'1' if first else '>1'})",
-    )
+    inv_ref = f"inverter {'1' if first else '>1'}"
+    hdrs = ["s", "Sensors"]
 
-    _print_table(
-        data=(
-            (e, ", ".join(s.sensor.id for s in r.sensors)) for e, r in report_s.items()
-        ),
-        field_names=["s", "Sensors"],
-        title=f"Report every (inverter {'1' if first else '>1'})",
-    )
+    data = [[e, ", ".join(s.sensor.id for s in r.sensors)] for e, r in read_s.items()]
+    tab = pretty_table(hdrs, data)
+    _LOG.info("Read every (%s)\n%s", inv_ref, tab.get_string())
+
+    data = [[e, ", ".join(s.sensor.id for s in r.sensors)] for e, r in report_s.items()]
+    tab = pretty_table(hdrs, data)
+    _LOG.info("Report every (%s)\n%s", inv_ref, tab.get_string())
 
     return read_s, report_s
-
-
-def _print_table(
-    data: Iterable[tuple[int, str]], field_names: list[str], title: str
-) -> None:
-    """Print a table."""
-    tab = PrettyTable()
-    tab.field_names = field_names
-    for key, val in sorted(data, key=lambda x: x[0]):
-        wrapped = wrap(str(val) or "", 80) or [""]
-        tab.add_row([key, wrapped[0]])
-        for more in wrapped[1:]:
-            tab.add_row(["", more])
-    _LOG.info("%s\n%s", title, tab.get_string())
 
 
 def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915

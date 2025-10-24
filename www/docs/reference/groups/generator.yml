@@ -1,0 +1,12 @@
+SENSORS:
+ - gen_signal_on # 3PH, 3PH-hv
+ - generator_charge_battery_current # 3PH, 3PH-hv
+ - generator_charge_enabled # 3PH, 3PH-hv
+ - generator_charge_start_battery_soc # 3PH, 3PH-hv
+ - generator_charge_start_battery_voltage # 3PH, 3PH-hv
+ - generator_cooling_time # 3PH, 3PH-hv
+ - generator_max_operating_time # 3PH, 3PH-hv
+ - generator_off_soc # 3PH, 3PH-hv
+ - generator_on_soc # 3PH, 3PH-hv
+ - generator_port_usage # 3PH, 3PH-hv
+ - min_pv_power_for_gen_start # 3PH, 3PH-hv

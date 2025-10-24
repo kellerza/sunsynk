@@ -1,0 +1,6 @@
+SENSORS:
+ - total_battery_charge
+ - total_battery_discharge
+ - total_grid_export
+ - total_grid_import
+ - total_pv_energy

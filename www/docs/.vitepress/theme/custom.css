@@ -15,3 +15,28 @@
 --vp-c-green-dimm-2: rgba(13, 110, 253, 0.2);
 --vp-c-green-dimm-3: rgba(13, 110, 253, 0.5);
 }
+
+
+
+
+
+/* .bigt table {
+  border-collapse: collapse;
+  width: 100%;
+} */
+
+/* .bigt th, .bigt td {
+  padding: 10px;
+  border: 1px solid #ccc;
+} */
+
+.bigt table {
+  overflow-x: unset !important;
+  overflow-y: unset !important;
+}
+
+.bigt thead th {
+  position: sticky;
+  top: 60px;
+  z-index: 1;
+}
