@@ -1,0 +1,6 @@
+SENSORS:
+ - ups_delay_time # 3PH, 3PH-hv
+ - ups_load_l1_power # 3PH, 3PH-hv
+ - ups_load_l2_power # 3PH, 3PH-hv
+ - ups_load_l3_power # 3PH, 3PH-hv
+ - ups_load_total_power # 3PH, 3PH-hv

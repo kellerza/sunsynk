@@ -3,12 +3,12 @@
 import logging
 
 import attrs
-from prettytable import PrettyTable
 
 from sunsynk import KWH, WATT, NumType, Sensor
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import EnumSensor
+from sunsynk.utils import pretty_table
 
 _LOG = logging.getLogger(__name__)
 
@@ -118,31 +118,19 @@ def init_schedules(schedules: list[Schedule]) -> None:
             # _LOG.info("Added    %s", sch)
         SCHEDULES[sch.key] = sch
 
-    tab = PrettyTable()
-    tab.field_names = [
-        "Key",
-        "src",
-        "Read",
-        "Report",
-        "Change by",
-        "Change %",
-        "Change any",
+    hdr = ["Key", "src", "Read", "Report", "Change by", "Change %", "Change any"]
+    data = [
+        [
+            schn,
+            source.get(schn, ""),
+            sch.read_every if sch.read_every else "once",
+            sch.report_every if sch.report_every else "",
+            sch.change_by if sch.change_by else "",
+            sch.change_percent if sch.change_percent else "",
+            sch.change_any if sch.change_any else "",
+        ]
+        for schn, sch in SCHEDULES.items()
     ]
+    tab = pretty_table(hdr, data)
 
-    for schn, sch in SCHEDULES.items():
-        # if schn not in updated:
-        #     _LOG.info("Default  %s", sch)
-        tab.add_row(
-            [
-                schn,
-                source.get(schn, ""),
-                sch.read_every if sch.read_every else "once",
-                sch.report_every if sch.report_every else "",
-                sch.change_by if sch.change_by else "",
-                sch.change_percent if sch.change_percent else "",
-                sch.change_any if sch.change_any else "",
-            ]
-        )
-
-    # tab.add_rows([e, [s.sensor.id for s in r.sensors]] for e, r in report_s.items())
     _LOG.info("Schedules:\n%s", tab.get_string())

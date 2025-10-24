@@ -1,0 +1,20 @@
+SENSORS:
+ - battery_absorption_voltage
+ - battery_capacity_current # 3PH, 3PH-hv
+ - battery_charge_efficiency # 3PH, 3PH-hv
+ - battery_equalization_days # 3PH, 3PH-hv
+ - battery_equalization_hours # 3PH, 3PH-hv
+ - battery_equalization_voltage
+ - battery_float_voltage
+ - battery_low_capacity
+ - battery_low_voltage
+ - battery_max_charge_current
+ - battery_max_discharge_current
+ - battery_resistance # 3PH, 3PH-hv
+ - battery_restart_capacity
+ - battery_restart_voltage
+ - battery_shutdown_capacity
+ - battery_shutdown_voltage
+ - battery_type # 3PH, 3PH-hv
+ - battery_wake_up # 3PH, 3PH-hv
+ - parallel_bat1_bat2 # 

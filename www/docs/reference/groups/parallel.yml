@@ -1,0 +1,5 @@
+SENSORS:
+ - parallel_enable # 3PH, 3PH-hv
+ - parallel_modbus_sn # 3PH, 3PH-hv
+ - parallel_mode # 3PH, 3PH-hv
+ - parallel_phase # 3PH, 3PH-hv

@@ -1,4 +1,6 @@
-# Custom Sensors
+# Custom/My Sensors
+
+## Creating your own sensor
 
 You can create custom sensors by defining them in a file called `mysensors.py` in the `/share/hass-addon-sunsynk/` directory. This allows you to add sensors that are not included in the default definitions.
 
@@ -76,9 +78,7 @@ SENSORS:
   - mysensors
 ```
 
-## More examples
-
-### Python based sensor
+## Example: Simple division
 
 This sensors divides 2 registers (reg 10/reg 20)
 
@@ -104,7 +104,7 @@ SENSORS = SensorDefinition()
 SENSORS += MyCustomSensor((10, 20), "Mysensor1", WATT)
 ```
 
-### Time sensor
+## Example: Time sensor
 
 ::: info
 Write is only partially implemented in the example below

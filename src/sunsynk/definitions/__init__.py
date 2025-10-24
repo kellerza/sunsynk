@@ -50,3 +50,12 @@ def import_defs(name: str) -> SensorDefinitions:
     )
     mod = import_module(f"sunsynk.definitions.{libname}")
     return mod.SENSORS
+
+
+# get this from config.yaml
+ALL_DEFS = "single-phase|single-phase-16kw|three-phase|three-phase-hv".split("|")
+
+
+def import_all_defs() -> dict[str, SensorDefinitions]:
+    """Get all sensor definitions."""
+    return {k: import_defs(k) for k in ALL_DEFS}

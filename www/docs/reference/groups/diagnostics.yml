@@ -1,0 +1,25 @@
+SENSORS:
+ - battery_bms_alarm_flag # 
+ - battery_bms_fault_flag # 
+ - battery_bms_soh # 
+ - battery_current # 1PH, 1PH-16kw, 3PH
+ - battery_power # 1PH, 1PH-16kw, 3PH
+ - battery_soc # 1PH, 1PH-16kw, 3PH
+ - battery_temperature # 1PH, 1PH-16kw, 3PH
+ - battery_voltage # 1PH, 1PH-16kw, 3PH
+ - dc_transformer_temperature
+ - fan_warning # 3PH-hv
+ - fault
+ - grid_l1_voltage # 3PH, 3PH-hv
+ - grid_l2_voltage # 3PH, 3PH-hv
+ - grid_l3_voltage # 3PH, 3PH-hv
+ - grid_phase_warning # 3PH-hv
+ - grid_relay_status # 3PH, 3PH-hv
+ - grid_voltage # 1PH, 1PH-16kw
+ - inverter_l1_power # 3PH, 3PH-hv
+ - inverter_l2_power # 3PH, 3PH-hv
+ - inverter_l3_power # 3PH, 3PH-hv
+ - inverter_relay_status # 
+ - lithium_battery_loss_warning # 3PH-hv
+ - parallel_communication_quality_warning # 3PH-hv
+ - radiator_temperature

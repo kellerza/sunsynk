@@ -1,0 +1,20 @@
+SENSORS:
+ - battery_capacity_current # 3PH, 3PH-hv
+ - battery_charge_efficiency # 3PH, 3PH-hv
+ - battery_low_capacity
+ - battery_max_charge_current
+ - battery_max_discharge_current
+ - battery_resistance # 3PH, 3PH-hv
+ - battery_restart_capacity
+ - battery_shutdown_capacity
+ - battery_type # 3PH, 3PH-hv
+ - battery_wake_up # 3PH, 3PH-hv
+ - configured_grid_frequency # 3PH, 3PH-hv
+ - configured_grid_phases # 3PH, 3PH-hv
+ - date_time
+ - grid_charge_battery_current
+ - grid_charge_start_battery_soc # 3PH, 3PH-hv
+ - grid_charge_start_battery_voltage # 3PH, 3PH-hv
+ - grid_standard # 3PH, 3PH-hv
+ - track_grid_phase # 3PH, 3PH-hv
+ - ups_delay_time # 3PH, 3PH-hv
