@@ -25,7 +25,7 @@ SENSORS:
  - inverter_current # 1PH, 1PH-16kw
  - inverter_power
  - inverter_voltage # 1PH, 1PH-16kw
- - load_frequency # 1PH, 1PH-16kw
+ - load_frequency
  - load_l1_power
  - load_l1_voltage # 3PH, 3PH-hv
  - load_l2_power

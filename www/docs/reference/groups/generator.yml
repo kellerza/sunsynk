@@ -1,9 +1,11 @@
 SENSORS:
+ - force_on_generator_as_load_function # 3PH, 3PH-hv
  - gen_signal_on # 3PH, 3PH-hv
  - generator_charge_battery_current # 3PH, 3PH-hv
  - generator_charge_enabled # 3PH, 3PH-hv
  - generator_charge_start_battery_soc # 3PH, 3PH-hv
  - generator_charge_start_battery_voltage # 3PH, 3PH-hv
+ - generator_connected_to_grid_input # 3PH, 3PH-hv
  - generator_cooling_time # 3PH, 3PH-hv
  - generator_max_operating_time # 3PH, 3PH-hv
  - generator_off_soc # 3PH, 3PH-hv
