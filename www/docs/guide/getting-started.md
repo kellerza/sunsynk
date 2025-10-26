@@ -15,7 +15,7 @@
 
 ### Modbus TCP to Modbus RTU Gateway Add-on
 
-An [mbusd TCP to RTU gateway](./mbusd).
+An [mbusd TCP to RTU gateway](./mbusd). Installation of this add-on is recommended.
 
 ### Sunsynk/Deye Inverter Add-on (multi)
 
