@@ -12,7 +12,7 @@ COPY sunsynk sunsynk
 RUN set -x \
     # && apk add --no-cache --virtual .build-deps \
     #     build-base \
-    && curl -LsSf https://astral.sh/uv/0.8.19/install.sh | sh \
+    && curl -LsSf https://astral.sh/uv/0.9.5/install.sh | sh \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
         ./sunsynk[umodbus,solarman]

@@ -2,7 +2,7 @@
 
 ## Driver
 
-The `DRIVER` can be **umodbus** or **pymodbus** or **solarman**.
+The `DRIVER` should be **pymodbus** or **solarman**. **umodbus** can be used as a last resort.
 
 The `READ_SENSOR_BATCH_SIZE` option allows you to customize how many registers may be read in a single request. Devices like the USR only allows 8 registers to be read. When using mbusd this can be much higher.
 
@@ -14,9 +14,7 @@ The `INVERTERS` option contains a list of inverters
 
 The following options are required per inverter:
 
-- `SERIAL_NR`
-
-  The serial number of your inverter. When you start the add-on the connected serial will be displayed in the log.
+- `SERIAL_NR` – The serial number of your inverter. When you start the add-on the connected serial will be displayed in the log.
 
   The add-on will not run if the expected/configured serial number is not found.
 
@@ -26,21 +24,12 @@ The following options are required per inverter:
 
   :::
 
-- `HA_PREFIX`
+- `HA_PREFIX` – A prefix to add to MQTT discovered Home Assistant entities (default: SS).
+- `MODBUS_ID` – The Modbus Server ID is a number, typically 1. Might be different in multi-inverter setups.
 
-  A prefix to add to all the MQTT Discovered Home Assistant Sensors (default: SS).
+- `DONGLE_SERIAL_NUMBER` – The **solarman** driver requires the dongle's serial number.
 
-- `MODBUS_ID`
-
-  The Modbus Server ID is a number typically 1. Might be different in multi-inverter setups.
-
-- `DONGLE_SERIAL_NUMBER`
-
-  Only required for the **solarman** driver.
-
-- `PORT`
-
-  The port used for communications. Format depends on the driver. See [Port](#port)
+- `PORT` – The port used for communications. Format depends on the driver. See [Port](#port)
 
 ### Port
 
@@ -85,7 +74,10 @@ The port for RS485 communications, which can be either:
   If you have any issues connecting directly to a serial port, please try mbusd - also see [this](https://github.com/kellerza/sunsynk/issues/131) issue
   :::
 
-  ::: tip
+  ::: details umodbus driver
+
+  The driver can also be umodbus, but this should be used as a last resort only, especially for serial connections.
+
   umodbus requires a `serial://` prefix
 
   ```yaml
@@ -103,15 +95,15 @@ The port for RS485 communications, which can be either:
     - PORT: ""
   ```
 
-- umodbus support an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
+- umodbus supports an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
 
 ## Sensors
 
-The `SENSOR_DEFINITION` option allows you to select between `single-phase`, `three-phase` and `three-phase-hv` sensor definitions.
+- `SENSOR_DEFINITION` – Allows you to select between `single-phase`, `single-phase-16kw`, `three-phase` and `three-phase-hv` sensor definitions.
 
-The `SENSORS` accepts a list of sensors to poll. Refer to the [single](./definitions) and [three](./definitions3ph) docs
+- `SENSORS` – Accepts a list of sensors to poll. Refer to [Sensor definitions](./definitions).
 
-The `SENSORS_FIRST_INVERTER` accepts a list of sensors that will only be applied to the first inverter
+- `SENSORS_FIRST_INVERTER` – Accepts a list of sensors that applies to the first inverter.
 
 ## Schedules
 
@@ -119,30 +111,35 @@ Refer to [Schedules](./schedules)
 
 ## Home Assistant Discovery options
 
-The per-inverter `HA_PREFIX` will be used for the Device (the Inverter) name and the prefix to all the entity Ids in Home Assistant
+`HA_PREFIX` – a per-inverter option that will be used for the Device (Inverter) name and as prefix for all the entity Ids in Home Assistant
 
-The `MANUFACTURER` option allows you to rename the inverter manufacturer that will be displayed on the Home Assistant device. It does not have to be Sunsynk ;-)
+`MANUFACTURER` - allows you to rename the inverter manufacturer that will be displayed on the Home Assistant device. It does not have to be Sunsynk ;-)
 
-The `NUMBER_ENTITY_MODE` option allows you to change how read/write sensors which present as number entities in Home Assistant behave.
+`NUMBER_ENTITY_MODE` - allows you to change how read/write number entities display in Home Assistant.
 The default display mode is `auto`. This setting controls how the number entity should be displayed in the UI. Can be set to `box` or `slider` to force a display mode.
 
-The `PROG_TIME_INTERVAL` option allows you to change the time interval in the lists for setting the program time.
-Be aware that if you set this to 5 mnutes you will have a very long select list of times to scroll through.
+`PROG_TIME_INTERVAL` – allows you to change the time interval in the lists for setting the program time.
+Be aware that if you set this to 5 minutes you will have a very long select list of times to scroll through.
 
 ## MQTT Settings
 
-You will need a working MQTT server. All values will be sent via MQTT toward Home
-Assistant.
+If you are running on a standard Home Assistant OS installation, you don't need any MQTT configuration. The add-on will query the HA Supervisor for the MQTT server and login details. If successful, it will prefer information from the supervisor and ignore the configuration.
 
-The default configuration assumes the Mosquitto broker add-on and you simply have to
-fill in your password.
+The MQTT integration in Home Assistant needs to publish MQTT Birth (**online**) and Last will (**offline**) messages to `homeassistant/status`. This can be done by clicking _Re-configure MQTT_ in the UI.
+
+::: details MQTT configuration options (optional)
+
+Configuration from the supervisor will be preferred if you don't have `MQTT_CUSTOM: true` set.
 
 ```yaml
+MQTT_CUSTOM: true   # Force the add-on to use this MQTT configuration
 MQTT_HOST: core-mosquitto
 MQTT_PORT: 1883
 MQTT_USERNAME: hass
 MQTT_PASSWORD: my-secure-password
 ```
+
+:::
 
 ## Debug options
 

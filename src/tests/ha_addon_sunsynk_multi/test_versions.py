@@ -4,6 +4,8 @@ import logging
 import re
 from pathlib import Path
 
+from sunsynk import VERSION
+
 ADDON_PATH = "hass-addon-sunsynk-multi"
 
 _LOG = logging.getLogger(__name__)
@@ -15,15 +17,7 @@ def test_versions() -> None:
     config.json - contains the HASS addon version
     setup.py    - sunsynk library on pypi
     """
-    v_setup = _get_version(
-        filename="src/sunsynk/__init__.py",
-        regex=r'VERSION = "(.+)"',
-    )[0]
-
-    # v_docker = _get_version(
-    #     filename=f"{ADDON_PATH}/Dockerfile",
-    #     regex=r"sunsynk(?:\[[^\]]+\])?==([0-9.]+)",
-    # )[0]
+    v_setup = VERSION
 
     v_config = _get_version(
         filename=f"{ADDON_PATH}/config.yaml",
@@ -37,9 +31,6 @@ def test_versions() -> None:
             v_config,
         )
 
-    # assert v_setup == v_docker
-    # assert v_setup == v_config
-
 
 def _get_version(filename: str, regex: str) -> list[str]:
     txt = Path(filename).read_text(encoding="utf-8")
@@ -48,21 +39,3 @@ def _get_version(filename: str, regex: str) -> list[str]:
     assert res, f"pattern not found in {filename}"
     _LOG.info("\t%s\t%s", res[0], filename)
     return res
-
-
-# def test_deps() -> None:
-#     """Check deps."""
-#     regex = r"    ([^ ]+\d)(\s|$)"
-
-#     v_docker = _get_version(
-#         filename=f"{ADDON_PATH}/Dockerfile",
-#         regex=regex,
-#     )
-
-#     v_setup = _get_version(
-#         filename="setup.cfg",
-#         regex=regex,
-#     )
-#     v_setup = [v for v in v_setup if not v.startswith("ruff")]
-
-#     assert " ".join(sorted(v_setup)) == " ".join(sorted(v_docker))

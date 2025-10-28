@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.8.20,<0.9" ]
+requires = [ "uv-build>=0.9,<0.10" ]
 
 [project]
 name = "sunsynk"

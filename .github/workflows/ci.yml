@@ -25,7 +25,7 @@ on:
 
 env:
   RUFF_VERSION: 0.13.1
-  UV_VERSION: 0.8.19
+  UV_VERSION: 0.9.5
 
 jobs:
   ruff:
