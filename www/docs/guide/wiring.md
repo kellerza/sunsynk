@@ -62,14 +62,14 @@ Other tested adaptors
 
    ![120ohm](../images/usr-w630-120ohm.jpg =200x200)
 
+   ### USR-W630 Configuration (Wi-Fi)
 
-   #### USR-W630 Configuration (Wi-Fi)
    1. Connect the USR-W630 to your home network using the STA Interface Settings.
    2. Set Working Mode Configuration to `Modbus TCP<=>Modbus RTU`:
    ![working mode configuration](../images/usr-w630-01.png)
-   2. Ensure "Modbus Polling" is disabled:
+   3. Ensure "Modbus Polling" is disabled:
    ![modbus polling](../images/usr-w630-02.png)
-   3. The add-on connects to `tcp://<server>:<port>`
+   4. The add-on connects to `tcp://<server>:<port>`
       - The server address of the USR-W630 was obtained through DHCP. You can allocate a fixed IP on your router's DHCP settings.
    ![tcp server](../images/usr-w630-03.png =400x400)
    ![tcp server](../images/usr-w630-03.png)
@@ -124,7 +124,7 @@ NOTE: RJ-45 port marked **RS485** (bottom right) does not work.
 
 ![SS](../images/inv-ss-8kw.png =80%x)
 
-Tested with: USB-to-485 adaptor sourced from Micro Robotics, [here](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
+Tested with: USB-to-485 adaptor sourced from [Micro Robotics](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
 ## Deye Inverters
 

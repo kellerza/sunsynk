@@ -131,7 +131,7 @@ Be aware that if you set this to 5 mnutes you will have a very long select list 
 
 ## MQTT Settings
 
-You will need a working MQTT server since all values will be sent via MQTT toward Home
+You will need a working MQTT server. All values will be sent via MQTT toward Home
 Assistant.
 
 The default configuration assumes the Mosquitto broker add-on and you simply have to

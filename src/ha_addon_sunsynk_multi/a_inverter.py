@@ -242,7 +242,6 @@ class AInverter:
 
     async def publish_stats(self, period: int) -> None:
         """Publish stats."""
-        # await MQTT.connect(OPT)
         await self.entity_timeout.send_state(MQTT, self.inv.timeouts)
 
         # calc stats

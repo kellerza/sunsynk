@@ -86,7 +86,6 @@ class ASensor:
             return
         if self._last == val and self.retain:
             return
-        # await MQTT.connect(OPT)
         await self.entity.send_state(MQTT, val, retain=self.retain)
         self._last = val
 

@@ -34,7 +34,6 @@ The following table shows the sensor name and Modbus register(s) used to get/set
 
 <!--@include: ./groups/all.html-->
 
-
 ## Groups of sensors
 
 Sensor groups will allow you to add several sensors with a single entry.
@@ -92,7 +91,7 @@ SENSORS:
 
 ### Settings
 
-Sensors used for changing the System Operating Mode - see [here](../examples/lovelace-settings)
+Sensors used for changing the System Operating Mode - see how they are used in  [Lovelace settings](../examples/lovelace-settings)
 
 These can be under `SENSORS` or `SENSORS_FIRST_INVERTER`
 

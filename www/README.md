@@ -24,10 +24,13 @@ Required: Node.js & git
 
 1. Clone the repo (ideally your fork) & change to the folder.
 2. Install all required packages
+
     ```bash
     npm install
     ```
+
 3. Run a local VitePress docs server. **--port** optional
+
     ```bash
     npm run docs:dev
     ```

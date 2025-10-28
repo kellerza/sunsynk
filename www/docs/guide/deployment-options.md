@@ -27,6 +27,6 @@ If the Inverter is close to your server/SBC running Home Assistant, you can use 
 
    This runs the addon on its own in a docker container, without depending on Home Assistant
 
-   Read more [here](./standalone-deployment).
+   Read more [Standard Deployment](./standalone-deployment).
 
    ![Deployment Option Standalone](../images/deploy-standalone.png)

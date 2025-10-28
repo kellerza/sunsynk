@@ -80,7 +80,7 @@ Adjust the `INVERTERS` section to match your inverter setup. `tcp://mbusd:502` p
 
 ## Using Pre-built Docker Images
 
-The repo also contains prebuilt Docker images for Sunsynk Multi. You can see the different images for the various supported architectures [here](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
+The repo also contains prebuilt Docker images, which is available from the [Github Container Registry](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
 
 ### Docker-Compose examples
 
@@ -110,7 +110,7 @@ services:
       S6_KEEP_ENV: 1
 ```
 
-For env vars to work, you need to add one additional env var (more [here](https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour))
+For env vars to work, you need to add `S6_KEEP_ENV` (more from [just-containers](https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour))
 
 ```yaml
 S6_KEEP_ENV: 1
