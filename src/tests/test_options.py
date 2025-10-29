@@ -1,7 +1,7 @@
 """Options."""
 
 import os
-from unittest import mock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -27,7 +27,7 @@ def test_load_env() -> None:
         "SCHEDULES": '[{"key": "k2", "change_by": "2"}]',
     }
 
-    with mock.patch.dict(os.environ, test_environ, clear=True):
+    with patch.dict(os.environ, test_environ, clear=True):
         res = OPT.load_env()
 
     assert OPT.prog_time_interval == 30
@@ -46,5 +46,26 @@ def test_load_env_bad() -> None:
     }
 
     with pytest.raises(ValueError):
-        with mock.patch.dict(os.environ, test_environ, clear=True):
+        with patch.dict(os.environ, test_environ, clear=True):
             OPT.load_env()
+
+
+@patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")
+async def test_unique(mock_init: MagicMock) -> None:
+    """Tests."""
+    invs = [
+        {"ha_prefix": "inv1", "port": "a"},
+        {"ha_prefix": "inv2", "port": "b"},
+        {"ha_prefix": "inv3", "port": "c"},
+    ]
+    OPT.load_dict({"inverters": invs})
+
+    assert mock_init.call_count == 0
+    await OPT.init_addon()
+    assert mock_init.call_count == 1
+
+    invs[1]["ha_prefix"] = invs[0]["ha_prefix"]
+    OPT.load_dict({"inverters": invs})
+    with pytest.raises(ValueError) as err:
+        await OPT.init_addon()
+    assert err.match("unique HA_PREFIX: inv1, inv1, inv3")

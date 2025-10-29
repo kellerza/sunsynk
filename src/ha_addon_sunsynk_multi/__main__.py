@@ -11,7 +11,7 @@ from .a_inverter import STATE
 from .a_sensor import MQTT, SS_TOPIC
 from .driver import callback_discovery_info, init_driver
 from .errors import print_errors
-from .options import OPT, init_options
+from .options import OPT
 from .sensor_callback import build_callback_schedule
 from .sensor_options import SOPT
 from .timer_callback import (
@@ -27,12 +27,13 @@ _LOG = logging.getLogger(__name__)
 
 async def main_loop() -> int:
     """Entry point."""
+    await OPT.init_addon()
+
     # Print version added during build & pyproject version
     vfile = Path(__file__) / "../../../../VERSION"
     ver = vfile.read_text().strip() if vfile.exists() else ""
     _LOG.info("sunsynk library version: %s (%s)", VERSION, ver)
 
-    await init_options()
     try:
         init_driver(OPT)
     except (TypeError, ValueError) as err:
