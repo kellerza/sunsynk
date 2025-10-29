@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import sys
+from pathlib import Path
 
 from sunsynk import VERSION
 
@@ -26,9 +27,13 @@ _LOG = logging.getLogger(__name__)
 
 async def main_loop() -> int:
     """Entry point."""
+    # Print version added during build & pyproject version
+    vfile = Path(__file__) / "../../../../VERSION"
+    ver = vfile.read_text().strip() if vfile.exists() else ""
+    _LOG.info("sunsynk library version: %s (%s)", VERSION, ver)
+
     await init_options()
     try:
-        _LOG.info("sunsynk library version: %s", VERSION)
         init_driver(OPT)
     except (TypeError, ValueError) as err:
         _LOG.critical(str(err))
