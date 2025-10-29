@@ -1,8 +1,10 @@
 # Schedules
 
-Schedules gives you a flexible way to define when to read sensors from the inverter and when to report these sensors to MQTT (or Home Assistant). The same schedule can apply to many sensors.
+Schedules gives you a flexible way to define when to read sensors from the inverter and when to
+report these sensors to MQTT (or Home Assistant). The same schedule can apply to many sensors.
 
-The default behaviour, without any configuration override will assign the following schedules to the sensors:
+The default behaviour, without any configuration override will assign the following schedules to the
+sensors:
 
 ```text
 +-----------+-----+------+--------+-----------+----------+------------+
@@ -24,8 +26,11 @@ What this means is that:
 2. Configuration sensors (`key = 'rw'`):
    - Read every 5 seconds, report every 5 minutes. If there is any change, report immediately.
 3. Based on the sensor's unit
-   - For sensors with a unit of `W`, read every 5 seconds, and report every minute. If there is a significant change of 80Watts report immediately.
-   - For sensors with a unit of `kWH`, read & report every 5 minutes. These are typically used by Home Assistant's Energy Management and aggregated every hour, so you really don't need to update them often.
+   - For sensors with a unit of `W`, read every 5 seconds, and report every minute. If there is a
+     significant change of 80Watts report immediately.
+   - For sensors with a unit of `kWH`, read & report every 5 minutes. These are typically used by
+     Home Assistant's Energy Management and aggregated every hour, so you really don't need to
+     update them often.
 4. Sensors with any unit (`key = 'any_unit'`)
    - Read every 15 seconds and report the avreage every 60 seconds.
 5. Sensors without a unit (`key = 'no_unit'`)
@@ -62,11 +67,14 @@ The `KEY` value of the sensor is used to identify sensors, these are show in the
 | 4     | `any_unit` | A catch-all for sensors with any unit. These are typically numerical sensors of some type. |
 | 5     | `no_unit`  | A catch-all for sensors without any unit. Typically non-numeric sensors.                   |
 
-To find a  schedule for any specific sensor, the search order in column 1 will be followed. This allows you to be very specific for sensors with a proper name, or be very generic for sensors with & without units.
+To find a schedule for any specific sensor, the search order in column 1 will be followed. This
+allows you to be very specific for sensors with a proper name, or be very generic for sensors with &
+without units.
 
 ## Proposed schedule overrides for Solarman
 
-When using the `solarman` driver, the Solarman dongle can be overwhelmed when constantly being read. Ideally you should not read more than once every 10 seconds.
+When using the `solarman` driver, the Solarman dongle can be overwhelmed when constantly being read.
+Ideally you should not read more than once every 10 seconds.
 
 The following schedule overrides are recommended for Solarman:
 
@@ -86,7 +94,8 @@ SCHEDULES:
   CHANGE_BY: 80
 ```
 
-An Example to change the battery sensor to update on all changes, including changing the read time to 30s instead of the default 15s.
+An Example to change the battery sensor to update on all changes, including changing the read time
+to 30s instead of the default 15s.
 
 ```yaml
 - KEY: "%"

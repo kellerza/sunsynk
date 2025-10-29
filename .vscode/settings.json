@@ -9,5 +9,7 @@
         "Sunsynk",
         "umodbus"
     ],
-    "cSpell.ignoreRandomStrings": true
+    "cSpell.ignoreRandomStrings": true,
+    "reflowMarkdown.preferredLineLength": 100,
+    "reflowMarkdown.wrapLongLinks": "wrap"
 }

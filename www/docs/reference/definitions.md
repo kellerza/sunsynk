@@ -2,9 +2,13 @@
 
 ## Sensor definitions
 
-Your inverter exposes data/sensors in specific modbus registers. The inverter's modbus protocol document will provide information of what the register represents and the format of the data in the register.
+Your inverter exposes data/sensors in specific modbus registers. The inverter's modbus protocol
+document will provide information of what the register represents and the format of the data in the
+register.
 
-The sensor definitions were created from these modbus protocol documents. Individual sensor definition include the modbus register number (or several registers), the name of the sensor, the unit and other optional parameters.
+The sensor definitions were created from these modbus protocol documents. Individual sensor
+definitions   include the modbus register number (or several registers), the name of the sensor, the
+unit and other optional parameters.
 
 When you select your inverter type, the corresponding set of definitions will be used.
 
@@ -12,13 +16,16 @@ When you select your inverter type, the corresponding set of definitions will be
 SENSOR_DEFINITIONS: single-phase / three-phase [low voltage] / three-phase-hv [high voltage]
 ```
 
-You can find the detail of the definitions [on Github](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions) and definitions are selected in the configuration with one of the following options:
+You can find the detail of the definitions
+[on Github](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions) and definitions
+are selected in the configuration with one of the following options:
 
 ## Adding sensors
 
 You can add sensors under the `SENSORS` and `SENSORS_FIRST_INVERTER` keys in the configuration.
 
-For example, if you want to add the *Battery SOC* sensor, you can use any of the following formats. In the logs you will see the first format (no spaces and all lower case).
+For example, if you want to add the *Battery SOC* sensor, you can use any of the following formats.
+In the logs you will see the first format (no spaces and all lower case).
 
 ```yaml
 SENSORS:
@@ -26,7 +33,8 @@ SENSORS:
   - Battery SOC
 ```
 
-This page contains detail of available sensors. If you do not find the sensor you are looking for, you can use the Modbus protocol document of your inverter to create your own custom sensor.
+This page contains detail of available sensors. If you do not find the sensor you are looking for,
+you can use the Modbus protocol document of your inverter to create your own custom sensor.
 
 ## Available sensors
 
@@ -47,17 +55,23 @@ SENSORS:
   - all
 ```
 
-Adding all sensors will cause Home Assistant to record a great amount of data, that you might not need. This could lead to a large database and slow down your system. It is especially bad if you are using an SD card for your Home Assistant installation.
+Adding all sensors will cause Home Assistant to record a great amount of data, that you might not
+need. This could lead to a large database and slow down your system. It is especially bad if you are
+using an SD card for your Home Assistant installation.
 
 Rather consider using the other groups or selecting the sensors you need.
 
 ::: warning
-It is *not* recommended to add **all** sensors for your final system. This is mainly for testing purposes.
+
+It is *not* recommended to add **all** sensors for your final system. This is mainly for
+testing purposes.
+
 :::
 
 ### Energy management
 
-These sensors are mostly related to energy or kWh and required for the Home Assistant [Energy Management](../guide/energy-management)
+These sensors are mostly related to energy or kWh and required for the Home Assistant
+[Energy Management](../guide/energy-management)
 
 ```yaml
 SENSORS:
@@ -91,7 +105,8 @@ SENSORS:
 
 ### Settings
 
-Sensors used for changing the System Operating Mode - see how they are used in  [Lovelace settings](../examples/lovelace-settings)
+Sensors used for changing the System Operating Mode - see how they are used in
+[Lovelace settings](../examples/lovelace-settings)
 
 These can be under `SENSORS` or `SENSORS_FIRST_INVERTER`
 
@@ -184,7 +199,9 @@ SENSORS:
 
 ### UPS / Backup Load
 
-Sensors used for monitoring UPS (Uninterruptible Power Supply) or backup load power consumption. These sensors provide power readings for each phase (L1, L2, L3) and total power consumption during backup operation.
+Sensors used for monitoring UPS (Uninterruptible Power Supply) or backup load power consumption.
+These sensors provide power readings for each phase (L1, L2, L3) and total power consumption during
+backup operation.
 
 ```yaml
 SENSORS:
@@ -201,7 +218,8 @@ SENSORS:
 
 ### My Sensors
 
-All your [Custom sensors](mysensors) can be added to the configuration using the **mysensors** group:
+All your [Custom sensors](mysensors) can be added to the configuration using the **mysensors**
+group:
 
 ```yaml
 SENSORS:
