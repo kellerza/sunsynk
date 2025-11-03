@@ -13,7 +13,7 @@
 
 ## Connectors
 
-The `CONNECTORS` option allows you to define shared connections that can be used by multiple inverters. This is particularly useful when using a TCP gateway where multiple inverters are connected to the same gateway.
+The `CONNECTORS` option allows you to define shared connections that can be used by multiple inverters. This enables a single Modbus gateway or master device to monitor multiple inverters, whether they are configured in parallel or as separate standalone systems. This is particularly useful when using a TCP gateway where multiple inverters are connected to the same gateway.
 
 ```yaml
 CONNECTORS:
@@ -80,7 +80,7 @@ INVERTERS:
     serial_nr: "DEF456"
 ```
 
-This configuration allows multiple inverters to share the same TCP connection to a gateway, solving the multiple Modbus master problem.
+This configuration allows multiple inverters to share the same TCP connection to a gateway, enabling one Modbus gateway/master to monitor multiple inverters. Each inverter maintains its own independent state and can be configured with different Modbus IDs, making this suitable for both parallel inverter setups and standalone inverters connected to the same gateway.
 
 ::: tip Backwards Compatibility
 
@@ -117,7 +117,7 @@ The following options are required per inverter:
 
 - `CONNECTOR` (New)
 
-  Reference to a connector defined in the `CONNECTORS` section. Multiple inverters can share the same connector.
+  Reference to a connector defined in the `CONNECTORS` section. Multiple inverters can share the same connector, allowing one Modbus gateway/master to monitor multiple inverters (parallel or non-parallel configurations). Each inverter maintains its own independent state and Modbus ID.
 
 - `DONGLE_SERIAL_NUMBER`
 
