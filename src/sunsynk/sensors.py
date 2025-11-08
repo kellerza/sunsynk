@@ -101,23 +101,101 @@ class Sensor16(Sensor):
     """History of reg[1]. If last 10 are all > 0, unpack as 32-bit, else only 16-bit."""
     history0: list[int] = attrs.field(factory=list)
 
-    def reg_to_value(self, regs: RegType) -> ValType:
-        """Return the value from the registers."""
+    def reg_to_value(self, regs: RegType) -> ValType:  # noqa: PLR0912
+        """Return the value from the registers.
+
+        This method handles 16-bit/32-bit auto-detection for power sensors.
+        The key insight is that when using 16-bit interpretation, the signedness
+        should be determined by reg[1], not by self.factor:
+        - reg[1] == 0: the 32-bit value was positive (0 to 65535) -> use unsigned
+        - reg[1] == 0xFFFF: the 32-bit value was negative -> use signed
+        """
         regs = self.masked(regs)
+        # Save original reg[1] before any modifications for sign determination
+        original_reg1 = regs[1]
+
         self.history1.append(regs[1])
         self.history0.append(regs[0])
         if len(self.history1) > 10:
             self.history1.pop(0)
             self.history0.pop(0)
-        # _LOG.debug("%s %s", hex_str(regs), mean(self.history0))
-        if (
-            any(r == 0 for r in self.history1)  # reg[1] between negative and positive
-            or (  # a big drop in reg[0] could also be close to a neg to pos transition
-                regs[1] == 0xFFFF and mean(self.history0) - regs[0] > 10000
-            )
+
+        # Determine if we should use 16-bit or 32-bit interpretation
+        use_16bit = False
+
+        # If reg[1] is 0, use 16-bit interpretation
+        if regs[1] == 0:
+            use_16bit = True
+        # If any value in history had reg[1] == 0, use 16-bit (transitioning between +/-)
+        elif any(r == 0 for r in self.history1):
+            use_16bit = True
+        # If reg[1] is 0xFFFF and there's a big drop, likely transitioning
+        elif (
+            regs[1] == 0xFFFF
+            and len(self.history0) > 0
+            and mean(self.history0) - regs[0] > 10000
         ):
-            regs = (regs[0],)
-        val: NumType = unpack_value(regs, signed=self.factor < 0)
+            use_16bit = True
+        # If reg[1] is consistently very small (likely noise/transient, not real 32-bit value)
+        # Check if reg[1] is small and compare interpretations
+        elif len(self.history1) >= 3 and all(r < 0x0100 for r in self.history1[-3:]):
+            # Calculate what the raw register value would be if interpreted as 32-bit
+            raw_32bit = unpack_value(regs, signed=self.factor < 0)
+            # Calculate what the raw register value would be if interpreted as 16-bit
+            # Use unsigned for comparison since we'll determine sign from reg[1] later
+            raw_16bit = unpack_value((regs[0],), signed=False)
+
+            # If we have history, check if 32-bit value would be unreasonably different
+            if len(self.history0) >= 5:
+                recent_avg = mean(self.history0[-5:])
+                # Calculate how far each interpretation is from recent average
+                dist_32bit = abs(raw_32bit - recent_avg)
+                dist_16bit = abs(raw_16bit - recent_avg)
+
+                # Check if reg[0] itself is large (>= 0x3000 = 12288) but not 0xFFFF,
+                # which suggests it's a 16-bit value being incorrectly interpreted
+                reg0_is_large = regs[0] >= 0x3000 and regs[0] != 0xFFFF
+                # Check if reg[0] is close to recent average (within 2x)
+                reg0_close_to_avg = abs(regs[0] - recent_avg) < recent_avg * 2
+
+                if (
+                    reg0_is_large
+                    and regs[0] > recent_avg * 2
+                    and abs(raw_32bit) > abs(recent_avg * 3)
+                    and dist_16bit < dist_32bit * 0.4
+                ):
+                    use_16bit = True
+                elif (
+                    regs[0] != 0xFFFF
+                    and not reg0_close_to_avg
+                    and abs(raw_32bit) > abs(recent_avg * 5)
+                    and dist_16bit < dist_32bit * 0.3
+                ):
+                    use_16bit = True
+            # With less history, be more conservative but still catch obvious issues
+            elif len(self.history0) >= 3:
+                recent_avg = mean(self.history0[-3:])
+                dist_32bit = abs(raw_32bit - recent_avg)
+                dist_16bit = abs(raw_16bit - recent_avg)
+                if (
+                    abs(raw_32bit) > abs(recent_avg * 5)
+                    and dist_16bit < dist_32bit * 0.3
+                ):
+                    use_16bit = True
+            # Even without much history, if reg[1] is very small and 32-bit would be huge
+            elif regs[1] > 0 and abs(raw_32bit) > 50000:
+                if abs(raw_16bit) < 35000:
+                    use_16bit = True
+
+        if use_16bit:
+            # When using 16-bit, determine signedness from reg[1]:
+            # - reg[1] == 0: 32-bit value was positive (0-65535), use unsigned
+            # - reg[1] == 0xFFFF: 32-bit value was negative, use signed
+            # This prevents large positive values (>32767) from being interpreted as negative
+            use_signed = original_reg1 == 0xFFFF
+            val: NumType = unpack_value((regs[0],), signed=use_signed)
+        else:
+            val = unpack_value(regs, signed=self.factor < 0)
         val = int_round(float(val) * abs(self.factor))
         return val
 

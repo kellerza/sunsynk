@@ -108,23 +108,73 @@ def test_sensor16() -> None:
     with pytest.raises(AssertionError):
         Sensor16((1,), "nope")
     s = Sensor16((1, 2), "power", "W", -1)
-    assert s.reg_to_value((0xFFFF, 0x0)) == -1
-    # since val transitioned the +/- boundary, interpret 10 values as 16-bit only
+
+    # When reg[1] = 0, the 32-bit value is positive (0-65535)
+    # So 0xFFFF should be interpreted as unsigned = 65535, not signed = -1
+    assert s.reg_to_value((0xFFFF, 0x0)) == 65535
+
+    # Since history has reg[1] = 0, interpret next values as 16-bit
     for i in range(9):
         assert s.reg_to_value((i, 0x1)) == i
     # Then back to 32-bit
     assert s.reg_to_value((0x0, 0x1)) == 0x10000
-    # once we have a 0, then it's 16-bit again
-    assert s.reg_to_value((0xFFFF, 0x0)) == -1
+
+    # Once we have reg[1] = 0 again, use 16-bit unsigned
+    assert s.reg_to_value((0xFFFF, 0x0)) == 65535
+
+    # When reg[1] = 0xFFFF, the 32-bit value is negative, use signed
     assert s.reg_to_value((0xFFFF, 0xFFFF)) == -1
     for i in range(8):
         assert s.reg_to_value((i, 0x1)) == i
     assert s.reg_to_value((0xFFFF, 0x1)) == 0x1FFFF
 
-    # Test neg to po transition on reg[0]
+    # Test neg to pos transition on reg[0]
     for _ in range(10):
         assert s.reg_to_value((0xFFFF, 0xFFFF)) == -1
     assert s.reg_to_value((0x0, 0xFFFF)) == 0
+
+
+def test_sensor16_large_positive() -> None:
+    """Test that large positive values (>32767) are not interpreted as negative.
+
+    This is a critical test for the fix of values above ~32k becoming negative.
+    When reg[1] = 0, the full 32-bit value is positive, so reg[0] should be
+    interpreted as unsigned 16-bit, not signed.
+    """
+    s = Sensor16((1, 2), "power", "W", -1)
+
+    # Build up history with large positive values
+    for val in [30000, 32000, 35000, 38000, 40000]:
+        result = s.reg_to_value((val, 0))
+        assert result == val, f"Expected {val}, got {result}"
+
+    # Values above 32767 should NOT become negative
+    assert s.reg_to_value((40000, 0)) == 40000
+    assert s.reg_to_value((50000, 0)) == 50000
+    assert s.reg_to_value((60000, 0)) == 60000
+
+    # Test boundary values
+    assert s.reg_to_value((32767, 0)) == 32767  # Max signed positive
+    assert s.reg_to_value((32768, 0)) == 32768  # Would be -32768 if signed
+    assert s.reg_to_value((65535, 0)) == 65535  # Would be -1 if signed
+
+
+def test_sensor16_negative_values() -> None:
+    """Test that actual negative values (reg[1] = 0xFFFF) work correctly."""
+    s = Sensor16((1, 2), "power", "W", -1)
+
+    # Build up history with negative values
+    # When reg[1] = 0xFFFF, the 32-bit value is negative
+    for _ in range(5):
+        assert s.reg_to_value((0xFFFF, 0xFFFF)) == -1
+
+    # Small negative values
+    assert s.reg_to_value((0xFFFE, 0xFFFF)) == -2
+    assert s.reg_to_value((0xFFF0, 0xFFFF)) == -16
+    assert s.reg_to_value((0xFF00, 0xFFFF)) == -256
+
+    # Larger negative values
+    assert s.reg_to_value((0x8000, 0xFFFF)) == -32768
 
 
 def test_group() -> None:
