@@ -26,12 +26,13 @@ COMMON += (
         0,
         "Device type",
         options={
-            2: "Inverter",
-            3: "Single phase hybrid",
-            4: "Microinverter",
-            5: "Low voltage three phase hybrid",
-            6: "High voltage three phase hybrid",
-            512: "Single phase LV hybrid (3x MTTP)",
+            2: "String Inverter",  # String unit
+            3: "Single-phase hybrid",  # Single-Phase Low-Voltage Energy Storage Unit
+            4: "Micro-inverter",
+            5: "Low-voltage three-phase hybrid",  # Three-Phase Low-Voltage Energy Storage Unit
+            6: "High-voltage three-phase hybrid",  # Three-Phase High-Voltage Energy Storage Unit
+            0x200: "Single-phase LV hybrid (3x MTTP)",
+            0x103: "Single-phase hybrid",  # SUN-6K-OG01LP1-EU-AM2
         },
     ),
     ProtocolVersionSensor(2, "Protocol"),

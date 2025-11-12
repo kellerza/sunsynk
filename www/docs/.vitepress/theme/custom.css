@@ -40,3 +40,15 @@
   top: 60px;
   z-index: 1;
 }
+
+.bigt td {
+  font-size: 12px;
+  padding: 4px;
+  text-align: center;
+}
+
+.bigt td:first-child {
+  font-size: 14px;
+  padding-left: 8px;
+  text-align: left;
+}

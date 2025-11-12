@@ -260,13 +260,18 @@ class EnumSensor(TextSensor):
         if res is None:
             if self.unknown:
                 return self.unknown.format(regsm[0])
+            url = {
+                "device_type": "https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions/__init__.py#L28"
+            }.get(
+                self.id,
+                "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions",
+            )
             if self._warn:
                 _LOG.warning(
-                    "%s: Unknown register value %s. "
-                    "Consider extending the definition with a PR. "
-                    "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions",
+                    "%s: Unknown register value %s. Consider extending the definition with a PR. %s",
                     self.id,
-                    regsm[0],
+                    hex(regsm[0]),
+                    url,
                 )
             self._warn = False
             return None
