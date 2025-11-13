@@ -18,6 +18,7 @@ cp %~1\config.yaml %cf%
 sed -i 's/image:/# image:/' %cf%
 sed -i 's/name: /name: A_LOCAL /' %cf%
 xcopy /Y %cf% %~2\config.yaml
+echo 0.0.0 > %~1\VERSION
 
 echo # Copy '%~1' to '%~2'
 xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt %~1 %~2

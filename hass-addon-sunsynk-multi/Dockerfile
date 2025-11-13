@@ -19,3 +19,4 @@ RUN set -x \
         ./sunsynk[umodbus,solarman]
 
 COPY rootfs /
+COPY VERSION VERSION

@@ -30,8 +30,15 @@ async def main_loop() -> int:
     await OPT.init_addon()
 
     # Print version added during build & pyproject version
-    vfile = Path(__file__) / "../../../../VERSION"
-    ver = vfile.read_text().strip() if vfile.exists() else ""
+    ver = ""
+    try:
+        for parent in Path(__file__).parents:
+            vfile = parent / "VERSION"
+            if vfile.exists():
+                ver = vfile.read_text().strip()
+                break
+    except Exception:
+        pass
     _LOG.info("sunsynk library version: %s (%s)", VERSION, ver)
 
     try:

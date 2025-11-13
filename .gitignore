@@ -1,6 +1,7 @@
 # private/local config
 options.yaml
 config.localtest.yaml
+VERSION
 
 .mypy_cache/
 .pytest_cache/
