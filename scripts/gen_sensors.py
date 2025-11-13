@@ -47,12 +47,7 @@ def generate_all_sensors(
         """Sensor info."""
         if not sensor:
             return ""
-        if isinstance(sensor, str):
-            return sensor
-        reg = (
-            str(sensor.address[0]) if len(sensor.address) == 1 else str(sensor.address)
-        )
-        return reg
+        return sensor if isinstance(sensor, str) else sensor.source
 
     headers = ["Name", *sorted(all_defs), "Group"]
     data = table_data(sensors.values(), headers)

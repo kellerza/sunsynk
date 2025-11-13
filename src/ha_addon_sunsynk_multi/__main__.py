@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from sunsynk import VERSION
+from sunsynk.utils import pretty_table_sensors
 
 from .a_inverter import STATE
 from .a_sensor import MQTT, SS_TOPIC
@@ -66,6 +67,11 @@ async def main_loop() -> int:
             await ist.hass_discover_sensors()
             ist.cb = build_callback_schedule(ist)
             CALLBACKS.append(ist.cb)
+
+            # Add info from the callback schedules?
+            tab = pretty_table_sensors(list(SOPT), ist.inv, {})
+            _LOG.info("Inverter %s\n%s", ist.inv.port, tab)
+
         except (ConnectionError, ValueError) as err:
             ist.log_bold(str(err))
             _LOG.critical(

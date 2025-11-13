@@ -274,3 +274,15 @@ def test_decode_fault() -> None:
     assert s.reg_to_value(regs) == "F32"
     regs = (0x0, 0x0, 0x1, 0x0)
     assert s.reg_to_value(regs) == "F33"
+
+
+def test_source() -> None:
+    """Test sensor source."""
+    assert Sensor(1, "test_sensor", "V", -1).source == "[1] S"
+    assert Sensor((1, 2), "test_sensor", "V", 10).source == "[1,2] * 10"
+    assert Sensor((1, 2), "test_sensor", "V", bitmask=0xA).source == "[1,2] & 0x0A"
+    assert (
+        Sensor((1, 2), "test_sensor", "V", bitmask=0xA, factor=-1).source
+        == "[1,2] & 0x0A S"
+    )
+    assert Sensor((1, 2), "test_sensor", "V", bitmask=0xEF1A).source == "[1,2] & 0xEF1A"

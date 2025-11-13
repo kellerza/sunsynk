@@ -11,6 +11,7 @@ from mqtt_entity import MQTTDevice, MQTTSensorEntity
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sunsynk import Sensor, Sunsynk, ValType
+from sunsynk.utils import pretty_table_sensors
 
 from .a_sensor import MQTT, SS_TOPIC, ASensor
 from .options import OPT, InverterOptions
@@ -133,20 +134,19 @@ class AInverter:
             raise ValueError(
                 f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
             )
-        self.log_bold(f"Inverter serial number '****{actual_ser[-4:]}'")
 
-        _LOG.info(
-            "Device type: %s, using the %s sensor definitions",
-            self.inv.state[DEFS.device_type],
-            OPT.sensor_definitions,
-        )
+        # All seem ok
+        add_info = {"device_type": f"\n(config: {OPT.sensor_definitions})"}
 
-        _LOG.info("Protocol version: %s", self.inv.state[DEFS.protocol])
+        tab = pretty_table_sensors(sensors, self.inv, add_info=add_info)
+        _LOG.info("Inverter %s - startup sensors\n%s", self.inv.port, tab)
 
         # Initial read for all sensors
         sensors = list(SOPT)
-        _LOG.info("Reading all sensors %s", ", ".join(s.name for s in sensors))
+        _LOG.info("Reading configured sensors %s", len(sensors))
         await self.read_sensors(sensors=sensors)
+        # tab = pretty_table_sensors(sensors, self.inv)
+        # _LOG.info("Inverter %s - active sensors\n%s", self.inv.port, tab)
 
     @property
     def rated_power(self) -> float:

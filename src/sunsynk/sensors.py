@@ -35,6 +35,21 @@ class Sensor:
         """Get the sensor ID."""
         return slug(self.name)
 
+    @property
+    def source(self) -> str:
+        """Return the source of the sensor."""
+        res = (
+            f"[{self.address[0]}]"
+            if len(self.address) == 1
+            else str(self.address).replace("(", "[").replace(")", "]").replace(" ", "")
+        )
+        if self.bitmask:
+            res += f" & 0x{self.bitmask:02X}"
+        sig = " S" if self.factor == -1 else ""
+        if abs(self.factor) != 1:
+            res += f" * {abs(self.factor)}"
+        return f"{res}{sig}"
+
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
         regs = self.masked(regs)
