@@ -70,7 +70,7 @@ class SensorOptions(dict[Sensor, SensorOption]):
             import_definitions()
         self.clear()
 
-        self.startup = [DEFS.device_type, DEFS.protocol, DEFS.serial]
+        self.startup = [DEFS.device_type, DEFS.protocol, DEFS.serial, DEFS.rated_power]
         sensors_all = list(get_sensors(target=self, names=OPT.sensors))
         sensors_1st = list(get_sensors(target=self, names=OPT.sensors_first_inverter))
 

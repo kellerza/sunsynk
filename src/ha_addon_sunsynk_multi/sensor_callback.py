@@ -3,6 +3,7 @@
 import asyncio
 import logging
 from collections import defaultdict
+from typing import Self
 
 import attrs
 
@@ -25,42 +26,46 @@ class SensorRun:
     sensors: set[SensorOption] = attrs.field(factory=set)
 
 
-def _build_schedules(idx: int) -> tuple[dict[int, SensorRun], dict[int, SensorRun]]:
-    """Build schedules."""
-    read_s: dict[int, SensorRun] = defaultdict(SensorRun)
-    report_s: dict[int, SensorRun] = defaultdict(SensorRun)
-    first = idx == 0
+@attrs.define(slots=True)
+class SensorSchedule:
+    """Sensor run schedule."""
 
-    for sopt in SOPT.values():
-        if not first and sopt.first:
-            continue
-        if sopt.schedule.read_every:
-            read_s[sopt.schedule.read_every].sensors.add(sopt)
-        if not sopt.visible:
-            continue
-        if sopt.schedule.report_every:
-            report_s[sopt.schedule.report_every].sensors.add(sopt)
+    read: dict[int, SensorRun] = attrs.field(factory=lambda: defaultdict(SensorRun))
+    report: dict[int, SensorRun] = attrs.field(factory=lambda: defaultdict(SensorRun))
 
-    if idx > 1:
-        return read_s, report_s
+    def build_schedules(self, idx: int) -> Self:
+        """Build schedules."""
+        self.read.clear()
+        self.report.clear()
+        first = idx == 0
 
-    inv_ref = f"inverter {'1' if first else '>1'}"
-    hdrs = ["s", "Sensors"]
+        for sopt in SOPT.values():
+            if not first and sopt.first:
+                continue
+            if sopt.schedule.read_every:
+                self.read[sopt.schedule.read_every].sensors.add(sopt)
+            if not sopt.visible:
+                continue
+            if sopt.schedule.report_every:
+                self.report[sopt.schedule.report_every].sensors.add(sopt)
 
-    data = [[e, ", ".join(s.sensor.id for s in r.sensors)] for e, r in read_s.items()]
-    tab = pretty_table(hdrs, data)
-    _LOG.info("Read every (%s)\n%s", inv_ref, tab.get_string())
+        if idx < 2:
+            self.print_schedule("Read every", idx, self.read)
+            self.print_schedule("Report every", idx, self.report)
 
-    data = [[e, ", ".join(s.sensor.id for s in r.sensors)] for e, r in report_s.items()]
-    tab = pretty_table(hdrs, data)
-    _LOG.info("Report every (%s)\n%s", inv_ref, tab.get_string())
+        return self
 
-    return read_s, report_s
+    def print_schedule(self, title: str, idx: int, sch: dict[int, SensorRun]) -> None:
+        """Print the sensor schedule."""
+        data = [[e, ", ".join(s.sensor.id for s in r.sensors)] for e, r in sch.items()]
+        tab = pretty_table(["s", "Sensors"], data)
+        inv_ref = ">1" if idx > 1 else "1"
+        _LOG.debug("%s (inverter %s)\n%s", title, inv_ref, tab.get_string())
 
 
-def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
+def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
     """Build the callback schedule."""
-    read_s, report_s = _build_schedules(ist.index)
+    ist.sched = SensorSchedule().build_schedules(ist.index)
     atsk = None
 
     async def callback_sensor(now: int) -> None:  # noqa: PLR0915 PLR0912
@@ -82,7 +87,7 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
             sensors_to_publish.add(ist.ss[sensor.id])
 
         # add all read items
-        for sec, srun in read_s.items():
+        for sec, srun in ist.sched.read.items():
             if now % sec == 0 or srun.next_run <= now:
                 sensors_to_read.update(s.sensor for s in srun.sensors)
                 srun.next_run = now + sec
@@ -126,7 +131,7 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
                     pub[asen] = last
 
         # check fixed reporting
-        for sec, srun in report_s.items():
+        for sec, srun in ist.sched.report.items():
             if now % sec == 0 or srun.next_run <= now:
                 # get list of ASensor from SensorOption
                 sens = [a for a in ist.ss.values() if a.opt in srun.sensors]
@@ -149,7 +154,7 @@ def build_callback_schedule(ist: AInverter) -> AsyncCallback:  # noqa: PLR0915
             nonlocal atsk
             atsk = asyncio.create_task(ist.publish_sensors(states=pub))
 
-    return AsyncCallback(
+    ist.cb = AsyncCallback(
         name=f"read {ist.opt.ha_prefix}",
         every=1,
         callback=callback_sensor,

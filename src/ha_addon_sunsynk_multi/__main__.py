@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 from sunsynk import VERSION
@@ -65,12 +66,21 @@ async def main_loop() -> int:
         try:
             await ist.connect()
             await ist.hass_discover_sensors()
-            ist.cb = build_callback_schedule(ist)
+            build_callback_schedule(ist)
             CALLBACKS.append(ist.cb)
 
-            # Add info from the callback schedules?
-            tab = pretty_table_sensors(list(SOPT), ist.inv, {})
-            _LOG.info("Inverter %s\n%s", ist.inv.port, tab)
+            # Add info from the callback schedules
+            add_info: dict[str, list[str]] = defaultdict(lambda: ["", "", ""])
+            add_info["header"] = ["Read every", "Report every"]
+            for every_s, srun in ist.sched.read.items():
+                for sen in srun.sensors:
+                    add_info[sen.sensor.id][1] = str(every_s)
+            for every_s, srun in ist.sched.report.items():
+                for sen in srun.sensors:
+                    add_info[sen.sensor.id][2] = str(every_s)
+
+            tab = pretty_table_sensors(list(SOPT), ist.inv, add_info=add_info)
+            _LOG.info("Inverter %s\n%s", ist.index, tab)
 
         except (ConnectionError, ValueError) as err:
             ist.log_bold(str(err))

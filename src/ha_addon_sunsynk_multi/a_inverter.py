@@ -4,6 +4,7 @@ import asyncio
 import logging
 import traceback
 from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING
 
 import attrs
 from mqtt_entity import MQTTDevice, MQTTSensorEntity
@@ -16,7 +17,10 @@ from sunsynk.utils import pretty_table_sensors
 from .a_sensor import MQTT, SS_TOPIC, ASensor
 from .options import OPT, InverterOptions
 from .sensor_options import DEFS, SOPT
-from .timer_callback import Callback
+from .timer_callback import AsyncCallback
+
+if TYPE_CHECKING:
+    from .sensor_callback import SensorSchedule
 
 _LOG = logging.getLogger(__name__)
 
@@ -31,6 +35,8 @@ class AInverter:
     ss: dict[str, ASensor] = attrs.field(factory=dict)
     """Sensor states."""
 
+    sched: "SensorSchedule" = attrs.field(init=False)
+
     mqtt_dev: MQTTDevice = attrs.field(
         factory=lambda: MQTTDevice(components={}, identifiers=[""])
     )
@@ -44,7 +50,7 @@ class AInverter:
     # Reporting stats
     entity_timeout: MQTTSensorEntity = attrs.field(init=False)
     entity_cbstats: MQTTSensorEntity = attrs.field(init=False)
-    cb: Callback = attrs.field(init=False)
+    cb: AsyncCallback = attrs.field(init=False)
 
     @property
     def get_state(self) -> Callable:
@@ -136,10 +142,10 @@ class AInverter:
             )
 
         # All seem ok
-        add_info = {"device_type": f"\n(config: {OPT.sensor_definitions})"}
+        add_info = {"device_type": [f"\n(config: {OPT.sensor_definitions})"]}
 
         tab = pretty_table_sensors(sensors, self.inv, add_info=add_info)
-        _LOG.info("Inverter %s - startup sensors\n%s", self.inv.port, tab)
+        _LOG.info("Inverter %s - startup sensors\n%s", self.index, tab)
 
         # Initial read for all sensors
         sensors = list(SOPT)

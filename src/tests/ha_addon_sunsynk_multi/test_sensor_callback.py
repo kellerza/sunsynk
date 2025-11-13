@@ -30,7 +30,8 @@ async def test_build_callback_schedule() -> None:
     ist.index = 0
 
     with patch("ha_addon_sunsynk_multi.sensor_callback.defaultdict", dds):
-        mycb = build_callback_schedule(ist)
+        build_callback_schedule(ist)
+        mycb = ist.cb
         if not iscoroutinefunction(mycb.callback):
             raise AssertionError("Callback is not a coroutine")
 
