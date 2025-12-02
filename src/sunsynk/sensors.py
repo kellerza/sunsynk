@@ -38,11 +38,13 @@ class Sensor:
     @property
     def source(self) -> str:
         """Return the source of the sensor."""
-        res = (
-            f"[{self.address[0]}]"
-            if len(self.address) == 1
-            else str(self.address).replace("(", "[").replace(")", "]").replace(" ", "")
-        )
+        if not self.address:
+            res = "const"
+        elif len(self.address) == 1:
+            res = f"[{self.address[0]}]"
+        else:
+            res = str(self.address).replace("(", "[").replace(")", "]").replace(" ", "")
+
         if self.bitmask:
             res += f" & 0x{self.bitmask:02X}"
         sig = " S" if self.factor == -1 else ""
@@ -73,6 +75,22 @@ class Sensor:
         if not isinstance(other, Sensor):
             raise TypeError(str(type(other)))
         return self.id == other.id
+
+
+@attrs.define(slots=True, eq=False)
+class Constant(Sensor):
+    """Sensor that always returns a constant value."""
+
+    value: NumType = None  # type: ignore[assignment]
+
+    def __attrs_post_init__(self) -> None:
+        """Post-initialization processing."""
+        assert not self.address
+        assert self.value is not None
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Return the constant value."""
+        return self.value
 
 
 @attrs.define(slots=True, eq=False)
@@ -173,6 +191,32 @@ class SensorDefinitions:
     def copy(self) -> SensorDefinitions:
         """Copy the sensor definitions."""
         return SensorDefinitions(all=self.all.copy(), deprecated=self.deprecated.copy())
+
+    def override(self, values: dict[str, int]) -> None:
+        """Override existing sensors with new definitions."""
+        for key, val in values.items():
+            sen_name, _, sen_attr = key.partition(".")
+            sen = self.all.get(sen_name)
+            if sen is None:
+                _LOG.error("Override: Sensor %s not found, skipping", sen_name)
+                continue
+            if sen_attr == "":
+                if not isinstance(sen, Constant):
+                    _LOG.warning(
+                        "Override for %s is not a Constant sensor, skipping", key
+                    )
+                else:
+                    sen.value = val
+                continue
+
+            if not hasattr(sen, sen_attr):
+                _LOG.error(
+                    "Override: Sensor %s has no attribute %s, skipping", key, sen_attr
+                )
+                continue
+
+            setattr(sen, sen_attr, val)
+            _LOG.info("Override: Sensor %s.%s set to %s", key, sen_attr, val)
 
 
 @attrs.define(slots=True, eq=False)

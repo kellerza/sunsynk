@@ -17,6 +17,12 @@ from sunsynk.sensors import (
 )
 
 SENSORS = SENSORS.copy()
+SENSORS.override(
+    {
+        "battery_min_voltage": 160,
+        "battery_max_voltage": 700,
+    }
+)
 
 ##########
 # Battery

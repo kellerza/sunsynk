@@ -70,16 +70,16 @@ async def main_loop() -> int:
             CALLBACKS.append(ist.cb)
 
             # Add info from the callback schedules
-            add_info: dict[str, list[str]] = defaultdict(lambda: ["", "", ""])
-            add_info["header"] = ["Read every", "Report every"]
+            add_info: dict[str, list[str]] = defaultdict(lambda: ["", ""])
+            add_hdr = ["Read every", "Report every"]
             for every_s, srun in ist.sched.read.items():
                 for sen in srun.sensors:
-                    add_info[sen.sensor.id][1] = str(every_s)
+                    add_info[sen.sensor.id][0] = str(every_s)
             for every_s, srun in ist.sched.report.items():
                 for sen in srun.sensors:
-                    add_info[sen.sensor.id][2] = str(every_s)
+                    add_info[sen.sensor.id][1] = str(every_s)
 
-            tab = pretty_table_sensors(list(SOPT), ist.inv, add_info=add_info)
+            tab = pretty_table_sensors(list(SOPT), ist.inv, add_hdr, add_info)
             _LOG.info("Inverter %s\n%s", ist.index, tab)
 
         except (ConnectionError, ValueError) as err:

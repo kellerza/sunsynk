@@ -78,7 +78,10 @@ def table_data[T](
 
 
 def pretty_table_sensors(
-    sensors: list["Sensor"], inv: "Sunsynk", add_info: dict[str, list[str]]
+    sensors: list["Sensor"],
+    inv: "Sunsynk",
+    add_hdr: list[str],
+    add_info: dict[str, list[str]],
 ) -> PrettyTable:
     """Generate a pretty table for the given sensors."""
     data: list[list[str]] = []
@@ -86,11 +89,14 @@ def pretty_table_sensors(
         row = [sen.id, sen.source, f"{inv.state[sen]} {sen.unit}"]
         if sen.id == "serial":
             row[2] = f"****{row[2][-5:]}"
-        if addi := add_info.get(sen.id):
-            row[2] += addi[0]
-            if len(addi) > 1:
-                row.extend(addi[1:])
+        if add_hdr:
+            addi = add_info.get(sen.id) or []
+            while len(addi) < len(add_hdr):
+                addi.append("")
+            while len(addi) > len(add_hdr):
+                addi.pop()
+            row.extend(addi)
         data.append(row)
 
-    header = ["Sensor", "Source", "Value", *add_info.get("header", [])]
+    header = ["Sensor", "Source", "Value", *add_hdr]
     return pretty_table(header, data, wrap_length=0)

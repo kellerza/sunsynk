@@ -68,6 +68,11 @@ class SensorOptions(dict[Sensor, SensorOption]):
         """Parse options and get the various sensor lists."""
         if not DEFS.all:
             import_definitions()
+            if OPT.overrides:
+                _LOG.info(
+                    "Applying sensor overrides from configuration: %s", OPT.overrides
+                )
+                DEFS.override(OPT.overrides)
         self.clear()
 
         self.startup = [DEFS.device_type, DEFS.protocol, DEFS.serial, DEFS.rated_power]

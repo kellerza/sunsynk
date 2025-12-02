@@ -142,9 +142,8 @@ class AInverter:
             )
 
         # All seem ok
-        add_info = {"device_type": [f"\n(config: {OPT.sensor_definitions})"]}
-
-        tab = pretty_table_sensors(sensors, self.inv, add_info=add_info)
+        add_info = {"device_type": [f"config: {OPT.sensor_definitions}"]}
+        tab = pretty_table_sensors(sensors, self.inv, ["Info"], add_info)
         _LOG.info("Inverter %s - startup sensors\n%s", self.index, tab)
 
         # Initial read for all sensors

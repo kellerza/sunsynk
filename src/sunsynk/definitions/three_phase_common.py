@@ -15,6 +15,7 @@ from sunsynk.rwsensors import (
 )
 from sunsynk.sensors import (
     BinarySensor,
+    Constant,
     EnumSensor,
     FaultSensor,
     InverterStateSensor,
@@ -261,8 +262,8 @@ SENSORS += (
 )
 
 # Absolute min and max voltage based on Deye inverter
-MIN_VOLT = 41
-MAX_VOLT = 60
+MIN_VOLT = Constant((), "Battery min voltage", VOLT, value=41)
+MAX_VOLT = Constant((), "Battery max voltage", VOLT, value=60)
 
 BATTERY_EQUALIZATION_VOLT = NumberRWSensor(
     99, "Battery Equalization voltage", VOLT, 0.01, min=MIN_VOLT, max=MAX_VOLT
@@ -299,6 +300,8 @@ BATTERY_SHUTDOWN_VOLT.max = BATTERY_LOW_VOLT
 BATTERY_RESTART_VOLT.min = BATTERY_LOW_VOLT
 
 SENSORS += (
+    MIN_VOLT,
+    MAX_VOLT,
     BATTERY_EQUALIZATION_VOLT,
     BATTERY_ABSORPTION_VOLT,
     BATTERY_FLOAT_VOLT,

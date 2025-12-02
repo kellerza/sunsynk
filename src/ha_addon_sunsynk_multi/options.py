@@ -31,6 +31,8 @@ class Options(MQTTOptions):
     prog_time_interval: int = 15
     inverters: list[InverterOptions] = attrs.field(factory=list)
     sensor_definitions: str = "single-phase"
+    sensor_overrides: list[str] | None = None
+    overrides: dict[str, int] | None = None
     sensors: list[str] = attrs.field(factory=list)
     sensors_first_inverter: list[str] = attrs.field(factory=list)
     read_allow_gap: int = 2
@@ -78,6 +80,24 @@ class Options(MQTTOptions):
             raise ValueError(
                 f"Inverters need a unique HA_PREFIX: {', '.join(ha_prefs)}"
             )
+
+    def load_dict(
+        self, value: dict, log_lvl: int = logging.DEBUG, log_msg: str = ""
+    ) -> None:
+        """Load options from dict."""
+        super().load_dict(value, log_lvl, log_msg)
+
+        if isinstance(self.sensor_overrides, list):
+            self.overrides = {}
+            errs = {}
+            for item in self.sensor_overrides:
+                key, _, val = str(item).partition("=")
+                try:
+                    self.overrides[key.strip()] = int(val.strip())
+                except ValueError:
+                    errs[key] = val
+            if errs:
+                _LOG.warning("Invalid sensor overrides found: %s", errs)
 
 
 OPT = Options()

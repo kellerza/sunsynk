@@ -1,6 +1,7 @@
 """Options."""
 
 import os
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -69,3 +70,18 @@ async def test_unique(mock_init: MagicMock) -> None:
     with pytest.raises(ValueError) as err:
         await OPT.init_addon()
     assert err.match("unique HA_PREFIX: inv1, inv1, inv3")
+
+
+def test_to_dict() -> None:
+    """Tests."""
+    tests: list[tuple[Any, dict | None]] = [
+        (None, None),
+        ({}, {}),
+        (["a=1", "b=2", "c=x"], {"a": 1, "b": 2}),
+    ]
+
+    for input_data, expected in tests:
+        OPT.overrides = None
+        OPT.sensor_overrides = None
+        OPT.load_dict({"sensor_overrides": input_data})
+        assert OPT.overrides == expected

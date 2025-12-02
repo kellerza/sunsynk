@@ -9,12 +9,14 @@ import pytest
 from sunsynk.definitions.single_phase import AMPS, CELSIUS, SENSORS, VOLT, WATT
 from sunsynk.sensors import (
     BinarySensor,
+    Constant,
     FaultSensor,
     InverterStateSensor,
     MathSensor,
     SDStatusSensor,
     Sensor,
     Sensor16,
+    SensorDefinitions,
     SerialSensor,
     TempSensor,
 )
@@ -286,3 +288,21 @@ def test_source() -> None:
         == "[1,2] & 0x0A S"
     )
     assert Sensor((1, 2), "test_sensor", "V", bitmask=0xEF1A).source == "[1,2] & 0xEF1A"
+
+
+def test_override() -> None:
+    """Tests."""
+    s = Sensor(1, "test sensor", "V", -1)
+    sen = SensorDefinitions()
+    sen += s
+
+    assert s.factor == -1
+    sen.override({"test_sensor.factor": -99})
+    assert s.factor == -99
+
+    c = Constant((), "constant sensor", value=42)
+    sen += c
+
+    assert c.value == 42
+    sen.override({"constant_sensor.value": 99})
+    assert c.value == 99
