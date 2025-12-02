@@ -30,8 +30,6 @@ options:
       DONGLE_SERIAL_NUMBER: "0"
       PORT: "tcp://homeassistant.local:502"
   SENSOR_DEFINITIONS: single-phase
-  SENSOR_OVERRIDES:
-    - "match(^[a-z_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"
   SENSORS:
     - energy_management
     - power_flow_card
@@ -59,6 +57,8 @@ schema:
       DONGLE_SERIAL_NUMBER: str?
       PORT: str
   SENSOR_DEFINITIONS: list(single-phase|single-phase-16kw|three-phase|three-phase-hv)
+  SENSOR_OVERRIDES:
+    - "match(^[a-z_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"
   SENSORS:
     - str
   SENSORS_FIRST_INVERTER:
