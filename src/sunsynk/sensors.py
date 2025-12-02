@@ -192,7 +192,7 @@ class SensorDefinitions:
         """Copy the sensor definitions."""
         return SensorDefinitions(all=self.all.copy(), deprecated=self.deprecated.copy())
 
-    def override(self, values: dict[str, int]) -> None:
+    def override(self, values: dict[str, int | float]) -> None:
         """Override existing sensors with new definitions."""
         for key, val in values.items():
             sen_name, _, sen_attr = key.partition(".")

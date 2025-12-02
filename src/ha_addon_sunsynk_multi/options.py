@@ -32,7 +32,7 @@ class Options(MQTTOptions):
     inverters: list[InverterOptions] = attrs.field(factory=list)
     sensor_definitions: str = "single-phase"
     sensor_overrides: list[str] | None = None
-    overrides: dict[str, int] | None = None
+    overrides: dict[str, int | float] | None = None
     sensors: list[str] = attrs.field(factory=list)
     sensors_first_inverter: list[str] = attrs.field(factory=list)
     read_allow_gap: int = 2
@@ -93,7 +93,7 @@ class Options(MQTTOptions):
             for item in self.sensor_overrides:
                 key, _, val = str(item).partition("=")
                 try:
-                    self.overrides[key.strip()] = int(val.strip())
+                    self.overrides[key.strip()] = float(val) if "." in val else int(val)
                 except ValueError:
                     errs[key] = val
             if errs:

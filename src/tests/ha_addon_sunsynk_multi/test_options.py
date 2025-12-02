@@ -77,7 +77,7 @@ def test_to_dict() -> None:
     tests: list[tuple[Any, dict | None]] = [
         (None, None),
         ({}, {}),
-        (["a=1", "b=2", "c=x"], {"a": 1, "b": 2}),
+        (["a=1", "b=2", "c=-0.1", "x=no"], {"a": 1, "b": 2, "c": -0.1}),
     ]
 
     for input_data, expected in tests:

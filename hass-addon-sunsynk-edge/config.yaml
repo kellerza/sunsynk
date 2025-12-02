@@ -31,7 +31,7 @@ options:
       PORT: "tcp://homeassistant.local:502"
   SENSOR_DEFINITIONS: single-phase
   SENSOR_OVERRIDES:
-    - "match(^[a-z_]+(.[a-z]+)?=[0-9]+$)?"
+    - "match(^[a-z_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"
   SENSORS:
     - energy_management
     - power_flow_card
