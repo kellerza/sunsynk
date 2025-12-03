@@ -7,6 +7,7 @@ from itertools import pairwise
 import pytest
 
 from sunsynk.definitions.single_phase import AMPS, CELSIUS, SENSORS, VOLT, WATT
+from sunsynk.rwsensors import NumberRWSensor
 from sunsynk.sensors import (
     BinarySensor,
     Constant,
@@ -306,3 +307,19 @@ def test_override() -> None:
     assert c.value == 42
     sen.override({"constant_sensor.value": 99})
     assert c.value == 99
+
+    s = NumberRWSensor(1, "rw sensor", "V", factor=1, min=1, max=100)
+    sen += s
+    assert s.factor == 1
+    assert s.min == 1
+    assert s.max == 100
+    sen.override(
+        {
+            "rw_sensor.factor": 10,
+            "rw_sensor.min": -50,
+            "rw_sensor.max": 50,
+        }
+    )
+    assert s.factor == 10
+    assert s.min == -50
+    assert s.max == 50

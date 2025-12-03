@@ -9,7 +9,7 @@ import attrs
 from sunsynk.definitions import import_defs
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import Sensor, SensorDefinitions
+from sunsynk.sensors import Constant, Sensor, SensorDefinitions
 
 from .helpers import import_mysensors
 from .options import OPT
@@ -363,6 +363,10 @@ def get_sensors(
             continue
 
         sen = DEFS.all.get(name)
+
+        if isinstance(sen, Constant):  # never add Constants directly
+            continue
+
         if not isinstance(sen, Sensor):
             if warn:
                 _LOG.error("Unknown sensor specified: %s", name)
