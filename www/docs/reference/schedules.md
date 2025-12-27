@@ -46,13 +46,13 @@ Sensor modifiers have been replaced with schedules.
 
 A schedule entry is defined with the following fields:
 
-| Field                      | Description                                                                                                           |
-|----------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| KEY                        | The sensor name, unit or one of the special keys. See [keys](#keys)                                                   |
-| READ_EVERY                 | Read the sensor every x seconds.                                                                                      |
-| REPORT_EVERY               | Report the sensor value to MQTT every x seconds.                                                                      |
-| CHANGE_ANY                 | Report the value immediately upon any change. Useful for configuration and text based sensors. (true/false)                        |
-| CHANGE_BY         | Report the sensor when there is a significant change. Example. Report power immedialtely when the power changes by x. |
+| Field          | Description                                                                                                           |
+|----------------|-----------------------------------------------------------------------------------------------------------------------|
+| KEY            | The sensor name, unit or one of the special keys. See [keys](#keys)                                                   |
+| READ_EVERY     | Read the sensor every x seconds.                                                                                      |
+| REPORT_EVERY   | Report the sensor value to MQTT every x seconds.                                                                      |
+| CHANGE_ANY     | Report the value immediately upon any change. Useful for configuration and text based sensors. (true/false)           |
+| CHANGE_BY      | Report the sensor when there is a significant change. Example. Report power immedialtely when the power changes by x. |
 | CHANGE_PERCENT | Report when there is an x percent change in the sensor value.                                                         |
 
 ## Keys

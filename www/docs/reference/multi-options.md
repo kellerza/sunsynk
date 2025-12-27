@@ -123,7 +123,8 @@ For information about available sensors, refer to the sensor [definitions](./def
 - `SENSORS_FIRST_INVERTER` – Accepts a list of additional sensors for the first inverter, typically
   settings.
 
-- `SENSOR_OVERRIDES` – Allows you to partly override sensor definitions. This is a list of strings, each string contains a key=value.
+- `SENSOR_OVERRIDES` – Allows you to partly override sensor definitions. This is a list of strings,
+  each string contains a key=value.
 
   Example yaml:
 
@@ -136,7 +137,8 @@ For information about available sensors, refer to the sensor [definitions](./def
 
   ::: details The log will show if an override was applied.
 
-  During startup, the log prints all overrides. You can find this in the logs directly after the logs showing which sensor definitions were loaded
+  During startup, the log prints all overrides. You can find this in the logs directly after the
+  logs showing which sensor definitions were loaded
 
   ```log
   [08:19:42] INFO    Importing sensor definitions single-phase (view the source online: https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions/single_phase.py )
