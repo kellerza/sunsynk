@@ -10,6 +10,13 @@ In it's most basic form a sensor the RS486 register and a name. You can find the
 document at various places online, search the [Power Forum](https://www.powerforum.co.za) or
 [Github issue #59](https://github.com/kellerza/sunsynk/issues/59)
 
+::: tip
+
+If you only need to change the min/max/factor of an existing sensor, consider using the
+`SENSOR_OVERRIDES` option - see the [multi-options](./multi-options.md) documentation for details.
+
+:::
+
 The `/share/` folder can be accessed through the Samba addon in Home Assistant. You can create the
 `hass-addon-sunsynk` folder & the `mysensors.py` file
 
