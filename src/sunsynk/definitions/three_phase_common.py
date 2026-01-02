@@ -213,6 +213,7 @@ SENSORS += (
 ###########
 SENSORS += (
     SwitchRWSensor(80, "Inverter enabled", on=1),  # 0=off, 1=on
+    SwitchRWSensor(179, "Off Grid mode", on=1, bitmask=1),
     NumberRWSensor(128, "Grid Charge Battery current", AMPS, max=185),
     NumberRWSensor(126, "Grid Charge Start Battery Voltage", VOLT, 0.01, max=6300),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
@@ -311,6 +312,24 @@ SENSORS += (
     BATTERY_SHUTDOWN_VOLT,
     BATTERY_RESTART_VOLT,
     BATTERY_LOW_VOLT,
+)
+
+
+#####
+# BMS
+#####
+SENSORS += (
+    Sensor(210, "Battery 1 BMS charging voltage", VOLT, 0.01),
+    Sensor(211, "Battery 1 BMS discharging voltage", VOLT, 0.01),
+    Sensor(212, "Battery 1 BMS charging current limit", AMPS),
+    Sensor(213, "Battery 1 BMS discharging current limit", AMPS),
+    Sensor(214, "Battery 1 BMS SOC", "%"),
+    Sensor(215, "Battery 1 BMS voltage", VOLT, 0.01),
+    Sensor(216, "Battery 1 BMS current", AMPS, 0.01),
+    TempSensor(217, "Battery 1 BMS temperature", CELSIUS, 0.1),
+    Sensor(218, "Battery 1 BMS max charge current limit", AMPS),
+    Sensor(219, "Battery 1 BMS max discharge current limit", AMPS),
+    Sensor(220, "Battery 1 BMS alarm flag", ""),
 )
 
 #################
@@ -659,6 +678,6 @@ SENSORS += (
 
 SENSORS.deprecated.update(
     {
-        "priority_mode": "priority_load",
+        # "priority_mode": "priority_load",
     }
 )

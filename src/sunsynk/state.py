@@ -7,7 +7,7 @@ from typing import cast
 
 import attr
 
-from sunsynk.helpers import NumType
+from sunsynk.helpers import NumType, as_num
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import BinarySensor, Sensor, ValType
 
@@ -50,6 +50,19 @@ class InverterState:
     def sensors(self) -> Iterator[Sensor]:
         """Get a generator of all sensors."""
         return iter(self.values.keys())
+
+    def resolve_num(
+        self,
+        val: NumType | Sensor,
+        default: NumType = 0,
+    ) -> NumType:
+        """Resolve a number helper."""
+        if isinstance(val, (int | float)):
+            return val
+        if isinstance(val, Sensor):
+            res = self.get(val, default)
+            return as_num(res)
+        return as_num(val)
 
     def update(self, new_regs: dict[int, int]) -> None:
         """Update the state."""

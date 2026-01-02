@@ -293,26 +293,39 @@ def test_source() -> None:
 
 def test_override() -> None:
     """Tests."""
-    s = Sensor(1, "test sensor", "V", -1)
     sen = SensorDefinitions()
-    sen += s
-
-    assert s.factor == -1
+    s0 = Sensor(1, "test sensor", "V", -1)
+    sen += s0
     sen.override({"test_sensor.factor": -99})
-    assert s.factor == -99
+    s1 = sen.all["test_sensor"]
+    assert s0.factor == -1
+    assert s1.factor == -99
 
-    c = Constant((), "constant sensor", value=42)
-    sen += c
 
-    assert c.value == 42
-    sen.override({"constant_sensor.value": 99})
-    assert c.value == 99
+def test_override_const() -> None:
+    """Tests."""
+    sen = SensorDefinitions()
+    c0 = Constant((), "constant sensor", value=42)
+    s1 = NumberRWSensor(1, "rw sensor", "V", factor=1, min=c0, max=100)
+    assert s1.min == c0
 
-    s = NumberRWSensor(1, "rw sensor", "V", factor=1, min=1, max=100)
-    sen += s
-    assert s.factor == 1
-    assert s.min == 1
-    assert s.max == 100
+    sen += (c0, s1)
+
+    sen.override({"constant_sensor": 99})
+    c1 = sen.all["constant_sensor"]
+    assert c0.value == 42
+    assert isinstance(c1, Constant) and c1.value == 99
+    assert isinstance(sen.all["rw_sensor"], NumberRWSensor)
+    s2 = sen.all["rw_sensor"]
+    assert s2.min is c1
+    assert s2.min is not c0
+
+
+def test_override_many() -> None:
+    """Tests."""
+    sen = SensorDefinitions()
+    s0 = NumberRWSensor(1, "rw sensor", "V", factor=1, min=1, max=100)
+    sen += s0
     sen.override(
         {
             "rw_sensor.factor": 10,
@@ -320,6 +333,11 @@ def test_override() -> None:
             "rw_sensor.max": 50,
         }
     )
-    assert s.factor == 10
-    assert s.min == -50
-    assert s.max == 50
+    assert s0.factor == 1
+    assert s0.min == 1
+    assert s0.max == 100
+    s1 = sen.all["rw_sensor"]
+    assert isinstance(s1, NumberRWSensor)
+    assert s1.factor == 10
+    assert s1.min == -50
+    assert s1.max == 50

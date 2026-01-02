@@ -52,11 +52,6 @@ class AInverter:
     entity_cbstats: MQTTSensorEntity = attrs.field(init=False)
     cb: AsyncCallback = attrs.field(init=False)
 
-    @property
-    def get_state(self) -> Callable:
-        """Return the get_state function on the inverter."""
-        return self.inv.state.get
-
     async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> None:
         """Read from the Modbus interface."""
         try:

@@ -43,7 +43,7 @@ async def test_ss_write_sensor(
     sen = NumberRWSensor((1,), "s1")
     state.track(sen)
 
-    assert sen.value_to_reg(44, state.get) == (44,)
+    assert sen.value_to_reg(44, state) == (44,)
 
     await ss.write_sensor(sen, 44)
     assert state.registers == {1: 44}
@@ -81,7 +81,7 @@ async def test_ss_write_sensor_bm(
     state.update({1: 0xFF})
     assert state.registers == {1: 0xFF}
 
-    assert sen.value_to_reg(0x10, state.get) == (0x10,)
+    assert sen.value_to_reg(0x10, state) == (0x10,)
     assert "outside" not in caplog.text
 
     rhr.return_value = [0xF8]  # write will perform a read!

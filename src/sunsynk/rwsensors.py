@@ -4,24 +4,25 @@ from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Callable, Generator
+from collections.abc import Generator
+from typing import TYPE_CHECKING
 
 import attrs
 from mqtt_entity.utils import BOOL_OFF, BOOL_ON
 
 from sunsynk.helpers import (
-    NumType,
     RegType,
     SSTime,
     ValType,
-    as_num,
     hex_str,
     pack_value,
 )
 from sunsynk.sensors import Sensor
 
+if TYPE_CHECKING:
+    from sunsynk.state import InverterState
+
 _LOG = logging.getLogger(__name__)
-ResolveType = Callable[[Sensor, ValType], ValType] | None
 
 
 @attrs.define(slots=True, eq=False)
@@ -40,7 +41,7 @@ class RWSensor(Sensor):
             return (regs[0] & self.bitmask, *regs[1:])
         return regs
 
-    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+    def value_to_reg(self, value: ValType, state: InverterState) -> RegType:
         """Get the reg value from a display value."""
         raise NotImplementedError
 
@@ -75,13 +76,13 @@ class NumberRWSensor(RWSensor):
         """Get a list of sensors upon which this sensor depends."""
         return [s for s in (self.min, self.max) if isinstance(s, Sensor)]
 
-    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+    def value_to_reg(self, value: ValType, state: InverterState) -> RegType:
         """Get the reg value from a display value."""
         if not self.address:
             raise NotImplementedError("Cannot write to a sensor with no address")
         fval = float(value)  # type:ignore[arg-type]
-        minv = resolve_num(resolve, self.min, 0)
-        maxv = resolve_num(resolve, self.max, 100)
+        minv = state.resolve_num(self.min, 0)
+        maxv = state.resolve_num(self.max, 100)
         val = int(max(minv, min(maxv, fval)) / abs(self.factor))
         return self.reg(
             *pack_value(val, bits=len(self.address) * 16, signed=self.factor < 0)
@@ -106,15 +107,15 @@ class SelectRWSensor(RWSensor):
         """Get the available values for this sensor."""
         return list(self.options.values())
 
-    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+    def value_to_reg(self, value: ValType, state: InverterState) -> RegType:
         """Get the reg value from a display value, or the current reg value if out of range."""
         value = str(value)
         regs = [r for r, v in self.options.items() if v == value]
         if regs:
             return self.reg(regs[0])
         _LOG.warning("Unknown %s", value)
-        current = resolve(self, None) if resolve else 0
-        return self.value_to_reg(current, None)  # type:ignore[attr-defined]
+        current = state.get(self, "")
+        return self.value_to_reg(current, state)
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the register."""
@@ -170,7 +171,7 @@ class SwitchRWSensor(RWSensor):
             return res == self.on
         return res != self.off
 
-    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+    def value_to_reg(self, value: ValType, state: InverterState) -> RegType:
         """Get the reg value from a display value, or the current reg value if out of range."""
         value = str(value)
         if value == BOOL_ON:
@@ -190,7 +191,7 @@ class SystemTimeRWSensor(RWSensor):
         if len(self.address) != 3:
             raise ValueError("SystemTimeRWSensor requires exactly 3 registers")
 
-    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+    def value_to_reg(self, value: ValType, state: InverterState) -> RegType:
         """Get the reg value from a display value."""
         redt = re.compile(r"(2\d{3})-(\d{2})-(\d{2}) ([012]?\d{1}):(\d{2}):(\d{2})")
         match = redt.fullmatch(str(value).strip())
@@ -227,18 +228,19 @@ class TimeRWSensor(RWSensor):
     min: TimeRWSensor | None = None
     max: TimeRWSensor | None = None
 
-    def available_values(
-        self, step_minutes: int, resolve: Callable[[Sensor, ValType], ValType]
-    ) -> list[str]:
+    def available_values(self, step_minutes: int, state: InverterState) -> list[str]:
         """Get the available values for this sensor."""
         full_day = 24 * 60
 
-        min_val = SSTime(string=str(resolve(self.min, 0))).minutes if self.min else 0
-        max_val = (
-            SSTime(string=str(resolve(self.max, 0))).minutes if self.max else full_day
+        min_val = (
+            SSTime(string=str(state.get(self.min, "0:00"))).minutes if self.min else 0
         )
-        val = SSTime(string=str(resolve(self, 0))).minutes
-
+        max_val = (
+            SSTime(string=str(state.get(self.max, "24:00"))).minutes
+            if self.max
+            else full_day
+        )
+        val = SSTime(string=str(state.get(self, "0:00"))).minutes
         time_range = self._range(min_val, max_val, val, step_minutes, full_day)
         return list(map(lambda m: SSTime(minutes=m).str_value, time_range))
 
@@ -251,7 +253,7 @@ class TimeRWSensor(RWSensor):
         """Decode the time from a register."""
         return SSTime(register=regs[0]).str_value
 
-    def value_to_reg(self, value: ValType, resolve: ResolveType) -> RegType:
+    def value_to_reg(self, value: ValType, state: InverterState) -> RegType:
         """Get the reg value from a display value."""
         if not self.address:
             raise NotImplementedError("Cannot write to a sensor with no address")
@@ -268,17 +270,3 @@ class TimeRWSensor(RWSensor):
             yield i % modulo
         if start == end or start != end % modulo:
             yield end
-
-
-def resolve_num(
-    resolve: ResolveType,
-    val: NumType | Sensor,
-    default: NumType = 0,
-) -> NumType:
-    """Resolve a number helper."""
-    if isinstance(val, (int | float)):
-        return val
-    if isinstance(val, Sensor):
-        res = resolve(val, default) if resolve else 0
-        return as_num(res)
-    return as_num(val)

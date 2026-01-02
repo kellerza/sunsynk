@@ -23,7 +23,7 @@ def test_bitmask(caplog: pytest.LogCaptureFixture, state: InverterState) -> None
     """Tests."""
     s = RWSensor(1, "", bitmask=0x1)
     with pytest.raises(NotImplementedError):
-        s.value_to_reg(None, state.get)
+        s.value_to_reg(None, state)
 
     s = NumberRWSensor(1, "", min=1, max=10, bitmask=0x1)
 
@@ -37,7 +37,7 @@ def test_bitmask(caplog: pytest.LogCaptureFixture, state: InverterState) -> None
     state.update({1: 3})
 
     val = 3
-    reg = s.value_to_reg(val, state.get)
+    reg = s.value_to_reg(val, state)
     reg = s.reg(*reg, msg=f"value was {val}")
 
     assert reg == (1,)
@@ -59,7 +59,7 @@ def test_bitmask2(caplog: pytest.LogCaptureFixture, state: InverterState) -> Non
     assert state[s] is True
 
     val = "OFF"
-    reg = s.value_to_reg(val, state.get)
+    reg = s.value_to_reg(val, state)
     reg = s.reg(*reg, msg=f"value was {val}")
     assert reg == (0,)
 
@@ -92,14 +92,13 @@ def test_number_rw(state: InverterState) -> None:
     state.update({1: 500})
     assert state[s] == 500  # does not take min/max into account!
 
-    assert s.value_to_reg(200, state.get) == (200,)
-    assert s.value_to_reg(500, state.get) == (300,)
-    assert s.value_to_reg(-1, state.get) == (1,)
-
+    assert s.value_to_reg(200, state) == (200,)
+    assert s.value_to_reg(500, state) == (300,)
+    assert s.value_to_reg(-1, state) == (1,)
     # writing negative values (when allowed by min)
     s.min = -10
     s.factor = -1  # indicate signed values
-    assert s.value_to_reg(-1, state.get) == (65535,)
+    assert s.value_to_reg(-1, state) == (65535,)
 
     s = NumberRWSensor(1, "s2", factor=0.01)
     state.track(s)
@@ -112,11 +111,11 @@ def test_number_rw(state: InverterState) -> None:
     reg55 = (55, 1)
     res55 = (1 << 16) + 55
     assert long.reg_to_value(reg55) == res55
-    assert long.value_to_reg(res55, state.get) == reg55
+    assert long.value_to_reg(res55, state) == reg55
 
     with pytest.raises(NotImplementedError):
         s.address = tuple()
-        s.value_to_reg(123, state.get)
+        s.value_to_reg(123, state)
 
 
 def test_number_rw2(state: InverterState) -> None:
@@ -129,7 +128,7 @@ def test_number_rw2(state: InverterState) -> None:
     assert state.registers[290] == 4850
     assert state[s] == 48.5
 
-    assert s.value_to_reg(48, state.get) == (4800,)
+    assert s.value_to_reg(48, state) == (4800,)
 
     # signed RW.
     # https://github.com/kellerza/sunsynk/issues/145
@@ -137,7 +136,7 @@ def test_number_rw2(state: InverterState) -> None:
     state.track(s2)
     state.update({206: 0xFFBA})
     assert state[s2] == -70
-    assert s2.value_to_reg(-70, state.get) == (0xFFBA,)
+    assert s2.value_to_reg(-70, state) == (0xFFBA,)
 
 
 def test_select_rw(caplog: pytest.LogCaptureFixture, state: InverterState) -> None:
@@ -145,7 +144,7 @@ def test_select_rw(caplog: pytest.LogCaptureFixture, state: InverterState) -> No
     s = SelectRWSensor(1, "", options={1: "one", 2: "two"})
 
     assert s.reg_to_value((2,)) == "two"
-    assert s.value_to_reg("two", state.get) == (2,)
+    assert s.value_to_reg("two", state) == (2,)
     assert s.reg_to_value((5,)) is None
 
     state.track(s)
@@ -157,7 +156,7 @@ def test_select_rw(caplog: pytest.LogCaptureFixture, state: InverterState) -> No
 
     assert s.available_values() == ["one", "two"]
 
-    assert s.value_to_reg("five", state.get) == (2,)
+    assert s.value_to_reg("five", state) == (2,)
     assert caplog.records[-1].message == "Unknown five"
     assert caplog.records[-1].levelname == "WARNING"
 
@@ -168,12 +167,12 @@ def test_systemtime_rw(state: InverterState) -> None:
     state.track(s)
 
     tim = "2023-03-01 12:34:56"
-    res = s.value_to_reg(tim, state.get)
+    res = s.value_to_reg(tim, state)
     assert res == (5891, 268, 8760)
     assert s.reg_to_value(res) == tim
 
     with pytest.raises(ValueError):
-        s.value_to_reg("2023-03-01 12:34", state.get)
+        s.value_to_reg("2023-03-01 12:34", state)
 
 
 def test_time_rw(state: InverterState) -> None:
@@ -188,9 +187,9 @@ def test_time_rw(state: InverterState) -> None:
     )
     assert state[s] == "3:00"
 
-    assert s.value_to_reg("0:00", state.get) == (0,)
-    assert s.value_to_reg("4:01", state.get) == (401,)
-    assert s.value_to_reg("23:59", state.get) == (2359,)
+    assert s.value_to_reg("0:00", state) == (0,)
+    assert s.value_to_reg("4:01", state) == (401,)
+    assert s.value_to_reg("23:59", state) == (2359,)
 
     assert s.dependencies == []
     s.min = TimeRWSensor(50, "min", factor=0.1)
@@ -205,10 +204,16 @@ def test_time_rw(state: InverterState) -> None:
     assert state[s.min] == "2:00"
     assert state[s.max] == "3:00"
 
-    assert s.available_values(15, state.get) == ["2:00", "2:15", "2:30", "2:45", "3:00"]
+    assert s.available_values(15, state) == [
+        "2:00",
+        "2:15",
+        "2:30",
+        "2:45",
+        "3:00",
+    ]
 
     s.reg_to_value((201,))
-    assert s.available_values(15, state.get) == [
+    assert s.available_values(15, state) == [
         "2:00",
         "2:15",
         "2:30",
@@ -223,7 +228,7 @@ def test_time_rw(state: InverterState) -> None:
             70: 30,
         }
     )
-    assert s.available_values(15, state.get) == [
+    assert s.available_values(15, state) == [
         "23:30",
         "23:45",
         "0:00",
@@ -237,7 +242,7 @@ def test_time_rw(state: InverterState) -> None:
             70: 200,
         }
     )
-    assert s.available_values(15, state.get) == ["2:00"]
+    assert s.available_values(15, state) == ["2:00"]
 
 
 # def test_update_sensor(caplog) -> None:

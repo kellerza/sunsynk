@@ -19,8 +19,12 @@ from sunsynk.sensors import (
 SENSORS = SENSORS.copy()
 SENSORS.override(
     {
-        "battery_min_voltage": 160,
-        "battery_max_voltage": 700,
+        "Battery min voltage": 160,
+        "Battery max voltage": 700,
+        "Battery 1 BMS charging voltage.factor": 0.1,
+        "Battery 1 BMS discharging voltage.factor": 0.1,
+        "Battery 1 BMS voltage.factor": 0.1,
+        "Battery 1 BMS current.factor": 0.1,
     }
 )
 
@@ -182,17 +186,17 @@ SENSORS += (
         },
     ),
     EnumSensor(229, "Battery 1 Manufacturer", options=hv_battery_manufacturers),
-    Sensor(210, "Battery 1 BMS charging voltage", VOLT, 0.1),
-    Sensor(211, "Battery 1 BMS discharging voltage", VOLT, 0.1),
-    Sensor(212, "Battery 1 BMS charging current limit", AMPS),
-    Sensor(213, "Battery 1 BMS discharging current limit", AMPS),
-    Sensor(214, "Battery 1 BMS SOC", "%"),
-    Sensor(215, "Battery 1 BMS voltage", VOLT, 0.1),
-    Sensor(216, "Battery 1 BMS current", AMPS, 0.1),
-    TempSensor(217, "Battery 1 BMS temperature", CELSIUS, 0.1),
-    Sensor(218, "Battery 1 BMS max charge current limit", AMPS),
-    Sensor(219, "Battery 1 BMS max discharge current limit", AMPS),
-    Sensor(220, "Battery 1 BMS alarm flag", ""),
+    # Sensor(210, "Battery 1 BMS charging voltage", VOLT, 0.1),
+    # Sensor(211, "Battery 1 BMS discharging voltage", VOLT, 0.1),
+    # Sensor(212, "Battery 1 BMS charging current limit", AMPS),
+    # Sensor(213, "Battery 1 BMS discharging current limit", AMPS),
+    # Sensor(214, "Battery 1 BMS SOC", "%"),
+    # Sensor(215, "Battery 1 BMS voltage", VOLT, 0.1),
+    # Sensor(216, "Battery 1 BMS current", AMPS, 0.1),
+    # TempSensor(217, "Battery 1 BMS temperature", CELSIUS, 0.1),
+    # Sensor(218, "Battery 1 BMS max charge current limit", AMPS),
+    # Sensor(219, "Battery 1 BMS max discharge current limit", AMPS),
+    # Sensor(220, "Battery 1 BMS alarm flag", ""),
     Sensor(221, "Battery 1 BMS fault flag", ""),
     SwitchRWSensor(
         222,
@@ -257,11 +261,11 @@ SENSORS += (
 
 SENSORS.deprecated.update(
     {
-        "priority_mode": "priority_load",
-        "battery_temperature": "battery_1_temperature",
-        "battery voltage": "battery_1_voltage",
-        "battery_soc": "battery_1_soc",
-        "battery_power": "battery_1_power",
-        "battery_current": "battery_1_current",
+        # "priority_mode": "priority_load",
+        # "battery_temperature": "battery_1_temperature",
+        # "battery voltage": "battery_1_voltage",
+        # "battery_soc": "battery_1_soc",
+        # "battery_power": "battery_1_power",
+        # "battery_current": "battery_1_current",
     }
 )

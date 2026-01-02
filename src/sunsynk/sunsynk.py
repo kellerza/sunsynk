@@ -40,7 +40,7 @@ class Sunsynk:
         self, sensor: RWSensor, value: ValType, *, msg: str = ""
     ) -> None:
         """Write a sensor."""
-        regs = sensor.value_to_reg(value, self.state.get)
+        regs = sensor.value_to_reg(value, self.state)
         # if bitmask we should READ the register first!!!
         if sensor.bitmask:
             _LOG.debug("0 - %s", regs)

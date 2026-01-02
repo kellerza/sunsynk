@@ -194,9 +194,25 @@ class SensorDefinitions:
 
     def override(self, values: dict[str, int | float]) -> None:
         """Override existing sensors with new definitions."""
+        new_sensors = dict[str, Sensor]()
+
+        def _copy(old: Sensor) -> Sensor:
+            sid = old.id
+            if news := new_sensors.get(sid):
+                return news
+            news = self.all[sid] = new_sensors[sid] = attrs.evolve(old)
+
+            # replace all references
+            for sen in self.all.values():
+                for attrn in dir(sen):
+                    cur = getattr(sen, attrn, None)
+                    if isinstance(cur, Sensor) and old == cur:
+                        setattr(_copy(sen), attrn, news)
+            return news
+
         for key, val in values.items():
             sen_name, _, sen_attr = key.partition(".")
-            sen = self.all.get(sen_name)
+            sen = self.all.get(slug(sen_name))
             if sen is None:
                 _LOG.error("Override: Sensor %s not found, skipping", sen_name)
                 continue
@@ -205,9 +221,8 @@ class SensorDefinitions:
                     _LOG.warning(
                         "Override for %s is not a Constant sensor, skipping", key
                     )
-                else:
-                    sen.value = val
-                continue
+                    continue
+                sen_attr = "value"
 
             if not hasattr(sen, sen_attr):
                 _LOG.error(
@@ -215,7 +230,7 @@ class SensorDefinitions:
                 )
                 continue
 
-            setattr(sen, sen_attr, val)
+            setattr(_copy(sen), sen_attr, val)
             _LOG.info("Override: Sensor %s.%s set to %s", key, sen_attr, val)
 
 

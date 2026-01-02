@@ -23,9 +23,9 @@ SENSORS += (
 
 SENSORS.deprecated.update(
     {
-        "grid_voltage": "grid_l1_voltage",
-        "battery_activate": "battery_wake_up",
-        "grid_connected_status": "grid_status",
+        # "grid_voltage": "grid_l1_voltage",
+        # "battery_activate": "battery_wake_up",
+        # "grid_connected_status": "grid_status",
     }
 )
 
