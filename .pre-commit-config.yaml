@@ -36,9 +36,12 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: mypy
-        name: mypy
-        entry: uv run mypy . --config-file pyproject.toml
+      - id: pyright
+        name: pyright
+        entry: uv run pyright
+      # - id: mypy
+      #   name: mypy
+      #   entry: uv run mypy . --config-file pyproject.toml
         language: system
         types: [python]
         pass_filenames: false

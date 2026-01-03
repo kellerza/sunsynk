@@ -36,8 +36,8 @@ urls.Source = "https://github.com/kellerza/sunsynk"
 [dependency-groups]
 dev = [
   "codespell",
-  "mypy",
   "pyproject-fmt",
+  "pyright",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
@@ -86,8 +86,8 @@ log_cli_level = "DEBUG"
 asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
-[tool.mypy]
-disallow_untyped_defs = true
-ignore_missing_imports = true
-exclude = [ "build" ]
-enable_error_code = [ "ignore-without-code" ]
+# [tool.mypy]
+# disallow_untyped_defs = true
+# ignore_missing_imports = true
+# exclude = [ "build" ]
+# enable_error_code = [ "ignore-without-code" ]

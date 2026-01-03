@@ -40,8 +40,27 @@ jobs:
           args: "format --check"
           version: ${{ env.RUFF_VERSION }}
 
-  mypy:
-    name: Check mypy
+  # mypy:
+  #   name: Check mypy
+  #   needs: [ruff]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #     - name: "Set up Python"
+  #       uses: actions/setup-python@v6
+  #       with:
+  #         python-version-file: "pyproject.toml"
+  #     - name: Install uv
+  #       uses: astral-sh/setup-uv@v7
+  #       with:
+  #         version: ${{ env.UV_VERSION }}
+  #     - name: Install Requirements
+  #       run: uv sync --frozen --all-extras
+  #     - name: Run mypy
+  #       run: uv run mypy . --config-file pyproject.toml
+
+  pyright:
+    name: Check pyright
     needs: [ruff]
     runs-on: ubuntu-latest
     steps:
@@ -54,10 +73,14 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.UV_VERSION }}
+      - name: "Set up Node JS"
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
       - name: Install Requirements
         run: uv sync --frozen --all-extras
-      - name: Run mypy
-        run: uv run mypy . --config-file pyproject.toml
+      - name: Run pyright
+        run: uv run pyright
 
   pytest:
     name: Run tests Python ${{ matrix.python-version }}
