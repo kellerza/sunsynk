@@ -65,7 +65,7 @@ class ConnectorManager:
         )
 
         # Set dongle serial for Solarman
-        if hasattr(suns, "dongle_serial_number") and conn_config.dongle_serial:
+        if isinstance(suns, SolarmanSunsynk) and conn_config.dongle_serial:
             suns.dongle_serial_number = conn_config.dongle_serial
 
         return suns
@@ -98,7 +98,7 @@ class ConnectorManager:
         """Close all connector connections."""
         for name, connector in self.connectors.items():
             try:
-                if hasattr(connector, "disconnect"):
+                if isinstance(connector, SolarmanSunsynk):
                     await connector.disconnect()
                 _LOG.info("Closed connector: %s", name)
             except Exception as err:

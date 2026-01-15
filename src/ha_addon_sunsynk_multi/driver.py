@@ -110,8 +110,9 @@ def _create_legacy_connection(inv: InverterOptions, opt: Options) -> Sunsynk:
         )
 
     if opt.driver == "solarman":
-        # Type ignore needed because mypy doesn't understand the factory is SolarmanSunsynk here
-        suns = factory(  # type: ignore[call-arg]
+        from sunsynk.solarmansunsynk import SolarmanSunsynk  # noqa: PLC0415
+
+        suns = SolarmanSunsynk(
             port=inv.port if inv.port else port_prefix + opt.debug_device,
             server_id=inv.modbus_id,
             timeout=opt.timeout,

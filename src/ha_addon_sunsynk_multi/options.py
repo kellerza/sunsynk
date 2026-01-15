@@ -4,7 +4,11 @@ import logging
 
 import attrs
 import cattrs
-from mqtt_entity.options import CONVERTER, MQTTOptions, transform_error
+from mqtt_entity.options import (
+    CONVERTER,
+    MQTTOptions,
+    transform_error,  # pyright: ignore[reportPrivateImportUsage]
+)
 
 from sunsynk.helpers import slug
 

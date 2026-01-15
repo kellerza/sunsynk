@@ -28,7 +28,7 @@ class InverterWrapper(Sunsynk):
     connector_name: str = attrs.field()
     """Name of the connector (for lock access)."""
 
-    server_id: int = attrs.field()
+    server_id: int = attrs.field(default=1)
     """Modbus server ID for this inverter."""
 
     def __attrs_post_init__(self) -> None:
