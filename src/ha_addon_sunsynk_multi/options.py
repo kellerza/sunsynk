@@ -17,37 +17,42 @@ from .timer_schedule import Schedule
 _LOG = logging.getLogger(__name__)
 
 
-def _convert_connectors(data: list | dict) -> "list[ConnectorOptions]":
-    """Convert list of dicts or dict of dicts to list of ConnectorOptions."""
-    _LOG.debug("_convert_connectors called with: %s (type: %s)", data, type(data))
+def _convert_connectors(data: list) -> "list[ConnectorOptions]":
+    """Convert list of dicts to list of ConnectorOptions."""
+    if not isinstance(data, list):
+        raise ValueError(f"Expected list, got {type(data)}")
 
-    if isinstance(data, dict):
-        # Convert dict format to list format
-        # e.g., {"tcp_gateway": {...}} -> [{"name": "tcp_gateway", ...}]
-        connector_list = []
-        for name, config in data.items():
-            connector_config = config.copy()
-            connector_config["name"] = name  # Add the name from the key
-            connector_list.append(connector_config)
-        data = connector_list
-        _LOG.debug("Converted dict to list format: %s", data)
-    elif not isinstance(data, list):
-        _LOG.error("Expected list or dict, got %s: %s", type(data), data)
-        raise ValueError(f"Expected list or dict, got {type(data)}")
+    # Normalize field names within each connector config
+    normalized_data = []
+    for item in data:
+        if isinstance(item, dict):
+            # Create a copy and normalize field names
+            normalized_item = item.copy()
 
-    # Debug logging
-    _LOG.debug("Converting connectors: %s", data)
-    for i, item in enumerate(data):
-        _LOG.debug("Connector[%d]: %s (type: %s)", i, item, type(item))
-        if not isinstance(item, dict):
-            _LOG.error(
-                "Connector[%d] is not a dict: %s (type: %s)", i, item, type(item)
-            )
-            raise ValueError(
-                f"Connector[{i}] is not a dict: {item} (type: {type(item)})"
-            )
+            # Map uppercase field names to lowercase
+            field_mapping = {
+                "NAME": "name",
+                "TYPE": "type",
+                "HOST": "host",
+                "PORT": "port",
+                "DRIVER": "driver",
+                "TIMEOUT": "timeout",
+                "DONGLE_SERIAL": "dongle_serial",
+                "BAUDRATE": "baudrate",
+            }
 
-    return [cattrs.structure(item, ConnectorOptions) for item in data]
+            for upper_key, lower_key in field_mapping.items():
+                if upper_key in normalized_item and lower_key not in normalized_item:
+                    normalized_item[lower_key] = normalized_item.pop(upper_key)
+                    _LOG.debug(
+                        "Normalized connector field: %s -> %s", upper_key, lower_key
+                    )
+
+            normalized_data.append(normalized_item)
+        else:
+            normalized_data.append(item)
+
+    return [cattrs.structure(item, ConnectorOptions) for item in normalized_data]
 
 
 def _convert_inverters(data: list) -> "list[InverterOptions]":

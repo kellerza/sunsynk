@@ -17,27 +17,27 @@ The `CONNECTORS` option allows you to define shared connections that can be used
 
 ```yaml
 CONNECTORS:
-  tcp_gateway:
-    type: tcp
-    host: 192.168.1.100
-    port: 502
-    driver: pymodbus
-    timeout: 10
+  - NAME: tcp_gateway
+    TYPE: tcp
+    HOST: 192.168.1.100
+    PORT: 502
+    DRIVER: pymodbus
+    TIMEOUT: 10
   
-  solarman_dongle:
-    type: solarman
-    host: 192.168.1.101
-    port: 8899
-    dongle_serial: 12345678
-    driver: solarman
-    timeout: 10
+  - NAME: solarman_dongle
+    TYPE: solarman
+    HOST: 192.168.1.101
+    PORT: 8899
+    DONGLE_SERIAL: 12345678
+    DRIVER: solarman
+    TIMEOUT: 10
   
-  serial_port:
-    type: serial
-    port: /dev/ttyUSB0
-    baudrate: 9600
-    driver: pymodbus
-    timeout: 10
+  - NAME: serial_port
+    TYPE: serial
+    PORT: /dev/ttyUSB0
+    BAUDRATE: 9600
+    DRIVER: pymodbus
+    TIMEOUT: 10
 ```
 
 ### Connector Types
@@ -61,23 +61,23 @@ CONNECTORS:
 
 ```yaml
 CONNECTORS:
-  tcp_gateway:
-    type: tcp
-    host: 192.168.1.100
-    port: 502
-    driver: pymodbus
-    timeout: 10
+  - NAME: tcp_gateway
+    TYPE: tcp
+    HOST: 192.168.1.100
+    PORT: 502
+    DRIVER: pymodbus
+    TIMEOUT: 10
 
 INVERTERS:
-  - connector: tcp_gateway
-    modbus_id: 1
-    ha_prefix: inverter1
-    serial_nr: "ABC123"
+  - CONNECTOR: tcp_gateway
+    MODBUS_ID: 1
+    HA_PREFIX: inverter1
+    SERIAL_NR: "ABC123"
     
-  - connector: tcp_gateway  # Same connector, different modbus_id
-    modbus_id: 2
-    ha_prefix: inverter2
-    serial_nr: "DEF456"
+  - CONNECTOR: tcp_gateway  # Same connector, different modbus_id
+    MODBUS_ID: 2
+    HA_PREFIX: inverter2
+    SERIAL_NR: "DEF456"
 ```
 
 This configuration allows multiple inverters to share the same TCP connection to a gateway, enabling one Modbus gateway/master to monitor multiple inverters. Each inverter maintains its own independent state and can be configured with different Modbus IDs, making this suitable for both parallel inverter setups and standalone inverters connected to the same gateway.

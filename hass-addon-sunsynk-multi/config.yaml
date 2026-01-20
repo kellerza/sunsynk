@@ -50,12 +50,22 @@ options:
   PROG_TIME_INTERVAL: 15
 schema:
   DRIVER: list(pymodbus|umodbus|solarman)
+  CONNECTORS:
+    - NAME: str
+      TYPE: list(tcp|serial|solarman)
+      HOST: str?
+      PORT: str?
+      DRIVER: list(pymodbus|umodbus|solarman)?
+      TIMEOUT: int(1,120)?
+      DONGLE_SERIAL: str?
+      BAUDRATE: int(1200,115200)?
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
       MODBUS_ID: int(1,16)
       DONGLE_SERIAL_NUMBER: str?
-      PORT: str
+      PORT: str?
+      CONNECTOR: str?
   SENSOR_DEFINITIONS: list(single-phase|single-phase-16kw|three-phase|three-phase-hv)
   SENSOR_OVERRIDES:
     - "match(^[a-z0-9_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"
