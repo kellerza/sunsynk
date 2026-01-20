@@ -177,6 +177,49 @@ def test_sensor16_negative_values() -> None:
     assert s.reg_to_value((0x8000, 0xFFFF)) == -32768
 
 
+def test_sensor16_classic_firmware_mode() -> None:
+    """Test classic firmware mode where sign detection from reg[1] is disabled.
+
+    When SENSOR16_SIGN_DETECTION is False, the sensor uses self.factor < 0
+    to determine signedness instead of checking reg[1] == 0xFFFF.
+    This is for older firmware that doesn't support 32-bit registers.
+    """
+    import sunsynk.sensors  # noqa: PLC0415
+
+    # Save original setting
+    original_setting = sunsynk.sensors.SENSOR16_SIGN_DETECTION
+
+    try:
+        # Disable sign detection from reg[1]
+        sunsynk.sensors.SENSOR16_SIGN_DETECTION = False
+
+        s = Sensor16((1, 2), "power", "W", -1)
+
+        # With classic mode and factor < 0, values should be signed
+        # 0xFFFF with reg[1]=0 would be -1 in classic mode (signed interpretation)
+        # because factor < 0 means use signed
+        result = s.reg_to_value((0xFFFF, 0x0))
+        assert result == -1, f"Classic mode: 0xFFFF should be -1 (signed), got {result}"
+
+        # 32768 (0x8000) with factor < 0 should be -32768
+        s2 = Sensor16((1, 2), "power", "W", -1)
+        result2 = s2.reg_to_value((0x8000, 0x0))
+        assert result2 == -32768, (
+            f"Classic mode: 0x8000 should be -32768, got {result2}"
+        )
+
+        # With positive factor, values should be unsigned
+        s3 = Sensor16((1, 2), "power", "W", 1)
+        result3 = s3.reg_to_value((0xFFFF, 0x0))
+        assert result3 == 65535, (
+            f"Classic mode positive factor: 0xFFFF should be 65535, got {result3}"
+        )
+
+    finally:
+        # Restore original setting
+        sunsynk.sensors.SENSOR16_SIGN_DETECTION = original_setting
+
+
 def test_group() -> None:
     """Tests."""
     sen = [

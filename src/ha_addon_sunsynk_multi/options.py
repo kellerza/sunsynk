@@ -210,10 +210,26 @@ class Options(MQTTOptions):
     driver: str = "pymodbus"
     manufacturer: str = "Sunsynk"
     debug_device: str = ""
+    sensor16_sign_detection: bool = True
+    """Enable sign detection from reg[1] for Sensor16 (modern firmware).
+
+    When True (default): uses reg[1] == 0xFFFF to detect negative values.
+    When False: uses classic behavior based on sensor factor sign.
+    Set to False for older firmware that doesn't support 32-bit registers.
+    """
 
     async def init_addon(self) -> None:
         """Init Add-On."""
         await super().init_addon()
+
+        # Configure Sensor16 sign detection behavior
+        import sunsynk.sensors  # noqa: PLC0415
+
+        sunsynk.sensors.SENSOR16_SIGN_DETECTION = self.sensor16_sign_detection
+        if not self.sensor16_sign_detection:
+            _LOG.info(
+                "Sensor16 sign detection from reg[1] disabled (classic firmware mode)"
+            )
 
         if self.driver == "umodbus":
             _LOG.warning("Try *pymodbus* if your encounter any issues with *umodbus*")

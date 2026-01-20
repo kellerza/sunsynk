@@ -93,6 +93,12 @@ class Constant(Sensor):
         return self.value
 
 
+# Module-level configuration for Sensor16 sign detection behavior
+# When True: use reg[1] == 0xFFFF to detect negative values (modern firmware)
+# When False: use self.factor < 0 for signedness (classic/old firmware behavior)
+SENSOR16_SIGN_DETECTION = True
+
+
 @attrs.define(slots=True, eq=False)
 class Sensor16(Sensor):
     """Sensor with a 16-bit/32-bit register registers."""
@@ -188,11 +194,17 @@ class Sensor16(Sensor):
                     use_16bit = True
 
         if use_16bit:
-            # When using 16-bit, determine signedness from reg[1]:
-            # - reg[1] == 0: 32-bit value was positive (0-65535), use unsigned
-            # - reg[1] == 0xFFFF: 32-bit value was negative, use signed
-            # This prevents large positive values (>32767) from being interpreted as negative
-            use_signed = original_reg1 == 0xFFFF
+            # Determine signedness for 16-bit interpretation
+            if SENSOR16_SIGN_DETECTION:
+                # Modern firmware: use reg[1] to detect sign
+                # - reg[1] == 0: 32-bit value was positive (0-65535), use unsigned
+                # - reg[1] == 0xFFFF: 32-bit value was negative, use signed
+                # This prevents large positive values (>32767) from being interpreted as negative
+                use_signed = original_reg1 == 0xFFFF
+            else:
+                # Classic/old firmware: use factor sign (original behavior)
+                # Old firmware doesn't set reg[1] to indicate signedness
+                use_signed = self.factor < 0
             val: NumType = unpack_value((regs[0],), signed=use_signed)
         else:
             val = unpack_value(regs, signed=self.factor < 0)
