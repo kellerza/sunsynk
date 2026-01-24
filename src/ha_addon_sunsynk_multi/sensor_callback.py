@@ -81,7 +81,8 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
             if not isinstance(sensor, RWSensor):
                 continue
             await asyncio.sleep(0.1)
-            await ist.inv.write_sensor(sensor, value)
+            await ist.write_sensor(sensor, value)
+            # await ist.inv.write_sensor(sensor, value)
             await asyncio.sleep(0.05)
             await ist.read_sensors(sensors=[sensor], msg=sensor.name)
             sensors_to_publish.add(ist.ss[sensor.id])

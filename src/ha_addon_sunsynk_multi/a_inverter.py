@@ -3,7 +3,8 @@
 import asyncio
 import logging
 import traceback
-from collections.abc import Callable, Iterable
+from collections.abc import AsyncGenerator, Callable, Iterable
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
 import attrs
@@ -11,6 +12,7 @@ from mqtt_entity import MQTTDevice, MQTTSensorEntity
 
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
+from sunsynk.state import InverterState
 from sunsynk.sunsynk import Sensor, Sunsynk, ValType
 from sunsynk.utils import pretty_table_sensors
 
@@ -52,24 +54,44 @@ class AInverter:
     entity_cbstats: MQTTSensorEntity = attrs.field(init=False)
     cb: AsyncCallback = attrs.field(init=False)
 
+    lock: asyncio.Lock = attrs.field(factory=asyncio.Lock, init=False)
+    """This lock shared between all inverters to avoid Modbus collisions."""
+    inv_state: InverterState = attrs.field(factory=InverterState)
+
+    @asynccontextmanager
+    async def lock_io(self) -> AsyncGenerator[None, None]:
+        """Lock the IO."""
+        async with self.lock:
+            self.inv.server_id = self.opt.modbus_id
+            self.inv.state = self.inv_state
+            yield
+
     async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> None:
         """Read from the Modbus interface."""
-        try:
-            await asyncio.sleep(0.005)
-            await self.inv.read_sensors(sensors)
-            self.read_errors = 0
-        except (
-            Exception,
-            asyncio.exceptions.CancelledError,
-        ) as err:
-            self.read_errors += 1
-            if msg:
-                arg0, *argn = err.args if err.args else ("",)
-                err.args = tuple([f"{arg0} {msg}".strip(), *argn])
+        async with self.lock_io():
+            try:
+                await asyncio.sleep(0.005)
+                await self.inv.read_sensors(sensors)
+                self.read_errors = 0
+            except (
+                Exception,
+                asyncio.exceptions.CancelledError,
+            ) as err:
+                self.read_errors += 1
+                if msg:
+                    arg0, *argn = err.args if err.args else ("",)
+                    err.args = tuple([f"{arg0} {msg}".strip(), *argn])
 
-            if OPT.debug > 1:
-                traceback.print_exc()
-            raise
+                if OPT.debug > 1:
+                    traceback.print_exc()
+                raise
+
+    async def write_sensor(
+        self, sensor: RWSensor, value: ValType, *, msg: str = ""
+    ) -> None:
+        """Write to the Modbus interface."""
+        async with self.lock_io():
+            await self.inv.write_sensor(sensor, value, msg=msg)
 
     async def read_sensors_retry(self, *, sensors: list[Sensor], msg: str = "") -> bool:
         """Read sensors with a retry."""
