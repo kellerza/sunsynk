@@ -304,21 +304,27 @@ def test_override() -> None:
 
 def test_override_const() -> None:
     """Tests."""
-    sen = SensorDefinitions()
     c0 = Constant((), "constant sensor", value=42)
-    s1 = NumberRWSensor(1, "rw sensor", "V", factor=1, min=c0, max=100)
-    assert s1.min == c0
+    s0 = NumberRWSensor(1, "rw sensor", "V", factor=1, min=c0, max=100)
 
-    sen += (c0, s1)
+    sen = SensorDefinitions()
+    sen += (c0, s0)
+    sen.override({"constant_sensor": 44})
 
-    sen.override({"constant_sensor": 99})
     c1 = sen.all["constant_sensor"]
+    s1 = sen.all["rw_sensor"]
+    assert isinstance(c1, Constant) and isinstance(s1, NumberRWSensor)
+
     assert c0.value == 42
-    assert isinstance(c1, Constant) and c1.value == 99
-    assert isinstance(sen.all["rw_sensor"], NumberRWSensor)
-    s2 = sen.all["rw_sensor"]
-    assert s2.min is c1
-    assert s2.min is not c0
+    assert c1.value == 44
+
+    assert s0.min is c0
+    assert s1.min is c1
+
+    ist = InverterState()
+
+    assert s0.value_to_reg(0, ist) == (42,)
+    assert s1.value_to_reg(0, ist) == (44,)
 
 
 def test_override_many() -> None:
