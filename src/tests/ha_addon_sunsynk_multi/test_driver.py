@@ -2,6 +2,7 @@
 
 import pytest
 
+from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.driver import STATE, init_driver
 from ha_addon_sunsynk_multi.options import OPT
 from sunsynk.pysunsynk import PySunsynk
@@ -11,25 +12,29 @@ from sunsynk.usunsynk import USunsynk
 
 def test_init() -> None:
     """Test init."""
+    inv_port = "tcp://127.0.0.1:123"
+    inv_option = {"inverters": [{"port": inv_port, "modbus_id": 1}]}
+
+    OPT.load_dict(inv_option)
+
     with pytest.raises(ValueError):
         OPT.driver = "bad"
         init_driver(OPT)
 
-    inv_port = "tcp://127.0.0.1:123"
-    inv_option = {"inverters": [{"port": inv_port, "modbus_id": 1}]}
-
     OPT.driver = "pymodbus"
-    OPT.load_dict(inv_option)
+    OPT.inverters[0].driver = ""
     init_driver(OPT)
     assert len(STATE) == 1
     assert STATE[0].inv == PySunsynk(port=inv_port, state=STATE[0].inv.state)
 
+    AInverter.connectors.clear()
     OPT.driver = "umodbus"
     OPT.load_dict(inv_option)
     init_driver(OPT)
     assert len(STATE) == 1
     assert STATE[0].inv == USunsynk(port=inv_port, state=STATE[0].inv.state)
 
+    AInverter.connectors.clear()
     inv_option = {
         "inverters": [{"port": inv_port, "modbus_id": 1, "dongle_serial_number": "101"}]
     }

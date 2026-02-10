@@ -56,6 +56,7 @@ schema:
       MODBUS_ID: int(1,16)
       DONGLE_SERIAL_NUMBER: str?
       PORT: str
+      DRIVER: str?
   SENSOR_DEFINITIONS: list(single-phase|single-phase-16kw|three-phase|three-phase-hv)
   SENSOR_OVERRIDES:
     - "match(^[a-z0-9_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"

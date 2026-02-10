@@ -5,7 +5,7 @@ import logging
 import traceback
 from collections.abc import AsyncGenerator, Callable, Iterable
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import attrs
 from mqtt_entity import MQTTDevice, MQTTSensorEntity
@@ -32,7 +32,6 @@ class AInverter:
     """Addon Inverter state (per inverter)."""
 
     index: int
-    inv: Sunsynk
     opt: InverterOptions
     ss: dict[str, ASensor] = attrs.field(factory=dict)
     """Sensor states."""
@@ -54,14 +53,35 @@ class AInverter:
     entity_cbstats: MQTTSensorEntity = attrs.field(init=False)
     cb: AsyncCallback = attrs.field(init=False)
 
-    lock: asyncio.Lock = attrs.field(factory=asyncio.Lock, init=False)
-    """This lock shared between all inverters to avoid Modbus collisions."""
     inv_state: InverterState = attrs.field(factory=InverterState)
+
+    connectors: ClassVar[dict[tuple[str, str], tuple[Sunsynk, asyncio.Lock]]] = {}
+    """Inverter connectors and locks, keyed by port."""
+
+    @classmethod
+    def add_connector(cls, inv_opt: InverterOptions, ss: Sunsynk) -> None:
+        """Add a connector."""
+        if (inv_opt.port, inv_opt.driver) in cls.connectors:
+            raise ValueError(
+                f"Connector for port {inv_opt.port} and driver {inv_opt.driver} already exists"
+            )
+        cls.connectors[(inv_opt.port, inv_opt.driver)] = (ss, asyncio.Lock())
+
+    @property
+    def connector(self) -> tuple[Sunsynk, asyncio.Lock]:
+        """Get the connector for this inverter."""
+        return self.connectors[(self.opt.port, self.opt.driver)]
+
+    @property
+    def inv(self) -> Sunsynk:
+        """Post init."""
+        return self.connector[0]
 
     @asynccontextmanager
     async def lock_io(self) -> AsyncGenerator[None, None]:
         """Lock the IO."""
-        async with self.lock:
+        lock = self.connector[1]
+        async with lock:
             self.inv.server_id = self.opt.modbus_id
             self.inv.state = self.inv_state
             yield
