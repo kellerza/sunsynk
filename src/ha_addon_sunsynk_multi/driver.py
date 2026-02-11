@@ -84,10 +84,10 @@ def init_connector(opt: Options, iopt: InverterOptions) -> None:
         timeout=opt.timeout,
         read_sensors_batch_size=opt.read_sensors_batch_size,
         allow_gap=opt.read_allow_gap,
+        state=None,  # type:ignore[arg-type]
         **kwargs,  # type:ignore[arg-type]
     )
     _LOG.debug("Driver: %s - inv:%s", ss, iopt)
-    ss.state.onchange = sensor_on_update
     AInverter.add_connector(iopt, ss)
 
 
@@ -96,4 +96,6 @@ def init_driver(opt: Options) -> None:
     STATE.clear()
     for idx, inv in enumerate(opt.inverters):
         init_connector(opt, inv)
-        STATE.append(AInverter(opt=inv, index=idx))
+        ist = AInverter(opt=inv, index=idx)
+        ist.state.onchange = sensor_on_update
+        STATE.append(ist)

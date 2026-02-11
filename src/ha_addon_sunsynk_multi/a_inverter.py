@@ -53,7 +53,10 @@ class AInverter:
     entity_cbstats: MQTTSensorEntity = attrs.field(init=False)
     cb: AsyncCallback = attrs.field(init=False)
 
-    inv_state: InverterState = attrs.field(factory=InverterState)
+    state: InverterState = attrs.field(factory=InverterState)
+    """The inverter state, which tracks all sensors and their values.
+
+    During an io_lock this will be the state on the sunsynk driver."""
 
     connectors: ClassVar[dict[tuple[str, str], tuple[Sunsynk, asyncio.Lock]]] = {}
     """Inverter connectors and locks, keyed by (port, driver)."""
@@ -72,26 +75,21 @@ class AInverter:
         """Get the connector for this inverter."""
         return self.connectors[(self.opt.port, self.opt.driver)]
 
-    @property
-    def inv(self) -> Sunsynk:
-        """Post init."""
-        return self.connector[0]
-
     @asynccontextmanager
-    async def lock_io(self) -> AsyncGenerator[None, None]:
+    async def lock_io(self) -> AsyncGenerator[Sunsynk, None]:
         """Lock the IO."""
-        lock = self.connector[1]
+        inv, lock = self.connector
         async with lock:
-            self.inv.server_id = self.opt.modbus_id
-            self.inv.state = self.inv_state
-            yield
+            inv.server_id = self.opt.modbus_id
+            inv.state = self.state
+            yield inv
 
     async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> None:
         """Read from the Modbus interface."""
-        async with self.lock_io():
+        async with self.lock_io() as inv:
             try:
                 await asyncio.sleep(0.005)
-                await self.inv.read_sensors(sensors)
+                await inv.read_sensors(sensors)
                 self.read_errors = 0
             except (
                 Exception,
@@ -110,8 +108,8 @@ class AInverter:
         self, sensor: RWSensor, value: ValType, *, msg: str = ""
     ) -> None:
         """Write to the Modbus interface."""
-        async with self.lock_io():
-            await self.inv.write_sensor(sensor, value, msg=msg)
+        async with self.lock_io() as inv:
+            await inv.write_sensor(sensor, value, msg=msg)
 
     async def read_sensors_retry(self, *, sensors: list[Sensor], msg: str = "") -> bool:
         """Read sensors with a retry."""
@@ -149,30 +147,31 @@ class AInverter:
             if not state.entity:
                 continue
             if value is None:
-                await state.publish(self.inv.state[state.opt.sensor])
+                await state.publish(self.state[state.opt.sensor])
             else:
                 await state.publish(value)
 
     async def connect(self) -> None:
         """Connect."""
-        _LOG.info("Connecting to %s", self.inv.port)
-        try:
-            await self.inv.connect()
-        except ConnectionError as exc:
-            raise ConnectionError(
-                f"Could not connect to {self.inv.port}: {exc}"
-            ) from exc
+        async with self.lock_io() as inv:
+            _LOG.info("Connecting to %s", inv.port)
+            try:
+                await inv.connect()
+            except ConnectionError as exc:
+                raise ConnectionError(
+                    f"Could not connect to {inv.port}: {exc}"
+                ) from exc
 
         sensors = list(SOPT.startup)
         _LOG.info("Reading startup sensors %s", ", ".join(s.name for s in sensors))
 
         if not await self.read_sensors_retry(sensors=sensors):
             raise ConnectionError(
-                f"No response on the Modbus interface {self.inv.port}, "
+                f"No response on the Modbus interface {self.opt.port}, "
                 "see https://kellerza.github.io/sunsynk/guide/fault-finding"
             )
         expected_ser = self.opt.serial_nr.replace("_", "")
-        actual_ser = str(self.inv.state[DEFS.serial])
+        actual_ser = str(self.state[DEFS.serial])
         if expected_ser != actual_ser:
             raise ValueError(
                 f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
@@ -180,7 +179,7 @@ class AInverter:
 
         # All seem ok
         add_info = {"device_type": [f"config: {OPT.sensor_definitions}"]}
-        tab = pretty_table_sensors(sensors, self.inv, ["Info"], add_info)
+        tab = pretty_table_sensors(sensors, self.state, ["Info"], add_info)
         _LOG.info("Inverter %s - startup sensors\n%s", self.index, tab)
 
         # Initial read for all sensors
@@ -194,7 +193,7 @@ class AInverter:
     def rated_power(self) -> float:
         """Return the inverter power."""
         try:
-            return float(self.inv.state[DEFS.rated_power])  # type:ignore[arg-type]
+            return float(self.state[DEFS.rated_power])  # type:ignore[arg-type]
         except (ValueError, TypeError):
             return 0
 
@@ -249,12 +248,12 @@ class AInverter:
         """Initialize the sensors."""
         # Track startup sensors
         for sen in SOPT.startup:
-            self.inv.state.track(sen)
+            self.state.track(sen)
 
         # create state entry
         for sopt in SOPT.values():
             sen = sopt.sensor
-            self.inv.state.track(sen)
+            self.state.track(sen)
             self.ss[sen.id] = ASensor(opt=sopt, retain=isinstance(sen, RWSensor))
 
     def create_stats_entities(self) -> None:
@@ -284,7 +283,7 @@ class AInverter:
 
     async def publish_stats(self, period: int) -> None:
         """Publish stats."""
-        await self.entity_timeout.send_state(MQTT, self.inv.timeouts)
+        await self.entity_timeout.send_state(MQTT, self.connector[0].timeouts)
 
         # calc stats
         lc_avg, lc_i = stats(self.cb.stat_time, include=lambda x: x > self.cb.every)

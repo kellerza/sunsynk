@@ -73,7 +73,7 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
 
-        await ist.inv.connect()  # Check that we are connected #395
+        await ist.connector[0].connect()  # Check that we are connected #395
 
         # Flush pending writes
         while ist.write_queue:
@@ -105,29 +105,29 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
         # Check significant change reporting
         for asen in sensors_to_publish:
             sensor = asen.opt.sensor
-            if sensor in ist.inv.state.historynn:
-                hist = ist.inv.state.historynn[sensor]
+            if sensor in ist.state.historynn:
+                hist = ist.state.historynn[sensor]
                 chg = hist[0] != hist[-1]
                 if chg and asen.opt.schedule.change_any:
                     pub[asen] = hist[-1]
             elif asen.opt.schedule.change_any:
                 # make sure it is part of historynn
                 last = (
-                    ist.inv.state.history.pop(sensor)[-1]
-                    if sensor in ist.inv.state.history
+                    ist.state.history.pop(sensor)[-1]
+                    if sensor in ist.state.history
                     else None
                 )
                 if last is not None:
                     pub[asen] = last
-                ist.inv.state.historynn[sensor] = [None, last]
-            elif sensor in ist.inv.state.history:
-                last = ist.inv.state.history[sensor][-1]
+                ist.state.historynn[sensor] = [None, last]
+            elif sensor in ist.state.history:
+                last = ist.state.history[sensor][-1]
                 if asen.opt.schedule.significant_change(
-                    history=ist.inv.state.history[sensor][:-1],
+                    history=ist.state.history[sensor][:-1],
                     last=last,
                 ):
-                    ist.inv.state.history[sensor].clear()
-                    ist.inv.state.history[sensor].append(last)
+                    ist.state.history[sensor].clear()
+                    ist.state.history[sensor].append(last)
                     pub[asen] = last
 
         # check fixed reporting
@@ -140,12 +140,12 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
                         continue
                     sensor = asen.opt.sensor
                     # Non-numeric value
-                    if sensor in ist.inv.state.historynn:
-                        pub[asen] = ist.inv.state.historynn[sensor][-1]
+                    if sensor in ist.state.historynn:
+                        pub[asen] = ist.state.historynn[sensor][-1]
                         continue
                     # average value is n
                     try:
-                        pub[asen] = ist.inv.state.history_average(sensor)
+                        pub[asen] = ist.state.history_average(sensor)
                     except ValueError:
                         _LOG.warning("No history for %s", sensor)
                 srun.next_run = now + sec

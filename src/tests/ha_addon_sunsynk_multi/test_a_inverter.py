@@ -46,7 +46,7 @@ async def test_ss_tcp_read(
     AInverter.add_connector(inv_opt, ss)
 
     # AInverter.read_sensors_retry
-    ist = AInverter(index=0, opt=inv_opt, inv_state=state, ss={})  # type:ignore[arg-type]
+    ist = AInverter(index=0, opt=inv_opt, state=state, ss={})  # type:ignore[arg-type]
 
     sensors = [SENSORS.rated_power]
 

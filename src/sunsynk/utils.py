@@ -12,7 +12,7 @@ from prettytable import PrettyTable
 
 if TYPE_CHECKING:
     from sunsynk.sensors import Sensor
-    from sunsynk.sunsynk import Sunsynk
+    from sunsynk.state import InverterState
 
 
 def import_module(mod_name: str, folder: str | Path | None = None) -> ModuleType:
@@ -79,14 +79,14 @@ def table_data[T](
 
 def pretty_table_sensors(
     sensors: list["Sensor"],
-    inv: "Sunsynk",
+    inv_state: "InverterState",
     add_hdr: list[str],
     add_info: dict[str, list[str]],
 ) -> PrettyTable:
     """Generate a pretty table for the given sensors."""
     data: list[list[str]] = []
     for sen in sorted(sensors, key=lambda s: s.address):
-        row = [sen.id, sen.source, f"{inv.state[sen]} {sen.unit}"]
+        row = [sen.id, sen.source, f"{inv_state[sen]} {sen.unit}"]
         if sen.id == "serial":
             row[2] = f"****{row[2][-5:]}"
         if add_hdr:

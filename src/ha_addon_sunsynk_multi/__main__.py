@@ -79,7 +79,7 @@ async def main_loop() -> int:
                 for sen in srun.sensors:
                     add_info[sen.sensor.id][1] = str(every_s)
 
-            tab = pretty_table_sensors(list(SOPT), ist.inv, add_hdr, add_info)
+            tab = pretty_table_sensors(list(SOPT), ist.state, add_hdr, add_info)
             _LOG.info("Inverter %s\n%s", ist.index, tab)
 
         except (ConnectionError, ValueError) as err:
