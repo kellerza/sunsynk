@@ -24,8 +24,8 @@ on:
       - ".github/workflows/ci.yml"
 
 env:
-  RUFF_VERSION: 0.14.10
-  UV_VERSION: 0.9.18
+  RUFF_VERSION: 0.15.0
+  UV_VERSION: 0.9.29
 
 jobs:
   ruff:
@@ -73,12 +73,10 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.UV_VERSION }}
-      - name: "Set up Node JS"
-        uses: actions/setup-node@v5
-        with:
-          node-version: "24"
       - name: Install Requirements
         run: uv sync --frozen --all-extras
+      - name: Install pyright
+        run: uv pip install pyright[nodejs]
       - name: Run pyright
         run: uv run pyright
 

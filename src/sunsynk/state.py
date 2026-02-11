@@ -9,7 +9,7 @@ import attr
 
 from sunsynk.helpers import NumType, as_num
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import BinarySensor, Sensor, ValType
+from sunsynk.sensors import BinarySensor, Constant, Sensor, ValType
 
 _LOG = logging.getLogger(__name__)
 
@@ -36,6 +36,8 @@ class InverterState:
 
     def get(self, sensor: Sensor, default: ValType = None) -> ValType:
         """Get the current value of a sensor."""
+        if isinstance(sensor, Constant):
+            return as_num(sensor.value)
         return self.values.get(sensor, default)
 
     def track(self, *sensor: Sensor) -> None:
