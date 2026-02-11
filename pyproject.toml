@@ -45,8 +45,8 @@ dev = [
   "types-pyyaml",
 ]
 
-[tool.uv.build-backend]
-module-name = [ "sunsynk", "ha_addon_sunsynk_multi" ]
+[tool.uv]
+build-backend.module-name = [ "sunsynk", "ha_addon_sunsynk_multi" ]
 
 [tool.ruff]
 include = [ "src/**/*.py" ]
@@ -76,18 +76,12 @@ lint.pylint.max-args = 7
 skip = "data,*.map,package-lock.json,*.map,**/cache/*,**/node_modules/*"
 ignore-words-list = "HASS,hass,Hass,ist"
 
-[tool.pytest.ini_options]
-pythonpath = [ ".", "src" ]
-filterwarnings = "ignore:.+@coroutine.+deprecated.+"
-testpaths = "src\tests"
-norecursedirs = [ ".git", "modules" ]
-log_cli = true
-log_cli_level = "DEBUG"
-asyncio_mode = "auto"
-addopts = "--cov=src --cov-report xml:cov.xml"
-
-# [tool.mypy]
-# disallow_untyped_defs = true
-# ignore_missing_imports = true
-# exclude = [ "build" ]
-# enable_error_code = [ "ignore-without-code" ]
+[tool.pytest]
+ini_options.pythonpath = [ ".", "src" ]
+ini_options.filterwarnings = "ignore:.+@coroutine.+deprecated.+"
+ini_options.testpaths = "src\tests"
+ini_options.norecursedirs = [ ".git", "modules" ]
+ini_options.log_cli = true
+ini_options.log_cli_level = "DEBUG"
+ini_options.asyncio_mode = "auto"
+ini_options.addopts = "--cov=src --cov-report xml:cov.xml"
