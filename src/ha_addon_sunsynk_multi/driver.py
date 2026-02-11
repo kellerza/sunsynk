@@ -44,54 +44,56 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
     HASS_DISCOVERY_INFO_UPDATE_QUEUE.update(SOPT[sen].affects)
 
 
-def inv_factory(opt: Options, inv: InverterOptions) -> Sunsynk:
-    """Sunsynk inverter factory."""
+def init_connector(opt: Options, iopt: InverterOptions) -> None:
+    """Sunsynk driver factory."""
+    iopt.driver = iopt.driver or opt.driver
+    if (iopt.port, iopt.driver) in AInverter.connectors:
+        _LOG.debug("Reusing driver for port, driver (%s, %s)", iopt.port, iopt.driver)
+        return
+
     factory: type[Sunsynk]
     port_prefix = ""
     kwargs = {}
-    inv.driver = inv.driver or opt.driver
 
-    if inv.driver == "pymodbus":
+    if iopt.driver == "pymodbus":
         from sunsynk.pysunsynk import PySunsynk  # noqa: PLC0415
 
         factory = PySunsynk
-    elif inv.driver == "umodbus":
+    elif iopt.driver == "umodbus":
         from sunsynk.usunsynk import USunsynk  # noqa: PLC0415
 
         factory = USunsynk
         port_prefix = "serial://"
-    elif inv.driver == "solarman":
+    elif iopt.driver == "solarman":
         from sunsynk.solarmansunsynk import SolarmanSunsynk  # noqa: PLC0415
 
         factory = SolarmanSunsynk
         port_prefix = "tcp://"
-        kwargs["dongle_serial_number"] = inv.dongle_serial_number
+        kwargs["dongle_serial_number"] = iopt.dongle_serial_number
     else:
         raise ValueError(
-            f"Invalid DRIVER: {inv.driver}. Expected umodbus, pymodbus, solarman"
+            f"Invalid DRIVER: {iopt.driver}. Expected umodbus, pymodbus, solarman"
         )
 
-    if "dongle_serial_number" not in kwargs and inv.dongle_serial_number:
+    if "dongle_serial_number" not in kwargs and iopt.dongle_serial_number:
         _LOG.warning("Ignoring dongle_serial_number for non-solarman driver")
 
     ss = factory(
-        port=inv.port if inv.port else port_prefix + opt.debug_device,
-        server_id=inv.modbus_id,
+        port=iopt.port if iopt.port else port_prefix + opt.debug_device,
+        server_id=iopt.modbus_id,
         timeout=opt.timeout,
         read_sensors_batch_size=opt.read_sensors_batch_size,
         allow_gap=opt.read_allow_gap,
         **kwargs,  # type:ignore[arg-type]
     )
-    _LOG.debug("Driver: %s - inv:%s", ss, inv)
+    _LOG.debug("Driver: %s - inv:%s", ss, iopt)
     ss.state.onchange = sensor_on_update
-    AInverter.add_connector(inv, ss)
-    return ss
+    AInverter.add_connector(iopt, ss)
 
 
 def init_driver(opt: Options) -> None:
     """Init Sunsynk driver for each inverter."""
     STATE.clear()
     for idx, inv in enumerate(opt.inverters):
-        if inv.port not in AInverter.connectors:
-            inv_factory(opt, inv)
+        init_connector(opt, inv)
         STATE.append(AInverter(opt=inv, index=idx))

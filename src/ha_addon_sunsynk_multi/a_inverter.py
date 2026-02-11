@@ -56,7 +56,7 @@ class AInverter:
     inv_state: InverterState = attrs.field(factory=InverterState)
 
     connectors: ClassVar[dict[tuple[str, str], tuple[Sunsynk, asyncio.Lock]]] = {}
-    """Inverter connectors and locks, keyed by port."""
+    """Inverter connectors and locks, keyed by (port, driver)."""
 
     @classmethod
     def add_connector(cls, inv_opt: InverterOptions, ss: Sunsynk) -> None:
