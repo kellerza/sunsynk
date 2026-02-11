@@ -11,6 +11,83 @@
   cases it makes more sense to read a couple of additional registers in 1 or two requests, than trying
   to read exactly what you are looking for in multiple requests.
 
+## Connectors
+
+The `CONNECTORS` option allows you to define shared connections that can be used by multiple inverters. This enables a single Modbus gateway or master device to monitor multiple inverters, whether they are configured in parallel or as separate standalone systems. This is particularly useful when using a TCP gateway where multiple inverters are connected to the same gateway.
+
+```yaml
+CONNECTORS:
+  - NAME: tcp_gateway
+    TYPE: tcp
+    HOST: 192.168.1.100
+    PORT: 502
+    DRIVER: pymodbus
+    TIMEOUT: 10
+  
+  - NAME: solarman_dongle
+    TYPE: solarman
+    HOST: 192.168.1.101
+    PORT: 8899
+    DONGLE_SERIAL: 12345678
+    DRIVER: solarman
+    TIMEOUT: 10
+  
+  - NAME: serial_port
+    TYPE: serial
+    PORT: /dev/ttyUSB0
+    BAUDRATE: 9600
+    DRIVER: pymodbus
+    TIMEOUT: 10
+```
+
+### Connector Types
+
+- **tcp**: TCP connection to a Modbus TCP gateway
+- **serial**: Direct serial connection
+- **solarman**: Solarman dongle connection
+
+### Connector Options
+
+- `name`: Unique name for the connector
+- `type`: Connection type (tcp, serial, solarman)
+- `host`: Host address (for tcp/solarman) or device path (for serial)
+- `port`: Port number (for tcp/solarman) or baudrate (for serial)
+- `driver`: Driver to use (pymodbus, umodbus, solarman)
+- `timeout`: Connection timeout in seconds
+- `dongle_serial`: Required for solarman type
+- `baudrate`: Required for serial type
+
+### Example: Multiple Inverters with Shared Connector
+
+```yaml
+CONNECTORS:
+  - NAME: tcp_gateway
+    TYPE: tcp
+    HOST: 192.168.1.100
+    PORT: 502
+    DRIVER: pymodbus
+    TIMEOUT: 10
+
+INVERTERS:
+  - CONNECTOR: tcp_gateway
+    MODBUS_ID: 1
+    HA_PREFIX: inverter1
+    SERIAL_NR: "ABC123"
+    
+  - CONNECTOR: tcp_gateway  # Same connector, different modbus_id
+    MODBUS_ID: 2
+    HA_PREFIX: inverter2
+    SERIAL_NR: "DEF456"
+```
+
+This configuration allows multiple inverters to share the same TCP connection to a gateway, enabling one Modbus gateway/master to monitor multiple inverters. Each inverter maintains its own independent state and can be configured with different Modbus IDs, making this suitable for both parallel inverter setups and standalone inverters connected to the same gateway.
+
+::: tip Backwards Compatibility
+
+Existing configurations using the `PORT` option will continue to work without changes. The connector system is an enhancement that provides better resource management and reliability for multi-inverter setups.
+
+:::
+
 ## Inverters
 
 The `INVERTERS` option contains a list of inverters
@@ -34,7 +111,21 @@ The following options are required per inverter:
 
 - `DONGLE_SERIAL_NUMBER` – The **solarman** driver requires the dongle's serial number.
 
-- `PORT` – The port used for communications. Format depends on the driver. See [Port](#port)
+- `MODBUS_ID`
+
+  The Modbus Server ID is a number typically 1. Might be different in multi-inverter setups.
+
+- `CONNECTOR` (New)
+
+  Reference to a connector defined in the `CONNECTORS` section. Multiple inverters can share the same connector, allowing one Modbus gateway/master to monitor multiple inverters (parallel or non-parallel configurations). Each inverter maintains its own independent state and Modbus ID.
+
+- `DONGLE_SERIAL_NUMBER`
+
+  Only required for the **solarman** driver when using legacy port configuration.
+
+- `PORT` (Legacy)
+
+  The port used for communications. Format depends on the driver. See [Port](#port). This is still supported for backwards compatibility.
 
 ### Port
 
