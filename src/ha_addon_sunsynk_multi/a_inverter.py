@@ -56,7 +56,7 @@ class AInverter:
     state: InverterState = attrs.field(factory=InverterState)
     """The inverter state, which tracks all sensors and their values.
 
-    During an io_lock this will be the state on the sunsynk driver."""
+    During a lock_io this will be the state on the sunsynk driver."""
 
     connectors: ClassVar[dict[tuple[str, str], tuple[Sunsynk, asyncio.Lock]]] = {}
     """Inverter connectors and locks, keyed by (port, driver)."""

@@ -49,6 +49,11 @@ def init_connector(opt: Options, iopt: InverterOptions) -> None:
     iopt.driver = iopt.driver or opt.driver
     if (iopt.port, iopt.driver) in AInverter.connectors:
         _LOG.debug("Reusing driver for port, driver (%s, %s)", iopt.port, iopt.driver)
+        if iopt.driver == "solarman":
+            _LOG.warning(
+                "Reusing the same port was not tested for the 'solarman' driver (%s)",
+                iopt.port,
+            )
         return
 
     factory: type[Sunsynk]
