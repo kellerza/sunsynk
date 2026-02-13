@@ -44,9 +44,9 @@ async def test_build_callback_schedule() -> None:
             20: SensorRun(next_run=0, sensors={TEST1[1]}),
         }
 
-        assert ist.inv.connect.call_count == 0  # type: ignore[attr-defined]
+        assert ist.connector[0].connect.call_count == 0  # type: ignore[attr-defined]
         await mycb.callback(1)
-        assert ist.inv.connect.call_count == 1  # type: ignore[attr-defined]
+        assert ist.connector[0].connect.call_count == 1  # type: ignore[attr-defined]
 
         assert ist.read_sensors.call_args_list == [  # type: ignore[attr-defined]
             call(

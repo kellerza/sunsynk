@@ -169,8 +169,8 @@ class ASensor:
             self.entity = MQTTNumberEntity(
                 **ent,
                 command_topic=command_topic,
-                min=ist.inv.state.resolve_num(sensor.min, 0),
-                max=ist.inv.state.resolve_num(sensor.max, 100),
+                min=ist.state.resolve_num(sensor.min, 0),
+                max=ist.state.resolve_num(sensor.max, 100),
                 mode=OPT.number_entity_mode,
                 step=0.1 if sensor.factor < 1 else 1,
                 suggested_display_precision=1,
@@ -200,7 +200,7 @@ class ASensor:
             self.entity = MQTTSelectEntity(
                 **ent,
                 command_topic=command_topic,
-                options=sensor.available_values(OPT.prog_time_interval, ist.inv.state),
+                options=sensor.available_values(OPT.prog_time_interval, ist.state),
                 on_command=on_change_factory(),
             )
             return self.entity

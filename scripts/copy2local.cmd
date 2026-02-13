@@ -1,8 +1,8 @@
 @echo off
 set DEST=\\192.168.1.8\addons
-CALL :copy_sunsynk hass-addon-sunsynk-edge
-CALL :copy_addon hass-addon-sunsynk-edge
 CALL :copy_builder hass-addon-sunsynk-edge
+CALL :copy_addon hass-addon-sunsynk-edge
+CALL :copy_sunsynk hass-addon-sunsynk-edge
 
 rem CALL :copy_config hass-addon-mbusd,\\192.168.1.8\addons\hass-addon-mbusd
 rem CALL :copy__addon hass-addon-mbusd,\\192.168.1.8\addons\hass-addon-mbusd
@@ -13,17 +13,19 @@ EXIT /B %ERRORLEVEL%
 CALL :print "Copy sunsynk package for '%~1'"
 for %%f in (pyproject.toml,MANIFEST.in,LICENSE,README.md,uv.lock) do xcopy /Y "%%f" %DEST%\%~1\sunsynk\
 xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt src %DEST%\%~1\sunsynk\src\
+EXIT /B 0
 
 :copy_addon
 CALL :print "Copy '%~1' to '%DEST%\%~1'"
+set /a num=%RANDOM% * 100 / 32768 + 1
+CALL :print "Set version to v%num% for local testing"
 xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt %~1 %DEST%\%~1
-EXIT /B 0
 
-CALL :print "Modify Config for local testing"
 set cf=%~1\config.localtest.yaml
 cp %~1\config.yaml %cf%
 sed -i 's/image:/# image:/' %cf%
 sed -i 's/name: /name: A_LOCAL /' %cf%
+sed -i "s/version: \"/version: \"v%num%_/" %cf%
 xcopy /Y %cf% %DEST%\%~1\config.yaml*
 EXIT /B 0
 

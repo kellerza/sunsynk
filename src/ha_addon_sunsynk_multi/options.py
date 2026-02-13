@@ -17,6 +17,8 @@ class InverterOptions:
     """Options for an inverter."""
 
     port: str = ""
+    driver: str = ""
+    """Optional driver override."""
     modbus_id: int = 0
     ha_prefix: str = ""
     serial_nr: str = ""

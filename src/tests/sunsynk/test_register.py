@@ -19,12 +19,15 @@ def test_on_changed(state: InverterState) -> None:
     state.update({1: 5})
     assert state.values[s1] == 5
     assert onchange.call_count == 1
-    assert onchange.call_args == call(s1, 5, None)
+    assert onchange.call_args_list == [call(s1, 5, None)]
 
     state.update({1: 10})
     assert state.values[s1] == 10
     assert onchange.call_count == 2
-    assert onchange.call_args == call(s1, 10, 5)
+    assert onchange.call_args_list == [
+        call(s1, 5, None),
+        call(s1, 10, 5),
+    ]
 
     s2 = Sensor(1, "S2", "")
     state.track(s2)
@@ -34,7 +37,6 @@ def test_on_changed(state: InverterState) -> None:
     state.update({1: 20})
     assert state.values[s1] == 20
     assert state.values[s2] == 20
-    assert onchange.call_count == 4
     assert onchange.call_args_list == [
         call(s1, 20, 10),
         call(s2, 20, None),

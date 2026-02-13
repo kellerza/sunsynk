@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, PropertyMock, patch
 import pytest
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter
+from ha_addon_sunsynk_multi.options import InverterOptions
 from sunsynk.definitions.single_phase import SENSORS
 from sunsynk.pysunsynk import PySunsynk
 from sunsynk.state import InverterState
@@ -41,8 +42,11 @@ async def test_ss_tcp_read(
     # Ensure we can read
     async_connect.return_value = 1
 
+    inv_opt = InverterOptions(modbus_id=1, ha_prefix="test")
+    AInverter.add_connector(inv_opt, ss)
+
     # AInverter.read_sensors_retry
-    ist = AInverter(index=0, inv=ss, opt={}, ss={})  # type:ignore[arg-type]
+    ist = AInverter(index=0, opt=inv_opt, state=state, ss={})  # type:ignore[arg-type]
 
     sensors = [SENSORS.rated_power]
 
