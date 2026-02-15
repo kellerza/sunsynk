@@ -27,7 +27,7 @@ def generate_all_sensors(
     all_defs: dict[str, SensorDefinitions], sen_groups: dict[str, set[str]]
 ) -> None:
     """Generate groups/all.html."""
-    sensors = defaultdict[str, dict[str, Sensor | str]](dict)
+    sensors = defaultdict[str, dict[str, Sensor | str]](dict[str, Sensor | str])
     for name, defs in all_defs.items():
         for key, sen in defs.all.items():
             sensors[key][name] = sen

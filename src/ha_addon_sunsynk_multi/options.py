@@ -1,8 +1,8 @@
 """Addon options."""
 
 import logging
+from dataclasses import dataclass, field
 
-import attrs
 from mqtt_entity.options import MQTTOptions
 
 from sunsynk.helpers import slug
@@ -12,7 +12,7 @@ from .timer_schedule import Schedule
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define()
+@dataclass
 class InverterOptions:
     """Options for an inverter."""
 
@@ -25,21 +25,21 @@ class InverterOptions:
     dongle_serial_number: int = 0
 
 
-@attrs.define()
+@dataclass
 class Options(MQTTOptions):
     """HASS Addon Options."""
 
     number_entity_mode: str = "auto"
     prog_time_interval: int = 15
-    inverters: list[InverterOptions] = attrs.field(factory=list)
+    inverters: list[InverterOptions] = field(default_factory=list)
     sensor_definitions: str = "single-phase"
     sensor_overrides: list[str] | None = None
     overrides: dict[str, int | float] | None = None
-    sensors: list[str] = attrs.field(factory=list)
-    sensors_first_inverter: list[str] = attrs.field(factory=list)
+    sensors: list[str] = field(default_factory=list)
+    sensors_first_inverter: list[str] = field(default_factory=list)
     read_allow_gap: int = 2
     read_sensors_batch_size: int = 20
-    schedules: list[Schedule] = attrs.field(factory=list)
+    schedules: list[Schedule] = field(default_factory=list)
     timeout: int = 10
     debug: int = 0
     driver: str = "pymodbus"

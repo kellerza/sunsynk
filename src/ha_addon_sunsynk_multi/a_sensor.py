@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import attrs
 from mqtt_entity import (
     MQTTBinarySensorEntity,
     MQTTClient,
@@ -49,12 +49,12 @@ MQTT = MQTTClient(devs=[], origin_name="Sunsynk Add-on")
 """The MQTTClient instance."""
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class ASensor:
     """Addon Sensor state & entity."""
 
     opt: SensorOption
-    # istate: int = attrs.field()
+    # istate: int = field()
     entity: MQTTEntity | None = None
     "The entity will be None if hidden."
 
@@ -154,7 +154,7 @@ class ASensor:
                 if isinstance(old_ent, MQTTRWEntity) and old_ent.on_command is not None:
                     return old_ent.on_command
 
-            async def on_change(val: float | str | bool) -> None:
+            async def on_change(val: float | str | bool, _: str) -> None:
                 """On change callback."""
                 _LOG.info("Queue update %s=%s", sensor.id, val)
                 ist.write_queue.update({sensor: val})
@@ -215,7 +215,7 @@ class ASensor:
         return self.entity
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class TimeoutState(ASensor):
     """Entity definition for the timeout sensor."""
 

@@ -225,13 +225,13 @@ def test_math() -> None:
     s = MathSensor((1, 2), "", "", factors=(1, -1))
     assert s.reg_to_value((1000, 800)) == 200
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         MathSensor((0, 1), "", "", factors=(1,))
 
-    with pytest.raises(AssertionError):
-        MathSensor((0, 1), "", "", factors="aaa")
+    with pytest.raises(ValueError):
+        MathSensor((0, 1), "", "", factors="aaa")  # type:ignore[arg-type]
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         MathSensor((0, 1), "", "")
 
     assert s.reg_to_value((200, 800)) == -600

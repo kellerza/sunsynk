@@ -36,14 +36,10 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: pyright
-        name: pyright
-        entry: uv run pyright
-      # - id: mypy
-      #   name: mypy
-      #   entry: uv run mypy . --config-file pyproject.toml
+      - id: zuban
+        name: zuban
+        entry: uv run zuban check
         language: system
-        types: [python]
         pass_filenames: false
 
       - id: pytest

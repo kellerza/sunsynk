@@ -3,10 +3,10 @@
 import asyncio
 import logging
 from collections.abc import Sequence
+from dataclasses import dataclass, field
 from urllib.parse import urlparse
 
-import attrs
-from pysolarmanv5 import PySolarmanV5Async  # type: ignore[]
+from pysolarmanv5 import PySolarmanV5Async  # type: ignore[import-untyped]
 
 from sunsynk.sunsynk import Sunsynk
 
@@ -16,16 +16,16 @@ _LOG = logging.getLogger(__name__)
 RETRY_ATTEMPTS = 5
 
 
-@attrs.define(kw_only=True)
+@dataclass(kw_only=True)
 class SolarmanSunsynk(Sunsynk):
     """Sunsynk class using PySolarmanV5."""
 
-    client: PySolarmanV5Async | None = attrs.field(default=None, repr=False)
+    client: PySolarmanV5Async | None = field(default=None, repr=False)
     dongle_serial_number: int = 0
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self) -> None:
         """Post init."""
-        self.allow_gap = self.allow_gap or 10
+        self.allow_gap: int = self.allow_gap or 10
         try:
             self.dongle_serial_number = int(self.dongle_serial_number)
             if self.dongle_serial_number == 0:
@@ -106,7 +106,7 @@ class SolarmanSunsynk(Sunsynk):
         while True:
             try:
                 client = await self.connected_client()
-                return await client.read_holding_registers(start, length)
+                return (await client.read_holding_registers(start, length)) or []
             except Exception as err:
                 attempt += 1
                 _LOG.error("Error reading: %s (retry %s)", err, attempt)

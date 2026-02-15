@@ -1,8 +1,7 @@
 """Schedules."""
 
 import logging
-
-import attrs
+from dataclasses import dataclass
 
 from sunsynk import KWH, WATT, NumType, Sensor
 from sunsynk.helpers import slug
@@ -18,11 +17,11 @@ SCH_ANY_UNIT = "any_unit"
 SCH_NO_UNIT = "no_unit"
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class Schedule:
     """A schehdule."""
 
-    key: str = attrs.field(default="", converter=slug, on_setattr=attrs.setters.convert)
+    key: str = ""
     """Key can be: the sensor name, class (i.e. RWSensor) and unit."""
 
     read_every: int = 0
@@ -33,6 +32,10 @@ class Schedule:
     """Significant change percent over last samples."""
     change_any: bool = False
     """Report any change to the last. Only use the last sample."""
+
+    def __post_init__(self) -> None:
+        """Post init."""
+        self.key = slug(self.key)
 
     @property
     def read_once(self) -> bool:

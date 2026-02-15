@@ -4,8 +4,7 @@ import asyncio
 import logging
 import time
 from collections.abc import Iterable, Sequence
-
-import attrs
+from dataclasses import dataclass, field
 
 from sunsynk.helpers import hex_str, patch_bitmask
 from sunsynk.rwsensors import RWSensor
@@ -15,11 +14,11 @@ from sunsynk.state import InverterState, group_sensors, register_map
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define(kw_only=True)
+@dataclass(kw_only=True)
 class Sunsynk:
     """Sunsync Modbus class."""
 
-    state: InverterState = attrs.field(factory=InverterState)
+    state: InverterState = field(default_factory=InverterState)
     port: str = "/dev/tty0"
     baudrate: int = 9600
     server_id: int = 1

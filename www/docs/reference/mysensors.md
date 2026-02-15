@@ -97,11 +97,11 @@ SENSORS:
 This sensors divides 2 registers (reg 10/reg 20)
 
 ```python
-import attrs
+from dataclasses import dataclass, field
 from sunsynk import Sensor, SensorDefinitions, WATT
 from sunsynk.helpers import unpack_value
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class MyCustomSensor(Sensor):
     """Custom sensor, using multiple registers."""
 
@@ -127,7 +127,7 @@ Write is only partially implemented in the example below
 ::: details
 
 ```python
-import attrs
+from dataclasses import dataclass, field
 import re
 
 from sunsynk import RegType, ValType, SensorDefinitions
@@ -136,7 +136,7 @@ from sunsynk.rwsensors import RWSensor, ResolveType
 SENSORS = SensorDefinitions()
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class SystemTimeRWSensor(RWSensor):
     """Read & write time sensor."""
 

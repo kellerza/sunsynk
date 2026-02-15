@@ -59,7 +59,7 @@ class InverterState:
         default: NumType = 0,
     ) -> NumType:
         """Resolve a number helper."""
-        if isinstance(val, (int | float)):
+        if isinstance(val, int | float):
             return val
         if isinstance(val, Sensor):
             res = self.get(val, default)

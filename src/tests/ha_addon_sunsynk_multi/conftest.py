@@ -19,11 +19,26 @@ def ist_factory(
     port: str = "tcp://test:123",
 ) -> AInverter:
     """Return an inverter test instance."""
-    res = MagicMock(spec_set=AInverter)
-    res.connector = (AsyncMock(), None)
-    res.state = MagicMock(spec_set=InverterState)
-    res.opt = InverterOptions(
-        ha_prefix=ha_prefix, serial_nr=serial, modbus_id=modbus_id, port=port
+    res = AInverter(
+        index=0,
+        opt=InverterOptions(
+            ha_prefix=ha_prefix,
+            serial_nr=serial,
+            modbus_id=modbus_id,
+            port=port,
+            driver="",
+        ),
+        mqtt_dev=MQTTDevice(identifiers=[serial], components={}),
+        state=MagicMock(spec=InverterState),  # type:ignore[arg-type]
     )
-    res.mqtt_dev = MQTTDevice(identifiers=[serial], components={})
+    res.connectors[(port, "")] = (AsyncMock(), AsyncMock())  # type:ignore[assignment]
+    res.read_sensors = AsyncMock()  # type: ignore[method-assign]
+    res.publish_sensors = AsyncMock()  # type: ignore[method-assign]
+
+    # res = MagicMock(spec=AInverter)
+    # res.ss = {}
+    # res.connector = (AsyncMock(), None)
+    # res.state = MagicMock(spec=InverterState)
+    # res.opt = iopt
+    # res.mqtt_dev = MQTTDevice(identifiers=[serial], components={})
     return res

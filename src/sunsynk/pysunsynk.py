@@ -3,9 +3,9 @@
 import asyncio
 import logging
 from collections.abc import Sequence
+from dataclasses import dataclass, field
 from urllib.parse import urlparse
 
-import attrs
 from pymodbus import __version__ as version
 from pymodbus.client import (
     AsyncModbusSerialClient,
@@ -20,11 +20,11 @@ from sunsynk.sunsynk import Sunsynk
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define(kw_only=True)
+@dataclass(kw_only=True)
 class PySunsynk(Sunsynk):
     """Sunsync Modbus class."""
 
-    client: ModbusBaseClient | None = attrs.field(default=None, repr=False)
+    client: ModbusBaseClient | None = field(default=None, repr=False)
 
     def _new_client(self) -> ModbusBaseClient:
         """Create a new client."""

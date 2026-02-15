@@ -88,7 +88,7 @@ def int_round(val: NumType) -> NumType:
 
 def as_num(val: ValType) -> float | int:
     """Convert to float."""
-    if isinstance(val, (float | int)):
+    if isinstance(val, float | int):
         return val
     if val is None:
         return 0

@@ -38,7 +38,7 @@ async def test_uss_sensor() -> None:
     ss = USunsynk(port="tcp://127.0.0.1:502")
     await ss.connect()
 
-    rhr = ss.client.read_holding_registers = AsyncMock()
+    rhr = ss.client.read_holding_registers = AsyncMock()  # type: ignore[method-assign]
 
     _LOG.warning("%s", dir(ss.client))
     assert not rhr.called

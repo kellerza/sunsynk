@@ -3,22 +3,22 @@
 import asyncio
 import logging
 from collections.abc import Sequence
+from dataclasses import dataclass
 from urllib import parse
 
-import attrs
-from async_modbus import AsyncClient, modbus_for_url  # type: ignore[]
-from connio import SERIAL_SCHEMES, SOCKET_SCHEMES  # type: ignore[]
+from async_modbus import AsyncClient, modbus_for_url  # type: ignore[import-untyped]
+from connio import SERIAL_SCHEMES, SOCKET_SCHEMES  # type: ignore[import-untyped]
 
 from sunsynk.sunsynk import Sunsynk
 
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define
+@dataclass
 class USunsynk(Sunsynk):
     """Sunsynk class using umodbus."""
 
-    client: AsyncClient = None  # type:ignore[arg-type]
+    client: AsyncClient = None  # type:ignore[assignment]
 
     async def connect(self) -> None:
         """Connect."""

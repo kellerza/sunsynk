@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import InitVar, dataclass, field, replace
 from statistics import mean
-
-import attrs
 
 from sunsynk.helpers import (
     NumType,
@@ -20,15 +19,26 @@ from sunsynk.helpers import (
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class Sensor:
     """Sunsynk sensor."""
 
-    address: RegType = attrs.field(converter=ensure_tuple)
+    regs: InitVar[RegType | int]
+    address: RegType = field(init=False)
     name: str
     unit: str = ""
     factor: float = 1
     bitmask: int = 0
+
+    def __post_init__(self, regs: RegType | int) -> None:
+        """Post init."""
+        self.address = ensure_tuple(regs)  # type:ignore[misc]
+        if self.bitmask and len(self.address) != 1:
+            _LOG.fatal(
+                "Sensors with a bitmask should reference a single register! %s [registers=%s]",
+                self.name,
+                self.address,
+            )
 
     @property
     def id(self) -> str:
@@ -77,14 +87,15 @@ class Sensor:
         return self.id == other.id
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class Constant(Sensor):
     """Sensor that always returns a constant value."""
 
     value: NumType = None  # type: ignore[assignment]
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self, regs: RegType | int) -> None:
         """Post-initialization processing."""
+        super().__post_init__(regs)
         assert not self.address
         assert self.value is not None
 
@@ -93,13 +104,13 @@ class Constant(Sensor):
         return self.value
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class Sensor16(Sensor):
     """Sensor with a 16-bit/32-bit register registers."""
 
-    history1: list[int] = attrs.field(factory=list)
+    history1: list[int] = field(default_factory=list)
     """History of reg[1]. If last 10 are all > 0, unpack as 32-bit, else only 16-bit."""
-    history0: list[int] = attrs.field(factory=list)
+    history0: list[int] = field(default_factory=list)
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the value from the registers."""
@@ -121,17 +132,18 @@ class Sensor16(Sensor):
         val = int_round(float(val) * abs(self.factor))
         return val
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
+        super().__post_init__(regs)
         assert len(self.address) == 2
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class TextSensor(Sensor):
     """Text/non-numeric sensors are discovered differently."""
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class BinarySensor(Sensor):
     """Binary sensor."""
 
@@ -148,12 +160,12 @@ class BinarySensor(Sensor):
         return res != self.off
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class SensorDefinitions:
     """Definitions."""
 
-    all: dict[str, Sensor] = attrs.field(factory=dict)
-    deprecated: dict[str, str] = attrs.field(factory=dict)
+    all: dict[str, Sensor] = field(default_factory=dict)
+    deprecated: dict[str, str] = field(default_factory=dict)
     """map of 'old_name': 'new_name'"""
 
     @property
@@ -200,7 +212,7 @@ class SensorDefinitions:
             sid = old.id
             if news := new_sensors.get(sid):
                 return news
-            news = self.all[sid] = new_sensors[sid] = attrs.evolve(old)
+            news = self.all[sid] = new_sensors[sid] = replace(old, regs=old.address)
 
             # replace all references
             for sen in self.all.values():
@@ -234,11 +246,11 @@ class SensorDefinitions:
             _LOG.info("Override: Sensor %s.%s set to %s", key, sen_attr, val)
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class MathSensor(Sensor):
     """Math sensor, add multiple registers."""
 
-    factors: tuple[float, ...] = attrs.field(default=None, converter=ensure_tuple)
+    factors: tuple[float, ...] = tuple()  # typing: ignore[assignment]
     no_negative: bool = False
     absolute: bool = False
 
@@ -256,12 +268,17 @@ class MathSensor(Sensor):
             val = 0
         return val
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        assert len(self.address) == len(self.factors)
+        super().__post_init__(regs)
+        self.factors = ensure_tuple(self.factors)
+        if len(self.address) != len(self.factors):
+            raise ValueError(
+                f"MathSensor requires the same number of registers and factors! {self.name} [registers={self.address}, factors={self.factors}]"
+            )
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class TempSensor(Sensor):
     """Offset by 100 for temperature."""
 
@@ -277,7 +294,7 @@ class TempSensor(Sensor):
         return None
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class SDStatusSensor(TextSensor):
     """SD card status."""
 
@@ -289,7 +306,7 @@ class SDStatusSensor(TextSensor):
         }.get(regs[0]) or f"unknown {regs[0]}"
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class InverterStateSensor(TextSensor):
     """Inverter status."""
 
@@ -305,7 +322,7 @@ class InverterStateSensor(TextSensor):
         }.get(regs[0]) or f"unknown {regs[0]}"
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class SerialSensor(Sensor):
     """Decode the inverter serial number."""
 
@@ -314,11 +331,11 @@ class SerialSensor(Sensor):
         return "".join(chr(b16 >> 8) + chr(b16 & 0xFF) for b16 in regs)
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class EnumSensor(TextSensor):
     """Sensor with a set of enum values. Like a read-only SelectRWSensor."""
 
-    options: dict[int, str] = attrs.field(factory=dict)
+    options: dict[int, str] = field(default_factory=dict)
     unknown: str | None = None
     """Unknown value format string. Default to none, can include the register value as {}."""
     _warn: bool = True
@@ -353,7 +370,7 @@ class EnumSensor(TextSensor):
         return res
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class FaultSensor(TextSensor):
     """Decode Inverter faults."""
 
@@ -386,7 +403,7 @@ class FaultSensor(TextSensor):
         return ", ".join(err)
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class HVFaultSensor(TextSensor):
     """Decode HV Inverter faults."""
 
@@ -469,7 +486,7 @@ class HVFaultSensor(TextSensor):
         return ", ".join(err)
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class ProtocolVersionSensor(Sensor):
     """Protocol version sensor."""
 
