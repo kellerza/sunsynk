@@ -270,7 +270,8 @@ class MathSensor(Sensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        super().__post_init__(regs)
+        # super().__post_init__(regs)
+        Sensor.__post_init__(self, regs)
         self.factors = ensure_tuple(self.factors)
         if len(self.address) != len(self.factors):
             raise ValueError(
