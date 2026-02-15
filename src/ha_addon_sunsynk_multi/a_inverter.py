@@ -76,7 +76,7 @@ class AInverter:
         return self.connectors[(self.opt.port, self.opt.driver)]
 
     @asynccontextmanager
-    async def lock_io(self) -> AsyncGenerator[Sunsynk, None]:
+    async def lock_io(self) -> AsyncGenerator[Sunsynk]:
         """Lock the IO."""
         inv, lock = self.connector
         async with lock:
@@ -141,7 +141,7 @@ class AInverter:
         return True
 
     async def publish_sensors(self, *, states: dict[ASensor, ValType]) -> None:
-        """Publish state to HASS."""
+        """Publish state to HASSH."""
         for state, value in states.items():
             # Entity was never created, don't publish state
             if not state.entity:

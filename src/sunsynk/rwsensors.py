@@ -45,14 +45,10 @@ class RWSensor(Sensor):
         """Get the reg value from a display value."""
         raise NotImplementedError
 
-    def reg_to_value(self, regs: RegType) -> ValType:
-        """Decode the register."""
-        return super().reg_to_value(self.masked(regs))
-
     def __post_init__(self, regs: RegType | int) -> None:
         """Run post init."""
-        # super().__post_init__(regs)
-        Sensor.__post_init__(self, regs)
+        # Bare calls to super() are supported from Python 3.14+
+        super(RWSensor, self).__post_init__(regs)
         if self.bitmask > 0 and len(self.address) != 1:
             _LOG.fatal(
                 "Sensors with a bitmask should reference a single register! %s [registers=%s]",
@@ -139,8 +135,7 @@ class SwitchRWSensor0(SelectRWSensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        # super().__post_init__(regs)
-        RWSensor.__post_init__(self, regs)
+        super(SwitchRWSensor0, self).__post_init__(regs)
         assert not self.options
         assert self.on != self.off
         self.options = {self.off: BOOL_OFF, self.on: BOOL_ON}
@@ -161,8 +156,7 @@ class SwitchRWSensor(RWSensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        # super().__post_init__(regs)
-        RWSensor.__post_init__(self, regs)
+        super(SwitchRWSensor, self).__post_init__(regs)
         if self.bitmask:
             if self.on is not None:
                 assert self.on & self.bitmask == self.on
@@ -170,7 +164,7 @@ class SwitchRWSensor(RWSensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Reg to value for binary."""
-        res = super().reg_to_value(regs)
+        res = super(SwitchRWSensor, self).reg_to_value(regs)
         if res is None:
             return ""
         if self.on is not None:
@@ -193,8 +187,7 @@ class SystemTimeRWSensor(RWSensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Run post init."""
-        # super().__post_init__(regs)
-        RWSensor.__post_init__(self, regs)
+        super(RWSensor, self).__post_init__(regs)
         if len(self.address) != 3:
             raise ValueError("SystemTimeRWSensor requires exactly 3 registers")
 
@@ -269,7 +262,7 @@ class TimeRWSensor(RWSensor):
     @staticmethod
     def _range(
         start: int, end: int, val: int, step: int, modulo: int
-    ) -> Generator[int, None, None]:
+    ) -> Generator[int]:
         if val % step != 0:
             yield val
         stop = end if start <= end else end + modulo

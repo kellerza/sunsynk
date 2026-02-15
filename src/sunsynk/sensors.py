@@ -95,8 +95,7 @@ class Constant(Sensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Post-initialization processing."""
-        # super().__post_init__(regs)
-        Sensor.__post_init__(self, regs)
+        super(Constant, self).__post_init__(regs)
         assert not self.address
         assert self.value is not None
 
@@ -135,8 +134,7 @@ class Sensor16(Sensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        # super().__post_init__(regs)
-        Sensor.__post_init__(self, regs)
+        super(Sensor16, self).__post_init__(regs)
         assert len(self.address) == 2
 
 
@@ -154,7 +152,7 @@ class BinarySensor(Sensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Reg to value for binary."""
-        res = super().reg_to_value(regs)
+        res = super(BinarySensor, self).reg_to_value(regs)
         if res is None:
             return None
         if self.on is not None:
@@ -272,8 +270,7 @@ class MathSensor(Sensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        # super().__post_init__(regs)
-        Sensor.__post_init__(self, regs)
+        super(MathSensor, self).__post_init__(regs)
         self.factors = ensure_tuple(self.factors)
         if len(self.address) != len(self.factors):
             raise ValueError(

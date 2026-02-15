@@ -331,7 +331,7 @@ SENSOR_GROUPS: dict[str, list[str]] = {
 
 def get_sensors(
     *, target: Iterable[Sensor], names: list[str], warn: bool = True
-) -> Generator[Sensor, None, None]:
+) -> Generator[Sensor]:
     """Add a sensor."""
     groups: set[str] = set()
 

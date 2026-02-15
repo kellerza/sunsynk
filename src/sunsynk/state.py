@@ -145,7 +145,7 @@ class InverterState:
 
 def group_sensors(
     sensors: Iterable[Sensor], allow_gap: int = 3, max_group_size: int = 60
-) -> Generator[list[int], None, None]:
+) -> Generator[list[int]]:
     """Group sensor registers into blocks for reading."""
     if not sensors:
         return
