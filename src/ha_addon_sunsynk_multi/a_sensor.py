@@ -1,7 +1,5 @@
 """State of a sensor & entity."""
 
-from __future__ import annotations
-
 import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -97,7 +95,7 @@ class ASensor:
         """Return True if the units are a measurement."""
         return units in {"W", "V", "A", "Hz", "°C", "°F", "%", "Ah", "VA"}
 
-    def visible_on(self, ist: AInverter) -> bool:
+    def visible_on(self, ist: "AInverter") -> bool:
         """Is entity visible on this inverter."""
         if not self.opt.visible:
             return False
@@ -107,7 +105,7 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, ist: AInverter, /) -> MQTTEntity:  # noqa: PLR0911, PLR0912
+    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:  # noqa: PLR0911, PLR0912
         """Create HASS entity."""
         dev_id = ist.opt.serial_nr
         if not self.visible_on(ist):
@@ -219,7 +217,7 @@ class ASensor:
 class TimeoutState(ASensor):
     """Entity definition for the timeout sensor."""
 
-    def create_entity(self, ist: AInverter, /) -> MQTTEntity:
+    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:
         """MQTT entities for stats."""
         dev_id = ist.opt.serial_nr
         if not dev_id:

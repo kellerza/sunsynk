@@ -1,10 +1,9 @@
 """Sensor classes represent modbus registers for an inverter."""
 
-from __future__ import annotations
-
 import logging
 from dataclasses import InitVar, dataclass, field, replace
 from statistics import mean
+from typing import Self
 
 from sunsynk.helpers import (
     NumType,
@@ -188,9 +187,7 @@ class SensorDefinitions:
         """Get the rated power sensor."""
         return self.all["rated_power"]
 
-    def __add__(
-        self, item: Sensor | tuple[Sensor, ...] | list[Sensor]
-    ) -> SensorDefinitions:
+    def __add__(self, item: Sensor | tuple[Sensor, ...] | list[Sensor]) -> Self:
         """Add new sensors."""
         if isinstance(item, Sensor):
             self.all[item.id] = item
@@ -200,7 +197,7 @@ class SensorDefinitions:
                 self.all[itm.id] = itm
         return self
 
-    def copy(self) -> SensorDefinitions:
+    def copy(self) -> "SensorDefinitions":
         """Copy the sensor definitions."""
         return SensorDefinitions(all=self.all.copy(), deprecated=self.deprecated.copy())
 
