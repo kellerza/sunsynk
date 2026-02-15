@@ -51,7 +51,8 @@ class RWSensor(Sensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Run post init."""
-        super().__post_init__(regs)
+        # super().__post_init__(regs)
+        Sensor.__post_init__(self, regs)
         if self.bitmask > 0 and len(self.address) != 1:
             _LOG.fatal(
                 "Sensors with a bitmask should reference a single register! %s [registers=%s]",
@@ -138,7 +139,8 @@ class SwitchRWSensor0(SelectRWSensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        super().__post_init__(regs)
+        # super().__post_init__(regs)
+        RWSensor.__post_init__(self, regs)
         assert not self.options
         assert self.on != self.off
         self.options = {self.off: BOOL_OFF, self.on: BOOL_ON}
@@ -159,7 +161,8 @@ class SwitchRWSensor(RWSensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        super().__post_init__(regs)
+        # super().__post_init__(regs)
+        RWSensor.__post_init__(self, regs)
         if self.bitmask:
             if self.on is not None:
                 assert self.on & self.bitmask == self.on
@@ -190,7 +193,8 @@ class SystemTimeRWSensor(RWSensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Run post init."""
-        super().__post_init__(regs)
+        # super().__post_init__(regs)
+        RWSensor.__post_init__(self, regs)
         if len(self.address) != 3:
             raise ValueError("SystemTimeRWSensor requires exactly 3 registers")
 

@@ -95,7 +95,8 @@ class Constant(Sensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Post-initialization processing."""
-        super().__post_init__(regs)
+        # super().__post_init__(regs)
+        Sensor.__post_init__(self, regs)
         assert not self.address
         assert self.value is not None
 
@@ -134,7 +135,8 @@ class Sensor16(Sensor):
 
     def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
-        super().__post_init__(regs)
+        # super().__post_init__(regs)
+        Sensor.__post_init__(self, regs)
         assert len(self.address) == 2
 
 
