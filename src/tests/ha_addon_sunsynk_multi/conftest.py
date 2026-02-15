@@ -1,5 +1,6 @@
 """Addon fixtures."""
 
+import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 from mqtt_entity import MQTTDevice
@@ -19,6 +20,10 @@ def ist_factory(
     port: str = "tcp://test:123",
 ) -> AInverter:
     """Return an inverter test instance."""
+    state = MagicMock(InverterState)
+    state.historynn = MagicMock()
+    state.history = MagicMock()
+
     res = AInverter(
         index=0,
         opt=InverterOptions(
@@ -29,16 +34,10 @@ def ist_factory(
             driver="",
         ),
         mqtt_dev=MQTTDevice(identifiers=[serial], components={}),
-        state=MagicMock(spec=InverterState),  # type:ignore[arg-type]
+        state=state,  # type:ignore[arg-type]
     )
-    res.connectors[(port, "")] = (AsyncMock(), AsyncMock())  # type:ignore[assignment]
+
+    res.connectors[(port, "")] = (AsyncMock(), asyncio.Lock())  # type:ignore[assignment]
     res.read_sensors = AsyncMock()  # type: ignore[method-assign]
     res.publish_sensors = AsyncMock()  # type: ignore[method-assign]
-
-    # res = MagicMock(spec=AInverter)
-    # res.ss = {}
-    # res.connector = (AsyncMock(), None)
-    # res.state = MagicMock(spec=InverterState)
-    # res.opt = iopt
-    # res.mqtt_dev = MQTTDevice(identifiers=[serial], components={})
     return res
