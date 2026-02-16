@@ -24,7 +24,7 @@ classifiers = [
 dependencies = [
   "attrs>=25,<26",
   "cattrs>=25,<26",
-  "mqtt-entity[options]>=1,<2",
+  "mqtt-entity[options]==1.0.21",
   "prettytable>=3.17,<4",
   "pymodbus[serial]==3.11.4",
 ]
