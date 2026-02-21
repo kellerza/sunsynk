@@ -3,9 +3,8 @@
 import asyncio
 import logging
 from collections import defaultdict
+from dataclasses import dataclass, field
 from typing import Self
-
-import attrs
 
 from sunsynk import RWSensor, Sensor, ValType
 from sunsynk.utils import pretty_table
@@ -18,20 +17,20 @@ from .timer_callback import AsyncCallback
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class SensorRun:
     """Sensor run schedule."""
 
     next_run: int = 0
-    sensors: set[SensorOption] = attrs.field(factory=set)
+    sensors: set[SensorOption] = field(default_factory=set)
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class SensorSchedule:
     """Sensor run schedule."""
 
-    read: dict[int, SensorRun] = attrs.field(factory=lambda: defaultdict(SensorRun))
-    report: dict[int, SensorRun] = attrs.field(factory=lambda: defaultdict(SensorRun))
+    read: dict[int, SensorRun] = field(default_factory=lambda: defaultdict(SensorRun))
+    report: dict[int, SensorRun] = field(default_factory=lambda: defaultdict(SensorRun))
 
     def build_schedules(self, idx: int) -> Self:
         """Build schedules."""

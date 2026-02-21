@@ -5,9 +5,9 @@ from __future__ import annotations
 import logging
 import re
 from collections.abc import Generator
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-import attrs
 from mqtt_entity.utils import BOOL_OFF, BOOL_ON
 
 from sunsynk.helpers import (
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class RWSensor(Sensor):
     """Read & write sensor."""
 
@@ -45,12 +45,10 @@ class RWSensor(Sensor):
         """Get the reg value from a display value."""
         raise NotImplementedError
 
-    def reg_to_value(self, regs: RegType) -> ValType:
-        """Decode the register."""
-        return super().reg_to_value(self.masked(regs))
-
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self, regs: RegType | int) -> None:
         """Run post init."""
+        # Bare calls to super() are supported from Python 3.14+
+        super(RWSensor, self).__post_init__(regs)
         if self.bitmask > 0 and len(self.address) != 1:
             _LOG.fatal(
                 "Sensors with a bitmask should reference a single register! %s [registers=%s]",
@@ -64,7 +62,7 @@ class RWSensor(Sensor):
         return []
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class NumberRWSensor(RWSensor):
     """Numeric sensor which can be read and written."""
 
@@ -89,14 +87,14 @@ class NumberRWSensor(RWSensor):
         )
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class SelectRWSensor(RWSensor):
     """Sensor with a set of options to select from."""
 
-    options: dict[int, str] = attrs.field(factory=dict)
+    options: dict[int, str] = field(default_factory=dict)
     # switch: tuple[int, int] | None = None
 
-    # def __attrs_post_init__(self) -> None:
+    # def __post_init__(self) -> None:
     #     """Ensure correct parameters."""
     #     if self.switch:
     #         assert not self.options
@@ -126,7 +124,7 @@ class SelectRWSensor(RWSensor):
         return res
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class SwitchRWSensor0(SelectRWSensor):
     """Switch Sensor. The original implementation."""
 
@@ -135,8 +133,9 @@ class SwitchRWSensor0(SelectRWSensor):
     off: int = 0
     """The register value representing OFF."""
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
+        super(SwitchRWSensor0, self).__post_init__(regs)
         assert not self.options
         assert self.on != self.off
         self.options = {self.off: BOOL_OFF, self.on: BOOL_ON}
@@ -146,7 +145,7 @@ class SwitchRWSensor0(SelectRWSensor):
             assert self.off & self.bitmask == self.off
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class SwitchRWSensor(RWSensor):
     """Switch. Similar to BinarySensor, but writeable."""
 
@@ -155,8 +154,9 @@ class SwitchRWSensor(RWSensor):
     off: int = 0
     """The register value representing OFF."""
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self, regs: RegType | int) -> None:
         """Ensure correct parameters."""
+        super(SwitchRWSensor, self).__post_init__(regs)
         if self.bitmask:
             if self.on is not None:
                 assert self.on & self.bitmask == self.on
@@ -164,7 +164,7 @@ class SwitchRWSensor(RWSensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Reg to value for binary."""
-        res = super().reg_to_value(regs)
+        res = super(SwitchRWSensor, self).reg_to_value(regs)
         if res is None:
             return ""
         if self.on is not None:
@@ -181,13 +181,13 @@ class SwitchRWSensor(RWSensor):
         return (self.off,)
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class SystemTimeRWSensor(RWSensor):
     """Read & write time sensor."""
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self, regs: RegType | int) -> None:
         """Run post init."""
-        super().__attrs_post_init__()
+        super(RWSensor, self).__post_init__(regs)
         if len(self.address) != 3:
             raise ValueError("SystemTimeRWSensor requires exactly 3 registers")
 
@@ -221,7 +221,7 @@ class SystemTimeRWSensor(RWSensor):
         return f"{y}-{m:02}-{d:02} {h}:{mn:02}:{s:02}"
 
 
-@attrs.define(slots=True, eq=False)
+@dataclass(slots=True, eq=False)
 class TimeRWSensor(RWSensor):
     """Extract the time."""
 
@@ -262,7 +262,7 @@ class TimeRWSensor(RWSensor):
     @staticmethod
     def _range(
         start: int, end: int, val: int, step: int, modulo: int
-    ) -> Generator[int, None, None]:
+    ) -> Generator[int]:
         if val % step != 0:
             yield val
         stop = end if start <= end else end + modulo

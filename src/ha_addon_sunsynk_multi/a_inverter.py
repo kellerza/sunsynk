@@ -5,9 +5,9 @@ import logging
 import traceback
 from collections.abc import AsyncGenerator, Callable, Iterable
 from contextlib import asynccontextmanager
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
-import attrs
 from mqtt_entity import MQTTDevice, MQTTSensorEntity
 
 from sunsynk.helpers import slug
@@ -18,7 +18,7 @@ from sunsynk.utils import pretty_table_sensors
 
 from .a_sensor import MQTT, SS_TOPIC, ASensor
 from .options import OPT, InverterOptions
-from .sensor_options import DEFS, SOPT
+from .sensor_options import DEFS, SOPT, SensorOptions
 from .timer_callback import AsyncCallback
 
 if TYPE_CHECKING:
@@ -27,33 +27,33 @@ if TYPE_CHECKING:
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define(slots=True, kw_only=True)
+@dataclass(kw_only=True)
 class AInverter:
     """Addon Inverter state (per inverter)."""
 
     index: int
     opt: InverterOptions
-    ss: dict[str, ASensor] = attrs.field(factory=dict)
+    ss: dict[str, ASensor] = field(default_factory=dict)
     """Sensor states."""
 
-    sched: "SensorSchedule" = attrs.field(init=False)
+    sched: "SensorSchedule" = field(init=False)
 
-    mqtt_dev: MQTTDevice = attrs.field(
-        factory=lambda: MQTTDevice(components={}, identifiers=[""])
+    mqtt_dev: MQTTDevice = field(
+        default_factory=lambda: MQTTDevice(components={}, identifiers=[""])
     )
     """MQTT Device for the inverter."""
 
-    read_errors: int = attrs.field(default=0, init=False)
+    read_errors: int = field(default=0, init=False)
 
-    write_queue: dict[Sensor, str | int | float | bool] = attrs.field(factory=dict)
+    write_queue: dict[Sensor, str | int | float | bool] = field(default_factory=dict)
     """Write queue for RWSensors."""
 
     # Reporting stats
-    entity_timeout: MQTTSensorEntity = attrs.field(init=False)
-    entity_cbstats: MQTTSensorEntity = attrs.field(init=False)
-    cb: AsyncCallback = attrs.field(init=False)
+    entity_timeout: MQTTSensorEntity = field(init=False)
+    entity_cbstats: MQTTSensorEntity = field(init=False)
+    cb: AsyncCallback = field(init=False)
 
-    state: InverterState = attrs.field(factory=InverterState)
+    state: InverterState = field(default_factory=InverterState)
     """The inverter state, which tracks all sensors and their values.
 
     During a lock_io this will be the state on the sunsynk driver."""
@@ -76,7 +76,7 @@ class AInverter:
         return self.connectors[(self.opt.port, self.opt.driver)]
 
     @asynccontextmanager
-    async def lock_io(self) -> AsyncGenerator[Sunsynk, None]:
+    async def lock_io(self) -> AsyncGenerator[Sunsynk]:
         """Lock the IO."""
         inv, lock = self.connector
         async with lock:
@@ -141,7 +141,7 @@ class AInverter:
         return True
 
     async def publish_sensors(self, *, states: dict[ASensor, ValType]) -> None:
-        """Publish state to HASS."""
+        """Publish state to HASSH."""
         for state, value in states.items():
             # Entity was never created, don't publish state
             if not state.entity:
@@ -234,8 +234,8 @@ class AInverter:
             except Exception as err:
                 _LOG.error("Could not create MQTT entity for %s: %s", s, err)
 
-            if hasattr(s.opt.sensor, "rated_power"):
-                s.opt.sensor.rated_power = int(self.rated_power)  # type:ignore[]
+            # if hasattr(s.opt.sensor, "rated_power"):
+            #     s.opt.sensor.rated_power = int(self.rated_power)  # type:ignore[]
 
     async def hass_discover_sensors(self) -> bool:
         """Discover all sensors."""
@@ -244,14 +244,15 @@ class AInverter:
         MQTT.monitor_homeassistant_status()
         return True
 
-    def init_sensors(self) -> None:
+    def init_sensors(self, soptions: SensorOptions | None = None) -> None:
         """Initialize the sensors."""
+        soptions = soptions or SOPT
         # Track startup sensors
-        for sen in SOPT.startup:
+        for sen in soptions.startup:
             self.state.track(sen)
 
         # create state entry
-        for sopt in SOPT.values():
+        for sopt in soptions.values():
             sen = sopt.sensor
             self.state.track(sen)
             self.ss[sen.id] = ASensor(opt=sopt, retain=isinstance(sen, RWSensor))

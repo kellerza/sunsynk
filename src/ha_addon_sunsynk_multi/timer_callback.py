@@ -3,10 +3,9 @@
 import asyncio
 import logging
 import time
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Sequence
+from dataclasses import dataclass, field
 from math import modf
-
-import attrs
 
 from sunsynk.helpers import slug
 
@@ -15,22 +14,22 @@ from .errors import log_error
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class Callback:
     """A callback."""
 
-    name: str = attrs.field(converter=slug)
-    every: int = attrs.field()
+    name: str
+    every: int = field()
     """Run every <every> seconds."""
     offset: int = 0
     """Offset in seconds."""
-    next_run: int = attrs.field(default=0, init=False)
+    next_run: int = 0
     """Next run in seconds."""
 
     keep_stats: bool = False
-    stat_time: list[float] = attrs.field(factory=list)
+    stat_time: list[float] = field(default_factory=list)
     """Execution time history."""
-    stat_slip: list[int] = attrs.field(factory=list)
+    stat_slip: list[int] = field(default_factory=list)
     """Seconds that execution slipped."""
     stat_busy: int = 0
     """Number of times the callback was still busy."""
@@ -39,19 +38,20 @@ class Callback:
         """Call the callback."""
         raise NotImplementedError
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self) -> None:
         """Init."""
+        self.name = slug(self.name)
         if self.every - self.offset < 1:
             raise ValueError(
                 f"every ({self.every}) must be larger than offset ({self.offset})"
             )
 
 
-@attrs.define(slots=True)
+@dataclass
 class SyncCallback(Callback):
     """A sync callback."""
 
-    callback: Callable[[int], None] = attrs.field(kw_only=True)
+    callback: Callable[[int], None] = field(kw_only=True)
 
     def call(self, now: int) -> None:
         """Catch unhandled exceptions."""
@@ -67,12 +67,12 @@ class SyncCallback(Callback):
             self.next_run = now  # re run!
 
 
-@attrs.define(slots=True)
+@dataclass
 class AsyncCallback(Callback):
     """An async callback."""
 
-    task: asyncio.Task = attrs.field(default=None, init=False)
-    callback: Callable[[int], Awaitable[None]] = attrs.field(kw_only=True)
+    task: asyncio.Task = field(default=None, init=False)  # type:ignore[arg-type]
+    callback: Callable[[int], Awaitable[None]] = field(kw_only=True)
 
     async def wrap_callback(self, cb_call: Awaitable[None]) -> None:
         """Catch unhandled exceptions."""
@@ -95,7 +95,7 @@ class AsyncCallback(Callback):
         self.task = asyncio.create_task(self.wrap_callback(self.callback(now)))
 
 
-async def run_callbacks(callbacks: list[Callback]) -> None:
+async def run_callbacks(callbacks: Sequence[Callback]) -> None:
     """Run the timer."""
     sleep_task = asyncio.create_task(asyncio.sleep(0.5))
     while callbacks:

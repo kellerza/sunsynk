@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.9,<0.11" ]
+requires = [ "uv-build>=0.10,<0.11" ]
 
 [project]
 name = "sunsynk"
@@ -22,7 +22,6 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "attrs>=25,<26",
   "cattrs>=25,<26",
   "mqtt-entity[options]==1.0.21",
   "prettytable>=3.17,<4",
@@ -37,12 +36,12 @@ urls.Source = "https://github.com/kellerza/sunsynk"
 dev = [
   "codespell",
   "pyproject-fmt",
-  "pyright",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
   "pytest-github-actions-annotate-failures",
   "types-pyyaml",
+  "zuban>=0.5.1",
 ]
 
 [tool.uv]
@@ -85,3 +84,7 @@ ini_options.log_cli = true
 ini_options.log_cli_level = "DEBUG"
 ini_options.asyncio_mode = "auto"
 ini_options.addopts = "--cov=src --cov-report xml:cov.xml"
+
+[tool.zuban]
+warn_unreachable = false
+warn_unused_ignores = true  # Not yet supported in 0.6.0

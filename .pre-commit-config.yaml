@@ -1,14 +1,9 @@
 repos:
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.18
-    hooks:
-      - id: uv-lock
-
   - repo: local
     hooks:
-      - id: gen_sensors
-        name: Generate sensor docs
-        entry: uv run scripts/gen_sensors.py
+      - id: lock
+        name: lock
+        entry: uv sync --upgrade --all-extras
         language: system
         pass_filenames: false
 
@@ -30,20 +25,22 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: zuban
+        name: zuban
+        entry: uv run zuban check
+        language: system
+        pass_filenames: false
+
       - id: codespell
         name: codespell
         entry: uv run codespell --toml pyproject.toml
         language: system
         pass_filenames: false
 
-      - id: pyright
-        name: pyright
-        entry: uv run pyright
-      # - id: mypy
-      #   name: mypy
-      #   entry: uv run mypy . --config-file pyproject.toml
+      - id: gen_sensors
+        name: Generate sensor docs
+        entry: uv run scripts/gen_sensors.py
         language: system
-        types: [python]
         pass_filenames: false
 
       - id: pytest

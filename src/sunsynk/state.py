@@ -3,9 +3,8 @@
 import logging
 from collections import defaultdict
 from collections.abc import Callable, Generator, Iterable, Iterator, Sequence
+from dataclasses import dataclass, field
 from typing import cast
-
-import attr
 
 from sunsynk.helpers import NumType, as_num
 from sunsynk.rwsensors import RWSensor
@@ -14,21 +13,22 @@ from sunsynk.sensors import BinarySensor, Constant, Sensor, ValType
 _LOG = logging.getLogger(__name__)
 
 
-@attr.define()
+@dataclass
 class InverterState:
     """Keep the state of the inverter."""
 
-    values: dict[Sensor, ValType] = attr.field(factory=dict)
-    registers: dict[int, int] = attr.field(factory=dict)
+    values: dict[Sensor, ValType] = field(default_factory=dict)
+    registers: dict[int, int] = field(default_factory=dict)
     onchange: Callable[[Sensor, ValType, ValType], None] | None = None
-    history: dict[Sensor, list[NumType]] = attr.field(
-        init=False, factory=lambda: defaultdict(list)
-    )
+    history: dict[Sensor, list[NumType]] = field(init=False)
     """Historic values for numeric types."""
-    historynn: dict[Sensor, list[ValType]] = attr.field(
-        init=False, factory=lambda: defaultdict(list)
-    )
+    historynn: dict[Sensor, list[ValType]] = field(init=False)
     """Historic values for non-numeric types."""
+
+    def __post_init__(self) -> None:
+        """Post init."""
+        self.historynn = defaultdict(list)
+        self.history = defaultdict(list)
 
     def __getitem__(self, sensor: Sensor) -> ValType:
         """Get the current value of a sensor."""
@@ -59,7 +59,7 @@ class InverterState:
         default: NumType = 0,
     ) -> NumType:
         """Resolve a number helper."""
-        if isinstance(val, (int | float)):
+        if isinstance(val, int | float):
             return val
         if isinstance(val, Sensor):
             res = self.get(val, default)
@@ -145,7 +145,7 @@ class InverterState:
 
 def group_sensors(
     sensors: Iterable[Sensor], allow_gap: int = 3, max_group_size: int = 60
-) -> Generator[list[int], None, None]:
+) -> Generator[list[int]]:
     """Group sensor registers into blocks for reading."""
     if not sensors:
         return

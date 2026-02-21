@@ -2,10 +2,11 @@
 
 from collections import defaultdict
 from inspect import iscoroutinefunction
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
+from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.sensor_callback import SensorRun, build_callback_schedule
 from ha_addon_sunsynk_multi.sensor_options import SOPT, Sensor, SensorOption
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
@@ -17,12 +18,16 @@ pytestmark = pytest.mark.asyncio
 
 async def test_build_callback_schedule() -> None:
     """Test build_callback_schedule."""
-    ist = ist_factory("888", "ss1", 1)
     SOPT.clear()
     SOPT.update({s.sensor: s for s in TEST1})
+    ist = ist_factory("888", "ss1", 1)
+    assert list(SOPT.values()) == list(TEST1)
+    AInverter.init_sensors(ist, SOPT)
+    # ist.init_sensors(SOPT)
+    # assert ist.ss == {"test": TEST1[0], "test2": TEST1[1]}
 
-    read_s: dict[str, SensorRun] = defaultdict(SensorRun)
-    report_s: dict[str, SensorRun] = defaultdict(SensorRun)
+    read_s: dict[int, SensorRun] = defaultdict(SensorRun)
+    report_s: dict[int, SensorRun] = defaultdict(SensorRun)
     dds = Mock()
     dds.side_effect = [read_s, report_s]
 
@@ -44,60 +49,56 @@ async def test_build_callback_schedule() -> None:
             20: SensorRun(next_run=0, sensors={TEST1[1]}),
         }
 
-        assert ist.connector[0].connect.call_count == 0  # type: ignore[attr-defined]
-        await mycb.callback(1)
-        assert ist.connector[0].connect.call_count == 1  # type: ignore[attr-defined]
-
-        assert ist.read_sensors.call_args_list == [  # type: ignore[attr-defined]
-            call(
-                sensors={TEST1[0].sensor, TEST1[1].sensor},
-                msg="poll_need_to_read",
+        def call_count() -> tuple[int, int, int]:
+            return (  # type: ignore[attr-defined]
+                ist.connector[0].connect.call_count,  # type: ignore[attr-defined]
+                ist.read_sensors.call_count,  # type: ignore[attr-defined]
+                ist.publish_sensors.call_count,  # type: ignore[attr-defined]
             )
-        ]
-        ist.read_sensors.call_args_list.clear()  # type: ignore[attr-defined]
-        assert ist.publish_sensors.call_count == 0  # type: ignore[attr-defined]
-        assert read_s == {
-            1: SensorRun(next_run=2, sensors={TEST1[0], TEST1[1]}),
-        }
-        assert report_s == {
-            10: SensorRun(next_run=11, sensors={TEST1[0]}),
-            20: SensorRun(next_run=21, sensors={TEST1[1]}),
-        }
+
+        def publish_sensors() -> list[str]:
+            return [k.name for k in ist.publish_sensors.call_args.kwargs["states"]]  # type: ignore[attr-defined]
+
+        def next_run() -> tuple[int, int, int]:
+            return (
+                read_s[1].next_run,
+                report_s[10].next_run,
+                report_s[20].next_run,
+            )
+
+        assert call_count() == (0, 0, 0)
+        assert next_run() == (0, 0, 0)
+
+        await mycb.callback(1)
+        assert call_count() == (1, 1, 1)
+        assert next_run() == (2, 11, 21)
 
         await mycb.callback(10)
-
-        assert ist.read_sensors.call_args_list == [  # type: ignore[attr-defined]
-            call(
-                sensors={TEST1[0].sensor, TEST1[1].sensor},
-                msg="poll_need_to_read",
-            )
-        ]
-        assert read_s == {
-            1: SensorRun(next_run=11, sensors={TEST1[0], TEST1[1]}),
-        }
-        assert report_s == {
-            10: SensorRun(next_run=20, sensors={TEST1[0]}),
-            20: SensorRun(next_run=21, sensors={TEST1[1]}),
-        }
+        assert call_count() == (2, 2, 2)
+        assert next_run() == (11, 20, 21)
+        assert publish_sensors() == ["test"]
 
         await mycb.callback(11)
-        assert read_s == {
-            1: SensorRun(next_run=12, sensors={TEST1[0], TEST1[1]}),
-        }
-        assert report_s == {
-            10: SensorRun(next_run=20, sensors={TEST1[0]}),
-            20: SensorRun(next_run=21, sensors={TEST1[1]}),
-        }
+        assert call_count() == (3, 3, 2)  # no publish on 11
+        assert next_run() == (12, 20, 21)
+
+        await mycb.callback(15)
+        assert call_count() == (4, 4, 2)  # no publish on 15
+        assert next_run() == (16, 20, 21)
+
+        await mycb.callback(19)
+        assert call_count() == (5, 5, 2)
+        assert next_run() == (20, 20, 21)
 
         await mycb.callback(20)
-        assert read_s == {
-            1: SensorRun(next_run=21, sensors={TEST1[0], TEST1[1]}),
-        }
-        assert report_s == {
-            10: SensorRun(next_run=30, sensors={TEST1[0]}),
-            20: SensorRun(next_run=40, sensors={TEST1[1]}),
-        }
-        assert ist.publish_sensors.call_count == 0  # type: ignore[attr-defined]
+        assert call_count() == (6, 6, 3)
+        assert next_run() == (21, 30, 40)
+        assert publish_sensors() == ["test", "test2"]
+
+        await mycb.callback(100)
+        assert call_count() == (7, 7, 4)  # single publish for 2 commands
+        assert next_run() == (101, 110, 120)
+        assert publish_sensors() == ["test", "test2"]
 
 
 TEST1 = (

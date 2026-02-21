@@ -1,11 +1,9 @@
 """State of a sensor & entity."""
 
-from __future__ import annotations
-
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import attrs
 from mqtt_entity import (
     MQTTBinarySensorEntity,
     MQTTClient,
@@ -49,12 +47,12 @@ MQTT = MQTTClient(devs=[], origin_name="Sunsynk Add-on")
 """The MQTTClient instance."""
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class ASensor:
     """Addon Sensor state & entity."""
 
     opt: SensorOption
-    # istate: int = attrs.field()
+    # istate: int = field()
     entity: MQTTEntity | None = None
     "The entity will be None if hidden."
 
@@ -97,7 +95,7 @@ class ASensor:
         """Return True if the units are a measurement."""
         return units in {"W", "V", "A", "Hz", "°C", "°F", "%", "Ah", "VA"}
 
-    def visible_on(self, ist: AInverter) -> bool:
+    def visible_on(self, ist: "AInverter") -> bool:
         """Is entity visible on this inverter."""
         if not self.opt.visible:
             return False
@@ -107,7 +105,7 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, ist: AInverter, /) -> MQTTEntity:  # noqa: PLR0911, PLR0912
+    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:  # noqa: PLR0911, PLR0912
         """Create HASS entity."""
         dev_id = ist.opt.serial_nr
         if not self.visible_on(ist):
@@ -154,7 +152,7 @@ class ASensor:
                 if isinstance(old_ent, MQTTRWEntity) and old_ent.on_command is not None:
                     return old_ent.on_command
 
-            async def on_change(val: float | str | bool) -> None:
+            async def on_change(val: float | str | bool, _: str) -> None:
                 """On change callback."""
                 _LOG.info("Queue update %s=%s", sensor.id, val)
                 ist.write_queue.update({sensor: val})
@@ -215,11 +213,11 @@ class ASensor:
         return self.entity
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class TimeoutState(ASensor):
     """Entity definition for the timeout sensor."""
 
-    def create_entity(self, ist: AInverter, /) -> MQTTEntity:
+    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:
         """MQTT entities for stats."""
         dev_id = ist.opt.serial_nr
         if not dev_id:

@@ -114,7 +114,7 @@ def test_number_rw(state: InverterState) -> None:
     assert long.value_to_reg(res55, state) == reg55
 
     with pytest.raises(NotImplementedError):
-        s.address = tuple()
+        s.address = tuple()  # type:ignore[misc]
         s.value_to_reg(123, state)
 
 

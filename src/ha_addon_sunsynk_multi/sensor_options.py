@@ -3,8 +3,7 @@
 import logging
 import traceback
 from collections.abc import Generator, Iterable
-
-import attrs
+from dataclasses import dataclass, field
 
 from sunsynk.definitions import import_defs
 from sunsynk.helpers import slug
@@ -21,14 +20,14 @@ DEFS = SensorDefinitions()
 """Sensor definitions (1ph / 3ph)."""
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class SensorOption:
     """Options for a sensor."""
 
     sensor: Sensor
     schedule: Schedule
     visible: bool = False
-    affects: set[Sensor] = attrs.field(factory=set)
+    affects: set[Sensor] = field(default_factory=set)
     """Affect sensors due to dependencies."""
     first: bool = False
     """Only on the first inverter."""
@@ -38,12 +37,12 @@ class SensorOption:
         return self.sensor.__hash__()
 
 
-@attrs.define(slots=True)
+@dataclass
 class SensorOptions(dict[Sensor, SensorOption]):
     """A dict of sensors from the configuration."""
 
-    startup: list[Sensor] = attrs.field(factory=list)
-    _deps: set[Sensor] = attrs.field(factory=set)
+    startup: list[Sensor] = field(default_factory=list)
+    _deps: set[Sensor] = field(default_factory=set)
 
     def _add_sensor(
         self,
@@ -332,7 +331,7 @@ SENSOR_GROUPS: dict[str, list[str]] = {
 
 def get_sensors(
     *, target: Iterable[Sensor], names: list[str], warn: bool = True
-) -> Generator[Sensor, None, None]:
+) -> Generator[Sensor]:
     """Add a sensor."""
     groups: set[str] = set()
 
