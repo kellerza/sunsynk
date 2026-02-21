@@ -247,7 +247,7 @@ class SensorDefinitions:
 class MathSensor(Sensor):
     """Math sensor, add multiple registers."""
 
-    factors: tuple[float, ...] = tuple()  # typing: ignore[assignment]
+    factors: tuple[float, ...] = tuple()
     no_negative: bool = False
     absolute: bool = False
 
