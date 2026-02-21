@@ -22,8 +22,8 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "cattrs>=25,<26",
-  "mqtt-entity[options]>=1.1.0",
+  "cattrs>=25,<27",
+  "mqtt-entity[options]>=1.1",
   "prettytable>=3.17,<4",
   "pymodbus[serial]==3.11.4",
 ]
