@@ -133,15 +133,15 @@ wheels = [
 
 [[package]]
 name = "cattrs"
-version = "25.3.0"
+version = "26.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6e/00/2432bb2d445b39b5407f0a90e01b9a271475eea7caf913d7a86bcb956385/cattrs-25.3.0.tar.gz", hash = "sha256:1ac88d9e5eda10436c4517e390a4142d88638fe682c436c93db7ce4a277b884a", size = 509321, upload-time = "2025-10-07T12:26:08.737Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/ec/ba18945e7d6e55a58364d9fb2e46049c1c2998b3d805f19b703f14e81057/cattrs-26.1.0.tar.gz", hash = "sha256:fa239e0f0ec0715ba34852ce813986dfed1e12117e209b816ab87401271cdd40", size = 495672, upload-time = "2026-02-18T22:15:19.406Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/2b/a40e1488fdfa02d3f9a653a61a5935ea08b3c2225ee818db6a76c7ba9695/cattrs-25.3.0-py3-none-any.whl", hash = "sha256:9896e84e0a5bf723bc7b4b68f4481785367ce07a8a02e7e9ee6eb2819bc306ff", size = 70738, upload-time = "2025-10-07T12:26:06.603Z" },
+    { url = "https://files.pythonhosted.org/packages/80/56/60547f7801b97c67e97491dc3d9ade9fbccbd0325058fd3dfcb2f5d98d90/cattrs-26.1.0-py3-none-any.whl", hash = "sha256:d1e0804c42639494d469d08d4f26d6b9de9b8ab26b446db7b5f8c2e97f7c3096", size = 73054, upload-time = "2026-02-18T22:15:17.958Z" },
 ]
 
 [[package]]
@@ -377,7 +377,7 @@ wheels = [
 
 [[package]]
 name = "mqtt-entity"
-version = "1.1.0"
+version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -385,9 +385,9 @@ dependencies = [
     { name = "colorlog" },
     { name = "paho-mqtt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bc/3a/15b090292e0f20a9970149ef62943f42a54376dbf6b0c8ff8258e0b4d32f/mqtt_entity-1.1.0.tar.gz", hash = "sha256:ee40e8fb35d4a449e1eb5263e67ef42b6e3a6a3646ea942a505bd09c47d8674a", size = 16926, upload-time = "2026-02-15T06:57:03.799Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/29/94/3543f39ea1241d2a4b106d39b9600cf900dd5c36f95066cb90020ae8237e/mqtt_entity-1.1.1.tar.gz", hash = "sha256:8d7533a149d2540f6fef14f0184e8b4ade30545e37c8aab4f9da137e5abb692d", size = 16852, upload-time = "2026-02-21T05:41:21.273Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/bb/0c35ec987e95dde3ff14a805f13304498908f517bb66d5cee48c2f30e6bb/mqtt_entity-1.1.0-py3-none-any.whl", hash = "sha256:daaba5b5ae5fd100fd51af93fe15688fff67c27d9a9fa8428cbb123b76c9937b", size = 19985, upload-time = "2026-02-15T06:57:04.92Z" },
+    { url = "https://files.pythonhosted.org/packages/13/5b/bf83c13ce91f1336f6d651c7bdf3d8987884cd887947e85a823d45274648/mqtt_entity-1.1.1-py3-none-any.whl", hash = "sha256:f821ac834e6634466bf2d99aca5ba56de4774b3a5f928c44c7109332d0699858", size = 19863, upload-time = "2026-02-21T05:41:20.286Z" },
 ]
 
 [package.optional-dependencies]
@@ -834,7 +834,7 @@ requires-dist = [
     { name = "async-modbus", marker = "extra == 'umodbus'", specifier = "==0.2.3" },
     { name = "cattrs", specifier = ">=25,<27" },
     { name = "connio", marker = "extra == 'umodbus'", specifier = "==0.2" },
-    { name = "mqtt-entity", extras = ["options"], specifier = ">=1.1.0" },
+    { name = "mqtt-entity", extras = ["options"], specifier = ">=1.1" },
     { name = "prettytable", specifier = ">=3.17,<4" },
     { name = "pymodbus", extras = ["serial"], specifier = "==3.11.4" },
     { name = "pysolarmanv5", marker = "extra == 'solarman'", specifier = "==3.0.6" },
