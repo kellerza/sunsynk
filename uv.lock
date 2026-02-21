@@ -834,7 +834,7 @@ requires-dist = [
     { name = "async-modbus", marker = "extra == 'umodbus'", specifier = "==0.2.3" },
     { name = "cattrs", specifier = ">=25,<26" },
     { name = "connio", marker = "extra == 'umodbus'", specifier = "==0.2" },
-    { name = "mqtt-entity", extras = ["options"], specifier = "==1.0.21" },
+    { name = "mqtt-entity", extras = ["options"], specifier = "==1.1.0" },
     { name = "prettytable", specifier = ">=3.17,<4" },
     { name = "pymodbus", extras = ["serial"], specifier = "==3.11.4" },
     { name = "pysolarmanv5", marker = "extra == 'solarman'", specifier = "==3.0.6" },
