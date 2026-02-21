@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.9,<0.11" ]
+requires = [ "uv-build>=0.10,<0.11" ]
 
 [project]
 name = "sunsynk"
@@ -87,3 +87,4 @@ ini_options.addopts = "--cov=src --cov-report xml:cov.xml"
 
 [tool.zuban]
 warn_unreachable = false
+warn_unused_ignores = true  # Not yet supported in 0.6.0

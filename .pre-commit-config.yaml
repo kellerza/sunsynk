@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: lock
         name: lock
-        entry: uv lock
+        entry: uv sync --upgrade --all-extras
         language: system
         pass_filenames: false
 
