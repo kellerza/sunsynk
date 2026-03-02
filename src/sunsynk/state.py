@@ -6,7 +6,7 @@ from collections.abc import Callable, Generator, Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from typing import cast
 
-from sunsynk.helpers import NumType, as_num
+from sunsynk.helpers import NumType, as_num, hex_str
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import BinarySensor, Constant, Sensor, ValType
 
@@ -86,10 +86,16 @@ class InverterState:
                 regs = (regs[0] & sen.bitmask,)
 
             newv = sen.reg_to_value(regs)
-            _LOG.debug("register %s = %s (old=%s)", self.registers, oldv, newv)
+            _LOG.debug("register %s = %s (old=%s)", sen.address, oldv, newv)
             if oldv != newv:
                 self.values[sen] = newv
                 changed[sen] = (newv, oldv)
+                if sen.trace:
+                    _LOG._log(
+                        15,  # logging.addLevelName(15, "TRACE")
+                        "Sensor %s changed from %s to %s [%s]",
+                        (sen.name, oldv, newv, hex_str(regs, address=sen.address)),
+                    )
 
             numeric = (
                 isinstance(newv, (int | float))

@@ -22,16 +22,18 @@ _LOG = logging.getLogger(__name__)
 class Sensor:
     """Sunsynk sensor."""
 
-    regs: InitVar[RegType | int]
+    address0: InitVar[RegType | int]
     address: RegType = field(init=False)
     name: str
     unit: str = ""
     factor: float = 1
     bitmask: int = 0
+    trace: int = 0
+    """Whether to trace changes for this sensor."""
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Post init."""
-        self.address = ensure_tuple(regs)  # type:ignore[misc]
+        self.address = ensure_tuple(address0)  # type:ignore[misc]
         if self.bitmask and len(self.address) != 1:
             _LOG.fatal(
                 "Sensors with a bitmask should reference a single register! %s [registers=%s]",
@@ -209,7 +211,7 @@ class SensorDefinitions:
             sid = old.id
             if news := new_sensors.get(sid):
                 return news
-            news = self.all[sid] = new_sensors[sid] = replace(old, regs=old.address)
+            news = self.all[sid] = new_sensors[sid] = replace(old, address0=old.address)
 
             # replace all references
             for sen in self.all.values():
@@ -228,19 +230,21 @@ class SensorDefinitions:
             if sen_attr == "":
                 if not isinstance(sen, Constant):
                     _LOG.warning(
-                        "Override for %s is not a Constant sensor, skipping", key
+                        "Override for %s is not a Constant sensor, skipping", sen_name
                     )
                     continue
                 sen_attr = "value"
 
             if not hasattr(sen, sen_attr):
                 _LOG.error(
-                    "Override: Sensor %s has no attribute %s, skipping", key, sen_attr
+                    "Override: Sensor %s has no attribute %s, skipping",
+                    sen_name,
+                    sen_attr,
                 )
                 continue
 
             setattr(_copy(sen), sen_attr, val)
-            _LOG.info("Override: Sensor %s.%s set to %s", key, sen_attr, val)
+            _LOG.info("Override: Sensor %s.%s set to %s", sen_name, sen_attr, val)
 
 
 @dataclass(slots=True, eq=False)

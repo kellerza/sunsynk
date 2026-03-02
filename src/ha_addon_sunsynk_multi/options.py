@@ -49,6 +49,7 @@ class Options(MQTTOptions):
     async def init_addon(self) -> None:
         """Init Add-On."""
         await super().init_addon()
+        logging.addLevelName(15, "TRACE")
 
         if self.driver == "umodbus":
             _LOG.warning("Try *pymodbus* if your encounter any issues with *umodbus*")

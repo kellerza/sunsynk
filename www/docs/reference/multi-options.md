@@ -123,8 +123,8 @@ For information about available sensors, refer to the sensor [definitions](./def
 - `SENSORS_FIRST_INVERTER` – Accepts a list of additional sensors for the first inverter, typically
   settings.
 
-- `SENSOR_OVERRIDES` – Allows you to partly override sensor definitions. This is a list of strings,
-  each string contains a key=value.
+- `SENSOR_OVERRIDES` – Allows you to override sensor definitions. This is a list of strings,
+  each string should be in the format `key=value`.
 
   Example yaml:
 
@@ -143,7 +143,14 @@ For information about available sensors, refer to the sensor [definitions](./def
   ```log
   [08:19:42] INFO    Importing sensor definitions single-phase (view the source online: https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions/single_phase.py )
   [08:19:42] INFO    Applying sensor overrides from configuration: {'prog4_power.max': 4990}
-  [08:19:42] INFO    Override: Sensor prog4_power.max.max set to 4990
+  [08:19:42] INFO    Override: Sensor prog4_power.max set to 4990
+  ```
+
+  Using sensor overrides you can add a trace to any sensor. This will print a message in the log every time the value changes, showing the old and new value, and the raw register values. This is not recommended for regular use, but can be very helpful when debugging sensors and sensor definitions.
+
+  ```yaml
+  SENSOR_OVERRIDES:
+  - prog4_power.trace=1
   ```
 
   :::
