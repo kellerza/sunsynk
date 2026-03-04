@@ -642,20 +642,20 @@ serial = [
 
 [[package]]
 name = "pyproject-fmt"
-version = "2.17.0"
+version = "2.18.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "toml-fmt-common" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8f/1b/56d9b9dd15f1bdf36ee1a1d5f26141e3b2eedd1705a84600504be91554b4/pyproject_fmt-2.17.0.tar.gz", hash = "sha256:8f00ab90ec7328a7f288fa90f94ba41c2ba3fe521386b5fce20a064b228848be", size = 142314, upload-time = "2026-03-01T23:28:53.334Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/c4/6b1361c1ca268c03ada092356d655581bbeae4996eec0529c593c87f852e/pyproject_fmt-2.18.1.tar.gz", hash = "sha256:c51e9e30ff76ee7c9ca27b0e2a4fcd36d458803a08841b0a279b7a0c24b3d54a", size = 144273, upload-time = "2026-03-03T19:39:24.28Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/41/ce/9a38852e01d72b50467b361d344b8634e5e7c4411de04aa2efd64e7a9c47/pyproject_fmt-2.17.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:8401f7b3182e8b91bb5970ff20b369aa0572d464856704516970959fb2d5e1df", size = 4723464, upload-time = "2026-03-01T23:28:31.854Z" },
-    { url = "https://files.pythonhosted.org/packages/b5/bd/1089d0a46ab08f2065a15dd69686d0aeef165a64455a59d3178dce386adb/pyproject_fmt-2.17.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:36d9e17208a37ad19566493e673770d96a834c8b164c0eb8e8625a4f2138fd72", size = 4546455, upload-time = "2026-03-01T23:28:34.272Z" },
-    { url = "https://files.pythonhosted.org/packages/52/85/269db8083829d2d78a145b219938c13dee325c66373705ae818f540759e5/pyproject_fmt-2.17.0-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:f87541aec67d4e11f6aee3f2c567d9c154741882bfb4b6501f2f9636ef7b59e2", size = 4694270, upload-time = "2026-03-01T23:28:36.706Z" },
-    { url = "https://files.pythonhosted.org/packages/5d/22/f92d467515bcb35c92126d63ef98a401fc05c4c5e5b60f6bb57a0134fb38/pyproject_fmt-2.17.0-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:09cc6a0c0a6b43decad5ee5061475e5f6b8e16535b194f960cd302fc76a4847f", size = 5015984, upload-time = "2026-03-01T23:28:39.133Z" },
-    { url = "https://files.pythonhosted.org/packages/71/5e/6699cbc332f3a95b64f12e49e900dc8215b1afdafea6467c06bef47d3ae4/pyproject_fmt-2.17.0-cp39-abi3-manylinux_2_31_riscv64.whl", hash = "sha256:59961a3ffdc27f6bcb3b6e1f9df82c612becfa0e45d8171e15cb8bddfe96a07f", size = 4734166, upload-time = "2026-03-01T23:28:41.382Z" },
-    { url = "https://files.pythonhosted.org/packages/33/82/3d266236520efb35974a3656e2c85ab8c1844de2a1e06c9d8162231b9eeb/pyproject_fmt-2.17.0-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:5cf2542b7c8bb27fd01351ff1bf5ec24617af03014ba88448c0bdedd97fde206", size = 5218676, upload-time = "2026-03-01T23:28:43.969Z" },
-    { url = "https://files.pythonhosted.org/packages/c0/71/9a21eda765d28b2e9c57a4c539ec2aa9fd263090107f6a740f29e5940c36/pyproject_fmt-2.17.0-cp39-abi3-win_amd64.whl", hash = "sha256:5fc95a142301e8a55e15a1e8a594b754d40d8af9d86b52667c0161005da44f86", size = 4826703, upload-time = "2026-03-01T23:28:46.455Z" },
+    { url = "https://files.pythonhosted.org/packages/29/ad/047ff1921e16d8967493701b45977cf5b834a6411abb2b64d8021fb6666c/pyproject_fmt-2.18.1-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:cfc9f6e7875c11f4127dec0e99326a952968f76c86e1104619bf5c03612aafd6", size = 4726078, upload-time = "2026-03-03T19:39:02.677Z" },
+    { url = "https://files.pythonhosted.org/packages/76/bc/3b9d157ff3b110720d10fcdf0b644c23208ca02fe1fd5abfe487d0350fbc/pyproject_fmt-2.18.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:e2371a16067421ab8f57372e9ba4850cccee211bd9847d012432943a94845305", size = 4547991, upload-time = "2026-03-03T19:39:04.972Z" },
+    { url = "https://files.pythonhosted.org/packages/41/63/56de9130fd5f3d1265e1207c0a5ccc9106ba884b1b4acb412f1d1162c479/pyproject_fmt-2.18.1-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:5e32763e9ed2f696948426595fbc093bbc39bf1462179ca113fca3b4bd042fd1", size = 4696340, upload-time = "2026-03-03T19:39:07.595Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/6c/31b74f84e6d3bc6144c4f52c35291f3e083e83bf9a47c09706d442ea5647/pyproject_fmt-2.18.1-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:ccd78bd180061d38b00f74b27f2965e5e5da434d720f858cf127b52638b7dd82", size = 5017466, upload-time = "2026-03-03T19:39:09.776Z" },
+    { url = "https://files.pythonhosted.org/packages/65/62/b9938ccf81986539a704b9d1039b539f1d9d1c1b98442e071eb00e22ecbc/pyproject_fmt-2.18.1-cp39-abi3-manylinux_2_31_riscv64.whl", hash = "sha256:e507f52ecd8255f54004d1fa611c1955e4eb2c907a8952855baa51f9d1bb5439", size = 4734857, upload-time = "2026-03-03T19:39:11.649Z" },
+    { url = "https://files.pythonhosted.org/packages/46/5d/6090c916839f62606c269362f46eb54dfbcabe66112d6cb5ca58b0b5df8c/pyproject_fmt-2.18.1-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:f0106803a12ab861e379c5db6c251bbf2b1ae295d40be0497feb2c536bf287c6", size = 5219127, upload-time = "2026-03-03T19:39:14.024Z" },
+    { url = "https://files.pythonhosted.org/packages/4d/22/1ae8529cb612ddd9b338454688fc97db355db51c99b62367cdae834fcc5b/pyproject_fmt-2.18.1-cp39-abi3-win_amd64.whl", hash = "sha256:798a7f5a536d6d5fa1e3fbf49b02dd9a70566c665d43522261692bc02a9c0af4", size = 4827432, upload-time = "2026-03-03T19:39:15.823Z" },
 ]
 
 [[package]]
@@ -724,14 +724,14 @@ wheels = [
 
 [[package]]
 name = "pytest-github-actions-annotate-failures"
-version = "0.3.0"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/39/d4/c54ee6a871eee4a7468e3a8c0dead28e634c0bc2110c694309dcb7563a66/pytest_github_actions_annotate_failures-0.3.0.tar.gz", hash = "sha256:d4c3177c98046c3900a7f8ddebb22ea54b9f6822201b5d3ab8fcdea51e010db7", size = 11248, upload-time = "2025-01-17T22:39:32.722Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c2/e1/8f2c242e6d75a26a8e5ddcc23f652a411e4aac3eedc4b923808ac0582685/pytest_github_actions_annotate_failures-0.4.0.tar.gz", hash = "sha256:77d6baa29c8c61c2dacc494fa76eb95a185f0ee61666714ac43fb12ea672d217", size = 10857, upload-time = "2026-03-02T18:57:40.919Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6d/73/7b0b15cb8605ee967b34aa1d949737ab664f94e6b0f1534e8339d9e64ab2/pytest_github_actions_annotate_failures-0.3.0-py3-none-any.whl", hash = "sha256:41ea558ba10c332c0bfc053daeee0c85187507b2034e990f21e4f7e5fef044cf", size = 6030, upload-time = "2025-01-17T22:39:31.701Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/bd/11809f5c78d5d8da2d0e004845d2382768bc20798b3e0988bca61efd349f/pytest_github_actions_annotate_failures-0.4.0-py3-none-any.whl", hash = "sha256:285fed86e16b0b7a8eac6acdcde31913798fb739b15ef5b86895b4f5e32bf237", size = 6039, upload-time = "2026-03-02T18:57:39.991Z" },
 ]
 
 [[package]]
