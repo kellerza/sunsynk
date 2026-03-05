@@ -16,6 +16,7 @@ from sunsynk.helpers import (
 )
 
 _LOG = logging.getLogger(__name__)
+LOG_TRACE = 15  # logging.addLevelName(LOG_TRACE, "TRACE")
 
 
 @dataclass(slots=True, eq=False)
@@ -289,7 +290,7 @@ class TempSensor(Sensor):
         """Decode the temperature (offset)."""
         try:
             val = regs[0]
-            return int_round((float(val) * abs(self.factor)) - self.offset)  # type: ignore[]
+            return int_round((float(val) * abs(self.factor)) - self.offset)
         except (TypeError, ValueError) as err:
             _LOG.error("Could not decode temperature: %s", err)
         return None

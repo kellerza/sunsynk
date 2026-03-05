@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib import parse
 
 from async_modbus import AsyncClient, modbus_for_url  # type: ignore[import-untyped]
@@ -18,7 +18,11 @@ _LOG = logging.getLogger(__name__)
 class USunsynk(Sunsynk):
     """Sunsynk class using umodbus."""
 
-    client: AsyncClient = None  # type:ignore[assignment]
+    client: AsyncClient = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Post init."""
+        self.client = None  # type:ignore[assignment]
 
     async def connect(self) -> None:
         """Connect."""

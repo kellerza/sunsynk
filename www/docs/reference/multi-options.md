@@ -146,6 +146,10 @@ For information about available sensors, refer to the sensor [definitions](./def
   [08:19:42] INFO    Override: Sensor prog4_power.max set to 4990
   ```
 
+  :::
+
+  ::: details Trace the value of any sensor.
+
   Using sensor overrides you can add a trace to any sensor. This will print a message in the log every time the value changes, showing the old and new value, and the raw register values. This is not recommended for regular use, but can be very helpful when debugging sensors and sensor definitions.
 
   ```yaml

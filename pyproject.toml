@@ -40,8 +40,9 @@ dev = [
   "pytest-asyncio",
   "pytest-cov",
   "pytest-github-actions-annotate-failures",
+  "ruff",
   "types-pyyaml",
-  "zuban>=0.5.1",
+  "zuban"
 ]
 
 [tool.uv]

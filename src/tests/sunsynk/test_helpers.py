@@ -39,6 +39,7 @@ def test_ensure_tuple() -> None:
     assert ensure_tuple(1) == (1,)
     assert ensure_tuple((1,)) == (1,)
     assert ensure_tuple((1, 5)) == (1, 5)
+    assert ensure_tuple([1, 5]) == (1, 5)
     assert ensure_tuple("a") == ("a",)
 
 

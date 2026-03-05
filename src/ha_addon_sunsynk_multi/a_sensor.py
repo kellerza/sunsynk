@@ -31,7 +31,7 @@ from sunsynk.rwsensors import (
     SwitchRWSensor0,
     TimeRWSensor,
 )
-from sunsynk.sensors import BinarySensor, EnumSensor, TextSensor
+from sunsynk.sensors import LOG_TRACE, BinarySensor, EnumSensor, TextSensor
 
 from .options import OPT
 from .sensor_options import SensorOption
@@ -83,6 +83,12 @@ class ASensor:
             return
         if self._last == val and self.retain:
             return
+        if self.opt.sensor.trace:
+            _LOG._log(
+                LOG_TRACE,
+                "MQTT Publish %s=%s %s",
+                (self.name, val, "(retain)" if self.retain else ""),
+            )
         await self.entity.send_state(MQTT, val, retain=self.retain)
         self._last = val
 
@@ -154,8 +160,19 @@ class ASensor:
 
             async def on_change(val: float | str | bool, _: str) -> None:
                 """On change callback."""
-                _LOG.info("Queue update %s=%s", sensor.id, val)
-                ist.write_queue.update({sensor: val})
+                if sensor.trace:
+                    _LOG._log(LOG_TRACE, "Queue update %s=%s", (sensor.id, val))
+                oldq = ist.write_queue.get(sensor)
+                ist.write_queue[sensor] = val
+                if oldq == val:
+                    return
+                if oldq is not None:
+                    _LOG.warning(
+                        "Write queued for %s. Skipped %s, queueing %s",
+                        sensor.id,
+                        oldq,
+                        val,
+                    )
                 await self.publish(val)
 
             return on_change

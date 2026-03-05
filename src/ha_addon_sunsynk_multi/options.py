@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from mqtt_entity.options import MQTTOptions
 
 from sunsynk.helpers import slug
+from sunsynk.sensors import LOG_TRACE
 
 from .timer_schedule import Schedule
 
@@ -49,7 +50,7 @@ class Options(MQTTOptions):
     async def init_addon(self) -> None:
         """Init Add-On."""
         await super().init_addon()
-        logging.addLevelName(15, "TRACE")
+        logging.addLevelName(LOG_TRACE, "TRACE")
 
         if self.driver == "umodbus":
             _LOG.warning("Try *pymodbus* if your encounter any issues with *umodbus*")

@@ -27,7 +27,7 @@ repos:
 
       - id: zuban
         name: zuban
-        entry: uv run zuban check
+        entry: uv run zuban check src
         language: system
         pass_filenames: false
 
@@ -45,7 +45,7 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: uv run pytest
+        entry: uv run pytest -vv
         language: system
         types: [python]
         pass_filenames: false

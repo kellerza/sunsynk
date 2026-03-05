@@ -8,7 +8,7 @@ from typing import cast
 
 from sunsynk.helpers import NumType, as_num, hex_str
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import BinarySensor, Constant, Sensor, ValType
+from sunsynk.sensors import LOG_TRACE, BinarySensor, Constant, Sensor, ValType
 
 _LOG = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ class InverterState:
                 changed[sen] = (newv, oldv)
                 if sen.trace:
                     _LOG._log(
-                        15,  # logging.addLevelName(15, "TRACE")
+                        LOG_TRACE,
                         "Sensor %s changed from %s to %s [%s]",
                         (sen.name, oldv, newv, hex_str(regs, address=sen.address)),
                     )

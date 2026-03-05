@@ -234,9 +234,6 @@ class AInverter:
             except Exception as err:
                 _LOG.error("Could not create MQTT entity for %s: %s", s, err)
 
-            # if hasattr(s.opt.sensor, "rated_power"):
-            #     s.opt.sensor.rated_power = int(self.rated_power)  # type:ignore[]
-
     async def hass_discover_sensors(self) -> bool:
         """Discover all sensors."""
         self.hass_create_discovery_info()

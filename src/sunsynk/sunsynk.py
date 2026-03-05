@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 
 from sunsynk.helpers import hex_str, patch_bitmask
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import Sensor, ValType
+from sunsynk.sensors import LOG_TRACE, Sensor, ValType
 from sunsynk.state import InverterState, group_sensors, register_map
 
 _LOG = logging.getLogger(__name__)
@@ -53,13 +53,12 @@ class Sunsynk:
             regs = (regs0, *regs[1:])
             msg = f"[Register {val0}-->{val1}]"
 
-        _LOG.info(
-            "Writing sensor %s=%s Registers:%s %s",
-            sensor.id,
-            value,
-            hex_str(regs, address=sensor.address),
-            msg,
-        )
+        if sensor.trace:
+            _LOG._log(
+                LOG_TRACE,
+                "Writing sensor %s=%s Registers:%s %s",
+                (sensor.id, value, hex_str(regs, address=sensor.address), msg),
+            )
         for idx, addr in enumerate(sensor.address):
             if idx:
                 await asyncio.sleep(0.05)

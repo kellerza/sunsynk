@@ -37,7 +37,7 @@ def ist_factory(
         state=state,  # type:ignore[arg-type]
     )
 
-    res.connectors[(port, "")] = (AsyncMock(), asyncio.Lock())  # type:ignore[assignment]
+    res.connectors[(port, "")] = (AsyncMock(), asyncio.Lock())
     res.read_sensors = AsyncMock()  # type: ignore[method-assign]
     res.publish_sensors = AsyncMock()  # type: ignore[method-assign]
     return res

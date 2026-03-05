@@ -24,8 +24,8 @@ on:
       - ".github/workflows/ci.yml"
 
 env:
-  RUFF_VERSION: 0.15.0
-  UV_VERSION: 0.9.29
+  RUFF_VERSION: 0.15.4
+  UV_VERSION: 0.10.2
 
 jobs:
   ruff:
@@ -57,7 +57,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run zuban
-        run: uv run zuban check
+        run: uv run zuban check src
 
   pytest:
     name: Run tests Python ${{ matrix.python-version }}
@@ -82,7 +82,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run tests and generate coverage report
-        run: uv run pytest
+        run: uv run pytest -vv
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:

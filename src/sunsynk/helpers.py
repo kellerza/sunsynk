@@ -3,7 +3,7 @@
 import logging
 import math
 import struct
-from typing import Any
+from collections.abc import Iterable
 
 _LOG = logging.getLogger(__name__)
 
@@ -67,13 +67,15 @@ def unpack_value(regs: RegType, *, signed: bool = True, maybe16: bool = False) -
     raise ValueError(f"Unsupported number of registers: {len(regs)}")
 
 
-def ensure_tuple(val: Any) -> tuple[int, ...]:
+def ensure_tuple[T](val: T | tuple[T, ...]) -> tuple[T, ...]:
     """Return a tuple."""
     if isinstance(val, tuple):
-        return val  # type: ignore[]
-    if isinstance(val, int):
-        return (val,)
-    return tuple(val)  # type: ignore[]
+        return val
+    if val is None:
+        return ()
+    if isinstance(val, Iterable) and not isinstance(val, str):
+        return tuple(val)
+    return (val,)
 
 
 def int_round(val: NumType) -> NumType:
