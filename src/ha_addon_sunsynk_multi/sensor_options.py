@@ -68,9 +68,6 @@ class SensorOptions(dict[Sensor, SensorOption]):
         if not DEFS.all:
             import_definitions()
             if OPT.overrides:
-                _LOG.info(
-                    "Applying sensor overrides from configuration: %s", OPT.overrides
-                )
                 DEFS.override(OPT.overrides)
         self.clear()
 

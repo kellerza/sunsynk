@@ -142,8 +142,14 @@ For information about available sensors, refer to the sensor [definitions](./def
 
   ```log
   [08:19:42] INFO    Importing sensor definitions single-phase (view the source online: https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions/single_phase.py )
-  [08:19:42] INFO    Applying sensor overrides from configuration: {'prog4_power.max': 4990}
-  [08:19:42] INFO    Override: Sensor prog4_power.max set to 4990
+  [08:19:42] INFO    Applying sensor overrides from configuration
+  +-------------+-----------+-------+----------+
+  |    Sensor   | Attribute | Value | Message  |
+  +-------------+-----------+-------+----------+
+  |    Serial   |   trace   |   1   | ✓ 0 -> 1 |
+  | Battery SOC |   trace   |   1   | ✓ 0 -> 1 |
+  | Prog5 power |   trace   |   1   | ✓ 0 -> 1 |
+  +-------------+-----------+-------+----------+
   ```
 
   :::

@@ -7,7 +7,7 @@ from sunsynk import KWH, WATT, NumType, Sensor
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import EnumSensor
-from sunsynk.utils import pretty_table
+from sunsynk.utils import pretty_table, table_data
 
 _LOG = logging.getLogger(__name__)
 
@@ -121,19 +121,18 @@ def init_schedules(schedules: list[Schedule]) -> None:
             # _LOG.info("Added    %s", sch)
         SCHEDULES[sch.key] = sch
 
-    hdr = ["Key", "src", "Read", "Report", "Change by", "Change %", "Change any"]
     data = [
-        [
-            schn,
-            source.get(schn, ""),
-            sch.read_every if sch.read_every else "once",
-            sch.report_every if sch.report_every else "",
-            sch.change_by if sch.change_by else "",
-            sch.change_percent if sch.change_percent else "",
-            sch.change_any if sch.change_any else "",
-        ]
+        {
+            "Key": schn,
+            "src": source.get(schn, ""),
+            "Read": sch.read_every if sch.read_every else "once",
+            "Report": sch.report_every if sch.report_every else "",
+            "Change by": sch.change_by if sch.change_by else "",
+            "Change %": sch.change_percent if sch.change_percent else "",
+            "Change any": sch.change_any if sch.change_any else "",
+        }
         for schn, sch in SCHEDULES.items()
     ]
-    tab = pretty_table(hdr, data)
+    tab = pretty_table(*table_data(data))
 
     _LOG.info("Schedules:\n%s", tab.get_string())

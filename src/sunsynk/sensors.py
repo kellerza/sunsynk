@@ -14,6 +14,7 @@ from sunsynk.helpers import (
     slug,
     unpack_value,
 )
+from sunsynk.utils import pretty_table, table_data
 
 _LOG = logging.getLogger(__name__)
 LOG_TRACE = 15  # logging.addLevelName(LOG_TRACE, "TRACE")
@@ -222,30 +223,39 @@ class SensorDefinitions:
                         setattr(_copy(sen), attrn, news)
             return news
 
+        info: list[dict[str, str]] = []
+
         for key, val in values.items():
             sen_name, _, sen_attr = key.partition(".")
             sen = self.all.get(slug(sen_name))
+            row = {
+                "Sensor": sen.name if sen else sen_name,
+                "Attribute": sen_attr,
+                "Value": str(val),
+                "Message": "?",
+            }
+            info.append(row)
             if sen is None:
-                _LOG.error("Override: Sensor %s not found, skipping", sen_name)
+                row["Message"] = "✕ Sensor not found"
                 continue
+
             if sen_attr == "":
                 if not isinstance(sen, Constant):
-                    _LOG.warning(
-                        "Override for %s is not a Constant sensor, skipping", sen_name
+                    row["Message"] = (
+                        "✕ Empty attributes can only be used with Constants"
                     )
                     continue
                 sen_attr = "value"
 
             if not hasattr(sen, sen_attr):
-                _LOG.error(
-                    "Override: Sensor %s has no attribute %s, skipping",
-                    sen_name,
-                    sen_attr,
-                )
+                row["Message"] = "✕ Attribute not found on target sensor"
                 continue
 
             setattr(_copy(sen), sen_attr, val)
-            _LOG.info("Override: Sensor %s.%s set to %s", sen_name, sen_attr, val)
+            row["Message"] = f"✓ {getattr(sen, sen_attr, '?')} -> {val}"
+
+        tab = pretty_table(*table_data(info))
+        _LOG.info("Applying sensor overrides from configuration\n%s", tab.get_string())
 
 
 @dataclass(slots=True, eq=False)

@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from typing import Self
 
 from sunsynk import RWSensor, Sensor, ValType
-from sunsynk.utils import pretty_table
+from sunsynk.utils import pretty_table, table_data
 
 from .a_inverter import AInverter
 from .a_sensor import ASensor, SensorOption
@@ -56,8 +56,11 @@ class SensorSchedule:
 
     def print_schedule(self, title: str, idx: int, sch: dict[int, SensorRun]) -> None:
         """Print the sensor schedule."""
-        data = [[e, ", ".join(s.sensor.id for s in r.sensors)] for e, r in sch.items()]
-        tab = pretty_table(["s", "Sensors"], data)
+        data = [
+            {"s": e, "Sensors": ", ".join(s.sensor.id for s in r.sensors)}
+            for e, r in sch.items()
+        ]
+        tab = pretty_table(*table_data(data))
         inv_ref = ">1" if idx > 1 else "1"
         _LOG.debug("%s (inverter %s)\n%s", title, inv_ref, tab.get_string())
 

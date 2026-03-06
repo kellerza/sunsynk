@@ -73,7 +73,10 @@ def table_data[T](
 ) -> tuple[list[str], list[list[T | None]]]:
     """Convert a list of dictionaries to a table data format."""
     if headers is None:
-        headers = list({k for v in data for k in v.keys()})
+        hdrs = {}
+        for row in data:
+            hdrs.update(row)
+        headers = list(hdrs)
     return headers, [[v.get(k) for k in headers] for v in data]
 
 
