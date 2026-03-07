@@ -93,7 +93,8 @@ async def main_loop() -> int:
     CALLBACKS.append(
         SyncCallback(name="log_errors", every=5 * 60, callback=print_errors)
     )
-    CALLBACKS.append(ToggleLogCallback(name="toggle_log", times=OPT.mute_logs))
+    if OPT.mute_logs:
+        CALLBACKS.append(ToggleLogCallback(name="toggle_log", times=OPT.mute_logs))
 
     await run_callbacks(CALLBACKS)
     return 0
