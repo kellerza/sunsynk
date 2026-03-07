@@ -3,7 +3,8 @@
 import logging
 from dataclasses import dataclass, field
 
-from mqtt_entity.options import MQTTOptions
+from mqtt_entity.options import CONVERTER, MQTTOptions
+from whenever import Time
 
 from sunsynk.helpers import slug
 from sunsynk.sensors import LOG_TRACE
@@ -46,6 +47,7 @@ class Options(MQTTOptions):
     driver: str = "pymodbus"
     manufacturer: str = "Sunsynk"
     debug_device: str = ""
+    mute_logs: list[Time] = field(default_factory=list)
 
     async def init_addon(self) -> None:
         """Init Add-On."""
@@ -102,6 +104,19 @@ class Options(MQTTOptions):
                     errs[key] = val
             if errs:
                 _LOG.warning("Invalid sensor overrides found: %s", errs)
+
+
+@CONVERTER.register_structure_hook  # type:ignore[call-overload]
+def time_structure_hook(value: str, _: type | None = None) -> Time:
+    """Convert a string to a Time."""
+    try:
+        vals = [int(v) for v in value.split(":")]
+        if len(vals) != 2:
+            raise ValueError()
+        return Time(hour=vals[0], minute=vals[1])
+    except ValueError as exc:
+        _LOG.error("Invalid time: %s (expected hh:mm)", value)
+        raise ValueError(f"Invalid time: {value} (expected hh:mm)") from exc
 
 
 OPT = Options()

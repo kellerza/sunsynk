@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import statistics
 import traceback
 from collections.abc import AsyncGenerator, Callable, Iterable
 from contextlib import asynccontextmanager
@@ -284,22 +285,25 @@ class AInverter:
         await self.entity_timeout.send_state(MQTT, self.connector[0].timeouts)
 
         # calc stats
-        lc_avg, lc_i = stats(self.cb.stat_time, include=lambda x: x > self.cb.every)
-        slip_a, slip_i = stats(self.cb.stat_slip)
+        times = self.cb.stat_time
         attr = {
-            "period": f"{period}s",
-            "long_calls": lc_i,
-            "long_calls_avg": f"{lc_avg}s",
-            "slips": slip_i,
-            "slips_avg": f"{slip_a}s",
-            "busy": self.cb.stat_busy,
+            "count": len(times),
+            "min": min(times),
+            "max": max(times),
+            "mean": statistics.mean(times),
+            "median": statistics.median(times),
+            "stdev": statistics.stdev(times) if len(times) > 1 else 0.0,
+            "p5": float(percentile(times, 5)),
+            "p95": float(percentile(times, 95)),
+            "busy_count": self.cb.stat_busy_count,
+            "error_count": self.cb.stat_error_count,
         }
-        await self.entity_cbstats.send_state(MQTT, len(self.cb.stat_time))
-        await self.entity_cbstats.send_json_attributes(MQTT, attr)
 
-        self.cb.stat_busy = 0
+        await self.entity_cbstats.send_state(MQTT, attr["mean"])
+        await self.entity_cbstats.send_json_attributes(MQTT, attr)
         self.cb.stat_time.clear()
-        self.cb.stat_slip.clear()
+        self.cb.stat_busy_count = 0
+        self.cb.stat_error_count = 0
 
 
 STATE: list[AInverter] = []
@@ -316,3 +320,32 @@ def stats(
     if subset:
         return (f"{sum(subset) / len(subset):.2f}", ssinfo)
     return ("0", ssinfo)
+
+
+def percentile(data: Iterable[float], percentile: int) -> float:
+    """Calculate the given percentile of the data."""
+    if not (0 <= percentile <= 100):
+        raise ValueError("Percentile must be between 0 and 100.")
+
+    # Sort the data
+    sorted_data = sorted(data)
+    n = len(sorted_data)
+
+    # Special cases
+    if percentile == 0:
+        return sorted_data[0]
+    if percentile == 100:
+        return sorted_data[-1]
+
+    # Nearest-rank method
+    rank = (percentile / 100) * (n - 1)
+    lower_index = int(rank)
+    upper_index = lower_index + 1
+
+    # Linear interpolation between closest ranks
+    if upper_index >= n:
+        return sorted_data[lower_index]
+    lower_value = sorted_data[lower_index]
+    upper_value = sorted_data[upper_index]
+    fraction = rank - lower_index
+    return lower_value + (upper_value - lower_value) * fraction

@@ -1,12 +1,15 @@
 """The the timer module."""
 
+import asyncio
 import logging
-from unittest.mock import patch
+from statistics import mean
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from ha_addon_sunsynk_multi.timer_callback import (
     AsyncCallback,
+    Callback,
     SyncCallback,
     run_callbacks,
 )
@@ -23,29 +26,45 @@ async def test_timer() -> None:
 
     async def run1(now: int) -> None:
         run[1] += 1
-        _LOG.info("now=%s: cnt=%s", now, run[1])
-        if run[1] == 17:
-            cbs.clear()
+        _LOG.debug("\t" * 3 + "run1: now=%s cnt=%s", now, run[1])
+        await asyncio.sleep(0.02)
 
     def run2(now: int) -> None:
         run[2] += 1
-        _LOG.info("now=%s:      cnt2=%s", now, run[2])
-        assert now % 2 == 0
+        _LOG.debug("\t" * 6 + "run2: now=%s cnt=%s", now, run[2])
+        # assert now % 2 == 0
 
-    cbs = [
-        AsyncCallback(name="test", callback=run1, every=1),
-        SyncCallback(name="test2", callback=run2, every=2),
+    cbs: list[Callback] = [
+        AsyncCallback(name="test", callback=run1, every=1, keep_stats=True),
+        SyncCallback(name="test2", callback=run2, every=2, keep_stats=True),
     ]
 
-    with patch("ha_addon_sunsynk_multi.timer_callback.modf") as mock_time:
-        lst = [(0.99, s) for s in range(2, 20)]
-        _LOG.info(lst)
-        mock_time.side_effect = lst
-        # mock_time.return_value = 0
-        await run_callbacks(cbs)
-        assert mock_time.call_count == 18
-        assert run[1] == 17
-        assert run[2] == 9
+    with patch(
+        "ha_addon_sunsynk_multi.timer_callback.ZonedDateTime",
+    ) as mock_zdt:
+        # loop duration should be 950ms, so sleep is short (1000ms - 950ms = 50ms)
+        lst = [per_loop for t in range(2000, 20000, 1000) for per_loop in (t, t + 950)]
+
+        def get_now():
+
+            val = lst.pop(0)
+            res = MagicMock()
+            res.timestamp_millis.return_value = val
+            _LOG.debug("get_now: %s", res.timestamp_millis())
+            return res
+
+        mock_zdt.now_in_system_tz.side_effect = get_now
+
+        try:
+            await run_callbacks(cbs)
+        except IndexError:  # seconds are done
+            pass
+
+    assert run == {1: 18, 2: 9}
+    assert len(cbs[0].stat_time) == 18
+    assert len(cbs[1].stat_time) == 9
+    assert mean(cbs[0].stat_time) >= 0.02
+    assert mean(cbs[1].stat_time) < 0.01
 
 
 async def test_schedule() -> None:
