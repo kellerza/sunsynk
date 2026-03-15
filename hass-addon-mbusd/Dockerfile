@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/aarch64-base
+ARG BUILD_FROM
 
 # mbusd Dockerfile as reference https://github.com/3cky/mbusd/blob/master/Dockerfile
 # - FROM home-assistant/base iso alpine:latest
