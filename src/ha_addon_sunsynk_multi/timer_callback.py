@@ -103,20 +103,25 @@ class ToggleLogCallback(Callback):
 
     async def mute_log(self) -> None:
         """Set log level to critical, and reset after duration."""
+        now, _, _ = ZonedDateTime.now_in_system_tz().format_iso().partition("T")
         _LOG.info(
-            "Disabling the log for %s seconds. Expecting errors due to network connectivity",
+            "[%s] Disabling the log for %s seconds",
+            now,
             self.duration,
         )
-        logs = (
-            "ha_addon_sunsynk_multi.a_inverter",
-            "ha_addon_sunsynk_multi.timer_callback",
-        )
-        assert __name__ in logs
-        for log in logs:
-            logging.getLogger(log).setLevel(logging.CRITICAL + 1)
-        await asyncio.sleep(self.duration)
-        for log in logs:
-            logging.getLogger(log).setLevel(self.original_level)
+
+        loggers = [logging.getLogger(n) for n in logging.root.manager.loggerDict]
+        levels: dict[str, int] = {}
+        for logr in loggers:
+            levels[logr.name] = logr.level
+            logr.setLevel(logging.CRITICAL + 1)
+
+        _LOG.error("Log disabled")
+        try:
+            await asyncio.sleep(self.duration)
+        finally:
+            for name, level in levels.items():
+                logging.getLogger(name).setLevel(level)
 
     def call(self, now: int) -> None:
         """Toggle the log level."""
