@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       actions-deps:
         patterns:
@@ -12,7 +12,9 @@ updates:
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
-      interval: "daily"
-    groups:
-      dev-deps:
-        dependency-type: "development"
+      interval: "weekly"
+    # groups:
+    #   dev-deps:
+    #     dependency-type: "development"
+    allow:
+      - dependency-type: "production"
