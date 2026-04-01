@@ -84,7 +84,7 @@ jobs:
       - name: Run tests and generate coverage report
         run: uv run pytest -vv
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: PYTHON
