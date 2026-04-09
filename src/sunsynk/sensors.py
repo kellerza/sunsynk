@@ -392,9 +392,9 @@ class FaultSensor(TextSensor):
             13: "Working mode change",
             18: "AC over current",
             20: "DC over current",
-            23: "F23 AC leak current or transient over current",
-            24: "F24 DC insulation impedance",
-            26: "F26 DC busbar imbalanced",
+            23: "AC leak current or transient over current",
+            24: "DC insulation impedance",
+            26: "DC busbar imbalanced",
             29: "Parallel comms cable",
             35: "No AC grid",
             42: "AC line low voltage",
@@ -409,7 +409,7 @@ class FaultSensor(TextSensor):
             for bit in range(16):
                 msk = 1 << bit
                 if msk & b16:
-                    msg = f"F{bit + off + 1:02} " + faults.get(off + msk, "")
+                    msg = f"F{bit + off + 1:02} " + faults.get(bit + off + 1, "")
                     err.append(msg.strip())
             off += 16
         return ", ".join(err)
@@ -492,7 +492,7 @@ class HVFaultSensor(TextSensor):
             for bit in range(16):
                 msk = 1 << bit
                 if msk & b16:
-                    msg = f"F{bit + off + 1:02} " + faults.get(off + msk, "")
+                    msg = f"F{bit + off + 1:02} " + faults.get(off + bit + 1, "")
                     err.append(msg.strip())
             off += 16
         return ", ".join(err)
