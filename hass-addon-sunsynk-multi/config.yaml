@@ -10,7 +10,6 @@ hassio_api: true
 hassio_role: homeassistant
 init: false
 uart: true
-apparmor: true
 arch:
   - aarch64
   - amd64
