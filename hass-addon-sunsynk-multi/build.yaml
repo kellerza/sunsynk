@@ -1,4 +1,0 @@
-# https://github.com/home-assistant/docker-base
-build_from:
-  aarch64: "ghcr.io/home-assistant/aarch64-base-python:3.13-alpine3.22"
-  amd64: "ghcr.io/home-assistant/amd64-base-python:3.13-alpine3.22"

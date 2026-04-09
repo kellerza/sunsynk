@@ -13,10 +13,9 @@ on:
 
 jobs:
   deployer:
-    uses: kellerza/hass-addons/.github/workflows/deployer.yml@main
+    uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
-      addon-slug: hass-addon-sunsynk-multi
-      addon-slug-edge: hass-addon-sunsynk-edge
-      pkg-name: sunsynk
-      registry-image: ghcr.io/${{ github.repository_owner }}/hass-addon-sunsynk-multi
+      app: hass-addon-sunsynk-multi
+      app-edge: hass-addon-sunsynk-edge
+      publish: false

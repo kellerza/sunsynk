@@ -1,4 +1,6 @@
 # private/local config
+hass-addon-sunsynk-multi/sunsynk
+hass-addon-sunsynk-multi/VERSION
 options.yaml
 config.localtest.yaml
 VERSION
