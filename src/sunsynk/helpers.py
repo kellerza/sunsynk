@@ -4,6 +4,7 @@ import logging
 import math
 import struct
 from collections.abc import Iterable
+from dataclasses import InitVar, dataclass
 
 _LOG = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ def ensure_tuple[T](val: T | tuple[T, ...]) -> tuple[T, ...]:
         return ()
     if isinstance(val, Iterable) and not isinstance(val, str):
         return tuple(val)
-    return (val,)
+    return (val,)  # type: ignore[return-value]
 
 
 def int_round(val: NumType) -> NumType:
@@ -123,28 +124,20 @@ def patch_bitmask(value: int, patch: int, bitmask: int) -> int:
     return (patch & bitmask) + (value & (0xFFFF - bitmask))
 
 
+@dataclass
 class SSTime:
     """Deals with inverter time format conversion complexities."""
 
     minutes: int = 0
+    strv: InitVar[str] = ""
+    regv: InitVar[int] = 0
 
-    def __init__(
-        self,
-        *,
-        minutes: int | None = None,
-        register: int | None = None,
-        string: str | None = None,
-    ) -> None:
-        """Init the time. All mutually exclusive."""
-        if minutes is not None:
-            assert register is None
-            assert string is None
-            self.minutes = minutes
-        elif register is not None:
-            assert string is None
-            self.reg_value = register
-        elif string is not None:
-            self.str_value = string
+    def __post_init__(self, strv: str, regv: int) -> None:
+        """Initialize from string or register value."""
+        if strv:
+            self.str_value = strv
+        elif regv:
+            self.reg_value = regv
 
     @property
     def reg_value(self) -> int:
@@ -162,6 +155,7 @@ class SSTime:
     def str_value(self) -> str:
         """Get the value in hh:mm format."""
         hours, minutes = divmod(self.minutes, 60)
+        hours = hours % 24
         return f"{hours}:{minutes:02}"
 
     @str_value.setter

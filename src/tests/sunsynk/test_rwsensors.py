@@ -223,26 +223,30 @@ def test_time_rw(state: InverterState) -> None:
 
     state.update(
         {
-            50: 2330,
-            60: 2330,
-            70: 30,
+            50: 2300,  # min
+            60: 2330,  # value
+            70: 2400,  # max
         }
     )
     assert s.available_values(15, state) == [
+        "23:00",
+        "23:15",
         "23:30",
         "23:45",
         "0:00",
-        "0:15",
-        "0:30",
+        # "0:00",
+        # "0:15",
+        # "0:30",
     ]
 
     state.update(
         {
-            50: 200,
-            70: 200,
+            50: 203,
+            60: 210,
+            70: 222,
         }
     )
-    assert s.available_values(15, state) == ["2:00"]
+    assert s.available_values(15, state) == ["2:03", "2:10", "2:15", "2:22"]
 
 
 # def test_update_sensor(caplog) -> None:

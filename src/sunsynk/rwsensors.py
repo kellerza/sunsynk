@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Generator
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -230,19 +229,17 @@ class TimeRWSensor(RWSensor):
 
     def available_values(self, step_minutes: int, state: InverterState) -> list[str]:
         """Get the available values for this sensor."""
-        full_day = 24 * 60
-
-        min_val = (
-            SSTime(string=str(state.get(self.min, "0:00"))).minutes if self.min else 0
-        )
-        max_val = (
-            SSTime(string=str(state.get(self.max, "24:00"))).minutes
-            if self.max
-            else full_day
-        )
-        val = SSTime(string=str(state.get(self, "0:00"))).minutes
-        time_range = self._range(min_val, max_val, val, step_minutes, full_day)
-        return list(map(lambda m: SSTime(minutes=m).str_value, time_range))
+        day = list(range(0, 24 * 60, step_minutes))
+        minv = SSTime(strv=str(state.get(self.min, "0:00"))).minutes if self.min else 0
+        maxv = SSTime(strv=str(state.get(self.max, "0:00"))).minutes if self.max else 0
+        if minv >= maxv:
+            maxv += 24 * 60
+        opt = [minv, *[v for v in day if (v > minv and v < maxv)], maxv]
+        val = SSTime(strv=str(state.get(self, "0:00"))).minutes
+        if val not in opt:
+            opt.append(val)
+        opt.sort()
+        return [SSTime(minutes=m).str_value for m in opt]
 
     @property
     def dependencies(self) -> list[Sensor]:
@@ -251,22 +248,10 @@ class TimeRWSensor(RWSensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the time from a register."""
-        return SSTime(register=regs[0]).str_value
+        return SSTime(regv=regs[0]).str_value
 
     def value_to_reg(self, value: ValType, state: InverterState) -> RegType:
         """Get the reg value from a display value."""
         if not self.address:
             raise NotImplementedError("Cannot write to a sensor with no address")
-        return self.reg(SSTime(string=str(value)).reg_value)
-
-    @staticmethod
-    def _range(
-        start: int, end: int, val: int, step: int, modulo: int
-    ) -> Generator[int]:
-        if val % step != 0:
-            yield val
-        stop = end if start <= end else end + modulo
-        for i in range(start, stop, step):
-            yield i % modulo
-        if start == end or start != end % modulo:
-            yield end
+        return self.reg(SSTime(strv=str(value)).reg_value)
