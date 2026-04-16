@@ -36,6 +36,8 @@ jobs:
               - "hass-addon-sunsynk-edge/**"
               - "src/ha_addon_sunsynk_multi/**"
               - "src/sunsynk/**"
+              - "pyproject.toml"
+              - "uv.lock"
 
     outputs:
       changed_ss: ${{ steps.changed.outputs.sunsynk_any_changed  }}
