@@ -377,7 +377,7 @@ wheels = [
 
 [[package]]
 name = "mqtt-entity"
-version = "1.1.5"
+version = "1.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -385,9 +385,9 @@ dependencies = [
     { name = "colorlog" },
     { name = "paho-mqtt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/53/dc/79f514dcaa5a9abeb6ecfe9f8ce00fe65b54ef3043699c2ee7f3a21bb047/mqtt_entity-1.1.5.tar.gz", hash = "sha256:87fc3e5e1ffbe4a378168b2b4e70b54abc4d582c2f28e90423369db9573cf583", size = 16864, upload-time = "2026-04-01T05:33:14.803Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f2/48/25365c6058435e4070ccb4a700978a59d31ef629ab1e4b7c2d612a5005af/mqtt_entity-1.1.6.tar.gz", hash = "sha256:9bbccbca9c3527b2982ac7979a4ec0d219b0c4f176bc0a4b223dccf1e5af953b", size = 17085, upload-time = "2026-04-16T12:56:27.617Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/71/38/47435f1e893e832006ca70395cfc56fcb5c7ef6e82970780b363694eb64b/mqtt_entity-1.1.5-py3-none-any.whl", hash = "sha256:63dc3c6cb7fbfd67d5865c2675d3b64039daf1631d7c3e10e868a20605edbf50", size = 19842, upload-time = "2026-04-01T05:33:13.917Z" },
+    { url = "https://files.pythonhosted.org/packages/04/dc/1d6e4ba98d4e2e9abf011ad66f88d50c899d227d88c2236f2ee0bc16c6a4/mqtt_entity-1.1.6-py3-none-any.whl", hash = "sha256:bcbaac5357ea88636be9ff592b938fa2c005ed24763a0260b2974c17ddd2ea30", size = 20073, upload-time = "2026-04-16T12:56:26.746Z" },
 ]
 
 [package.optional-dependencies]
@@ -496,11 +496,11 @@ wheels = [
 
 [[package]]
 name = "packaging"
-version = "26.0"
+version = "26.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/65/ee/299d360cdc32edc7d2cf530f3accf79c4fca01e96ffc950d8a52213bd8e4/packaging-26.0.tar.gz", hash = "sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4", size = 143416, upload-time = "2026-01-21T20:50:39.064Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/de/0d2b39fb4af88a0258f3bac87dfcbb48e73fbdea4a2ed0e2213f9a4c2f9a/packaging-26.1.tar.gz", hash = "sha256:f042152b681c4bfac5cae2742a55e103d27ab2ec0f3d88037136b6bfe7c9c5de", size = 215519, upload-time = "2026-04-14T21:12:49.362Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/b9/c538f279a4e237a006a2c98387d081e9eb060d203d8ed34467cc0f0b9b53/packaging-26.0-py3-none-any.whl", hash = "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529", size = 74366, upload-time = "2026-01-21T20:50:37.788Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/c2/920ef838e2f0028c8262f16101ec09ebd5969864e5a64c4c05fad0617c56/packaging-26.1-py3-none-any.whl", hash = "sha256:5d9c0669c6285e491e0ced2eee587eaf67b670d94a19e94e3984a481aba6802f", size = 95831, upload-time = "2026-04-14T21:12:47.56Z" },
 ]
 
 [[package]]
