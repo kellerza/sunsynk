@@ -74,18 +74,18 @@ lint.ignore = [ "D203", "D213", "E203", "E501", "PLR2004" ]
 lint.pylint.max-args = 7
 
 [tool.codespell]
-skip = "data,*.map,package-lock.json,*.map,**/cache/*,**/node_modules/*"
 ignore-words-list = "HASS,hass,Hass,ist"
+skip = "data,*.map,package-lock.json,*.map,**/cache/*,**/node_modules/*"
 
 [tool.pytest]
-ini_options.pythonpath = [ ".", "src" ]
-ini_options.filterwarnings = "ignore:.+@coroutine.+deprecated.+"
 ini_options.testpaths = "src\tests"
+ini_options.pythonpath = [ ".", "src" ]
 ini_options.norecursedirs = [ ".git", "modules" ]
+ini_options.addopts = "--cov=src --cov-report xml:cov.xml"
+ini_options.filterwarnings = "ignore:.+@coroutine.+deprecated.+"
 ini_options.log_cli = true
 ini_options.log_cli_level = "DEBUG"
 ini_options.asyncio_mode = "auto"
-ini_options.addopts = "--cov=src --cov-report xml:cov.xml"
 
 [tool.zuban]
 warn_unreachable = false
