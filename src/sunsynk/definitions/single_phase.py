@@ -115,6 +115,12 @@ SENSORS += (
     # - dev & normal version, see https://github.com/kellerza/sunsynk/issues/134
     # Essential 2 power
     # - early-2023 see https://github.com/kellerza/sunsynk/issues/75
+    # 166 - AUX/GEN port power
+    # 167 - Grid L1/LD power
+    # 175 - Inverter power
+    # 169 - Grid power
+    # 172 - Grid CT power
+    # 141 - AUX load mode (0-GEN in, 1-Smart load, 2-Micro Inv IN) - 235?
     MathSensor((175, 169, 166), "Essential power", WATT, factors=(1, 1, -1)),
     MathSensor((175, 167, 166), "Essential 1 power", WATT, factors=(1, 1, -1)),
     MathSensor(

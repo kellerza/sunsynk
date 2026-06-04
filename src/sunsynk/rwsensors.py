@@ -184,6 +184,8 @@ class SwitchRWSensor(RWSensor):
 class SystemTimeRWSensor(RWSensor):
     """Read & write time sensor."""
 
+    year_offset: int = 2000
+
     def __post_init__(self, regs: RegType | int) -> None:
         """Run post init."""
         super(RWSensor, self).__post_init__(regs)
@@ -196,8 +198,8 @@ class SystemTimeRWSensor(RWSensor):
         match = redt.fullmatch(str(value).strip())
         if not match:
             raise ValueError(f"Invalid datetime {value}")
-        y, m, d = int(match.group(1)) - 2000, int(match.group(2)), int(match.group(3))
-        h, mn, s = int(match.group(4)), int(match.group(5)), int(match.group(6))
+        y, m, d, h, mn, s = [int(match.group(i)) for i in range(1, 7)]
+        y -= self.year_offset
         regs = (
             (y << 8) + m,
             (d << 8) + h,
@@ -211,7 +213,7 @@ class SystemTimeRWSensor(RWSensor):
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Decode the register."""
-        y = ((regs[0] & 0xFF00) >> 8) + 2000
+        y = ((regs[0] & 0xFF00) >> 8) + self.year_offset
         m = regs[0] & 0xFF
         d = (regs[1] & 0xFF00) >> 8
         h = regs[1] & 0xFF
