@@ -12,6 +12,7 @@ VERSION
 cov.xml
 .coverage
 .ruff_cache/
+.local
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

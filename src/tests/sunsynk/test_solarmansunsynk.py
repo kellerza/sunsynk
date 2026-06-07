@@ -3,14 +3,11 @@
 from typing import Any
 from unittest.mock import AsyncMock, patch
 
-import pytest
-
 from sunsynk.solarmansunsynk import SolarmanSunsynk
 
 P_CONNECT = "sunsynk.solarmansunsynk.SolarmanSunsynk.connect"
 
 
-@pytest.mark.asyncio
 @patch(P_CONNECT, new_callable=AsyncMock)
 async def test_uss_sensor(connect: Any) -> None:
     """Tests."""

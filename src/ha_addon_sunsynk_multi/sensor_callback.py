@@ -75,6 +75,11 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
         sensors_to_read: set[Sensor] = set()
         sensors_to_publish: set[ASensor] = set()
 
+        if ist.lifecycle != "running":
+            await ist.attempt_stale_recovery()
+            if ist.lifecycle != "running":
+                return
+
         await ist.connector[0].connect()  # Check that we are connected #395
 
         # Flush pending writes

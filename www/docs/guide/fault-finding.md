@@ -32,6 +32,8 @@ The addon follows the following startup process:
 
 Once the startup is complete, the addon will continue to read & publish sensor data. During this process you will occasianally see read failures. As long as this does not happen on every read, you can probably continue using the addon, but can consider reducing sensors, relaxing the read schedules, etc.
 
+If you poll several inverters on one RS485 bus and one unit stops replying, it might enter a stale state. You can control this via `STALE_INVERTER_AFTER_TIMEOUTS` in the add-on options. After enough successive failed reads, the add-on stops polling that inverter for the quiet period  and (`STALE_INVERTER_SKIP_SECONDS`). After the stale period has expired the serial register will be verified to resume normal polling.
+
 If you fail to get a reply from the inverter, typically if step #2 fails, please check the following:
 
 ## (A) Cabling & connection

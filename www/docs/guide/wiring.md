@@ -2,22 +2,73 @@
 
 ## RS485 wiring
 
+### Dedicated port
+
 RS485 requires a twisted pair, this works with CAT5 network cable and RJ-45 connectors.
 
 If the RJ-45 connector on the inverter side is crimped according to [T568A/T568B](https://en.wikipedia.org/wiki/ANSI/TIA-568#Wiring), you can use the pinout in the following table. If the two outermost colors you see on the connector are brown and green, it is probably T568A; if they are brown and orange, it is probably T568B.
 
-| RJ45 Pin<br>(inverter side) | Wire Color<br>(when using T568A) | Wire Color<br>(when using T568B) | RS485<br>pins |
-| :-------------------------: | :------------------------------: | :------------------------------: | :-----------: |
-|              1              |           Green-White            |           Orange-White           |     B/D-      |
-|              2              |              Green               |              Orange              |     A/D+      |
-|              3              |           Orange-White           |           Green-White            |      GND      |
+| RJ45 Pin<br>(inverter side)   | Wire Color (T568A) | Wire Color (T568B) | RS485 pins  |
+|:-----------------------------:|:------------------:|:------------------:|:-----------:|
+|               1               |    Green-White     |    Orange-White    |    B/D-     |
+|               2               |       Green        |       Orange       |    A/D+     |
+|               3               |    Orange-White    |    Green-White     |     GND     |
 
-::: tip
+### Combined RS485/CAN port ("2-in-1" BMS port)
 
-The newer inverters have a combined RS485 and CAN-BUS port. If your battery is already using the port for its CAN-BUS communications, you need to split the cable to connect your RS485 connector. The following articles explains the wiring of the port:
+On many newer Sunsynk and Deye hybrid inverters, the **BMS** RJ45 socket is a single physical connector that carries **two independent buses**:
 
-- [DIY cable split](https://solarenergyconcepts.co.uk/practical-and-diy/crc-error-solar-assistant/)
-- [SolarAssistant's RJ45 splitter](https://solar-assistant.io/help/deye/2_in_1_bms_port)
+- **Pins 1–3** — Modbus RTU over **RS485** (same mapping as the table above). This is what the add-on uses when you wire an RS485 adaptor or Ethernet gateway to that port.
+- **Pins 4–5** — **CAN** high and low between the inverter and a compatible lithium battery BMS.
+
+Because RS485 and CAN use different pairs, the inverter can talk to the battery on CAN while you attach a monitor on RS485 **if** both branches are wired correctly.
+
+**If the battery already uses this port**
+
+You cannot simply unplug the battery cable and leave the battery unmanaged. You need either:
+
+- A **passive RJ45 splitter** (one plug into the inverter, two sockets): one lead to the battery with **only** the pins the battery needs (usually CAN on 4–5, plus GND if required by that cable), and one lead to your RS485 device with **only** pins 1–3 (and no accidental connection of RS485 into the battery end), or  
+- A **custom Y cable** built to the same rule: inverter → battery path preserves CAN; inverter → adaptor path is **only** the RS485 pair and reference ground.
+
+**Why that matters**
+
+If a homemade splitter or patch cable feeds **all eight pins** to both the battery and an RS485 adaptor, RS485 signals can appear on pins at the battery that were not designed for them, which can disrupt BMS communication or monitoring. The battery leg should not carry RS485 A/B unless the battery documentation explicitly says so.
+
+**Pin reference (inverter RJ45, typical 2-in-1 BMS port)**
+
+| RJ45 pin | Wire Color (T568A) | Wire Color (T568B) | Typical signal | Notes                      |
+| :------: | :----------------: | :----------------: | -------------- | -------------------------- |
+|    1     |    Green-White     |    Orange-White    | RS485 B (D−)   | Same as the dedicated port |
+|    2     |       Green        |       Orange       | RS485 A (D+)   | Same as the dedicated port |
+|    3     |    Orange-White    |    Green-White     | GND            | Same as the dedicated port |
+|    4     |        Blue        |        Blue        | CAN high       | Battery BMS                |
+|    5     |     Blue-White     |     Blue-White     | CAN low        | Battery BMS                |
+|    6     |       Orange       |       Green        | Often unused   |                            |
+|    7     |    Brown-White     |    Brown-White     | Often unused   |                            |
+|    8     |       Brown        |       Brown        | Often unused   |                            |
+
+Exact pin use can vary by model and firmware; always check the BMS / communications section of your inverter manual before building or buying a splitter.
+
+### DB9 / dongle port
+
+Many Sunsynk/Deye inverters expose their Modbus interface on a **DB9** connector - the same port used by the Sunsynk/Solarman WiFi data logger. The inverter communicates **Modbus RTU over RS485** on this port (the data lines are RS485 differential, **not** RS232), and the port also supplies a DC voltage to power the dongle.
+
+The pinout below is described **from the inverter's DB9 port**:
+
+| DB9 Pin | Inverter signal       | Connect to (RS485) |
+| :-----: | --------------------- | :----------------: |
+|    1    | RS485 **B** (D-)      |        B/D-        |
+|    2    | RS485 **A** (D+)      |        A/D+        |
+|    3    | NC (not connected)    |         -          |
+|    4    | DC power out          |         -          |
+|    5    | GND                   |        GND         |
+
+::: warning
+
+- The data lines are **RS485** (differential A/B), not RS232. Connect to an **RS485** adaptor/gateway: pin 2 → A/D+, pin 1 → B/D-, pin 5 → GND.
+- **Pin 4 supplies DC power out** to feed the dongle. The output voltage is model-dependent - **measure it before use** (the Solarman LSW-3 logger accepts DC 5-12V).
+- You must **remove the dongle/stick logger** while using this port - it is the same single bus and only a single master should poll the inverter.
+- Settings are unchanged: 9600 baud, 8N1, Modbus RTU.
 
 :::
 
@@ -29,7 +80,7 @@ The newer inverters have a combined RS485 and CAN-BUS port. If your battery is a
 
    ![Waveshare](../images/usb-wave-rs485.webp =360x360)
 
-   Waveshare also has a RS485-to-Ethernet module. (which does not work!)
+   Waveshare also has a RS485-to-Ethernet module.
 
 2. USB-to-RS485 adaptor with cable [example](https://www.robotics.org.za/index.php?route=product/product&product_id=5947)
 
@@ -91,6 +142,8 @@ Other tested adaptors
    ![settings](../images/eth-hf5142-settings.webp =400x400)
 
 4. Waveshare RS485 TO (POE) ETH  (1x RS485 to 1x E-Port)
+
+   [Waveshare wiki: RS232/485/422 TO POE ETH (B)](https://www.waveshare.com/wiki/RS232/485/422_TO_POE_ETH_(B))
 
    ![gateway](../images/eth-ws485poe.jpg)
 

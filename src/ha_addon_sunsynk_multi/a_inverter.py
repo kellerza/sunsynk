@@ -3,11 +3,12 @@
 import asyncio
 import logging
 import statistics
+import time
 import traceback
-from collections.abc import AsyncGenerator, Callable, Iterable
+from collections.abc import AsyncGenerator, Iterable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from mqtt_entity import MQTTDevice, MQTTSensorEntity
 
@@ -15,7 +16,7 @@ from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
 from sunsynk.state import InverterState
 from sunsynk.sunsynk import Sensor, Sunsynk, ValType
-from sunsynk.utils import pretty_table_sensors
+from sunsynk.utils import percentile, pretty_table_sensors
 
 from .a_sensor import MQTT, SS_TOPIC, ASensor
 from .options import OPT, InverterOptions
@@ -26,6 +27,14 @@ if TYPE_CHECKING:
     from .sensor_callback import SensorSchedule
 
 _LOG = logging.getLogger(__name__)
+
+# Addon poll/connection lifecycle (distinct from Modbus register values in `state`).
+type AInverterLifecycle = Literal[
+    "starting",
+    "running",
+    "stale_quiet",
+    "stale_probing",
+]
 
 
 @dataclass(kw_only=True)
@@ -45,6 +54,11 @@ class AInverter:
     """MQTT Device for the inverter."""
 
     read_errors: int = field(default=0, init=False)
+
+    lifecycle: AInverterLifecycle = field(default="starting", init=False)
+    """Where this inverter is in the add-on poll loop (see `AInverterLifecycle`)."""
+
+    _stale_quiet_until: float = field(default=0.0, init=False)
 
     write_queue: dict[Sensor, str | int | float | bool] = field(default_factory=dict)
     """Write queue for RWSensors."""
@@ -85,6 +99,61 @@ class AInverter:
             inv.state = self.state
             yield inv
 
+    def lifecycle_enter_stale(self, reason: str | None = None) -> None:
+        """Start or extend stale quiet: refresh deadline, set lifecycle, and log."""
+        self._stale_quiet_until = time.monotonic() + OPT.stale_inverter_skip_seconds
+        self.lifecycle = "stale_quiet"
+        if reason is None:
+            reason = f"after {OPT.stale_inverter_after_timeouts} successive read errors"
+        _LOG.warning(
+            "Inverter %s stale. Skip Modbus for %ss: %s",
+            self.opt.ha_prefix,
+            OPT.stale_inverter_skip_seconds,
+            reason,
+        )
+
+    async def attempt_stale_recovery(self) -> None:
+        """Handle stale quiet or run a serial probe when quiet has elapsed."""
+        if self.lifecycle != "stale_quiet":
+            return
+        if time.monotonic() < self._stale_quiet_until:
+            self.lifecycle = "stale_quiet"
+            return
+
+        await self.connector[0].connect()
+
+        self.lifecycle = "stale_probing"
+
+        async with self.lock_io() as inv:
+            try:
+                await asyncio.sleep(0.005)
+                await inv.read_sensors(sensors=[DEFS.serial])
+            except (
+                Exception,
+                asyncio.exceptions.CancelledError,
+            ) as err:
+                self.lifecycle_enter_stale(f"Inverter probe failed: {err!s}")
+                return
+
+        try:
+            self.serial_matches_config()
+        except ValueError as err:
+            self.lifecycle_enter_stale(str(err))
+            return
+
+        _LOG.info("Inverter %s (%s): resumed", self.index, self.opt.ha_prefix)
+        self.lifecycle = "running"
+
+    def serial_matches_config(self) -> bool:
+        """Return whether the last read left the serial register matching config."""
+        expected_ser = self.opt.serial_nr.replace("_", "")
+        actual_ser = str(self.state[DEFS.serial])
+        if expected_ser != actual_ser:
+            raise ValueError(
+                f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
+            )
+        return True
+
     async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> None:
         """Read from the Modbus interface."""
         async with self.lock_io() as inv:
@@ -97,6 +166,9 @@ class AInverter:
                 asyncio.exceptions.CancelledError,
             ) as err:
                 self.read_errors += 1
+                if self.read_errors >= OPT.stale_inverter_after_timeouts:
+                    self.lifecycle_enter_stale()
+                    return
                 if msg:
                     arg0, *argn = err.args if err.args else ("",)
                     err.args = tuple([f"{arg0} {msg}".strip(), *argn])
@@ -154,6 +226,7 @@ class AInverter:
 
     async def connect(self) -> None:
         """Connect."""
+        self.lifecycle = "starting"
         async with self.lock_io() as inv:
             _LOG.info("Connecting to %s", inv.port)
             try:
@@ -171,12 +244,7 @@ class AInverter:
                 f"No response on the Modbus interface {self.opt.port}, "
                 "see https://kellerza.github.io/sunsynk/guide/fault-finding"
             )
-        expected_ser = self.opt.serial_nr.replace("_", "")
-        actual_ser = str(self.state[DEFS.serial])
-        if expected_ser != actual_ser:
-            raise ValueError(
-                f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
-            )
+        self.serial_matches_config()
 
         # All seem ok
         add_info = {"device_type": [f"config: {OPT.sensor_definitions}"]}
@@ -187,6 +255,7 @@ class AInverter:
         sensors = list(SOPT)
         _LOG.info("Reading configured sensors %s", len(sensors))
         await self.read_sensors(sensors=sensors)
+        self.lifecycle = "running"
         # tab = pretty_table_sensors(sensors, self.inv)
         # _LOG.info("Inverter %s - active sensors\n%s", self.inv.port, tab)
 
@@ -307,45 +376,3 @@ class AInverter:
 
 
 STATE: list[AInverter] = []
-
-
-def stats(
-    samples: list[int] | list[float],
-    *,
-    include: Callable[[int | float], bool] = bool,
-) -> tuple[str, str]:
-    """Calculate average for the samples."""
-    subset = [t for t in samples if include(t)]
-    ssinfo = f"{len(subset)}/{len(samples)}"
-    if subset:
-        return (f"{sum(subset) / len(subset):.2f}", ssinfo)
-    return ("0", ssinfo)
-
-
-def percentile(data: Iterable[float], percentile: int) -> float:
-    """Calculate the given percentile of the data."""
-    if not (0 <= percentile <= 100):
-        raise ValueError("Percentile must be between 0 and 100.")
-
-    # Sort the data
-    sorted_data = sorted(data)
-    n = len(sorted_data)
-
-    # Special cases
-    if percentile == 0:
-        return sorted_data[0]
-    if percentile == 100:
-        return sorted_data[-1]
-
-    # Nearest-rank method
-    rank = (percentile / 100) * (n - 1)
-    lower_index = int(rank)
-    upper_index = lower_index + 1
-
-    # Linear interpolation between closest ranks
-    if upper_index >= n:
-        return sorted_data[lower_index]
-    lower_value = sorted_data[lower_index]
-    upper_value = sorted_data[upper_index]
-    fraction = rank - lower_index
-    return lower_value + (upper_value - lower_value) * fraction

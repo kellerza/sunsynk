@@ -8,7 +8,6 @@ from sunsynk.pysunsynk import FramerType, PySunsynk
 from sunsynk.state import InverterState
 
 
-@pytest.mark.asyncio
 async def test_pyss() -> None:
     """Tests."""
     ss = PySunsynk()
@@ -37,7 +36,6 @@ P_READ_HR = "sunsynk.pysunsynk.AsyncModbusTcpClient.read_holding_registers"
 P_WRITE_REGS = "sunsynk.pysunsynk.AsyncModbusTcpClient.write_registers"
 
 
-@pytest.mark.asyncio
 @patch(P_ASYNC_CONNECTED, new_callable=PropertyMock)
 @patch(P_CONNECT, new_callable=AsyncMock)
 async def test_ss_tcp_connect(
@@ -68,7 +66,6 @@ async def test_ss_tcp_connect(
     assert ss.client and ss.client.connected == 888
 
 
-@pytest.mark.asyncio
 @patch(P_ASYNC_CONNECTED, new_callable=PropertyMock)
 @patch(P_CONNECT, new_callable=AsyncMock)
 @patch(P_READ_HR, new_callable=AsyncMock)
@@ -102,7 +99,6 @@ async def test_ss_tcp_read(
     # assert "xXx" not in caplog.text
 
 
-@pytest.mark.asyncio
 @patch(P_ASYNC_CONNECTED, new_callable=PropertyMock)
 @patch(P_CONNECT, new_callable=AsyncMock)
 @patch(P_WRITE_REGS, new_callable=AsyncMock)
@@ -142,7 +138,6 @@ async def test_ss_tcp_write(
     assert "timeout writing" in caplog.text
 
 
-@pytest.mark.asyncio
 @patch("sunsynk.pysunsynk.AsyncModbusSerialClient", async_connected=PropertyMock)
 async def test_ss_serial(serialc: MagicMock, state: InverterState) -> None:
     """Tests."""

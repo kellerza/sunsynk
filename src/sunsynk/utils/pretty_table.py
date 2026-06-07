@@ -1,11 +1,7 @@
 """Utilities."""
 
-import importlib
-import sys
 from collections.abc import Callable, Iterable
-from pathlib import Path
 from textwrap import wrap
-from types import ModuleType
 from typing import TYPE_CHECKING, Any
 
 from prettytable import PrettyTable
@@ -13,18 +9,6 @@ from prettytable import PrettyTable
 if TYPE_CHECKING:
     from sunsynk.sensors import Sensor
     from sunsynk.state import InverterState
-
-
-def import_module(mod_name: str, folder: str | Path | None = None) -> ModuleType:
-    """import_module."""
-    if folder:
-        sys.path.insert(0, str(folder))
-    try:
-        mod_obj = importlib.import_module(mod_name)
-        return mod_obj
-    finally:
-        if folder and sys.path[0] == str(folder):
-            sys.path.pop(0)
 
 
 def ensure_str(v: Any) -> str:

@@ -11,7 +11,6 @@ from sunsynk.usunsynk import USunsynk
 _LOG = logging.getLogger(__name__)
 
 
-@pytest.mark.asyncio
 async def test_uss_schemes() -> None:
     """Test url schemes for usunsynk.
 
@@ -32,7 +31,6 @@ async def test_uss_schemes() -> None:
             await ss.connect()
 
 
-@pytest.mark.asyncio
 async def test_uss_sensor() -> None:
     """Tests."""
     ss = USunsynk(port="tcp://127.0.0.1:502")

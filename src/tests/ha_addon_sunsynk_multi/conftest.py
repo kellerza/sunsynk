@@ -40,4 +40,6 @@ def ist_factory(
     res.connectors[(port, "")] = (AsyncMock(), asyncio.Lock())
     res.read_sensors = AsyncMock()  # type: ignore[method-assign]
     res.publish_sensors = AsyncMock()  # type: ignore[method-assign]
+    # Poll callback only runs Modbus when lifecycle is running (see sensor_callback).
+    res.lifecycle = "running"
     return res

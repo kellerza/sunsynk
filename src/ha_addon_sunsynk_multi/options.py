@@ -43,6 +43,12 @@ class Options(MQTTOptions):
     read_sensors_batch_size: int = 20
     schedules: list[Schedule] = field(default_factory=list)
     timeout: int = 10
+
+    stale_inverter_after_timeouts: int = 10
+    """After this many successive read failures, skip Modbus for this inverter."""
+    stale_inverter_skip_seconds: int = 600
+    """Quiet period (seconds) before probing with a serial register read only."""
+
     debug: int = 0
     driver: str = "pymodbus"
     manufacturer: str = "Sunsynk"
