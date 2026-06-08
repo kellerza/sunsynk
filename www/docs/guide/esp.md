@@ -24,7 +24,8 @@ For each AREA, you need the following:
 - `HA_PREFIX`
 - `AREA_ID` *
 
-You can search for the AREA_ID using the `SEARCH_AREA` configuration option. The search result will be printed in the addon log
+You can search for the AREA_ID using the `SEARCH_AREA` configuration option. The search result will be printed in the
+addon log
 
 The following should be saved in you HA config folder `/config/custom_templates/loadshed.jinja`
 

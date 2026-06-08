@@ -18,7 +18,8 @@ An [mbusd TCP to RTU gateway](./mbusd).
 
 ### Sunsynk/Deye Inverter Add-on (multi)
 
-The recommended version of the add-on. It supports multiple inverters and custom sensors. The documentation available on this website is for the multi add-on version.
+The recommended version of the add-on. It supports multiple inverters and custom sensors. The documentation available on
+this website is for the multi add-on version.
 
 ::: tip
 This is the recommended version of the add-on!

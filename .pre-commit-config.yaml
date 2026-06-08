@@ -49,3 +49,9 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+
+      - id: rumdl
+        name: rumdl
+        entry: uv run rumdl fmt
+        language: system
+        pass_filenames: false

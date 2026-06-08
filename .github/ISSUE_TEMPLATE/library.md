@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-### Issue related to the Python sunsynk library
+## Issue related to the Python sunsynk library
 
 ### Describe the issue/bug
 

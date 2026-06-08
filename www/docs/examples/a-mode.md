@@ -4,18 +4,23 @@
 
 Ideally you do not want to discharge your batteries into non-essential loads like the geyser or heat pumps.
 
-With **Load Limit** you can change the power export behavior from your inverter. The power from your inverter is a combination of PV and battery.
+With **Load Limit** you can change the power export behavior from your inverter. The power from your inverter is a
+combination of PV and battery.
 
 The options are:
 
 - **Essentials** - only supply power to the essentials (after the inverter)
-- **Allow Export** - allow export to the grid. This can feed power to the non-essential loads and places no limit to feeding back into the grid.
-- **Zero Export** - allow feed back to the grid side, or non-essentials. In addition it uses the Inverter's CT to limit power fed back toward the utility grid.
+- **Allow Export** - allow export to the grid. This can feed power to the non-essential loads and places no limit to
+  feeding back into the grid.
+- **Zero Export** - allow feed back to the grid side, or non-essentials. In addition it uses the Inverter's CT to limit
+  power fed back toward the utility grid.
 
 This automation sets `load_limit` for daytime & night-time behavior:
 
-- During the day, the inverter (PV & battery) can supply excess power to the non-essentials. No/zero export is allowed, since we cannot sell power to the grid.
-- During the evening, the inverter (PV & battery) should only supply power to the Essentials. All non-essentials can use the utility grid if available.
+- During the day, the inverter (PV & battery) can supply excess power to the non-essentials. No/zero export is allowed,
+  since we cannot sell power to the grid.
+- During the evening, the inverter (PV & battery) should only supply power to the Essentials. All non-essentials can use
+  the utility grid if available.
 
 ```yaml
 SENSORS:
@@ -66,7 +71,8 @@ This can be achieved with any of the following sensors
 - `Grid frequency` drops below a certain value
 - `Grid voltage` drops below a certain value
 
-The example automation below creates a binary_sensor from the grid frequency and sends out notification on power failure and the duration of the failure (with some sane back-offs). It serves as a reminder that load shadding is a reality.
+The example automation below creates a binary_sensor from the grid frequency and sends out notification on power failure
+and the duration of the failure (with some sane back-offs). It serves as a reminder that load shadding is a reality.
 
 ```yaml
 SENSORS:
@@ -104,7 +110,14 @@ alert:
 
 ## Battery charging to optimise Time-of-Use tariffs
 
-Example of automation to economically optimize the battery: In Spain, electrical surpluses are better paid early in the day, the inverter usually charges the battery at that time so there are no surpluses.  Later, when they are already charged, the purchase price of surpluses is usually much lower, which is why it occurred to us in the ["Posesos del Turbo..."](https://t.me/pos_turbo_energy) Telegram group in Spain to make an automation by lowering the maximum charging power of the battery to 1A during the first hours of the day to force the sale of surpluses at those hours, and then, for example from 12 or 1 pm, when the sale price drops, raise the charging power to its normal level to charge it before sunset.  This will depend a lot on the number of plates, batteries and hours of light that each one has naturally.
+Example of automation to economically optimize the battery: In Spain, electrical surpluses are better paid early in the
+day, the inverter usually charges the battery at that time so there are no surpluses. Later, when they are already
+charged, the purchase price of surpluses is usually much lower, which is why it occurred to us in the
+["Posesos del Turbo..."](https://t.me/pos_turbo_energy) Telegram group in Spain to make an automation by lowering the
+maximum charging power of the battery to 1A during the first hours of the day to force the sale of surpluses at those
+hours, and then, for example from 12 or 1 pm, when the sale price drops, raise the charging power to its normal level to
+charge it before sunset. This will depend a lot on the number of plates, batteries and hours of light that each one has
+naturally.
 
 ```yaml
 SENSORS:
@@ -151,7 +164,9 @@ mode: single
 
 ## Charge the battery in case of low forecast
 
-Example of automation to Charge the battery in the program 1 time in the months of March and September if the expected production of the following day is going to be less than 10kwh as long as the price in that hourly period is less than 0.05cts. Using the Forecast.Solar integration.
+Example of automation to Charge the battery in the program 1 time in the months of March and September if the expected
+production of the following day is going to be less than 10kwh as long as the price in that hourly period is less than
+0.05cts. Using the Forecast.Solar integration.
 
 ```yaml
 SENSORS:

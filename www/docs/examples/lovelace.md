@@ -1,10 +1,13 @@
 # Lovelace examples
 
-This page contains a couple of frontend examples to represent the power flow of your system. While the Home Assistant Energy dashboard gives you a good indication of your energy usage, the power flow shows you what is happening at the current moment.
+This page contains a couple of frontend examples to represent the power flow of your system. While the Home Assistant
+Energy dashboard gives you a good indication of your energy usage, the power flow shows you what is happening at the
+current moment.
 
 ## Sunsynk Power Flow Card
 
-The Sunsynk Power Flow card can be installed by adding a custom Lovelace repository to HACS: <https://github.com/slipx06/sunsynk-power-flow-card> or clicking this button:
+The Sunsynk Power Flow card can be installed by adding a custom Lovelace repository to HACS:
+<https://github.com/slipx06/sunsynk-power-flow-card> or clicking this button:
 
 [![Open your Home Assistant instance and open slipx's repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=sunsynk-power-flow-card&category=plugin&owner=slipx06)
 
@@ -126,7 +129,8 @@ min_line_width: 2
 
 ## Power Distribution card
 
-The Lovelace configuration for the Power Distribution Card is shown below. You can install the Power Distribution Card through HACS
+The Lovelace configuration for the Power Distribution Card is shown below. You can install the Power Distribution Card
+through HACS
 
 ![Power distribution](../images/power_dist.webp)
 

@@ -6,7 +6,7 @@ labels: "addon"
 assignees: ""
 ---
 
-### Issue related to
+## Issue related to
 
 Sunsynk / mbusd Home Assistant Add-On
 
@@ -14,8 +14,7 @@ Sunsynk / mbusd Home Assistant Add-On
 
 A clear and concise description of what the bug is.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Expected behavior** A clear and concise description of what you expected to happen.
 
 ### Your environment
 

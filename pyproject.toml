@@ -42,8 +42,9 @@ dev = [
   "pytest-cov",
   "pytest-github-actions-annotate-failures",
   "ruff",
+  "rumdl>=0.2.9",
   "types-pyyaml",
-  "zuban"
+  "zuban",
 ]
 
 [tool.uv]
@@ -90,3 +91,15 @@ ini_options.asyncio_mode = "auto"
 [tool.zuban]
 warn_unreachable = false
 warn_unused_ignores = true  # Not yet supported in 0.6.0
+
+[tool.rumdl]
+exclude = [ ".git", "node_modules" ]
+respect-gitignore = true
+extend-enable = [ "MD060" ]  # table formatting
+MD013.severity = "info"
+MD013.line-length = 120
+MD013.code_blocks = false
+MD013.tables = false
+MD013.reflow = true
+MD013.reflow-mode = "normalize"
+MD033.allowed-elements = [ "br" ]

@@ -6,7 +6,8 @@ It is hosted at `https://github.io/kellerza/sunsynk/`
 
 ## Contributions
 
-Contributions are welcome. Simply fork the repository & edit your copy. VS Code is recommended, but you can work on small changes directly in Github.
+Contributions are welcome. Simply fork the repository & edit your copy. VS Code is recommended, but you can work on
+small changes directly in Github.
 
 When you are happy with the changes, simply create a Pull Request (PR)!
 
@@ -16,7 +17,8 @@ The documentation is written using [Markdown in VitePress](https://vitepress.vue
 
 VitePress site settings can be found in [config.ts](./docs/.vitepress/config.ts)
 
-As part of the Github CI/CD pipeline VitePress will compile the static site and publish it to the **gh-pages** branch, from where it is served.
+As part of the Github CI/CD pipeline VitePress will compile the static site and publish it to the **gh-pages** branch,
+from where it is served.
 
 ## Local testing
 
