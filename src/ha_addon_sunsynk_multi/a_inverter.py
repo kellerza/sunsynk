@@ -99,7 +99,27 @@ class AInverter:
             inv.state = self.state
             yield inv
 
-    def lifecycle_enter_stale(self, reason: str | None = None) -> None:
+    @property
+    def availability_topic(self) -> str:
+        """MQTT topic: ``online`` / ``offline`` reflect poll-loop lifecycle (retained)."""
+        return f"{SS_TOPIC}/{self.opt.ha_prefix}/availability"
+
+    async def publish_lifecycle_availability(self) -> None:
+        """Publish retained lifecycle availability (no-op if MQTT is not connected)."""
+        if not MQTT.client.is_connected():
+            return
+        payload = "online" if self.lifecycle == "running" else "offline"
+        try:
+            await MQTT.publish(
+                self.availability_topic,
+                payload,
+                qos=0,
+                retain=True,
+            )
+        except Exception as err:
+            _LOG.debug("Lifecycle availability publish failed: %s", err)
+
+    async def lifecycle_enter_stale(self, reason: str | None = None) -> None:
         """Start or extend stale quiet: refresh deadline, set lifecycle, and log."""
         self._stale_quiet_until = time.monotonic() + OPT.stale_inverter_skip_seconds
         self.lifecycle = "stale_quiet"
@@ -111,8 +131,9 @@ class AInverter:
             OPT.stale_inverter_skip_seconds,
             reason,
         )
+        await self.publish_lifecycle_availability()
 
-    async def attempt_stale_recovery(self) -> None:
+    async def lifecycle_attempt_recovery(self) -> None:
         """Handle stale quiet or run a serial probe when quiet has elapsed."""
         if self.lifecycle != "stale_quiet":
             return
@@ -132,17 +153,18 @@ class AInverter:
                 Exception,
                 asyncio.exceptions.CancelledError,
             ) as err:
-                self.lifecycle_enter_stale(f"Inverter probe failed: {err!s}")
+                await self.lifecycle_enter_stale(f"Inverter probe failed: {err!s}")
                 return
 
         try:
             self.serial_matches_config()
         except ValueError as err:
-            self.lifecycle_enter_stale(str(err))
+            await self.lifecycle_enter_stale(str(err))
             return
 
         _LOG.info("Inverter %s (%s): resumed", self.index, self.opt.ha_prefix)
         self.lifecycle = "running"
+        await self.publish_lifecycle_availability()
 
     def serial_matches_config(self) -> bool:
         """Return whether the last read left the serial register matching config."""
@@ -167,7 +189,8 @@ class AInverter:
             ) as err:
                 self.read_errors += 1
                 if self.read_errors >= OPT.stale_inverter_after_timeouts:
-                    self.lifecycle_enter_stale()
+                    await self.lifecycle_enter_stale()
+                    await self.publish_lifecycle_availability()
                     return
                 if msg:
                     arg0, *argn = err.args if err.args else ("",)
@@ -227,6 +250,8 @@ class AInverter:
     async def connect(self) -> None:
         """Connect."""
         self.lifecycle = "starting"
+        if MQTT.client.is_connected():
+            await self.publish_lifecycle_availability()
         async with self.lock_io() as inv:
             _LOG.info("Connecting to %s", inv.port)
             try:
@@ -256,6 +281,8 @@ class AInverter:
         _LOG.info("Reading configured sensors %s", len(sensors))
         await self.read_sensors(sensors=sensors)
         self.lifecycle = "running"
+        if MQTT.client.is_connected():
+            await self.publish_lifecycle_availability()
         # tab = pretty_table_sensors(sensors, self.inv)
         # _LOG.info("Inverter %s - active sensors\n%s", self.inv.port, tab)
 
@@ -288,6 +315,8 @@ class AInverter:
                 model=f"{int(self.rated_power / 1000)}kW Inverter (**{serial_nr[-4:]})",
                 manufacturer=OPT.manufacturer,
                 components={},
+                availability_topics=[self.availability_topic],
+                availability_mode="all",
             )
             MQTT.devs.append(self.mqtt_dev)
             self.create_stats_entities()
@@ -309,6 +338,7 @@ class AInverter:
         self.hass_create_discovery_info()
         await MQTT.connect(OPT)
         MQTT.monitor_homeassistant_status()
+        await self.publish_lifecycle_availability()
         return True
 
     def init_sensors(self, soptions: SensorOptions | None = None) -> None:

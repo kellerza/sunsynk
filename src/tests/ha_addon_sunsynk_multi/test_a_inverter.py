@@ -138,7 +138,7 @@ async def test_attempt_stale_recovery_quiet_period_skips_connect(
         await ist.read_sensors(sensors=[DEFS.serial])
         assert ist.lifecycle == "stale_quiet"
 
-        await ist.attempt_stale_recovery()
+        await ist.lifecycle_attempt_recovery()
         mock_ss.connect.assert_not_called()
     finally:
         OPT.stale_inverter_after_timeouts = old_a
@@ -190,9 +190,9 @@ async def test_attempt_stale_recovery_probe_success_returns_to_running(
                 new_callable=AsyncMock,
             ),
         ):
-            ist.lifecycle_enter_stale("test setup")
+            await ist.lifecycle_enter_stale("test setup")
             mono[0] = 10_000.0
-            await ist.attempt_stale_recovery()
+            await ist.lifecycle_attempt_recovery()
 
         mock_ss.connect.assert_called_once()
         mock_ss.read_sensors.assert_called_once()
@@ -242,9 +242,9 @@ async def test_attempt_stale_recovery_probe_failure_reenters_stale(
                 new_callable=AsyncMock,
             ),
         ):
-            ist.lifecycle_enter_stale("test setup")
+            await ist.lifecycle_enter_stale("test setup")
             mono[0] = 10_000.0
-            await ist.attempt_stale_recovery()
+            await ist.lifecycle_attempt_recovery()
 
         mock_ss.connect.assert_called_once()
         assert ist.lifecycle == "stale_quiet"

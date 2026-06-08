@@ -56,8 +56,10 @@ async def main_loop() -> int:
 
     asyncio.get_event_loop().set_debug(OPT.debug > 0)
 
-    # MQTT client availability will use the first inverter's prefix
-    MQTT.availability_topic = f"{SS_TOPIC}/availability_{OPT.inverters[0].ha_prefix}"
+    # MQTT broker LWT + connect availability (all inverter prefixes);
+    # per-inverter Modbus lifecycle uses SS/<HA_PREFIX>/availability (see AInverter).
+    prefixes = "_".join(sorted(inv.ha_prefix for inv in OPT.inverters))
+    MQTT.availability_topic = f"{SS_TOPIC}/availability_{prefixes}"
 
     CALLBACKS.append(
         AsyncCallback(name="discovery_info", every=5, callback=callback_discovery_info)

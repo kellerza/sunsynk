@@ -180,6 +180,17 @@ supervisor and ignore the configuration.
 The MQTT integration in Home Assistant needs to publish MQTT Birth (**online**) and Last will (**offline**) messages to
 `homeassistant/status`. This can be done by clicking _Re-configure MQTT_ in the UI.
 
+Device discovery uses two retained availability signals (Home Assistant requires **both** to be **online**):
+
+- `SS/availability_<HA_PREFIXES>` – the add-on MQTT client: **offline** when the client disconnects from the broker
+  (last will).
+- `SS/<HA_PREFIX>/availability` – per inverter: **offline** when that inverter is not in the normal poll loop (for
+  example after repeated read errors / stale skip, or while reconnecting Modbus after the MQTT client is already up).
+  This covers a single inverter when RS485 drops but the broker connection stays up.
+
+`<HA_PREFIX>` is each inverter’s `HA_PREFIX` option (the first inverter’s prefix is used for the client LWT topic name
+only).
+
 ::: details MQTT configuration options (optional)
 
 Configuration from the supervisor will be preferred if you don't have `MQTT_CUSTOM: true` set.
