@@ -78,6 +78,11 @@ lint.pylint.max-args = 7
 ignore-words-list = "HASS,hass,Hass,ist"
 skip = "data,*.map,package-lock.json,*.map,**/cache/*,**/node_modules/*"
 
+[tool.pyrefly]
+project-includes = [
+  "src/**/*.py*",
+]
+
 [tool.pytest]
 ini_options.testpaths = "src\tests"
 ini_options.pythonpath = [ ".", "src" ]
@@ -89,17 +94,17 @@ ini_options.log_cli_level = "DEBUG"
 ini_options.asyncio_mode = "auto"
 
 [tool.zuban]
+mypy_path = [ "src" ]  # , "src/sunsynk", "src/ha_addon_sunsynk_multi", "src/tests" ]
 warn_unreachable = false
 warn_unused_ignores = true  # Not yet supported in 0.6.0
 
 [tool.rumdl]
-exclude = [ ".git", "node_modules" ]
 respect-gitignore = true
 extend-enable = [ "MD060" ]  # table formatting
 MD013.severity = "info"
-MD013.line-length = 120
+MD013.line-length = 100
 MD013.code_blocks = false
 MD013.tables = false
 MD013.reflow = true
 MD013.reflow-mode = "normalize"
-MD033.allowed-elements = [ "br" ]
+MD033.allowed-elements = [ "br", "i-mdi-dev-to" ]

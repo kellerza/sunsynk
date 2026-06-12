@@ -3,13 +3,13 @@
 ## Energy Management
 
 You can read more Energy Management in Home Assistant
-[Energy management release blog](https://www.home-assistant.io/blog/2021/08/04/home-energy-management/) and
-[Home energy management](https://www.home-assistant.io/docs/energy/).
+[Energy management release blog](https://www.home-assistant.io/blog/2021/08/04/home-energy-management/)
+and [Home energy management](https://www.home-assistant.io/docs/energy/).
 
 ![HASS Energy management](../images/energy.png)
 
-The following sensors are required as a minimum to enable the Home Assistant Energy feaure for a hybrid inverter with PV
-and a battery.
+The following sensors are required as a minimum to enable the Home Assistant Energy feaure for a
+hybrid inverter with PV and a battery.
 
 ```yaml
 SENSORS:
@@ -29,8 +29,8 @@ SENSORS:
 
 :::
 
-Once you included these sensors in your addon configuration, they should be available in Home Assistant and you can add
-them to the Energy Management configuration by following this link:
+Once you included these sensors in your addon configuration, they should be available in Home
+Assistant and you can add them to the Energy Management configuration by following this link:
 [![Open your Home Assistant instance and show your Energy configuration panel.](https://my.home-assistant.io/badges/config_energy.svg)](https://my.home-assistant.io/redirect/config_energy/)
 
 Show the Energy panel (also available in your sidebar):

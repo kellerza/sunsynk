@@ -88,7 +88,7 @@ class Sunsynk:
             glen = grp[-1] - grp[0] + 1
             try:
                 perf = time.perf_counter()
-                async with asyncio.timeout(self.timeout + 1):
+                async with asyncio.timeout(self.timeout):
                     r_r = await self.read_holding_registers(grp[0], glen)
                 perf = time.perf_counter() - perf
                 _LOG.debug(
@@ -103,9 +103,14 @@ class Sunsynk:
                 )
                 self.timeouts += 1
                 continue
+            except asyncio.exceptions.CancelledError:
+                errs.append(
+                    Exception(f"cancelled reading {glen} registers from {grp[0]}")
+                )
+                continue
             except Exception as err:
                 errs.append(
-                    err.__class__(
+                    Exception(
                         f"{err.__class__.__name__} reading {glen} registers from {grp[0]}: {err}"
                     )
                 )
@@ -127,7 +132,5 @@ class Sunsynk:
             )
 
         self.state.update(new_regs)
-        if len(errs) > 1:
-            raise ExceptionGroup("Errors reading sensors", errs) from None
         if errs:
-            raise errs[0] from None
+            raise ExceptionGroup("Errors reading sensors", errs) from None

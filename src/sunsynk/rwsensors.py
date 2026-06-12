@@ -44,10 +44,10 @@ class RWSensor(Sensor):
         """Get the reg value from a display value."""
         raise NotImplementedError
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Run post init."""
         # Bare calls to super() are supported from Python 3.14+
-        super(RWSensor, self).__post_init__(regs)
+        super(RWSensor, self).__post_init__(address0)
         if self.bitmask > 0 and len(self.address) != 1:
             _LOG.fatal(
                 "Sensors with a bitmask should reference a single register! %s [registers=%s]",
@@ -132,9 +132,9 @@ class SwitchRWSensor0(SelectRWSensor):
     off: int = 0
     """The register value representing OFF."""
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Ensure correct parameters."""
-        super(SwitchRWSensor0, self).__post_init__(regs)
+        super(SwitchRWSensor0, self).__post_init__(address0)
         assert not self.options
         assert self.on != self.off
         self.options = {self.off: BOOL_OFF, self.on: BOOL_ON}
@@ -153,9 +153,9 @@ class SwitchRWSensor(RWSensor):
     off: int = 0
     """The register value representing OFF."""
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Ensure correct parameters."""
-        super(SwitchRWSensor, self).__post_init__(regs)
+        super(SwitchRWSensor, self).__post_init__(address0)
         if self.bitmask:
             if self.on is not None:
                 assert self.on & self.bitmask == self.on
@@ -186,9 +186,9 @@ class SystemTimeRWSensor(RWSensor):
 
     year_offset: int = 2000
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Run post init."""
-        super(RWSensor, self).__post_init__(regs)
+        super(RWSensor, self).__post_init__(address0)
         if len(self.address) != 3:
             raise ValueError("SystemTimeRWSensor requires exactly 3 registers")
 

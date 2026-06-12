@@ -1,15 +1,15 @@
 configuration:
   DRIVER:
     name: Inverter Driver
-    description: "
+    description: |
       The inverter driver to use.
 
       *pymodbus* is recommended when connected via a RS485/TCP adapter.
 
-      With *solarman* you have to reduce the frequency that you read (see schedules)"
+      With *solarman* you have to reduce the frequency that you read (see schedules).
   INVERTERS:
     name: Inverters
-    description: '
+    description: |
       Add one item per inverter.
 
       HA_PREFIX should be unique for each inverter.
@@ -17,14 +17,88 @@ configuration:
       If PORT is a blank string "" the selected DEBUG_DEVICE will be used.
 
       Only the solarman driver requires the DONGLE_SERIAL_NUMBER.
-      '
+
+      Optional **DRIVER** per inverter overrides the global driver for that inverter.
   SENSOR_DEFINITIONS:
     name: Sensor definitions
     description: ""
-
+  SENSOR_OVERRIDES:
+    name: Sensor overrides
+    description: |
+      Override sensor attributes (min, max, factor, trace). Each entry is `key=value`.
+      See the documentation for examples.
+  SENSORS:
+    name: Sensors
+    description: |
+      Sensor groups or individual sensor names to poll for all inverters.
+  SENSORS_FIRST_INVERTER:
+    name: Sensors (first inverter)
+    description: |
+      Extra sensors polled only for the first inverter (typically settings).
+  MANUFACTURER:
+    name: Manufacturer
+    description: Manufacturer name shown on the Home Assistant device.
+  READ_ALLOW_GAP:
+    name: Read allow gap
+    description: |
+      Maximum register address gap to include in a single Modbus read (fills gaps between requested registers).
+  READ_SENSORS_BATCH_SIZE:
+    name: Read batch size
+    description: Maximum number of registers to read in one Modbus request.
+  STALE_INVERTER_AFTER_SECONDS:
+    name: Stale inverter after (seconds)
+    description: |
+      After a successful read, if Modbus failures continue past this many seconds, that inverter enters stale quiet so the
+      bus is not blocked for others. Default 120.
+  STALE_INVERTER_SKIP_SECONDS:
+    name: Stale skip (seconds)
+    description: |
+      How long to stay in stale quiet before a one-off serial probe and possible recovery. Default 600.
+  SCHEDULES:
+    name: Schedules
+    description: |
+      When to read sensors and when to publish to MQTT (per key, e.g. power **W**). See the schedules documentation.
+  NUMBER_ENTITY_MODE:
+    name: Number entity mode
+    description: |
+      How read/write number entities display in Home Assistant — **auto**, **box**, or **slider**.
   PROG_TIME_INTERVAL:
     name: Program time interval
-    description: "
-      Set the program time interval in minutes for the selection list.
+    description: |
+      Program time selection list step in minutes.
 
-      Warning: setting this to 5 minutes will result in a very long list to scroll through."
+      Warning: 5 minutes produces a very long list to scroll through.
+  TIMEOUT:
+    name: Modbus timeout
+    description: |
+      Modbus timeout in seconds for connect and register read/write attempts.
+
+      Default **1** second. Increase if you see spurious timeouts on slow links.
+  MQTT_CUSTOM:
+    name: Custom MQTT
+    description: |
+      When enabled, use MQTT_HOST, MQTT_PORT, MQTT_USERNAME, and MQTT_PASSWORD below instead of Supervisor discovery.
+  MQTT_HOST:
+    name: MQTT host
+    description: MQTT broker hostname (used when custom MQTT is enabled).
+  MQTT_PORT:
+    name: MQTT port
+    description: MQTT broker port (used when custom MQTT is enabled).
+  MQTT_USERNAME:
+    name: MQTT username
+    description: MQTT broker username (used when custom MQTT is enabled).
+  MQTT_PASSWORD:
+    name: MQTT password
+    description: MQTT broker password (used when custom MQTT is enabled).
+  DEBUG:
+    name: Debug level
+    description: |
+      Log verbosity. 0 = normal, higher values print more detail (see documentation).
+  DEBUG_DEVICE:
+    name: Debug device
+    description: USB serial device used when an inverter PORT is left empty.
+  MUTE_LOGS:
+    name: Mute logs (clock times)
+    description: |
+      Local times (`hh:mm`) when the add-on temporarily sets logging to critical for 60 seconds to suppress noisy
+      expected messages. Optional.

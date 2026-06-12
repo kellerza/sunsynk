@@ -4,7 +4,6 @@ import asyncio
 import logging
 import statistics
 import time
-import traceback
 from collections.abc import AsyncGenerator, Iterable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
@@ -49,7 +48,7 @@ class AInverter:
     sched: "SensorSchedule" = field(init=False)
 
     mqtt_dev: MQTTDevice = field(
-        default_factory=lambda: MQTTDevice(components={}, identifiers=[""])
+        default_factory=lambda: MQTTDevice(components={}, identifiers=[("", "")])
     )
     """MQTT Device for the inverter."""
 
@@ -58,7 +57,8 @@ class AInverter:
     lifecycle: AInverterLifecycle = field(default="starting", init=False)
     """Where this inverter is in the add-on poll loop (see `AInverterLifecycle`)."""
 
-    _stale_quiet_until: float = field(default=0.0, init=False)
+    _stale_quiet_until: float = 0
+    _stale_enter_at: float = float("inf")
 
     write_queue: dict[Sensor, str | int | float | bool] = field(default_factory=dict)
     """Write queue for RWSensors."""
@@ -102,18 +102,18 @@ class AInverter:
     @property
     def availability_topic(self) -> str:
         """MQTT topic: ``online`` / ``offline`` reflect poll-loop lifecycle (retained)."""
-        return f"{SS_TOPIC}/{self.opt.ha_prefix}/availability"
+        return f"{SS_TOPIC}/availability_1_{self.opt.ha_prefix}"
 
-    async def publish_lifecycle_availability(self) -> None:
+    async def set_lifecycle(self, lifecycle: AInverterLifecycle | None) -> None:
         """Publish retained lifecycle availability (no-op if MQTT is not connected)."""
+        if lifecycle is not None:
+            self.lifecycle = lifecycle
         if not MQTT.client.is_connected():
             return
-        payload = "online" if self.lifecycle == "running" else "offline"
         try:
-            await MQTT.publish(
+            await MQTT.publish_availability(
                 self.availability_topic,
-                payload,
-                qos=0,
+                self.lifecycle == "running",
                 retain=True,
             )
         except Exception as err:
@@ -122,49 +122,43 @@ class AInverter:
     async def lifecycle_enter_stale(self, reason: str | None = None) -> None:
         """Start or extend stale quiet: refresh deadline, set lifecycle, and log."""
         self._stale_quiet_until = time.monotonic() + OPT.stale_inverter_skip_seconds
-        self.lifecycle = "stale_quiet"
+        await self.set_lifecycle("stale_quiet")
         if reason is None:
-            reason = f"after {OPT.stale_inverter_after_timeouts} successive read errors"
+            reason = f"after {OPT.stale_inverter_after_seconds}s without a successful Modbus read"
         _LOG.warning(
             "Inverter %s stale. Skip Modbus for %ss: %s",
             self.opt.ha_prefix,
             OPT.stale_inverter_skip_seconds,
             reason,
         )
-        await self.publish_lifecycle_availability()
 
     async def lifecycle_attempt_recovery(self) -> None:
         """Handle stale quiet or run a serial probe when quiet has elapsed."""
         if self.lifecycle != "stale_quiet":
             return
         if time.monotonic() < self._stale_quiet_until:
-            self.lifecycle = "stale_quiet"
+            await self.set_lifecycle("stale_quiet")
             return
 
         await self.connector[0].connect()
 
-        self.lifecycle = "stale_probing"
+        await self.set_lifecycle("stale_probing")
 
         async with self.lock_io() as inv:
             try:
                 await asyncio.sleep(0.005)
                 await inv.read_sensors(sensors=[DEFS.serial])
-            except (
-                Exception,
-                asyncio.exceptions.CancelledError,
-            ) as err:
+            except Exception as err:
                 await self.lifecycle_enter_stale(f"Inverter probe failed: {err!s}")
                 return
 
         try:
             self.serial_matches_config()
+            _LOG.info("Inverter %s (%s): resumed", self.index, self.opt.ha_prefix)
+            await self.set_lifecycle("running")
         except ValueError as err:
             await self.lifecycle_enter_stale(str(err))
             return
-
-        _LOG.info("Inverter %s (%s): resumed", self.index, self.opt.ha_prefix)
-        self.lifecycle = "running"
-        await self.publish_lifecycle_availability()
 
     def serial_matches_config(self) -> bool:
         """Return whether the last read left the serial register matching config."""
@@ -176,29 +170,34 @@ class AInverter:
             )
         return True
 
-    async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> None:
+    async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> bool:
         """Read from the Modbus interface."""
         async with self.lock_io() as inv:
             try:
                 await asyncio.sleep(0.005)
                 await inv.read_sensors(sensors)
                 self.read_errors = 0
-            except (
-                Exception,
-                asyncio.exceptions.CancelledError,
-            ) as err:
+                self._stale_enter_at = (
+                    time.monotonic() + OPT.stale_inverter_after_seconds
+                )
+                return True
+            except ExceptionGroup as err:
                 self.read_errors += 1
-                if self.read_errors >= OPT.stale_inverter_after_timeouts:
+                if time.monotonic() > self._stale_enter_at:
                     await self.lifecycle_enter_stale()
-                    await self.publish_lifecycle_availability()
-                    return
+                    return False
                 if msg:
                     arg0, *argn = err.args if err.args else ("",)
                     err.args = tuple([f"{arg0} {msg}".strip(), *argn])
 
+                if msg:
+                    msg += ": "
+                msg += compact_exception_group(err)
                 if OPT.debug > 1:
-                    traceback.print_exc()
-                raise
+                    _LOG.error("ExceptionGroup: %s", msg, exc_info=err)
+                else:
+                    _LOG.error("ExceptionGroup: %s", msg)
+            return False
 
     async def write_sensor(
         self, sensor: RWSensor, value: ValType, *, msg: str = ""
@@ -209,22 +208,20 @@ class AInverter:
 
     async def read_sensors_retry(self, *, sensors: list[Sensor], msg: str = "") -> bool:
         """Read sensors with a retry."""
-        while True:
+        for c in range(1, 4):
+            if c > 1:
+                _LOG.warning("Retry %s read %s", c, msg)
             try:
-                await self.read_sensors(sensors=sensors, msg=msg)
-                return True
-            except asyncio.exceptions.CancelledError as err:
-                _LOG.error("Timeout %s", err)
+                if await self.read_sensors(sensors=sensors, msg=msg):
+                    return True
             except Exception as err:
-                _LOG.error("%s", err)
-            await asyncio.sleep(0.1)
-            if self.read_errors > 2:
-                break
+                _LOG.error("Retry %s read failed %s", c, err)
+            await asyncio.sleep(0.2)
 
         if len(sensors) == 1:
             return False
 
-        _LOG.warning("Retrying individual sensors: %s", [s.id for s in sensors])
+        _LOG.warning("Retry individual sensors - %s", [s.id for s in sensors])
         errs = []
         for sen in sensors:
             await asyncio.sleep(0.02)
@@ -232,7 +229,7 @@ class AInverter:
                 errs.append(sen.name)
 
         if errs:
-            _LOG.critical("Could not read sensors: %s", errs)
+            _LOG.error("Could not read sensors: %s", errs)
             return False
         return True
 
@@ -249,9 +246,7 @@ class AInverter:
 
     async def connect(self) -> None:
         """Connect."""
-        self.lifecycle = "starting"
-        if MQTT.client.is_connected():
-            await self.publish_lifecycle_availability()
+        await self.set_lifecycle("starting")
         async with self.lock_io() as inv:
             _LOG.info("Connecting to %s", inv.port)
             try:
@@ -270,6 +265,7 @@ class AInverter:
                 "see https://kellerza.github.io/sunsynk/guide/fault-finding"
             )
         self.serial_matches_config()
+        await self.set_lifecycle("running")
 
         # All seem ok
         add_info = {"device_type": [f"config: {OPT.sensor_definitions}"]}
@@ -280,9 +276,6 @@ class AInverter:
         sensors = list(SOPT)
         _LOG.info("Reading configured sensors %s", len(sensors))
         await self.read_sensors(sensors=sensors)
-        self.lifecycle = "running"
-        if MQTT.client.is_connected():
-            await self.publish_lifecycle_availability()
         # tab = pretty_table_sensors(sensors, self.inv)
         # _LOG.info("Inverter %s - active sensors\n%s", self.inv.port, tab)
 
@@ -308,7 +301,7 @@ class AInverter:
 
         if self.mqtt_dev.id == "":
             self.mqtt_dev = MQTTDevice(
-                identifiers=[serial_nr],
+                identifiers=[("serial", serial_nr)],
                 # https://github.com/kellerza/sunsynk/issues/165
                 # name=f"{OPT.manufacturer} AInverter {serial_nr}",
                 name=self.opt.ha_prefix,
@@ -321,14 +314,14 @@ class AInverter:
             MQTT.devs.append(self.mqtt_dev)
             self.create_stats_entities()
             for s in self.ss.values():
-                if s.visible_on(self):
+                if s.visible_on(self):  # type: ignore[arg-type]
                     ids.append(s.opt.sensor.id)
 
         for s in self.ss.values():
             if s.opt.sensor.id not in ids:
                 continue
             try:
-                s.entity = s.create_entity(self)
+                s.entity = s.create_entity(self)  # type: ignore[arg-type]
                 self.mqtt_dev.components[s.opt.sensor.id] = s.entity
             except Exception as err:
                 _LOG.error("Could not create MQTT entity for %s: %s", s, err)
@@ -338,7 +331,6 @@ class AInverter:
         self.hass_create_discovery_info()
         await MQTT.connect(OPT)
         MQTT.monitor_homeassistant_status()
-        await self.publish_lifecycle_availability()
         return True
 
     def init_sensors(self, soptions: SensorOptions | None = None) -> None:
@@ -385,6 +377,8 @@ class AInverter:
 
         # calc stats
         times = self.cb.stat_time
+        if not times:
+            times = [0]
         attr = {
             "count": len(times),
             "min": min(times),
@@ -392,8 +386,8 @@ class AInverter:
             "mean": statistics.mean(times),
             "median": statistics.median(times),
             "stdev": statistics.stdev(times) if len(times) > 1 else 0.0,
-            "p5": float(percentile(times, 5)),
-            "p95": float(percentile(times, 95)),
+            "p5": percentile(times, 5),
+            "p95": percentile(times, 95),
             "busy_count": self.cb.stat_busy_count,
             "error_count": self.cb.stat_error_count,
         }
@@ -406,3 +400,12 @@ class AInverter:
 
 
 STATE: list[AInverter] = []
+
+
+def compact_exception_group(err: ExceptionGroup) -> str:
+    """Compact exception group."""
+    try:
+        res = ", ".join([f"{err.__class__.__name__}: {err}" for err in err.exceptions])
+        return res.replace("TimeoutError: t", "T")
+    except Exception:
+        return str(err)

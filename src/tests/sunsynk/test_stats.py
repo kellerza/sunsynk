@@ -58,3 +58,16 @@ def test_percentile_accepts_non_list_iterable() -> None:
 def test_percentile_quarter_between_two_values() -> None:
     """25th percentile between 0 and 100 is 25."""
     assert math.isclose(percentile([0.0, 100.0], 25), 25.0)
+
+
+def test_percentile_empty_list() -> None:
+    """Empty list returns 0."""
+    with pytest.raises(ValueError, match="empty"):
+        assert percentile([], 50) == 0.0
+
+
+def test_percentile_one_value() -> None:
+    """One value returns that value."""
+    assert percentile([0.0], 50) == 0.0
+    assert percentile([0.0], 0) == 0.0
+    assert percentile([0.0], 100) == 0.0

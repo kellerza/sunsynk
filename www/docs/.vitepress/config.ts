@@ -1,5 +1,9 @@
 import { defineConfig } from "vitepress"
 import imsize from "markdown-it-imsize"
+import type { Plugin } from "vite"
+import Components from "unplugin-vue-components/vite"
+import Icons from "unplugin-icons/vite"
+import IconsResolver from "unplugin-icons/resolver"
 
 export default defineConfig({
   lang: "en-US",
@@ -40,9 +44,6 @@ export default defineConfig({
       { name: "viewport", content: "width=device-width, initial-scale=1.0" },
     ],
   ],
-  // vite: {
-  //   buildEnd: buildEnd,
-  // },
   themeConfig: {
     logo: "/labctl1.svg",
     nav: [
@@ -143,5 +144,18 @@ export default defineConfig({
     config: md => {
       md.use(imsize as any)
     },
+  },
+  vite: {
+    plugins: [
+      Icons({
+        compiler: "vue3",
+        autoInstall: false,
+      }) as Plugin,
+      Components({
+        resolvers: [IconsResolver()],
+        // so auto-imported icons work in .md (and script-setup MD)
+        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+      }) as Plugin,
+    ],
   },
 });

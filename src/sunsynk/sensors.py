@@ -94,13 +94,13 @@ class Sensor:
 class Constant(Sensor):
     """Sensor that always returns a constant value."""
 
-    value: NumType = None  # type: ignore[assignment]
+    value: NumType = -1
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Post-initialization processing."""
-        super(Constant, self).__post_init__(regs)
+        super(Constant, self).__post_init__(address0)
         assert not self.address
-        assert self.value is not None
+        assert self.value > 0
 
     def reg_to_value(self, regs: RegType) -> ValType:
         """Return the constant value."""
@@ -135,9 +135,9 @@ class Sensor16(Sensor):
         val = int_round(float(val) * abs(self.factor))
         return val
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Ensure correct parameters."""
-        super(Sensor16, self).__post_init__(regs)
+        super(Sensor16, self).__post_init__(address0)
         assert len(self.address) == 2
 
 
@@ -280,9 +280,9 @@ class MathSensor(Sensor):
             val = 0
         return val
 
-    def __post_init__(self, regs: RegType | int) -> None:
+    def __post_init__(self, address0: RegType | int) -> None:
         """Ensure correct parameters."""
-        super(MathSensor, self).__post_init__(regs)
+        super(MathSensor, self).__post_init__(address0)
         self.factors = ensure_tuple(self.factors)
         if len(self.address) != len(self.factors):
             raise ValueError(

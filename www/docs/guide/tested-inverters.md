@@ -1,7 +1,8 @@
 # Tested Inverters
 
-There are several inverters that are rebranded Deye inverters, so you might have success with other inverter brands as
-well, please add your inverter by editing this file and creating a Pull Request if you are successful.
+There are several inverters that are rebranded Deye inverters, so you might have success with other
+inverter brands as well, please add your inverter by editing this file and creating a Pull Request
+if you are successful.
 
 | Inverter Model         | Battery               | Version     | User                   | Port(s)               |
 | ---------------------- | --------------------- | ----------- | ---------------------- | --------------------- |

@@ -14,7 +14,8 @@ You need your own API key, get it here: <https://eskomsepush.gumroad.com/l/api>
 
 ::: tip
 
-The EskomSePush API is limited to 50 requests per day. Request results are cached to reduce calls to the API.
+The EskomSePush API is limited to 50 requests per day. Request results are cached to reduce calls to
+the API.
 
 :::
 
@@ -24,8 +25,8 @@ For each AREA, you need the following:
 - `HA_PREFIX`
 - `AREA_ID` *
 
-You can search for the AREA_ID using the `SEARCH_AREA` configuration option. The search result will be printed in the
-addon log
+You can search for the AREA_ID using the `SEARCH_AREA` configuration option. The search result will
+be printed in the addon log
 
 The following should be saved in you HA config folder `/config/custom_templates/loadshed.jinja`
 

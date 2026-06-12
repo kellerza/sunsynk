@@ -1,7 +1,7 @@
 # Deye/Sunsynk Inverters
 
-This repo enables access to Deye Hybrid Inverters & Deye branded inverters like Sunsynk through a Python 3 library. It
-also provides an Add-On that can be installed in the Home Assistant OS.
+This repo enables access to Deye Hybrid Inverters & Deye branded inverters like Sunsynk through a
+Python 3 library. It also provides an Add-On that can be installed in the Home Assistant OS.
 
 This code was developed on a [Sunsynk](https://www.sunsynk.org/) 5.5 kWh inverter.
 
@@ -13,9 +13,10 @@ Refer to [https://kellerza.github.io/sunsynk/](https://kellerza.github.io/sunsyn
 
 ## Home Assistant Sunsynk Add-On
 
-For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk inverter. Sensors are read
-using the Modbus protocol and sent to a MQTT server. See
-[deployment options](https://kellerza.github.io/sunsynk/guide/deployment-options) for examples of tested hardware.
+For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk
+inverter. Sensors are read using the Modbus protocol and sent to a MQTT server. See
+[deployment options](https://kellerza.github.io/sunsynk/guide/deployment-options) for examples of
+tested hardware.
 
 ### Installation
 

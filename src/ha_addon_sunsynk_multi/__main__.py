@@ -56,9 +56,10 @@ async def main_loop() -> int:
 
     asyncio.get_event_loop().set_debug(OPT.debug > 0)
 
-    # MQTT broker LWT + connect availability (all inverter prefixes);
-    # per-inverter Modbus lifecycle uses SS/<HA_PREFIX>/availability (see AInverter).
-    prefixes = "_".join(sorted(inv.ha_prefix for inv in OPT.inverters))
+    # MQTT broker LWT + connect "online": SS/availability_<sorted HA_PREFIX list joined by _>
+    # (see mqtt_entity: will_set + on_connect retain). Per-inverter poll lifecycle:
+    # SS/availability_1_<HA_PREFIX> (see AInverter.set_lifecycle, retain=True).
+    prefixes = "_".join(sorted(inv.ha_prefix.lower() for inv in OPT.inverters))
     MQTT.availability_topic = f"{SS_TOPIC}/availability_{prefixes}"
 
     CALLBACKS.append(
@@ -91,6 +92,13 @@ async def main_loop() -> int:
                 "This Add-On will terminate in 30 seconds, use the Supervisor Watchdog to restart automatically."
             )
             return 2
+
+    async def on_ha_connected() -> None:
+        """When MQTT is connected, ensure we update MQTT availability states."""
+        for ist in STATE:
+            await ist.set_lifecycle(None)
+
+    MQTT.on_ha_connected = on_ha_connected
 
     CALLBACKS.append(
         SyncCallback(name="log_errors", every=5 * 60, callback=print_errors)

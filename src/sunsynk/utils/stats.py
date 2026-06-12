@@ -7,6 +7,8 @@ def percentile(data: Iterable[float], percentile: int) -> float:
     """Calculate the given percentile of the data."""
     if not (0 <= percentile <= 100):
         raise ValueError("Percentile must be between 0 and 100.")
+    if not data:
+        raise ValueError("Data cannot be empty.")
 
     # Sort the data
     sorted_data = sorted(data)

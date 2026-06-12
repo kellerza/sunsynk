@@ -1,8 +1,8 @@
 # Lovelace examples
 
-This page contains a couple of frontend examples to represent the power flow of your system. While the Home Assistant
-Energy dashboard gives you a good indication of your energy usage, the power flow shows you what is happening at the
-current moment.
+This page contains a couple of frontend examples to represent the power flow of your system. While
+the Home Assistant Energy dashboard gives you a good indication of your energy usage, the power flow
+shows you what is happening at the current moment.
 
 ## Sunsynk Power Flow Card
 
@@ -129,8 +129,8 @@ min_line_width: 2
 
 ## Power Distribution card
 
-The Lovelace configuration for the Power Distribution Card is shown below. You can install the Power Distribution Card
-through HACS
+The Lovelace configuration for the Power Distribution Card is shown below. You can install the Power
+Distribution Card through HACS
 
 ![Power distribution](../images/power_dist.webp)
 

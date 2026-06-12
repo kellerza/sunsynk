@@ -67,7 +67,7 @@ class SensorSchedule:
 
 def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
     """Build the callback schedule."""
-    ist.sched = SensorSchedule().build_schedules(ist.index)
+    ist.sched = SensorSchedule().build_schedules(ist.index)  # type: ignore[assignment]
     atsk = None
 
     async def callback_sensor(now: int) -> None:  # noqa: PLR0915 PLR0912

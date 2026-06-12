@@ -1,11 +1,12 @@
 """Tests for ha_addon_sunsynk_multi.a_inverter."""
 
-import asyncio
+import time
 from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
 
 import pytest
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter
+from ha_addon_sunsynk_multi.a_sensor import MQTT
 from ha_addon_sunsynk_multi.options import OPT, InverterOptions
 from ha_addon_sunsynk_multi.sensor_options import DEFS, import_definitions
 from sunsynk.definitions.single_phase import SENSORS
@@ -16,6 +17,35 @@ from sunsynk.sunsynk import Sunsynk
 P_ASYNC_CONNECTED = "sunsynk.pysunsynk.AsyncModbusTcpClient.connected"
 P_CONNECT = "sunsynk.pysunsynk.AsyncModbusTcpClient.connect"
 P_READ_HR = "sunsynk.pysunsynk.AsyncModbusTcpClient.read_holding_registers"
+
+# Avoid lifecycle MQTT publish calling wait_connected() (no broker in unit tests).
+P_MOCK_MQTT_PUBLISH_AVAILABILITY = patch(
+    "ha_addon_sunsynk_multi.a_inverter.MQTT.publish_availability",
+    new_callable=AsyncMock,
+)
+
+
+async def test_set_lifecycle_publish_availability_uses_retain() -> None:
+    """Per-inverter lifecycle MQTT must be retained (HA after broker restart)."""
+    inv_opt = InverterOptions(
+        modbus_id=1, ha_prefix="my_inv", serial_nr="1", port="tcp://x:502"
+    )
+    mock_ss = MagicMock(spec=Sunsynk)
+    mock_ss.read_sensors = AsyncMock()
+    mock_ss.connect = AsyncMock()
+    AInverter.connectors.clear()
+    AInverter.add_connector(inv_opt, mock_ss)
+    ist = AInverter(index=0, opt=inv_opt, ss={})  # type: ignore[arg-type]
+
+    mock_client = MagicMock()
+    mock_client.is_connected.return_value = True
+    with patch.object(MQTT, "client", mock_client):
+        with patch.object(
+            MQTT, "publish_availability", new_callable=AsyncMock
+        ) as pub_av:
+            await ist.set_lifecycle("running")
+    pub_av.assert_awaited_once_with("SS/availability_1_my_inv", True, retain=True)
+    AInverter.connectors.clear()
 
 
 @patch(P_ASYNC_CONNECTED, new_callable=PropertyMock)
@@ -33,7 +63,7 @@ async def test_ss_tcp_read(
     https://github.com/kellerza/sunsynk/issues/180
     Also see sunsynk.test_pysunsynk.
     """
-    read_holding_reg.side_effect = asyncio.exceptions.CancelledError
+    read_holding_reg.side_effect = TimeoutError("test")
 
     ss = PySunsynk(port="tcp://1.1.1.1")
     ss.state = state
@@ -48,11 +78,11 @@ async def test_ss_tcp_read(
 
     # AInverter.read_sensors_retry
     ist = AInverter(index=0, opt=inv_opt, state=state, ss={})  # type:ignore[arg-type]
+    # Default _stale_enter_at is inf until a successful read arms the deadline.
 
     sensors = [SENSORS.rated_power]
 
-    with pytest.raises(asyncio.exceptions.CancelledError):
-        await ist.read_sensors(sensors=sensors)
+    assert await ist.read_sensors(sensors=sensors) is False
 
     res = await ist.read_sensors_retry(sensors=sensors)
     assert res is False
@@ -67,12 +97,12 @@ async def test_ss_tcp_read(
 
 
 async def test_stale_skip_after_successive_read_errors(state: InverterState) -> None:
-    """Enter stale quiet after successive read failures; last failure does not raise."""
+    """Enter stale quiet after read failures once the grace window (seconds) has elapsed."""
     AInverter.connectors.clear()
-    old_a = OPT.stale_inverter_after_timeouts
+    old_a = OPT.stale_inverter_after_seconds
     old_s = OPT.stale_inverter_skip_seconds
     try:
-        OPT.stale_inverter_after_timeouts = 2
+        OPT.stale_inverter_after_seconds = 2
         OPT.stale_inverter_skip_seconds = 60
 
         inv_opt = InverterOptions(
@@ -83,9 +113,8 @@ async def test_stale_skip_after_successive_read_errors(state: InverterState) -> 
             driver="",
         )
         mock_ss = MagicMock(spec=Sunsynk)
-        mock_ss.read_sensors = AsyncMock(
-            side_effect=[ValueError("crc"), TimeoutError("timeout")]
-        )
+        eg_fail = ExceptionGroup("read", (RuntimeError("crc"),))
+        mock_ss.read_sensors = AsyncMock(side_effect=[eg_fail, eg_fail])
         mock_ss.connect = AsyncMock()
         AInverter.add_connector(inv_opt, mock_ss)
 
@@ -93,17 +122,20 @@ async def test_stale_skip_after_successive_read_errors(state: InverterState) -> 
         state.track(DEFS.serial)
         ist = AInverter(index=0, opt=inv_opt, state=state, ss={})  # type:ignore[arg-type]
 
-        with pytest.raises(ValueError):
-            await ist.read_sensors(sensors=[DEFS.serial])
-        assert ist.lifecycle == "starting"
-        assert ist.read_errors == 1
+        with P_MOCK_MQTT_PUBLISH_AVAILABILITY:
+            # Finite deadline: failures before deadline only increment read_errors.
+            ist._stale_enter_at = time.monotonic() + 100.0
+            assert await ist.read_sensors(sensors=[DEFS.serial]) is False
+            assert ist.lifecycle == "starting"
+            assert ist.read_errors == 1
 
-        await ist.read_sensors(sensors=[DEFS.serial])
-        assert ist.lifecycle == "stale_quiet"
-        assert ist._stale_quiet_until > 0
-        assert ist.read_errors == 2
+            ist._stale_enter_at = time.monotonic() - 1.0
+            assert await ist.read_sensors(sensors=[DEFS.serial]) is False
+            assert ist.lifecycle == "stale_quiet"
+            assert ist._stale_quiet_until > 0
+            assert ist.read_errors == 2
     finally:
-        OPT.stale_inverter_after_timeouts = old_a
+        OPT.stale_inverter_after_seconds = old_a
         OPT.stale_inverter_skip_seconds = old_s
         AInverter.connectors.clear()
 
@@ -113,10 +145,10 @@ async def test_attempt_stale_recovery_quiet_period_skips_connect(
 ) -> None:
     """During stale quiet, attempt_stale_recovery does not call connect."""
     AInverter.connectors.clear()
-    old_a = OPT.stale_inverter_after_timeouts
+    old_a = OPT.stale_inverter_after_seconds
     old_skip = OPT.stale_inverter_skip_seconds
     try:
-        OPT.stale_inverter_after_timeouts = 1
+        OPT.stale_inverter_after_seconds = 1
         OPT.stale_inverter_skip_seconds = 60
 
         inv_opt = InverterOptions(
@@ -127,21 +159,27 @@ async def test_attempt_stale_recovery_quiet_period_skips_connect(
             driver="",
         )
         mock_ss = MagicMock(spec=Sunsynk)
-        mock_ss.read_sensors = AsyncMock(side_effect=TimeoutError("timeout"))
+        mock_ss.read_sensors = AsyncMock(
+            side_effect=ExceptionGroup("read", (TimeoutError("timeout"),))
+        )
         mock_ss.connect = AsyncMock()
         AInverter.add_connector(inv_opt, mock_ss)
 
         import_definitions()
         state.track(DEFS.serial)
         ist = AInverter(index=0, opt=inv_opt, state=state, ss={})  # type:ignore[arg-type]
+        # Arm stale: failures only count after a successful read set a finite deadline;
+        # simulate "deadline already passed" for this scenario.
+        ist._stale_enter_at = time.monotonic() - 1.0
 
-        await ist.read_sensors(sensors=[DEFS.serial])
-        assert ist.lifecycle == "stale_quiet"
+        with P_MOCK_MQTT_PUBLISH_AVAILABILITY:
+            assert await ist.read_sensors(sensors=[DEFS.serial]) is False
+            assert ist.lifecycle == "stale_quiet"
 
-        await ist.lifecycle_attempt_recovery()
+            await ist.lifecycle_attempt_recovery()
         mock_ss.connect.assert_not_called()
     finally:
-        OPT.stale_inverter_after_timeouts = old_a
+        OPT.stale_inverter_after_seconds = old_a
         OPT.stale_inverter_skip_seconds = old_skip
         AInverter.connectors.clear()
 
@@ -189,6 +227,7 @@ async def test_attempt_stale_recovery_probe_success_returns_to_running(
                 "ha_addon_sunsynk_multi.a_inverter.asyncio.sleep",
                 new_callable=AsyncMock,
             ),
+            P_MOCK_MQTT_PUBLISH_AVAILABILITY,
         ):
             await ist.lifecycle_enter_stale("test setup")
             mono[0] = 10_000.0
@@ -241,6 +280,7 @@ async def test_attempt_stale_recovery_probe_failure_reenters_stale(
                 "ha_addon_sunsynk_multi.a_inverter.asyncio.sleep",
                 new_callable=AsyncMock,
             ),
+            P_MOCK_MQTT_PUBLISH_AVAILABILITY,
         ):
             await ist.lifecycle_enter_stale("test setup")
             mono[0] = 10_000.0

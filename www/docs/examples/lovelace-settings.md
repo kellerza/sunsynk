@@ -1,11 +1,12 @@
 # System settings card
 
-Below you can find two examples Lovelace cards to show, and allow editing, of the System mode in the frontend
+Below you can find two examples Lovelace cards to show, and allow editing, of the System mode in the
+frontend
 
 ## Example #1
 
-This card shows the system values and can be edited by clicking on individual settings. It uses the Mushroom cards,
-which can be installed with HACS.
+This card shows the system values and can be edited by clicking on individual settings. It uses the
+Mushroom cards, which can be installed with HACS.
 
 You need the following sensor group.
 

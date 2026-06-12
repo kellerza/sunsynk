@@ -52,3 +52,12 @@
   padding-left: 8px;
   text-align: left;
 }
+
+/* Iconify (unplugin-icons): inline dev/edge marker next to option names */
+.vp-edge-option-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.15em;
+  height: 1.15em;
+  margin-left: 0.0em;
+}

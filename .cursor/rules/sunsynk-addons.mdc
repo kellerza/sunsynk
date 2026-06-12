@@ -1,0 +1,64 @@
+---
+description: Sunsynk HA add-ons — edit edge only; multi is CI/release; options docs workflow
+globs:
+  - hass-addon-sunsynk-*/**
+  - src/ha_addon_sunsynk_multi/**
+  - www/docs/reference/multi-options.md
+alwaysApply: true
+---
+
+# Sunsynk Home Assistant add-ons
+
+## Editing policy (agents)
+
+**Do not** create, edit, delete, or move files under **`hass-addon-sunsynk-multi/`** unless the user **explicitly** asks for
+stable-multi work (e.g. “sync multi”, “release prep”, “fix CI output in multi”, “cherry-pick to stable addon”). Normal
+tasks — config, schema, translations, Dockerfile, run scripts, CHANGELOG in the add-on folder — **must only be proposed
+under `hass-addon-sunsynk-edge/`**.
+
+If the user has **`hass-addon-sunsynk-multi/**`** open or asks for a change that would touch multi, **redirect**: apply the
+same change under **`hass-addon-sunsynk-edge/`** (or `src/` / docs as below) and state that multi is updated by **CI when
+a GitHub tag is pushed**.
+
+## Repository layout
+
+- **`hass-addon-sunsynk-edge`** — **Development add-on.** All manual add-on packaging work happens here (`config.yaml`,
+  `schema`, `translations/`, Docker/run scripts).
+
+- **`hass-addon-sunsynk-multi`** — **Stable / release add-on.** **CI-maintained** for routine changes; do not hand-edit
+  as part of feature work.
+
+- **`src/ha_addon_sunsynk_multi`** — **Add-on Python** used in the Docker build. Implement behaviour here; it ships with
+  edge builds immediately and is what the multi image is built from on release (no second code path).
+
+## Supervisor options (documentation workflow)
+
+When you add or change a **Supervisor option**, keep these in sync — **using edge for packaging strings**:
+
+### 1. Home Assistant UI (`translations/en.yaml`)
+
+- Add or update **`hass-addon-sunsynk-edge/translations/en.yaml`** only (short `name` / `description` for the Supervisor
+  UI).
+- **Do not** update `hass-addon-sunsynk-multi/translations/` unless the user explicitly requests stable-multi sync; CI /
+  release flow is expected to align multi with edge.
+
+### 2. Reference docs (`www/docs/reference/multi-options.md`)
+
+- Document every user-facing option; this page is built into the **VitePress** site. Use the same `OPTION_KEY` as in
+  `config.yaml` (uppercase with underscores).
+
+**Dev / edge only:** if the option exists **only** in `hass-addon-sunsynk-edge/config.yaml` (not yet in multi’s
+`config.yaml`), prefix the bullet in `multi-options.md` with:
+
+```markdown
+- <i-mdi-dev-to class="vp-edge-option-icon" /> `YOUR_OPTION` – …
+```
+
+**After release:** when CI adds the option to **`hass-addon-sunsynk-multi/config.yaml`**, remove that icon prefix and any
+“edge only” wording for that option (edits to **`multi-options.md`** are fine; still avoid hand-editing multi **addon**
+files unless the user asked).
+
+### 3. Python (`src/ha_addon_sunsynk_multi/options.py`)
+
+- Add or update `Options` / `InverterOptions` fields so YAML/env loading matches the edge schema (uppercase keys map to
+  lowercase attributes via `mqtt_entity`).

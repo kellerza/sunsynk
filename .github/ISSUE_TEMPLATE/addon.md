@@ -18,10 +18,10 @@ A clear and concise description of what the bug is.
 
 ### Your environment
 
-- Home Assistant version: 2025.1.x
+- Home Assistant version: 2026.1.x
 - Addon:
   - Name: sunsynk-multi
-  - Version: 2025-01-11
+  - Version: 2026-01-11
 - Inverter:
   - Make: Sunsynk/Deye/Sol-Ark/...
   - Model: \_\_
@@ -30,18 +30,21 @@ A clear and concise description of what the bug is.
   - RS485/RS232/solarman
   - RS485/RS232 brand
 
-### You configuration
+### Your configuration
+
+Paste your add-on YAML **between** the two lines below (replace the placeholder line). Keep the
+first line (three backticks and `yaml`) and the last line (three backticks only) so GitHub formats
+it as a code block.
 
 ```yaml
-
-paste config in the block surrounded by 3x backticks
-
+# replace this line with your full configuration
 ```
 
 ### Logs
 
-```logs
+Same idea for logs: paste between the fences (replace the placeholder). Use the most recent lines
+that show the error.
 
-paste logs in 3x backticks...
-
+```text
+# replace this line with relevant log lines
 ```

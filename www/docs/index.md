@@ -38,5 +38,5 @@ features:
 
 
 
-footer: Apache 2.0 Licensed | Copyright © 2021-2025 Johann Kellerman
+footer: Apache 2.0 Licensed | Copyright © 2021-2026 Johann Kellerman
 ---

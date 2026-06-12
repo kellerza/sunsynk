@@ -8,8 +8,9 @@ assignees: ''
 ---
 
 Existing sensor definitions can be found
-[sunsynk/definitions](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions/). You can test your own
-definitions using [custom sensors](https://kellerza.github.io/sunsynk/reference/mysensors)
+[sunsynk/definitions](https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions/). You
+can test your own definitions using
+[custom sensors](https://kellerza.github.io/sunsynk/reference/mysensors)
 
 ## Your environment
 

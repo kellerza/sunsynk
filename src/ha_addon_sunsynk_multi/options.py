@@ -42,12 +42,12 @@ class Options(MQTTOptions):
     read_allow_gap: int = 2
     read_sensors_batch_size: int = 20
     schedules: list[Schedule] = field(default_factory=list)
-    timeout: int = 10
+    timeout: int = 1
 
-    stale_inverter_after_timeouts: int = 10
-    """After this many successive read failures, skip Modbus for this inverter."""
+    stale_inverter_after_seconds: int = 60
+    """Grace window (seconds) after each successful read: if failures continue past this deadline, enter stale quiet."""
     stale_inverter_skip_seconds: int = 600
-    """Quiet period (seconds) before probing with a serial register read only."""
+    """Quiet period (seconds) with no normal polling before a serial-only probe and possible recovery."""
 
     debug: int = 0
     driver: str = "pymodbus"
@@ -67,11 +67,12 @@ class Options(MQTTOptions):
             inv.ha_prefix = slug(inv.ha_prefix.strip())
 
             if inv.dongle_serial_number:
-                if inv.port:
+                if inv.driver and inv.driver != "solarman":
                     _LOG.warning(
-                        "%s: No port expected when you specify a serial number."
+                        "%s: DONGLE_SERIAL_NUMBER requires the driver to be 'solarman'",
+                        inv.ha_prefix,
                     )
-                continue
+                inv.driver = "solarman"
 
             if not inv.port or inv.port.lower().startswith(("serial:", "/dev")):
                 _LOG.warning(
@@ -103,7 +104,7 @@ class Options(MQTTOptions):
             self.overrides = {}
             errs = {}
             for item in self.sensor_overrides:
-                key, _, val = str(item).partition("=")
+                key, _, val = item.partition("=")
                 try:
                     self.overrides[key.strip()] = float(val) if "." in val else int(val)
                 except ValueError:

@@ -10,6 +10,6 @@
         "umodbus"
     ],
     "cSpell.ignoreRandomStrings": true,
-    "reflowMarkdown.preferredLineLength": 100,
-    "reflowMarkdown.wrapLongLinks": "wrap"
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python-envs.pythonProjects": []
 }

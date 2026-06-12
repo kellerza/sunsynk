@@ -33,7 +33,7 @@ def ist_factory(
             port=port,
             driver="",
         ),
-        mqtt_dev=MQTTDevice(identifiers=[serial], components={}),
+        mqtt_dev=MQTTDevice(identifiers=[("serial_number", serial)], components={}),
         state=state,  # type:ignore[arg-type]
     )
 

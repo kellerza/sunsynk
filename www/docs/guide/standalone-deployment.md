@@ -1,22 +1,23 @@
 # Run standalone using docker compose
 
-If you are running only Home Assistant Core, or do not have Home Assistant Supervisor, you might want to run this addon
-as a standalone service. Docker Compose is commonly used to manage services that run in docker containers.
+If you are running only Home Assistant Core, or do not have Home Assistant Supervisor, you might
+want to run this addon as a standalone service. Docker Compose is commonly used to manage services
+that run in docker containers.
 
-As a standalone service, this addon does not depend on Home Assistant Core, Supervisor or OS. You can run this addon and
-send data to any MQTT server without using other HA services.
+As a standalone service, this addon does not depend on Home Assistant Core, Supervisor or OS. You
+can run this addon and send data to any MQTT server without using other HA services.
 
-Another benefit of this setup is to run this addon along with `mbusd` on a Raspberry Pi without having to install Home
-Assistant on it.
+Another benefit of this setup is to run this addon along with `mbusd` on a Raspberry Pi without
+having to install Home Assistant on it.
 
 ## Local Docker-Compose Builds
 
-In these example commands we prefix the `docker-compose build` commands with the environment variable definition
-`BUILD_FROM=...`, which specifies which base image is used. For a Raspberry Pi you would need to use
-`BUILD_FROM=ghcr.io/home-assistant/armhf-base-python:3.12`, and for a 64bit PC you would use
-`BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12`. A list of available base images can be found in
-`hass-addon-sunsynk-multi/build.yaml` and `hass-addon-mbusd/build.yaml`. Use the one that is most appropriate for your
-host computer.
+In these example commands we prefix the `docker-compose build` commands with the environment
+variable definition `BUILD_FROM=...`, which specifies which base image is used. For a Raspberry Pi
+you would need to use `BUILD_FROM=ghcr.io/home-assistant/armhf-base-python:3.12`, and for a 64bit PC
+you would use `BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12`. A list of available base
+images can be found in `hass-addon-sunsynk-multi/build.yaml` and `hass-addon-mbusd/build.yaml`. Use
+the one that is most appropriate for your host computer.
 
 ### Sunsynk Multi
 
@@ -59,8 +60,8 @@ MQTT_PASSWORD: ""
 # DEBUG_DEVICE: "/dev/ttyAMA0"
 ```
 
-Adjust the `INVERTERS` section to match your inverter setup. `tcp://mbusd:502` points toward a DNS entry, or most likely
-container named `mbusd` included in this docker compose stack.
+Adjust the `INVERTERS` section to match your inverter setup. `tcp://mbusd:502` points toward a DNS
+entry, or most likely container named `mbusd` included in this docker compose stack.
 
 :::
 
@@ -70,8 +71,9 @@ container named `mbusd` included in this docker compose stack.
 
 ### Mbusd
 
-* Edit `docker-compose.yaml` changing the values under `environment` to match your configuration, leaving the device set
-  to `/dev/ttyUSB0` as we mount the correct port to this location in the next step.
+* Edit `docker-compose.yaml` changing the values under `environment` to match your configuration,
+  leaving the device set to `/dev/ttyUSB0` as we mount the correct port to this location in the next
+  step.
 * Under `volumes` change `/dev/ttyRS485` to the RS485 port of your host computer.
 * Build the image `BUILD_FROM=<base_image> docker compose build mbusd`
 * Run the container `docker compose up mbusd`
@@ -81,6 +83,19 @@ container named `mbusd` included in this docker compose stack.
 
 The repo also contains prebuilt Docker images, which is available from the
 [Github Container Registry](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
+
+::: info
+
+To use [custom sensors](../reference/mysensors.md) in Docker, ensure your `mysensors.py` exists next
+to your config `options.yaml` and mount it at **`/share/hass-addon-sunsynk/mysensors.py`**, for
+example:
+
+```yaml
+    volumes:
+      - ${PWD}/mysensors.py:/share/hass-addon-sunsynk/mysensors.py
+```
+
+:::
 
 ### Docker-Compose examples
 
@@ -134,13 +149,14 @@ ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
 
 ## Using Environment Variables with Docker Compose
 
-If you prefer to use environment variables instead of an `options.yaml` file, you can configure the Sunsynk Multi
-service entirely with environment variables. All configuration options that would normally be set in the `options.yaml`
-file can be set as environment variables.
+If you prefer to use environment variables instead of an `options.yaml` file, you can configure the
+Sunsynk Multi service entirely with environment variables. All configuration options that would
+normally be set in the `options.yaml` file can be set as environment variables.
 
 ### Example Configuration
 
-Here is an example of how to run the Sunsynk Multi service using environment variables in a `docker-compose.yml` file:
+Here is an example of how to run the Sunsynk Multi service using environment variables in a
+`docker-compose.yml` file:
 
 ```yaml
 services:
@@ -172,12 +188,13 @@ services:
 * **MQTT_PORT**: The MQTT broker port (typically 1883).
 * **MQTT_USERNAME**: The username for the MQTT broker.
 * **MQTT_PASSWORD**: The password for the MQTT broker.
-* **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes when using the `s6`
-  init system.
+* **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes
+  when using the `s6` init system.
 * **DRIVER**: The driver to use for modbus communication (e.g., `pymodbus`, `umodbus`).
-* **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values for `SERIAL_NR`,
-  `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
+* **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values
+  for `SERIAL_NR`, `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
 * **SCHEDULES**: A JSON string representing the schedules for sensor reading and reporting.
-* **Other Configuration Options**: Any other configuration option that is typically defined in `options.yaml` can be
-  passed as an environment variable. The keys from `options.yaml` should be written in uppercase and underscores (e.g.,
-  `SENSOR_DEFINITIONS`, `READ_ALLOW_GAP`, `SENSORS`, etc.).
+* **Other Configuration Options**: Any other configuration option that is typically defined in
+  `options.yaml` can be passed as an environment variable. The keys from `options.yaml` should be
+  written in uppercase and underscores (e.g., `SENSOR_DEFINITIONS`, `READ_ALLOW_GAP`, `SENSORS`,
+  etc.).

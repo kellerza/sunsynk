@@ -2,25 +2,26 @@
 
 ## Creating your own sensor
 
-You can create custom sensors by defining them in a file called `mysensors.py` in the `/share/hass-addon-sunsynk/`
-directory. This allows you to add sensors that are not included in the default definitions.
+You can create custom sensors by defining them in a file called `mysensors.py` in the
+`/share/hass-addon-sunsynk/` directory. This allows you to add sensors that are not included in the
+default definitions.
 
-In it's most basic form a sensor the RS486 register and a name. You can find the RS485 protocol document at various
-places online, search the [Power Forum](https://www.powerforum.co.za) or
+In it's most basic form a sensor the RS486 register and a name. You can find the RS485 protocol
+document at various places online, search the [Power Forum](https://www.powerforum.co.za) or
 [Github issue #59](https://github.com/kellerza/sunsynk/issues/59)
 
 ::: tip
 
-If you only need to change the min/max/factor of an existing sensor, consider using the `SENSOR_OVERRIDES` option - see
-the [multi-options](./multi-options.md) documentation for details.
+If you only need to change the min/max/factor of an existing sensor, consider using the
+`SENSOR_OVERRIDES` option - see the [multi-options](./multi-options.md) documentation for details.
 
 :::
 
-The `/share/` folder can be accessed through the Samba addon in Home Assistant. You can create the `hass-addon-sunsynk`
-folder & the `mysensors.py` file
+The `/share/` folder can be accessed through the Samba addon in Home Assistant. You can create the
+`hass-addon-sunsynk` folder & the `mysensors.py` file
 
-This is a Python file and follows the same logic as the definitions.py & definitions3p.py. It exposes a single `SENSORS`
-global variable to which you can add the individual sensor definitions.
+This is a Python file and follows the same logic as the definitions.py & definitions3p.py. It
+exposes a single `SENSORS` global variable to which you can add the individual sensor definitions.
 
 An example `mysensors.py` file:
 
@@ -66,8 +67,8 @@ An example of adding a custom selling load sensor, the takes the ct power off th
 MathSensor((175, 172), "Selling Load Power direct", WATT, factors=(1, 1)),
 ```
 
-Once defined, your custom sensors will be loaded automatically when the addon starts, and you'll see them listed in the
-startup logs:
+Once defined, your custom sensors will be loaded automatically when the addon starts, and you'll see
+them listed in the startup logs:
 
 ```log
 INFO    Importing /share/hass-addon-sunsynk/mysensors.py...
