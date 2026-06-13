@@ -58,7 +58,7 @@ class AInverter:
     """Where this inverter is in the add-on poll loop (see `AInverterLifecycle`)."""
 
     _stale_quiet_until: float = 0
-    _stale_enter_at: float = float("inf")
+    _stale_enter_at: float = 0
 
     write_queue: dict[Sensor, str | int | float | bool] = field(default_factory=dict)
     """Write queue for RWSensors."""
@@ -119,8 +119,12 @@ class AInverter:
         except Exception as err:
             _LOG.debug("Lifecycle availability publish failed: %s", err)
 
-    async def lifecycle_enter_stale(self, reason: str | None = None) -> None:
+    async def lifecycle_enter_stale(self, reason: str | None = None) -> bool:
         """Start or extend stale quiet: refresh deadline, set lifecycle, and log."""
+        past_stale = time.monotonic() >= self._stale_enter_at
+        if self.lifecycle in ("running", "starting") and not past_stale:
+            return False
+
         self._stale_quiet_until = time.monotonic() + OPT.stale_inverter_skip_seconds
         await self.set_lifecycle("stale_quiet")
         if reason is None:
@@ -131,6 +135,7 @@ class AInverter:
             OPT.stale_inverter_skip_seconds,
             reason,
         )
+        return True
 
     async def lifecycle_attempt_recovery(self) -> None:
         """Handle stale quiet or run a serial probe when quiet has elapsed."""
@@ -173,18 +178,22 @@ class AInverter:
     async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> bool:
         """Read from the Modbus interface."""
         async with self.lock_io() as inv:
+            await asyncio.sleep(0.005)
             try:
-                await asyncio.sleep(0.005)
-                await inv.read_sensors(sensors)
+                async with asyncio.timeout(OPT.timeout * 2):
+                    await inv.read_sensors(sensors)
                 self.read_errors = 0
                 self._stale_enter_at = (
                     time.monotonic() + OPT.stale_inverter_after_seconds
                 )
                 return True
+            except TimeoutError:
+                self.read_errors += 1
+                await self.lifecycle_enter_stale("read timeout")
+                return False
             except ExceptionGroup as err:
                 self.read_errors += 1
-                if time.monotonic() > self._stale_enter_at:
-                    await self.lifecycle_enter_stale()
+                if await self.lifecycle_enter_stale():
                     return False
                 if msg:
                     arg0, *argn = err.args if err.args else ("",)
@@ -301,7 +310,7 @@ class AInverter:
 
         if self.mqtt_dev.id == "":
             self.mqtt_dev = MQTTDevice(
-                identifiers=[("serial", serial_nr)],
+                identifiers=[serial_nr],
                 # https://github.com/kellerza/sunsynk/issues/165
                 # name=f"{OPT.manufacturer} AInverter {serial_nr}",
                 name=self.opt.ha_prefix,

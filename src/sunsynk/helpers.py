@@ -68,7 +68,7 @@ def unpack_value(regs: RegType, *, signed: bool = True, maybe16: bool = False) -
     raise ValueError(f"Unsupported number of registers: {len(regs)}")
 
 
-def ensure_tuple[T](val: T | tuple[T, ...]) -> tuple[T, ...]:
+def ensure_tuple[T](val: T | tuple[T, ...] | None) -> tuple[T, ...]:
     """Return a tuple."""
     if isinstance(val, tuple):
         return val

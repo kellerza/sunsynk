@@ -33,7 +33,7 @@ repos:
 
       - id: codespell
         name: codespell
-        entry: uv run codespell --toml pyproject.toml
+        entry: uv run codespell --toml pyproject.toml src www/docs www/README.md README.md scripts .github .cursor/rules hass-addon-sunsynk-edge hass-addon-sunsynk-multi hass-addon-mbusd
         language: system
         pass_filenames: false
 

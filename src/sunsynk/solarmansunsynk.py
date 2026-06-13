@@ -26,14 +26,16 @@ class SolarmanSunsynk(Sunsynk):
     def __post_init__(self) -> None:
         """Post init."""
         self.allow_gap: int = self.allow_gap or 10
+        raw = self.dongle_serial_number
         try:
-            self.dongle_serial_number = int(self.dongle_serial_number)
+            self.dongle_serial_number = raw if isinstance(raw, int) else int(raw)
             if self.dongle_serial_number == 0:
-                raise ValueError("DONGLE_SERIAL_NUMBER not set")
-        except ValueError as err:
+                raise ValueError()
+        except ValueError:
             raise ValueError(
-                f"DONGLE_SERIAL_NUMBER must be an integer, got '{self.dongle_serial_number}'"
-            ) from err
+                "DONGLE_SERIAL_NUMBER must be a non-zero integer for the solarman "
+                f"driver (Wi-Fi dongle). Got {raw!r}"
+            ) from None
 
     async def connected_client(self) -> PySolarmanV5Async:
         """Get client, connect if needed."""
@@ -43,7 +45,7 @@ class SolarmanSunsynk(Sunsynk):
         url = urlparse(f"{self.port}")
         self.client = client = PySolarmanV5Async(
             address=url.hostname,
-            serial=int(self.dongle_serial_number),
+            serial=self.dongle_serial_number,
             port=url.port,
             mb_slave_id=self.server_id,
             auto_reconnect=True,

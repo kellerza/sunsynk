@@ -211,27 +211,131 @@
             <td>power_flow_card</td>
         </tr>
         <tr>
-            <td>AUX power</td>
-            <td>[166] S</td>
-            <td>[166] S</td>
+            <td>AUX port usage (R/W)<br>Generator input</td>
+            <td>[235]</td>
+            <td>[235]</td>
+            <td>[133]</td>
+            <td>[133]</td>
+            <td>generator</td>
+        </tr>
+        <tr>
+            <td>AUX port usage (R/W)<br>Generator input</td>
+            <td>[235]</td>
+            <td>[235]</td>
             <td></td>
             <td></td>
+            <td>generator</td>
+        </tr>
+        <tr>
+            <td>Gen power<br>AUX power</td>
+            <td>[166] S</td>
+            <td>[166] S</td>
+            <td>[667,671] S</td>
+            <td>[667,671] S</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
-            <td>AUX voltage</td>
+            <td>Gen power<br>AUX power</td>
+            <td>[166] S</td>
+            <td>[166] S</td>
+            <td>[667,671] S</td>
+            <td>[667,671] S</td>
+            <td>power_flow_card</td>
+        </tr>
+        <tr>
+            <td>Gen L1 voltage<br>AUX L1 voltage</td>
             <td>[181] * 0.1</td>
             <td>[181] * 0.1</td>
-            <td></td>
-            <td></td>
+            <td>[661] * 0.1</td>
+            <td>[661] * 0.1</td>
             <td></td>
         </tr>
         <tr>
-            <td>AUX frequency</td>
-            <td>[196] * 0.1</td>
-            <td>[196] * 0.1</td>
+            <td>Gen L1 voltage<br>AUX L1 voltage</td>
+            <td>[181] * 0.1</td>
+            <td>[181] * 0.1</td>
+            <td>[661] * 0.1</td>
+            <td>[661] * 0.1</td>
             <td></td>
+        </tr>
+        <tr>
+            <td>Gen L2 voltage<br>AUX L2 voltage</td>
+            <td>[182] * 0.1</td>
+            <td>[182] * 0.1</td>
+            <td>[662] * 0.1</td>
+            <td>[662] * 0.1</td>
             <td></td>
+        </tr>
+        <tr>
+            <td>Gen L2 voltage<br>AUX L2 voltage</td>
+            <td>[182] * 0.1</td>
+            <td>[182] * 0.1</td>
+            <td>[662] * 0.1</td>
+            <td>[662] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L3 voltage<br>AUX L3 voltage</td>
+            <td>[183] * 0.1</td>
+            <td>[183] * 0.1</td>
+            <td>[663] * 0.1</td>
+            <td>[663] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L3 voltage<br>AUX L3 voltage</td>
+            <td>[183] * 0.1</td>
+            <td>[183] * 0.1</td>
+            <td>[663] * 0.1</td>
+            <td>[663] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L1 current<br>AUX L1 current</td>
+            <td>[184] * 0.01</td>
+            <td>[184] * 0.01</td>
+            <td>[671] * 0.01</td>
+            <td>[671] * 0.01</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L1 current<br>AUX L1 current</td>
+            <td>[184] * 0.01</td>
+            <td>[184] * 0.01</td>
+            <td>[671] * 0.01</td>
+            <td>[671] * 0.01</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L2 current<br>AUX L2 current</td>
+            <td>[185] * 0.01</td>
+            <td>[185] * 0.01</td>
+            <td>[672] * 0.01</td>
+            <td>[672] * 0.01</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L2 current<br>AUX L2 current</td>
+            <td>[185] * 0.01</td>
+            <td>[185] * 0.01</td>
+            <td>[672] * 0.01</td>
+            <td>[672] * 0.01</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L3 current<br>AUX L3 current</td>
+            <td>[186] * 0.01</td>
+            <td>[186] * 0.01</td>
+            <td>[673] * 0.01</td>
+            <td>[673] * 0.01</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L3 current<br>AUX L3 current</td>
+            <td>[186] * 0.01</td>
+            <td>[186] * 0.01</td>
+            <td>[673] * 0.01</td>
+            <td>[673] * 0.01</td>
             <td></td>
         </tr>
         <tr>
@@ -601,14 +705,6 @@
             <td>[130]</td>
             <td>[130]</td>
             <td>settings</td>
-        </tr>
-        <tr>
-            <td>Generator input (R/W)</td>
-            <td>[235]</td>
-            <td>[235]</td>
-            <td></td>
-            <td></td>
-            <td></td>
         </tr>
         <tr>
             <td>Battery charging voltage</td>
@@ -1387,31 +1483,15 @@
             <td>power_flow_card</td>
         </tr>
         <tr>
-            <td>Gen L1 voltage</td>
+            <td>AUX port usage (R/W)<br>Generator Port Usage</td>
             <td></td>
             <td></td>
-            <td>[661] * 0.1</td>
-            <td>[661] * 0.1</td>
-            <td></td>
+            <td>[133]</td>
+            <td>[133]</td>
+            <td>generator</td>
         </tr>
         <tr>
-            <td>Gen L2 voltage</td>
-            <td></td>
-            <td></td>
-            <td>[662] * 0.1</td>
-            <td>[662] * 0.1</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L3 voltage</td>
-            <td></td>
-            <td></td>
-            <td>[663] * 0.1</td>
-            <td>[663] * 0.1</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L1 power</td>
+            <td>Gen L1 power<br>AUX L1 power</td>
             <td></td>
             <td></td>
             <td>[664,668] S</td>
@@ -1419,7 +1499,15 @@
             <td></td>
         </tr>
         <tr>
-            <td>Gen L2 power</td>
+            <td>Gen L1 power<br>AUX L1 power</td>
+            <td></td>
+            <td></td>
+            <td>[664,668] S</td>
+            <td>[664,668] S</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L2 power<br>AUX L2 power</td>
             <td></td>
             <td></td>
             <td>[665,669] S</td>
@@ -1427,7 +1515,15 @@
             <td></td>
         </tr>
         <tr>
-            <td>Gen L3 power</td>
+            <td>Gen L2 power<br>AUX L2 power</td>
+            <td></td>
+            <td></td>
+            <td>[665,669] S</td>
+            <td>[665,669] S</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L3 power<br>AUX L3 power</td>
             <td></td>
             <td></td>
             <td>[666,670] S</td>
@@ -1435,35 +1531,11 @@
             <td></td>
         </tr>
         <tr>
-            <td>Gen power</td>
+            <td>Gen L3 power<br>AUX L3 power</td>
             <td></td>
             <td></td>
-            <td>[667,671] S</td>
-            <td>[667,671] S</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L1 current</td>
-            <td></td>
-            <td></td>
-            <td>[671] * 0.01</td>
-            <td>[671] * 0.01</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L2 current</td>
-            <td></td>
-            <td></td>
-            <td>[672] * 0.01</td>
-            <td>[672] * 0.01</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L3 current</td>
-            <td></td>
-            <td></td>
-            <td>[673] * 0.01</td>
-            <td>[673] * 0.01</td>
+            <td>[666,670] S</td>
+            <td>[666,670] S</td>
             <td></td>
         </tr>
         <tr>
@@ -1721,14 +1793,6 @@
             <td>[114] * 0.1</td>
             <td>[114] * 0.1</td>
             <td>advanced<br>battery</td>
-        </tr>
-        <tr>
-            <td>Generator Port Usage (R/W)</td>
-            <td></td>
-            <td></td>
-            <td>[133]</td>
-            <td>[133]</td>
-            <td>generator</td>
         </tr>
         <tr>
             <td>Battery min voltage</td>

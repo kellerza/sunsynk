@@ -9,7 +9,7 @@ shows you what is happening at the current moment.
 The Sunsynk Power Flow card can be installed by adding a custom Lovelace repository to HACS:
 <https://github.com/slipx06/sunsynk-power-flow-card> or clicking this button:
 
-[![Open your Home Assistant instance and open slipx's repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=sunsynk-power-flow-card&category=plugin&owner=slipx06)
+[![Add slipx's repository to your Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=sunsynk-power-flow-card&category=plugin&owner=slipx06)
 
 ![Power Flow Card](../images/power-flow.png =500x600)
 

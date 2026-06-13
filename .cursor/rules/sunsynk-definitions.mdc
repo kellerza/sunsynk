@@ -1,0 +1,39 @@
+---
+description: Inverter Modbus sensor definitions — profiles, inheritance, single vs three phase
+globs:
+  - src/sunsynk/definitions/**
+alwaysApply: false
+---
+
+# Sunsynk inverter definitions (`src/sunsynk/definitions/`)
+
+## What lives here
+
+All **Modbus register → sensor** mappings for supported inverters live under
+**`src/sunsynk/definitions/`**. Each **named definition profile** (loaded via `import_defs` in
+`__init__.py`) corresponds to a **distinct inverter family / register layout**, not a small tweak on
+the same map.
+
+## Building on another profile
+
+Some definitions **reuse another module’s `SENSORS`** and patch or append registers (e.g.
+`single_phase_16kw.py` starts from `single_phase` and overrides selected sensors). That pattern
+means a **large common register set** with **local overrides** — but only where the hardware
+actually matches.
+
+## Single-phase vs three-phase
+
+**Single-phase** (`single_phase.py`, …) and **three-phase** (`three_phase_common.py` plus
+`three_phase_lv.py` / `three_phase_hv.py`) are **not** two views of the same register file: they use
+**different definitions and different register semantics**. When adding or comparing sensors:
+
+- **Do not assume** the same holding register number means the same physical quantity across
+  profiles.
+- Prefer **reading the target profile’s file** end-to-end for that inverter before copying a sensor
+  from another profile.
+
+## Canonical profile names
+
+The add-on / library config string for each profile is listed in **`ALL_DEFS`** in
+`src/sunsynk/definitions/__init__.py` (e.g. `single-phase`, `single-phase-16kw`, `three-phase`,
+`three-phase-hv`). New profiles must be wired there (and in docs / schema as needed).

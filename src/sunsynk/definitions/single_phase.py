@@ -68,37 +68,47 @@ SENSORS += (
     Sensor(192, "Load frequency", HZ, 0.01),
 )
 
-#################
-# AUX / Generator
-#################
+######################
+# AUX / Generator Port
+######################
 SENSORS += (
-    Sensor(166, "AUX power", WATT, -1),
-    # Sensor(166, "Generator Power", WATT, -1),
-    Sensor(181, "AUX voltage", VOLT, 0.1),
-    Sensor(196, "AUX frequency", HZ, 0.1),
+    SelectRWSensor(
+        235,
+        "AUX port usage",
+        "",
+        options={0: "Disable", 1: "Smartload", 2: "Generator"},
+        alias="Generator input",
+    ),
+    Sensor(166, "Gen power", WATT, -1, alias="AUX power"),
+    Sensor(181, "Gen L1 voltage", VOLT, 0.1, alias="AUX L1 voltage"),
+    Sensor(182, "Gen L2 voltage", VOLT, 0.1, alias="AUX L2 voltage"),
+    Sensor(183, "Gen L3 voltage", VOLT, 0.1, alias="AUX L3 voltage"),
+    Sensor(184, "Gen L1 current", AMPS, -0.01, alias="AUX L1 current"),
+    Sensor(185, "Gen L2 current", AMPS, -0.01, alias="AUX L2 current"),
+    Sensor(186, "Gen L3 current", AMPS, -0.01, alias="AUX L3 current"),
 )
 
-#############
-# Solar PV 1
-#############
+#####################
+# MPPT 1 Solar Power
+#####################
 SENSORS += (
     Sensor(186, "PV1 power", WATT, -1),
     Sensor(109, "PV1 voltage", VOLT, 0.1),
     Sensor(110, "PV1 current", AMPS, 0.1),
 )
 
-#############
-# Solar PV 2
-#############
+#####################
+# MPPT2 Solar Power
+#####################
 SENSORS += (
     Sensor(187, "PV2 power", WATT, -1),
     Sensor(111, "PV2 voltage", VOLT, 0.1),
     Sensor(112, "PV2 current", AMPS, 0.1),
 )
 
-#############
-# Solar PV 3
-#############
+#####################
+# MPPT 3 Solar Power
+#####################
 SENSORS += (
     Sensor(188, "PV3 power", WATT, -1),
     Sensor(113, "PV3 voltage", VOLT, 0.1),
@@ -182,9 +192,6 @@ SENSORS += (
     SwitchRWSensor(43, "Inverter enabled", on=1),  # 0=off, 1=on
     Sensor(200, "Control mode"),
     SwitchRWSensor(232, "Grid charge enabled", "", bitmask=1),
-    SelectRWSensor(
-        235, "Generator input", "", options={0: "Disable", 1: "Output", 2: "Input"}
-    ),
     Sensor(312, "Battery charging voltage", VOLT, 0.01),
     Sensor(603, "Bat1 SOC", "%"),
     Sensor(611, "Bat1 Cycle"),

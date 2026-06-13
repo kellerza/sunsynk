@@ -76,7 +76,8 @@ lint.pylint.max-args = 7
 
 [tool.codespell]
 ignore-words-list = "HASS,hass,Hass,ist"
-skip = "data,*.map,package-lock.json,*.map,**/cache/*,**/node_modules/*"
+# Scan roots are the paths on the codespell pre-commit hook (not the whole repo).
+skip = "*.map"
 
 [tool.pyrefly]
 project-includes = [
@@ -99,6 +100,7 @@ warn_unreachable = false
 warn_unused_ignores = true  # Not yet supported in 0.6.0
 
 [tool.rumdl]
+include = [ "**/*.md", "**/*.mdc" ]
 respect-gitignore = true
 extend-enable = [ "MD060" ]  # table formatting
 MD013.severity = "info"

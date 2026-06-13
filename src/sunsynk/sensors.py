@@ -20,6 +20,11 @@ _LOG = logging.getLogger(__name__)
 LOG_TRACE = 15  # logging.addLevelName(LOG_TRACE, "TRACE")
 
 
+def ensure_slugs(alias: str | tuple[str, ...] | None) -> list[str]:
+    """Ensure a list of slugs."""
+    return [slug(n) for n in ensure_tuple(alias)]
+
+
 @dataclass(slots=True, eq=False)
 class Sensor:
     """Sunsynk sensor."""
@@ -32,6 +37,9 @@ class Sensor:
     bitmask: int = 0
     trace: int = 0
     """Whether to trace changes for this sensor."""
+
+    alias: str | tuple[str, ...] | None = None
+    """Alternate name(s); each is registered in ``SensorDefinitions.all`` under ``slug(name)``."""
 
     def __post_init__(self, address0: RegType | int) -> None:
         """Post init."""
@@ -193,12 +201,11 @@ class SensorDefinitions:
 
     def __add__(self, item: Sensor | tuple[Sensor, ...] | list[Sensor]) -> Self:
         """Add new sensors."""
-        if isinstance(item, Sensor):
-            self.all[item.id] = item
-            return self
-        if isinstance(item, (tuple | list)):
-            for itm in item:
-                self.all[itm.id] = itm
+        sensors = item if isinstance(item, (tuple, list)) else [item]
+        for sen in sensors:
+            self.all[sen.id] = sen
+            for aid in ensure_slugs(sen.alias):
+                self.all[aid] = sen
         return self
 
     def copy(self) -> "SensorDefinitions":

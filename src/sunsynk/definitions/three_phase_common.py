@@ -87,20 +87,26 @@ SENSORS += (
     Sensor(655, "Load frequency", "Hz", 0.01),
 )
 
-##############
-# Gen Power
-##############
+######################
+# AUX / Generator Port
+######################
 SENSORS += (
-    Sensor(661, "Gen L1 voltage", VOLT, 0.1),
-    Sensor(662, "Gen L2 voltage", VOLT, 0.1),
-    Sensor(663, "Gen L3 voltage", VOLT, 0.1),
-    Sensor16((664, 668), "Gen L1 power", WATT, -1),
-    Sensor16((665, 669), "Gen L2 power", WATT, -1),
-    Sensor16((666, 670), "Gen L3 power", WATT, -1),
-    Sensor16((667, 671), "Gen power", WATT, -1),
-    Sensor(671, "Gen L1 current", AMPS, -0.01),
-    Sensor(672, "Gen L2 current", AMPS, -0.01),
-    Sensor(673, "Gen L3 current", AMPS, -0.01),
+    SelectRWSensor(
+        133,
+        "AUX port usage",
+        options={0: "Generator", 1: "Smartload", 2: "Micro Inverter"},
+        alias="Generator Port Usage",
+    ),
+    Sensor16((664, 668), "Gen L1 power", WATT, -1, alias="AUX L1 power"),
+    Sensor16((665, 669), "Gen L2 power", WATT, -1, alias="AUX L2 power"),
+    Sensor16((666, 670), "Gen L3 power", WATT, -1, alias="AUX L3 power"),
+    Sensor16((667, 671), "Gen power", WATT, -1, alias="AUX power"),
+    Sensor(661, "Gen L1 voltage", VOLT, 0.1, alias="AUX L1 voltage"),
+    Sensor(662, "Gen L2 voltage", VOLT, 0.1, alias="AUX L2 voltage"),
+    Sensor(663, "Gen L3 voltage", VOLT, 0.1, alias="AUX L3 voltage"),
+    Sensor(671, "Gen L1 current", AMPS, -0.01, alias="AUX L1 current"),
+    Sensor(672, "Gen L2 current", AMPS, -0.01, alias="AUX L2 current"),
+    Sensor(673, "Gen L3 current", AMPS, -0.01, alias="AUX L3 current"),
 )
 
 ####################
@@ -113,9 +119,9 @@ SENSORS += (
     Sensor16((643, 699), "UPS Load total power", WATT, 1),
 )
 
-##############
-# Solar Power
-##############
+###################
+# Power on Outputs
+###################
 SENSORS += (
     MathSensor(
         (672, 673, 674, 675), "PV power", WATT, factors=(1, 1, 1, 1)
@@ -255,11 +261,6 @@ SENSORS += (
     ),
     NumberRWSensor(113, "Battery Resistance", "mΩ", max=6000),
     Sensor(114, "Battery Charge Efficiency", "%", 0.1),
-    SelectRWSensor(
-        133,
-        "Generator Port Usage",
-        options={0: "Generator", 1: "Smartload", 2: "Micro Inverter"},
-    ),
 )
 
 # Absolute min and max voltage based on Deye inverter

@@ -1,5 +1,5 @@
 SENSORS:
- - aux_power # 1PH, 1PH-16kw
+ - aux_power
  - battery_1_soc # 3PH-hv
  - battery_1_voltage # 3PH-hv
  - battery_current # 1PH, 1PH-16kw, 3PH

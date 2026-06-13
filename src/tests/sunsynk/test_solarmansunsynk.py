@@ -3,9 +3,23 @@
 from typing import Any
 from unittest.mock import AsyncMock, patch
 
+import pytest
+
 from sunsynk.solarmansunsynk import SolarmanSunsynk
 
 P_CONNECT = "sunsynk.solarmansunsynk.SolarmanSunsynk.connect"
+
+
+def test_solarman_dongle_serial_zero_is_clear_error() -> None:
+    """Zero must not be reported as a non-integer parse failure."""
+    with pytest.raises(ValueError, match="non-zero integer"):
+        SolarmanSunsynk(port="tcp://127.0.0.1:8899", dongle_serial_number=0)
+
+
+def test_solarman_dongle_serial_invalid_type() -> None:
+    """Non-numeric values get a parse-oriented message."""
+    with pytest.raises(ValueError, match="Got 'abc'"):
+        SolarmanSunsynk(port="tcp://127.0.0.1:8899", dongle_serial_number="abc")  # type: ignore[arg-type]
 
 
 @patch(P_CONNECT, new_callable=AsyncMock)

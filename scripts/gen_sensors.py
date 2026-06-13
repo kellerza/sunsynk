@@ -7,6 +7,7 @@ from pathlib import Path
 from ha_addon_sunsynk_multi.sensor_options import SENSOR_GROUPS
 from sunsynk import RWSensor, Sensor, SensorDefinitions
 from sunsynk.definitions import import_all_defs
+from sunsynk.helpers import ensure_tuple
 from sunsynk.utils import pretty_table, table_data
 
 
@@ -34,13 +35,15 @@ def generate_all_sensors(
             sensors[key]["Group"] = "<br>".join(sorted(sen_groups.get(sen.id, [])))
 
     def getname(row: list[Sensor | str | None]) -> str:
-        """Get the name of the row."""
+        """Get the name of the row (HTML: name, then aliases on separate lines)."""
         for sen in row:
             if not sen or isinstance(sen, str):
                 continue
-            if isinstance(sen, RWSensor):
-                return f"{sen.name} (R/W)"
-            return sen.name
+            base = f"{sen.name} (R/W)" if isinstance(sen, RWSensor) else sen.name
+            aliases = ensure_tuple(sen.alias)
+            if aliases:
+                return "<br>".join((base, *aliases))
+            return base
         return "?"
 
     def get_sensor_info(sensor: Sensor | str | None) -> str:

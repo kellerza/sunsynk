@@ -20,6 +20,7 @@ from sunsynk.sensors import (
     SensorDefinitions,
     SerialSensor,
     TempSensor,
+    ensure_slugs,
 )
 from sunsynk.state import InverterState, group_sensors
 
@@ -189,7 +190,7 @@ def waste(groups: Iterable[list[int]]) -> Sequence[int]:
 def test_ids() -> None:
     """Tests."""
     for name, sen in SENSORS.all.items():
-        assert name == sen.id
+        assert name == sen.id or name in ensure_slugs(sen.alias)
 
         try:
             if sen.factor and sen.factor < 0 and len(sen.address) > 1:
@@ -277,6 +278,26 @@ def test_decode_fault() -> None:
     assert s.reg_to_value(regs) == "F32"
     regs = (0x0, 0x0, 0x1, 0x0)
     assert s.reg_to_value(regs) == "F33"
+
+
+def test_sensor_alias_registered_as_slug() -> None:
+    """String ``alias`` is one alternate name; registry keys match ``slug()`` (config / get_sensors)."""
+    sen = SensorDefinitions()
+    s = Sensor(1, "Gen power", WATT, -1, alias="AUX power")
+    sen += s
+    assert sen.all["gen_power"] is s
+    assert sen.all["aux_power"] is s
+    assert set(sen.all) == {"gen_power", "aux_power"}
+
+
+def test_sensor_alias_tuple() -> None:
+    """Multiple alternate names from a tuple each get a slug key."""
+    sen = SensorDefinitions()
+    s = Sensor(1, "X", WATT, -1, alias=("Alt one", "Alt two"))
+    sen += s
+    assert sen.all["x"] is s
+    assert sen.all["alt_one"] is s
+    assert sen.all["alt_two"] is s
 
 
 def test_source() -> None:
