@@ -67,6 +67,14 @@ The port for RS485 communications, which can be either:
 
   Refer to the [Schedules](./schedules) section for recommended schedule overrides.
   :::
+  ::: tip Shared RS485 bus (one connector, many inverters)
+  You can repeat the **same** `PORT` value for **multiple** `INVERTERS` entries. Each inverter still
+  needs its own **`MODBUS_ID`** (and the usual unique `SERIAL_NR` & `HA_PREFIX`). One physical
+  gateway or shared Modbus bus can then reach every unit on that wire. This is the **recommended**
+  layout when all inverters share a single physical bus: the add-on ensures
+  **only one I/O request is active at a time** on a shared port, which reduces contention compared
+  to several clients fighting the same link.
+  :::
 
 - A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card
   **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)

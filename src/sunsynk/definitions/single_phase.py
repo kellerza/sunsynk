@@ -316,12 +316,12 @@ SENSORS += (
     SelectRWSensor(278, "Prog5 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
     SelectRWSensor(279, "Prog6 mode", options=PROG_MODE_OPTIONS, bitmask=0x1C),
     # Untested
-    SwitchRWSensor(274, "Prog1 sell", bitmask=0x20, on=0x20),
-    SwitchRWSensor(275, "Prog2 sell", bitmask=0x20, on=0x20),
-    SwitchRWSensor(276, "Prog3 sell", bitmask=0x20, on=0x20),
-    SwitchRWSensor(277, "Prog4 sell", bitmask=0x20, on=0x20),
-    SwitchRWSensor(278, "Prog5 sell", bitmask=0x20, on=0x20),
-    SwitchRWSensor(279, "Prog6 sell", bitmask=0x20, on=0x20),
+    # SwitchRWSensor(274, "Prog1 sell", bitmask=0x20, on=0x20),
+    # SwitchRWSensor(275, "Prog2 sell", bitmask=0x20, on=0x20),
+    # SwitchRWSensor(276, "Prog3 sell", bitmask=0x20, on=0x20),
+    # SwitchRWSensor(277, "Prog4 sell", bitmask=0x20, on=0x20),
+    # SwitchRWSensor(278, "Prog5 sell", bitmask=0x20, on=0x20),
+    # SwitchRWSensor(279, "Prog6 sell", bitmask=0x20, on=0x20),
 )
 SENSORS += (
     NumberRWSensor(
