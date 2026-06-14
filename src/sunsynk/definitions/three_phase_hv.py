@@ -50,18 +50,22 @@ SENSORS += (
 ##############
 SENSORS += (
     MathSensor(
-        (672, 673, 674, 675), "PV power", WATT, factors=(10, 10, 10, 10)
-    ),  # pv1,pv2,pv3,pv4 power
+        (672, 673, 674, 675,727, 728, 729, 730), "PV power", WATT, factors=(10, 10, 10, 10,10, 10, 10, 10)
+    ),  # pv1,pv2,pv3,pv4,pv5,pv6,pv7,pv8 power
 )
 
 ################
-# MPPT 1-4 Solar Power
+# MPPT 1-8 Solar Power
 ################
 SENSORS += (
     Sensor(672, "PV1 power", WATT, 10),
     Sensor(673, "PV2 power", WATT, 10),
     Sensor(674, "PV3 power", WATT, 10),
     Sensor(675, "PV4 power", WATT, 10),
+    Sensor(727, "PV5 power", WATT, 10),
+    Sensor(728, "PV6 power", WATT, 10),
+    Sensor(729, "PV7 power", WATT, 10),
+    Sensor(730, "PV8 power", WATT, 10),
 )
 
 
