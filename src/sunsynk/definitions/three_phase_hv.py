@@ -55,7 +55,6 @@ SENSORS += (
         WATT,
         factors=(10, 10, 10, 10, 10, 10, 10, 10),
     ),  # pv1,pv2,pv3,pv4,pv5,pv6,pv7,pv8 power
-    ),  # pv1,pv2,pv3,pv4,pv5,pv6,pv7,pv8 power
 )
 
 ################
