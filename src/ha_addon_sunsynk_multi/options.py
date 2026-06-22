@@ -61,10 +61,15 @@ class Options(MQTTOptions):
         logging.addLevelName(LOG_TRACE, "TRACE")
 
         if self.driver == "umodbus":
-            _LOG.warning("Try *pymodbus* if your encounter any issues with *umodbus*")
+            _LOG.warning("*umodbus* was deprecated. Use *pymodbus* instead.")
+            self.driver = "pymodbus"
 
         for inv in self.inverters:
             inv.ha_prefix = slug(inv.ha_prefix.strip())
+
+            if inv.driver == "umodbus":
+                _LOG.warning("*umodbus* was deprecated. Use *pymodbus* instead.")
+                inv.driver = "pymodbus"
 
             if inv.dongle_serial_number:
                 if inv.driver and inv.driver != "solarman":

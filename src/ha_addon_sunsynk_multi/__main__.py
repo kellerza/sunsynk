@@ -6,6 +6,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from ha_addon_sunsynk_multi.driver import HASS_DISCOVERY_INFO_UPDATE_QUEUE
 from sunsynk import VERSION
 from sunsynk.utils import pretty_table_sensors
 
@@ -53,6 +54,8 @@ async def main_loop() -> int:
     SOPT.init_sensors()
     for ist in STATE:
         ist.init_sensors()
+
+    HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
 
     asyncio.get_event_loop().set_debug(OPT.debug > 0)
 
