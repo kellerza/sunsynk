@@ -11,13 +11,18 @@ COPY sunsynk sunsynk
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # modbus-rs only ships glibc/cp311 wheels, so on this musl + py3.13 base it is
-# built from source. cargo/patchelf are only needed at build time and removed after.
+# built from source. Alpine's rustc lags modbus-rs MSRV (e.g. napi-build needs 1.88),
+# so install stable via rustup; build tools are removed after.
 RUN set -x \
-    && apk add --no-cache --virtual .build-deps cargo patchelf \
+    && apk add --no-cache --virtual .build-deps curl build-base patchelf \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        | sh -s -- -y --profile minimal \
+    && source "$HOME/.cargo/env" \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
         ./sunsynk[modbusrs,solarman] \
-    && apk del .build-deps
+    && apk del .build-deps \
+    && rm -rf "$HOME/.cargo" "$HOME/.rustup"
 
 COPY rootfs /
 COPY VERSION VERSION

@@ -9,12 +9,10 @@ updates:
         patterns:
           - "*"
 
+  # [dependency-groups] dev — bumped locally via uv sync in pre-commit
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "weekly"
-    # groups:
-    #   dev-deps:
-    #     dependency-type: "development"
     allow:
       - dependency-type: "production"
