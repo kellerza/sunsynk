@@ -134,10 +134,8 @@ export default defineConfig({
       copyright: "Apache 2.0 | Copyright © 2021-2025 Johann Kellerman",
     },
 
-    algolia: {
-      appId: "ZZ2YT4M4EY",
-      apiKey: "3fda4c9bd770052e9e3ebeb213af2a82",
-      indexName: "sunsynk",
+    search: {
+      provider: "local",
     },
   },
   markdown: {
