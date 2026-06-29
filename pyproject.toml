@@ -25,7 +25,7 @@ dependencies = [
   "cattrs>=25,<27",
   "mqtt-entity[options]>=1.1",
   "prettytable>=3.17,<4",
-  "pymodbus[serial]==3.11.4",
+  "pymodbus[serial]==3.13.1",
   "whenever>=0.10,<11",
 ]
 optional-dependencies.modbusrs = [ "modbus-rs>=0.15" ]
