@@ -3,45 +3,59 @@ repos:
     hooks:
       - id: lock
         name: lock
-        entry: uv sync --upgrade --all-extras
+        entry: uv sync --upgrade --extra solarman
         language: system
         pass_filenames: false
+        priority: 0
 
       - id: pyproject-fmt
         name: pyproject-fmt
         entry: uv run pyproject-fmt pyproject.toml
         language: system
         pass_filenames: false
+        priority: 10
+
+      - id: rumdl
+        name: rumdl
+        entry: uv run rumdl fmt
+        language: system
+        pass_filenames: false
+        priority: 20
 
       - id: ruff-check
         name: ruff-check
         entry: uv run ruff check --fix --exit-non-zero-on-fix
         language: system
         pass_filenames: false
+        priority: 20
 
       - id: ruff-format
         name: ruff-format
         entry: uv run ruff format --exit-non-zero-on-fix
         language: system
         pass_filenames: false
+        priority: 30
 
       - id: zuban
         name: zuban
         entry: uv run zuban check src
         language: system
         pass_filenames: false
+        priority: 35
 
       - id: codespell
         name: codespell
         entry: uv run codespell --toml pyproject.toml src www/docs www/README.md README.md scripts .github .cursor/rules hass-addon-sunsynk-edge hass-addon-sunsynk-multi hass-addon-mbusd
         language: system
-        pass_filenames: false
+        pass_filenames: true
+        priority: 30
 
       - id: gen_sensors
         name: Generate sensor docs
         entry: uv run scripts/gen_sensors.py
         language: system
         pass_filenames: false
+        priority: 40
 
       - id: pytest
         name: pytest
@@ -49,9 +63,5 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+        priority: 50
 
-      - id: rumdl
-        name: rumdl
-        entry: uv run rumdl fmt
-        language: system
-        pass_filenames: false

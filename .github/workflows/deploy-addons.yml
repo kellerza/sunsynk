@@ -53,6 +53,6 @@ jobs:
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
-      app: hass-addon-sunsynk-multi
+      app-stable: hass-addon-sunsynk-multi
       app-edge: hass-addon-sunsynk-edge
       publish: true

@@ -64,11 +64,10 @@ def init_connector(opt: Options, iopt: InverterOptions) -> None:
         from sunsynk.pysunsynk import PySunsynk  # noqa: PLC0415
 
         factory = PySunsynk
-    elif iopt.driver == "umodbus":
-        from sunsynk.usunsynk import USunsynk  # noqa: PLC0415
+    elif iopt.driver == "modbusrs":
+        from sunsynk.rsunsynk import RSunsynk  # noqa: PLC0415
 
-        factory = USunsynk
-        port_prefix = "serial://"
+        factory = RSunsynk
     elif iopt.driver == "solarman":
         from sunsynk.solarmansunsynk import SolarmanSunsynk  # noqa: PLC0415
 
@@ -77,7 +76,7 @@ def init_connector(opt: Options, iopt: InverterOptions) -> None:
         kwargs["dongle_serial_number"] = iopt.dongle_serial_number
     else:
         raise ValueError(
-            f"Invalid DRIVER: {iopt.driver}. Expected umodbus, pymodbus, solarman"
+            f"Invalid DRIVER: {iopt.driver}. Expected pymodbus, modbusrs, solarman"
         )
 
     if "dongle_serial_number" not in kwargs and iopt.dongle_serial_number:

@@ -10,10 +10,14 @@ ENV PATH="/root/.local/bin/:$PATH"
 COPY sunsynk sunsynk
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# modbus-rs only ships glibc/cp311 wheels, so on this musl + py3.13 base it is
+# built from source. cargo/patchelf are only needed at build time and removed after.
 RUN set -x \
+    && apk add --no-cache --virtual .build-deps cargo patchelf \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
-        ./sunsynk[umodbus,solarman]
+        ./sunsynk[modbusrs,solarman] \
+    && apk del .build-deps
 
 COPY rootfs /
 COPY VERSION VERSION

@@ -136,7 +136,9 @@ Once you have a working connection (reading the serial), consider introducing **
 setup, in this configuration mbus connects to the serial port and the addon connects via TCP,
 typically: `PORT: tcp://homeassistant.local:502`
 
-**mbusd** and the *pymodbus* driver gives the best results.
+**mbusd** and the *pymodbus* driver gives the best results on stable multi. On **dev-edge**, the
+*modbusrs* driver can connect directly to a serial port without mbusd; see
+[configuration](../reference/multi-options#driver).
 
 ### Check line voltage / termination resistor
 

@@ -1,0 +1,4 @@
+# s6-overlay scripts: LF line endings; run/finish must be executable in the image
+**/rootfs/etc/s6-overlay/s6-rc.d/*/run text eol=lf
+**/rootfs/etc/s6-overlay/s6-rc.d/*/finish text eol=lf
+**/rootfs/etc/s6-overlay/s6-rc.d/*/type text eol=lf

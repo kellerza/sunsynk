@@ -6,6 +6,10 @@ configuration:
 
       *pymodbus* is recommended when connected via a RS485/TCP adapter.
 
+      *modbusrs* is a Rust-based driver (modbus-rs). Works over a TCP gateway, and its
+      native Rust serial (RTU) stack may connect directly to a serial port more reliably
+      than *pymodbus* (which often needs mbusd).
+
       With *solarman* you have to reduce the frequency that you read (see schedules).
   INVERTERS:
     name: Inverters
@@ -73,7 +77,7 @@ configuration:
     description: |
       Modbus timeout in seconds for connect and register read/write attempts.
 
-      Default **1** second. Increase if you see spurious timeouts on slow links.
+      Default **10** seconds. Increase if you see spurious timeouts on slow links.
   MQTT_CUSTOM:
     name: Custom MQTT
     description: |

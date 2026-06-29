@@ -2,7 +2,16 @@
 
 ## Driver
 
-- `DRIVER` – pick one of **pymodbus** or **solarman**. **umodbus** can be used as a last resort.
+- `DRIVER` – pick one of **pymodbus**, **solarman**, or (dev-edge) **modbusrs**.
+
+  Legacy configs with **umodbus** are remapped to **pymodbus** at startup (log warning). For direct
+  serial, **modbusrs** is the recommended replacement on dev-edge (see below).
+
+  - <i-mdi-dev-to class="vp-edge-option-icon" /> **`modbusrs`** – Rust-backed driver
+    ([modbus-rs](https://pypi.org/project/modbus-rs/)). Use with `tcp://` toward a gateway, or
+    connect **directly** to a serial port (`/dev/ttyUSB0`) more reliably than `pymodbus` (which
+    often needs [mbusd](../guide/mbusd)). `serial-tcp://` / `serial-udp://` (RTU-over-TCP/UDP) are
+    not supported — use `pymodbus` for those.
 
 - `READ_SENSOR_BATCH_SIZE` – specifies how many registers may be read in a single request. Devices
   like the USR only allows 8 registers to be read. When using mbusd this can be much higher.
@@ -12,8 +21,7 @@
   read exactly what you are looking for in multiple requests.
 
 - `TIMEOUT` – Modbus timeout in **seconds** for connect and register read/write attempts. Default
-  **10** in sunsynk-multi. The dev-edge add-on defaults to **1** second for faster failure on busy
-  RS485 lines; increase it if you see spurious timeouts.
+  **10**; increase it if you see spurious timeouts on slow links.
 
 ## Inverters
 
@@ -85,24 +93,29 @@ The port for RS485 communications, which can be either:
     - PORT: /dev/ttyUSB0
   ```
 
+  ::: details Direct serial with modbusrs (dev-edge)
+  On dev-edge, **`modbusrs`** can talk RTU on a local serial port without mbusd:
+
+  ```yaml
+  DRIVER: modbusrs
+  INVERTERS:
+    - PORT: /dev/ttyUSB0
+  ```
+
+  Or via TCP through mbusd:
+
+  ```yaml
+  DRIVER: modbusrs
+  INVERTERS:
+    - PORT: tcp://homeassistant.local:502
+  ```
+
+  :::
   ::: tip This repository contains a [mbusd](../guide/mbusd) add-on, a very reliable Modbus TCP to
   Modbus RTU gateway.
 
   If you have any issues connecting directly to a serial port, please try mbusd - also see
   [this](https://github.com/kellerza/sunsynk/issues/131) issue
-  :::
-  ::: details umodbus driver
-  The driver can also be umodbus, but this should be used as a last resort only, especially for
-  serial connections.
-
-  umodbus requires a `serial://` prefix
-
-  ```yaml
-  DRIVER: umodbus
-  INVERTERS:
-    - PORT: serial:///dev/ttyUSB0
-  ```
-
   :::
 
 - For the first inverter in the list, you can use an empty string. The serial port selected under
@@ -112,8 +125,6 @@ The port for RS485 communications, which can be either:
   INVERTERS:
     - PORT: ""
   ```
-
-- umodbus supports an RFC2217 compatible port (e.g. `tcp://homeassistant.local:6610`)
 
 ## Sensors
 

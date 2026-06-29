@@ -46,16 +46,16 @@ options:
       CHANGE_PERCENT: 0
   NUMBER_ENTITY_MODE: "auto"
   PROG_TIME_INTERVAL: 15
-  TIMEOUT: 1
+  TIMEOUT: 10
 schema:
-  DRIVER: list(pymodbus|umodbus|solarman)
+  DRIVER: list(pymodbus|modbusrs|solarman)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
       MODBUS_ID: int(1,16)
       DONGLE_SERIAL_NUMBER: str?
       PORT: str
-      DRIVER: list(pymodbus|umodbus|solarman)?
+      DRIVER: list(pymodbus|modbusrs|solarman)?
   SENSOR_DEFINITIONS: list(single-phase|single-phase-16kw|three-phase|three-phase-hv)
   SENSOR_OVERRIDES:
     - "match(^[a-z0-9_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"

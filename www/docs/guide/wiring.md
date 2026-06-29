@@ -139,7 +139,7 @@ Other tested adaptors
    as in the example below.
 
    > NOTE: The resistor legs should be trimmed to a more reasonable length to ensure they don't
-   accidentally short together.
+accidentally short together.
 
    ![120ohm](../images/usr-w630-120ohm.jpg =200x200)
 

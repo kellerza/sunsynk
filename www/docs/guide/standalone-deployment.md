@@ -16,7 +16,7 @@ In these example commands we prefix the `docker-compose build` commands with the
 variable definition `BUILD_FROM=...`, which specifies which base image is used. For a Raspberry Pi
 you would need to use `BUILD_FROM=ghcr.io/home-assistant/armhf-base-python:3.12`, and for a 64bit PC
 you would use `BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12`. A list of available base
-images can be found in `hass-addon-sunsynk-multi/build.yaml` and `hass-addon-mbusd/build.yaml`. Use
+images can be found in `hass-addon-sunsynk-edge/Dockerfile` and `hass-addon-mbusd/build.yaml`. Use
 the one that is most appropriate for your host computer.
 
 ### Sunsynk Multi
@@ -190,7 +190,8 @@ services:
 * **MQTT_PASSWORD**: The password for the MQTT broker.
 * **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes
   when using the `s6` init system.
-* **DRIVER**: The driver to use for modbus communication (e.g., `pymodbus`, `umodbus`).
+* **DRIVER**: The driver to use for modbus communication (`pymodbus`, `solarman`, or `modbusrs` with
+  `pip install sunsynk[modbusrs]`).
 * **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values
   for `SERIAL_NR`, `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
 * **SCHEDULES**: A JSON string representing the schedules for sensor reading and reporting.

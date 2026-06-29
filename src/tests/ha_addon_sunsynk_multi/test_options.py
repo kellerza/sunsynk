@@ -52,6 +52,27 @@ def test_load_env_bad() -> None:
 
 
 @patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")
+async def test_umodbus_remap(mock_init: MagicMock) -> None:
+    """Legacy umodbus driver and serial:// ports are migrated to pymodbus."""
+    OPT.load_dict(
+        {
+            "driver": "umodbus",
+            "inverters": [
+                {
+                    "ha_prefix": "inv1",
+                    "port": "serial:///dev/ttyUSB0",
+                    "serial_nr": "1",
+                }
+            ],
+        }
+    )
+    await OPT.init_addon()
+    assert OPT.driver == "pymodbus"
+    assert OPT.inverters[0].driver == ""
+    assert OPT.inverters[0].port == "/dev/ttyUSB0"
+
+
+@patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")
 async def test_unique(mock_init: MagicMock) -> None:
     """Tests."""
     invs = [

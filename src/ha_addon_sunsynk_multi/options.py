@@ -2,6 +2,7 @@
 
 import logging
 from dataclasses import dataclass, field
+from urllib.parse import urlparse
 
 from mqtt_entity.options import CONVERTER, MQTTOptions
 from whenever import Time
@@ -12,6 +13,26 @@ from sunsynk.sensors import LOG_TRACE
 from .timer_schedule import Schedule
 
 _LOG = logging.getLogger(__name__)
+
+
+def _normalize_legacy_port(port: str) -> str:
+    """Strip legacy umodbus ``serial://`` prefix for pymodbus."""
+    parsed = urlparse(port)
+    if parsed.scheme == "serial" and parsed.path:
+        return parsed.path
+    return port
+
+
+def _remap_umodbus_driver(driver: str) -> str:
+    """Map removed umodbus driver to pymodbus."""
+    if driver == "umodbus":
+        _LOG.warning(
+            "*umodbus* was removed; using *pymodbus* instead. "
+            "For direct serial on dev-edge, use DRIVER: modbusrs, or mbusd with pymodbus. "
+            "Update DRIVER in your configuration."
+        )
+        return "pymodbus"
+    return driver
 
 
 @dataclass
@@ -42,7 +63,7 @@ class Options(MQTTOptions):
     read_allow_gap: int = 2
     read_sensors_batch_size: int = 20
     schedules: list[Schedule] = field(default_factory=list)
-    timeout: int = 1
+    timeout: int = 10
 
     stale_inverter_after_seconds: int = 60
     """Grace window (seconds) after each successful read: if failures continue past this deadline, enter stale quiet."""
@@ -60,16 +81,23 @@ class Options(MQTTOptions):
         await super().init_addon()
         logging.addLevelName(LOG_TRACE, "TRACE")
 
-        if self.driver == "umodbus":
-            _LOG.warning("*umodbus* was deprecated. Use *pymodbus* instead.")
-            self.driver = "pymodbus"
+        self.driver = _remap_umodbus_driver(self.driver)
 
         for inv in self.inverters:
             inv.ha_prefix = slug(inv.ha_prefix.strip())
 
-            if inv.driver == "umodbus":
-                _LOG.warning("*umodbus* was deprecated. Use *pymodbus* instead.")
-                inv.driver = "pymodbus"
+            inv.driver = _remap_umodbus_driver(inv.driver) if inv.driver else inv.driver
+
+            if inv.port:
+                normalized = _normalize_legacy_port(inv.port)
+                if normalized != inv.port:
+                    _LOG.warning(
+                        "%s: Normalized legacy port %r to %r for pymodbus",
+                        inv.ha_prefix or inv.serial_nr,
+                        inv.port,
+                        normalized,
+                    )
+                    inv.port = normalized
 
             if inv.dongle_serial_number:
                 if inv.driver and inv.driver != "solarman":
@@ -80,9 +108,16 @@ class Options(MQTTOptions):
                 inv.driver = "solarman"
 
             if not inv.port or inv.port.lower().startswith(("serial:", "/dev")):
-                _LOG.warning(
-                    "Use mbusd instead of connecting directly to a serial port"
-                )
+                active_driver = inv.driver or self.driver
+                if active_driver == "pymodbus":
+                    _LOG.warning(
+                        "Use mbusd with pymodbus for serial, or DRIVER: modbusrs "
+                        "(dev-edge) for direct serial"
+                    )
+                elif active_driver != "modbusrs":
+                    _LOG.warning(
+                        "Use mbusd instead of connecting directly to a serial port"
+                    )
 
             if not inv.port:
                 _LOG.warning(

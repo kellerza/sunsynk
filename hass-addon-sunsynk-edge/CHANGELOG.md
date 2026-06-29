@@ -37,6 +37,14 @@ All items below are changes since add-on **0.10.1** (stable release on GitHub `m
 - **`DONGLE_SERIAL_NUMBER` (Solarman)** – Clearer **validation and logging** for the Wi-Fi dongle
   serial (non-zero integer, driver consistency, ignored values on non-Solarman drivers)—see
   [#641](https://github.com/kellerza/sunsynk/issues/641).
+- **`umodbus` driver removed** – The **umodbus** Modbus driver and its dependencies are gone.
+  Configurations that still set `DRIVER: umodbus` are remapped to **pymodbus** at startup with a log
+  warning; legacy `serial:///dev/...` ports are normalized to `/dev/...`. For direct serial, use
+  **`modbusrs`** (dev-edge) or **mbusd** with **pymodbus**.
+- **`modbusrs` driver (dev-edge)** – Rust-backed Modbus via
+  [modbus-rs](https://pypi.org/project/modbus-rs/). Supports `tcp://` gateways and direct serial
+  (`/dev/ttyUSB0`). Optional extra `pip install sunsynk[modbusrs]`; included in the dev-edge add-on
+  image. See reference docs.
 
 ### Sensor definitions
 

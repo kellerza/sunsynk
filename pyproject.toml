@@ -28,8 +28,8 @@ dependencies = [
   "pymodbus[serial]==3.11.4",
   "whenever>=0.10,<11",
 ]
+optional-dependencies.modbusrs = [ "modbus-rs>=0.15" ]
 optional-dependencies.solarman = [ "pysolarmanv5==3.0.6" ]
-optional-dependencies.umodbus = [ "async-modbus==0.2.3", "connio==0.2", "umodbus==1.0.4" ]
 urls.Homepage = "https://kellerza.github.io/sunsynk/"
 urls.Source = "https://github.com/kellerza/sunsynk"
 
@@ -89,6 +89,9 @@ ini_options.testpaths = "src\tests"
 ini_options.pythonpath = [ ".", "src" ]
 ini_options.norecursedirs = [ ".git", "modules" ]
 ini_options.addopts = "--cov=src --cov-report xml:cov.xml"
+ini_options.markers = [
+  "modbusrs: requires sunsynk[modbusrs] (modbus-rs package)",
+]
 ini_options.filterwarnings = "ignore:.+@coroutine.+deprecated.+"
 ini_options.log_cli = true
 ini_options.log_cli_level = "DEBUG"
@@ -103,6 +106,7 @@ warn_unused_ignores = true  # Not yet supported in 0.6.0
 include = [ "**/*.md", "**/*.mdc" ]
 respect-gitignore = true
 extend-enable = [ "MD060" ]  # table formatting
+extend-disable = [ "MD042" ]
 MD013.severity = "info"
 MD013.line-length = 100
 MD013.code_blocks = false
