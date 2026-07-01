@@ -23,7 +23,7 @@ jobs:
     #secrets: inherit
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7
         with:
           # Shallow checkout (default depth 1) breaks tj-actions/changed-files on
           # release events: it needs prior tags/commits to diff the new tag.
