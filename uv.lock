@@ -621,11 +621,11 @@ wheels = [
 
 [[package]]
 name = "pymodbus"
-version = "3.11.4"
+version = "3.14.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/2a/af/bbb716301ab9c60f0702c3cdf72cc0e373286a5648fe16bc4431400489dc/pymodbus-3.11.4.tar.gz", hash = "sha256:6910e385cb6b2f983cd457e9ecee2ff580dbb23cf3d84aefec0845e71edd606a", size = 163422, upload-time = "2025-11-30T10:36:33.717Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/55/ea2a6bb2e61926013df736cf7bba2405caafad36ab919bc6104c3cad1ea0/pymodbus-3.14.0.tar.gz", hash = "sha256:f1f486ec45b77b7565c5168c9609e244a4a6428d386f3cff56eb85a2297cd10c", size = 165886, upload-time = "2026-07-12T14:22:48.02Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/80/84c32440949c77f2c201c38e5fa56fd8f19da31bf24df55bdbdaba67767c/pymodbus-3.11.4-py3-none-any.whl", hash = "sha256:89865929f53bd5e32b4076dde00ee86d9b8afb1686832ed74e69d55df22729c3", size = 166002, upload-time = "2025-11-30T10:36:31.992Z" },
+    { url = "https://files.pythonhosted.org/packages/22/18/614c8e62787b5057317c1f59e632ee842717c169f4d27440b724ade19d9f/pymodbus-3.14.0-py3-none-any.whl", hash = "sha256:408f7a9594073a979e7749f0225508b8491ef74fa1979c81011dee96a7a7570c", size = 166539, upload-time = "2026-07-12T14:22:46.391Z" },
 ]
 
 [package.optional-dependencies]
@@ -866,7 +866,7 @@ requires-dist = [
     { name = "modbus-rs", marker = "extra == 'modbusrs'", specifier = ">=0.15" },
     { name = "mqtt-entity", extras = ["options"], specifier = ">=1.1" },
     { name = "prettytable", specifier = ">=3.17,<4" },
-    { name = "pymodbus", extras = ["serial"], specifier = "==3.11.4" },
+    { name = "pymodbus", extras = ["serial"], specifier = "==3.14.0" },
     { name = "pysolarmanv5", marker = "extra == 'solarman'", specifier = "==3.0.6" },
     { name = "whenever", specifier = ">=0.10,<11" },
 ]
