@@ -137,3 +137,34 @@ async def test_ss_read_sensors(rhr: MagicMock, state: InverterState) -> None:
     with pytest.raises(ExceptionGroup) as excinfo:
         await ss.read_sensors(sensors)
     assert len(excinfo.value.exceptions) == 2
+
+
+@pytest.mark.parametrize("response", ([9], [9, 8, 7]))
+@patch("sunsynk.Sunsynk.read_holding_registers")
+async def test_ss_rejects_response_length_mismatch(
+    rhr: MagicMock,
+    response: list[int],
+    state: InverterState,
+) -> None:
+    """A malformed response must not mix new words with cached registers."""
+    ss = Sunsynk()
+    ss.state = state
+    single = Sensor(1, "Single")
+    pair = Sensor((10, 11), "Pair")
+    state.track(single, pair)
+    state.update({10: 0, 11: 7})
+
+    def rhr_side_effect(start: int, length: int) -> Sequence[int]:
+        return [5] if (start, length) == (1, 1) else response
+
+    rhr.side_effect = rhr_side_effect
+    with pytest.raises(ExceptionGroup) as excinfo:
+        await ss.read_sensors([single, pair])
+
+    assert len(excinfo.value.exceptions) == 1
+    assert str(excinfo.value.exceptions[0]) == (
+        f"response length mismatch reading 2 registers from 10: got {len(response)}"
+    )
+    assert state[single] == 5
+    assert state[pair] == 7 << 16
+    assert state.registers == {1: 5, 10: 0, 11: 7}
