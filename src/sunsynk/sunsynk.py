@@ -116,11 +116,17 @@ class Sunsynk:
                 )
                 continue
 
+            if len(r_r) != glen:
+                errs.append(
+                    OSError(
+                        f"response length mismatch reading {glen} registers from "
+                        f"{grp[0]}: got {len(r_r)}"
+                    )
+                )
+                continue
+
             regs = register_map(grp[0], r_r)
             new_regs.update(regs)
-
-            if len(r_r) != glen:
-                _LOG.warning("Did not complete read, only read %s/%s", len(r_r), glen)
 
             _LOG.debug(
                 "Request registers: %s glen=%d. Response %s len=%d. regs=%s",
