@@ -354,9 +354,9 @@ wheels = [
 
 [[package]]
 name = "modbus-rs"
-version = "0.15.2"
+version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/34/d1/90a2532dd15541628e8cf518612a2ab42d69309b1fc64974df1edbaae60e/modbus_rs-0.15.2.tar.gz", hash = "sha256:55fe40a3ec0bd74d6950ae8ea488a6f6719520fde465d450730a4bb652c1710a", size = 5283468, upload-time = "2026-06-28T11:18:16.194Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/6e/59e47072eff9cb2005c4811064680aa72ac974285b5b81f6fa353f31c15d/modbus_rs-0.16.0.tar.gz", hash = "sha256:0e482e68dff4719be93fcc85adcb481a7797e7b3922f38b00578b8962c640aec", size = 5314370, upload-time = "2026-07-30T07:20:57.757Z" }
 
 [[package]]
 name = "mqtt-entity"
