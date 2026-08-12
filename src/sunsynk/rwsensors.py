@@ -231,17 +231,20 @@ class TimeRWSensor(RWSensor):
 
     def available_values(self, step_minutes: int, state: InverterState) -> list[str]:
         """Get the available values for this sensor."""
-        day = list(range(0, 24 * 60, step_minutes))
+        day = list(range(0, 48 * 60, step_minutes))
         minv = SSTime(strv=str(state.get(self.min, "0:00"))).minutes if self.min else 0
         maxv = SSTime(strv=str(state.get(self.max, "0:00"))).minutes if self.max else 0
-        if minv >= maxv:
+        wraps_midnight = minv >= maxv
+        if wraps_midnight:
             maxv += 24 * 60
         opt = [minv, *[v for v in day if (v > minv and v < maxv)], maxv]
         val = SSTime(strv=str(state.get(self, "0:00"))).minutes
+        if wraps_midnight and val < minv:
+            val += 24 * 60
         if val not in opt:
             opt.append(val)
         opt.sort()
-        return [SSTime(minutes=m).str_value for m in opt]
+        return list(dict.fromkeys(SSTime(minutes=m).str_value for m in opt))
 
     @property
     def dependencies(self) -> list[Sensor]:
