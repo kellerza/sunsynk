@@ -249,6 +249,21 @@ def test_time_rw(state: InverterState) -> None:
     assert s.available_values(15, state) == ["2:03", "2:10", "2:15", "2:22"]
 
 
+def test_time_rw_wrap_over_midnight() -> None:
+    """A time sensor whose window wraps past midnight offers the wrapped slots."""
+    state = InverterState()
+    sensor = TimeRWSensor(60, "prog1", factor=0.1)
+    sensor.min = TimeRWSensor(50, "prog6", factor=0.1)
+    sensor.max = TimeRWSensor(70, "prog2", factor=0.1)
+    state.track(sensor, sensor.min, sensor.max)
+    state.update({50: 2300, 60: 100, 70: 500})
+
+    values = sensor.available_values(60, state)
+
+    assert values == ["23:00", "0:00", "1:00", "2:00", "3:00", "4:00", "5:00"]
+    assert len(values) == len(set(values))
+
+
 # def test_update_sensor(caplog) -> None:
 #     s = NumberRWSensor(60, "two", factor=0.1)
 #     assert s.value is None
