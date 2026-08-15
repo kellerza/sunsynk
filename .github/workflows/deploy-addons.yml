@@ -56,3 +56,4 @@ jobs:
       app-stable: hass-addon-sunsynk-multi
       app-edge: hass-addon-sunsynk-edge
       publish: true
+

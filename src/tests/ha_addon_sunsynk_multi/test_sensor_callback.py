@@ -51,7 +51,7 @@ async def test_build_callback_schedule() -> None:
 
         def call_count() -> tuple[int, int, int]:
             return (  # type: ignore[attr-defined]
-                ist.connector[0].connect.call_count,  # type: ignore[attr-defined]
+                ist.inv.connect.call_count,  # type: ignore[attr-defined]
                 ist.read_sensors.call_count,  # type: ignore[attr-defined]
                 ist.publish_sensors.call_count,  # type: ignore[attr-defined]
             )

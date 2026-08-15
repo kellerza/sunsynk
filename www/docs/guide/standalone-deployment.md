@@ -27,7 +27,6 @@ Create your own `options.yaml` file with the following content:
 
 ```yaml
 ---
-DRIVER: "pymodbus"
 INVERTERS:
   - SERIAL_NR: "007"
     HA_PREFIX: SS
@@ -170,7 +169,6 @@ services:
       MQTT_USERNAME: ${MQTT_USER}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
       S6_KEEP_ENV: 1
-      DRIVER: "pymodbus"
       SENSOR_DEFINITIONS: "single-phase"
       SENSORS: '["energy_management", "power_flow_card", "pv2_power"]'
       SENSORS_FIRST_INVERTER: '["settings"]'
@@ -178,7 +176,7 @@ services:
       READ_ALLOW_GAP: 2
       READ_SENSORS_BATCH_SIZE: 20
       NUMBER_ENTITY_MODE: "auto"
-      INVERTERS: '[{"SERIAL_NR":"1234567890","HA_PREFIX":"SUN-10k-dsaxz","MODBUS_ID":1,"DONGLE_SERIAL_NUMBER":"1234567890","PORT":"tcp://192.168.1.123:8899"}]'
+      INVERTERS: '[{"SERIAL_NR":"1234567890","HA_PREFIX":"SUN-10k-dsaxz","MODBUS_ID":1,"DONGLE_SERIAL_NUMBER":"1234567890","PORT":"solarman://192.168.1.123:8899"}]'
       SCHEDULES: '[{"key":"w","read_every":5,"report_every":60,"change_by":80,"change_percent":0,"change_any":0}]'
 ```
 
@@ -190,10 +188,10 @@ services:
 * **MQTT_PASSWORD**: The password for the MQTT broker.
 * **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes
   when using the `s6` init system.
-* **DRIVER**: The driver to use for modbus communication (`pymodbus`, `solarman`, or `modbusrs` with
-  `pip install sunsynk[modbusrs]`).
 * **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values
   for `SERIAL_NR`, `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
+  Use `PORT: solarman://host:8899` (plus dongle serial) for Solarman; otherwise `tcp://`,
+  `serial-tcp://`, `udp://`, or a serial device path.
 * **SCHEDULES**: A JSON string representing the schedules for sensor reading and reporting.
 * **Other Configuration Options**: Any other configuration option that is typically defined in
   `options.yaml` can be passed as an environment variable. The keys from `options.yaml` should be

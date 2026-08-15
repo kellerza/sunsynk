@@ -1,16 +1,4 @@
 configuration:
-  DRIVER:
-    name: Inverter Driver
-    description: |
-      The inverter driver to use.
-
-      *pymodbus* is recommended when connected via a RS485/TCP adapter.
-
-      *modbusrs* is a Rust-based driver (modbus-rs). Works over a TCP gateway, and its
-      native Rust serial (RTU) stack may connect directly to a serial port more reliably
-      than *pymodbus* (which often needs mbusd).
-
-      With *solarman* you have to reduce the frequency that you read (see schedules).
   INVERTERS:
     name: Inverters
     description: |
@@ -20,9 +8,9 @@ configuration:
 
       If PORT is a blank string "" the selected DEBUG_DEVICE will be used.
 
-      Only the solarman driver requires the DONGLE_SERIAL_NUMBER.
-
-      Optional **DRIVER** per inverter overrides the global driver for that inverter.
+      Use PORT `solarman://host:8899` plus DONGLE_SERIAL_NUMBER for a
+      Solarman Wi-Fi dongle. Otherwise use tcp://, serial-tcp://, udp://,
+      or a serial device path (tmodbus).
   SENSOR_DEFINITIONS:
     name: Sensor definitions
     description: ""

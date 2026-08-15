@@ -1,13 +1,12 @@
 """Addon fixtures."""
 
-import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 from mqtt_entity import MQTTDevice
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter, InverterOptions
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
-from sunsynk.sunsynk import InverterState
+from sunsynk.sunsynk import InverterState, Sunsynk
 
 NOSCHEDULE = Schedule("no_unit", read_every=1, report_every=1)
 
@@ -24,6 +23,10 @@ def ist_factory(
     state.historynn = MagicMock()
     state.history = MagicMock()
 
+    mock_inv = MagicMock(spec=Sunsynk)
+    mock_inv.connect = AsyncMock()
+    mock_inv.timeouts = 0
+
     res = AInverter(
         index=0,
         opt=InverterOptions(
@@ -31,13 +34,12 @@ def ist_factory(
             serial_nr=serial,
             modbus_id=modbus_id,
             port=port,
-            driver="",
         ),
+        inv=mock_inv,
         mqtt_dev=MQTTDevice(identifiers=[("serial_number", serial)], components={}),
         state=state,  # type:ignore[arg-type]
     )
 
-    res.connectors[(port, "")] = (AsyncMock(), asyncio.Lock())
     res.read_sensors = AsyncMock()  # type: ignore[method-assign]
     res.publish_sensors = AsyncMock()  # type: ignore[method-assign]
     # Poll callback only runs Modbus when lifecycle is running (see sensor_callback).

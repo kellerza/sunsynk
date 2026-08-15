@@ -80,7 +80,7 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
             if ist.lifecycle != "running":
                 return
 
-        await ist.connector[0].connect()  # Check that we are connected #395
+        await ist.inv.connect()  # Check that we are connected #395
 
         # Flush pending writes
         while ist.write_queue:

@@ -15,10 +15,9 @@ arch:
   - amd64
 map:
   - share:rw
-  - addon_config:rw
+  - app_config:rw
   - share:rw
 options:
-  DRIVER: "pymodbus"
   INVERTERS:
     - SERIAL_NR: "007"
       HA_PREFIX: SS
@@ -48,14 +47,12 @@ options:
   PROG_TIME_INTERVAL: 15
   TIMEOUT: 10
 schema:
-  DRIVER: list(pymodbus|modbusrs|solarman)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
       MODBUS_ID: int(1,16)
       DONGLE_SERIAL_NUMBER: str?
       PORT: str
-      DRIVER: list(pymodbus|modbusrs|solarman)?
   SENSOR_DEFINITIONS: list(single-phase|single-phase-16kw|three-phase|three-phase-hv)
   SENSOR_OVERRIDES:
     - "match(^[a-z0-9_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"

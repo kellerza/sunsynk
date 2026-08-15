@@ -6,6 +6,20 @@
 
 All items below are changes since add-on **0.10.1** (stable release on GitHub `main`).
 
+### Major changes
+
+The following are major changes, but should accept and convert older configuration:
+
+- The `DRIVER` option is obsolete (ignored with a warning); leftover `DRIVER: solarman` / non-zero
+  dongle serial with `tcp://` remaps to `solarman://`. Legacy `serial:///dev/...` ports normalize to
+  `/dev/...`.
+- **PORT selects transport** – Modbus uses `tcp://`, `serial-tcp://`, `udp://`, or a serial device
+  path (tmodbus). Solarman uses `solarman://host:8899` plus `DONGLE_SERIAL_NUMBER`.
+- **Modbus underlay** – Holding-register I/O uses
+  [modbus-connection](https://home-assistant-libs.github.io/modbus-connection/); Multi-inverter
+  setups share one connection per port, all locaks controlled by the modbus connection. This
+  replaces pymodbus, umosbus and modbusrs with the underlying tmodbus driver.
+
 ### GitHub issues (in progress)
 
 - [#639](https://github.com/kellerza/sunsynk/issues/639) – Loss of communication with one inverter
@@ -37,14 +51,6 @@ All items below are changes since add-on **0.10.1** (stable release on GitHub `m
 - **`DONGLE_SERIAL_NUMBER` (Solarman)** – Clearer **validation and logging** for the Wi-Fi dongle
   serial (non-zero integer, driver consistency, ignored values on non-Solarman drivers)—see
   [#641](https://github.com/kellerza/sunsynk/issues/641).
-- **`umodbus` driver removed** – The **umodbus** Modbus driver and its dependencies are gone.
-  Configurations that still set `DRIVER: umodbus` are remapped to **pymodbus** at startup with a log
-  warning; legacy `serial:///dev/...` ports are normalized to `/dev/...`. For direct serial, use
-  **`modbusrs`** (dev-edge) or **mbusd** with **pymodbus**.
-- **`modbusrs` driver (dev-edge)** – Rust-backed Modbus via
-  [modbus-rs](https://pypi.org/project/modbus-rs/). Supports `tcp://` gateways and direct serial
-  (`/dev/ttyUSB0`). Optional extra `pip install sunsynk[modbusrs]`; included in the dev-edge add-on
-  image. See reference docs.
 
 ### Sensor definitions
 

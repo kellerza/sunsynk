@@ -17,15 +17,9 @@ pytestmark = pytest.mark.asyncio
 _LOG = logging.getLogger(__name__)
 
 
-async def test_ss_not_implemented() -> None:
-    """Tests."""
-    ss = Sunsynk()
-    with pytest.raises(NotImplementedError):
-        await ss.connect()
-    with pytest.raises(NotImplementedError):
-        await ss.write_register(address=1, value=1)
-    with pytest.raises(NotImplementedError):
-        await ss.read_holding_registers(1, 1)
+def _ss(**kwargs: object) -> Sunsynk:
+    """Sunsynk with a dummy unit."""
+    return Sunsynk(unit=MagicMock(), **kwargs)  # type: ignore[arg-type]
 
 
 @patch("sunsynk.Sunsynk.read_holding_registers")
@@ -37,7 +31,7 @@ async def test_ss_write_sensor(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Tests."""
-    ss = Sunsynk()
+    ss = _ss()
     ss.state = state
 
     sen = NumberRWSensor((1,), "s1")
@@ -73,7 +67,7 @@ async def test_ss_write_sensor_bm(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Tests."""
-    ss = Sunsynk()
+    ss = _ss()
     ss.state = state
 
     sen = NumberRWSensor((1,), "s1", bitmask=0x10)
@@ -99,7 +93,7 @@ async def test_ss_write_sensor_bm(
 @patch("sunsynk.Sunsynk.read_holding_registers")
 async def test_ss_read_sensors(rhr: MagicMock, state: InverterState) -> None:
     """Tests."""
-    ss = Sunsynk()
+    ss = _ss()
     ss.state = state
     sensors = [
         NumberRWSensor((1,), "One", min=1, max=10),
@@ -147,7 +141,7 @@ async def test_ss_rejects_response_length_mismatch(
     state: InverterState,
 ) -> None:
     """A malformed response must not mix new words with cached registers."""
-    ss = Sunsynk()
+    ss = _ss()
     ss.state = state
     single = Sensor(1, "Single")
     pair = Sensor((10, 11), "Pair")

@@ -121,8 +121,8 @@ Other tested adaptors
 
 1. Waveshare RS232/485/422 TO POE ETH (B)
 
-   [Waveshare shop](https://www.waveshare.com/product/iot-communication/wired-comm-converter/ethernet-to-uart-rs232-rs485/rs232-485-422-to-poe-eth-b.htm)
-   | [Waveshare wiki](https://www.waveshare.com/wiki/RS232/485/422_TO_POE_ETH_(B))
+   [Waveshare shop](https://www.waveshare.com/product/iot-communication/wired-comm-converter/ethernet-to-uart-rs232-rs485/rs232-485-422-to-poe-eth-b.htm) |
+   [Waveshare wiki](https://www.waveshare.com/wiki/RS232/485/422_TO_POE_ETH_(B))
 
    This device can connect via RS485 or directly to the DB9 (RS232) port.
 

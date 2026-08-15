@@ -52,11 +52,11 @@ def test_load_env_bad() -> None:
 
 
 @patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")
-async def test_umodbus_remap(mock_init: MagicMock) -> None:
-    """Legacy umodbus driver and serial:// ports are migrated to pymodbus."""
+async def test_legacy_port_migration(mock_init: MagicMock) -> None:
+    """Legacy DRIVER / serial:// / tcp+dongle migrate via PORT schemes."""
     OPT.load_dict(
         {
-            "driver": "umodbus",
+            "driver": "pymodbus",
             "inverters": [
                 {
                     "ha_prefix": "inv1",
@@ -67,9 +67,38 @@ async def test_umodbus_remap(mock_init: MagicMock) -> None:
         }
     )
     await OPT.init_addon()
-    assert OPT.driver == "pymodbus"
-    assert OPT.inverters[0].driver == ""
     assert OPT.inverters[0].port == "/dev/ttyUSB0"
+
+    OPT.load_dict(
+        {
+            "driver": "solarman",
+            "inverters": [
+                {
+                    "ha_prefix": "inv1",
+                    "port": "tcp://192.168.1.182:8899",
+                    "serial_nr": "1",
+                    "dongle_serial_number": 1,
+                }
+            ],
+        }
+    )
+    await OPT.init_addon()
+    assert OPT.inverters[0].port == "solarman://192.168.1.182:8899"
+
+    OPT.load_dict(
+        {
+            "inverters": [
+                {
+                    "ha_prefix": "inv1",
+                    "port": "tcp://192.168.1.182:8899",
+                    "serial_nr": "1",
+                    "dongle_serial_number": 99,
+                }
+            ],
+        }
+    )
+    await OPT.init_addon()
+    assert OPT.inverters[0].port == "solarman://192.168.1.182:8899"
 
 
 @patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")

@@ -2,12 +2,18 @@
 """Run the addon."""
 
 import logging
+from typing import cast
+
+from modbus_connection.tmodbus import ModbusConnection
 
 from sunsynk import Sensor, Sunsynk, ValType
+from sunsynk.connection import open_connection
+from sunsynk.solarman import SolarmanUnit
+from sunsynk.sunsynk import HoldingUnit
 
 from .a_inverter import STATE, AInverter
 from .a_sensor import MQTT
-from .options import InverterOptions, Options
+from .options import InverterOptions, Options, is_solarman_port
 from .sensor_options import SOPT
 
 _LOG = logging.getLogger(":")
@@ -44,62 +50,65 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
     HASS_DISCOVERY_INFO_UPDATE_QUEUE.update(SOPT[sen].affects)
 
 
-def init_connector(opt: Options, iopt: InverterOptions) -> None:
-    """Sunsynk driver factory."""
-    iopt.driver = iopt.driver or opt.driver
-    if (iopt.port, iopt.driver) in AInverter.connectors:
-        _LOG.debug("Reusing driver for port, driver (%s, %s)", iopt.port, iopt.driver)
-        if iopt.driver == "solarman":
-            _LOG.warning(
-                "Reusing the same port was not tested for the 'solarman' driver (%s)",
-                iopt.port,
-            )
-        return
-
-    factory: type[Sunsynk]
-    port_prefix = ""
-    kwargs = {}
-
-    if iopt.driver == "pymodbus":
-        from sunsynk.pysunsynk import PySunsynk  # noqa: PLC0415
-
-        factory = PySunsynk
-    elif iopt.driver == "modbusrs":
-        from sunsynk.rsunsynk import RSunsynk  # noqa: PLC0415
-
-        factory = RSunsynk
-    elif iopt.driver == "solarman":
-        from sunsynk.solarmansunsynk import SolarmanSunsynk  # noqa: PLC0415
-
-        factory = SolarmanSunsynk
-        port_prefix = "tcp://"
-        kwargs["dongle_serial_number"] = iopt.dongle_serial_number
+def _shared_modbus_connection(opt: Options, *, port: str) -> ModbusConnection:
+    """One ``ModbusConnection`` per port; reused across MODBUS_IDs."""
+    conn = AInverter.connections.get(port)
+    if conn is None:
+        conn = open_connection(port, timeout=opt.timeout)
+        AInverter.connections[port] = conn
+        _LOG.debug("Opened Modbus connection for %s", port)
     else:
-        raise ValueError(
-            f"Invalid DRIVER: {iopt.driver}. Expected pymodbus, modbusrs, solarman"
+        _LOG.debug("Reusing Modbus connection for %s", port)
+    return conn
+
+
+def create_sunsynk(opt: Options, iopt: InverterOptions) -> Sunsynk:
+    """Build a per-inverter ``Sunsynk`` (shared connection when Modbus)."""
+    port = iopt.port or opt.debug_device
+
+    if is_solarman_port(port):
+        if port in AInverter.solarman_ports:
+            _LOG.warning("Reusing a Solarman port is not supported (%s)", port)
+        AInverter.solarman_ports.add(port)
+        unit = SolarmanUnit(
+            port=port,
+            dongle_serial_number=iopt.dongle_serial_number,
+            server_id=iopt.modbus_id,
+            timeout=opt.timeout,
+        )
+        ss = Sunsynk(
+            unit=unit,
+            port=port,
+            timeout=opt.timeout,
+            read_sensors_batch_size=opt.read_sensors_batch_size,
+            allow_gap=opt.read_allow_gap,
+        )
+    else:
+        if iopt.dongle_serial_number:
+            _LOG.warning("Ignoring dongle_serial_number for non-solarman PORT %s", port)
+        conn = _shared_modbus_connection(opt, port=port)
+        ss = Sunsynk(
+            # ponytail: see Sunsynk.from_url — TmodbusUnit vs HoldingUnit Coroutine typing
+            unit=cast(HoldingUnit, conn.for_unit(iopt.modbus_id)),
+            connection=conn,
+            port=port,
+            timeout=opt.timeout,
+            read_sensors_batch_size=opt.read_sensors_batch_size,
+            allow_gap=opt.read_allow_gap,
         )
 
-    if "dongle_serial_number" not in kwargs and iopt.dongle_serial_number:
-        _LOG.warning("Ignoring dongle_serial_number for non-solarman driver")
-
-    ss = factory(
-        port=iopt.port if iopt.port else port_prefix + opt.debug_device,
-        server_id=iopt.modbus_id,
-        timeout=opt.timeout,
-        read_sensors_batch_size=opt.read_sensors_batch_size,
-        allow_gap=opt.read_allow_gap,
-        state=None,  # type:ignore[arg-type]
-        **kwargs,  # type:ignore[arg-type]
-    )
-    _LOG.debug("Driver: %s - inv:%s", ss, iopt)
-    AInverter.add_connector(iopt, ss)
+    _LOG.debug("Sunsynk: %s - inv:%s", ss, iopt)
+    return ss
 
 
 def init_driver(opt: Options) -> None:
     """Init Sunsynk driver for each inverter."""
     STATE.clear()
+    AInverter.connections.clear()
+    AInverter.solarman_ports.clear()
     for idx, inv in enumerate(opt.inverters):
-        init_connector(opt, inv)
-        ist = AInverter(opt=inv, index=idx)
+        ss = create_sunsynk(opt, inv)
+        ist = AInverter(opt=inv, index=idx, inv=ss)
+        ss.state = ist.state
         ist.state.onchange = sensor_on_update
         STATE.append(ist)

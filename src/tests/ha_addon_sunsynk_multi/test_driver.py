@@ -1,12 +1,12 @@
 """Test driver."""
 
-import pytest
+from unittest.mock import MagicMock, patch
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.driver import STATE, init_driver
 from ha_addon_sunsynk_multi.options import OPT
-from sunsynk.pysunsynk import PySunsynk
-from sunsynk.solarmansunsynk import SolarmanSunsynk
+from sunsynk.solarman import SolarmanUnit
+from sunsynk.sunsynk import Sunsynk
 
 
 def test_init() -> None:
@@ -16,28 +16,36 @@ def test_init() -> None:
 
     OPT.load_dict(inv_option)
 
-    with pytest.raises(ValueError):
-        OPT.driver = "bad"
+    AInverter.connections.clear()
+    AInverter.solarman_ports.clear()
+    mock_conn = MagicMock()
+    mock_conn.for_unit.return_value = MagicMock()
+    with patch("ha_addon_sunsynk_multi.driver.open_connection", return_value=mock_conn):
         init_driver(OPT)
-
-    OPT.driver = "pymodbus"
-    OPT.inverters[0].driver = ""
-    init_driver(OPT)
     assert len(STATE) == 1
-    ist = STATE[0].connector[0]
-    assert isinstance(ist, PySunsynk)
+    ist = STATE[0].inv
+    assert isinstance(ist, Sunsynk)
     assert ist.port == inv_port
+    mock_conn.for_unit.assert_called_once_with(1)
 
-    AInverter.connectors.clear()
+    AInverter.connections.clear()
+    AInverter.solarman_ports.clear()
+    solar_port = "solarman://127.0.0.1:8899"
     inv_option = {
-        "inverters": [{"port": inv_port, "modbus_id": 1, "dongle_serial_number": "101"}]
+        "inverters": [
+            {
+                "port": solar_port,
+                "modbus_id": 1,
+                "dongle_serial_number": "101",
+            }
+        ]
     }
-    OPT.driver = "solarman"
     OPT.inverters = []
     OPT.load_dict(inv_option)
     init_driver(OPT)
     assert len(STATE) == 1
-    ist = STATE[0].connector[0]
-    assert isinstance(ist, SolarmanSunsynk)
-    assert ist.port == inv_port
-    assert ist.dongle_serial_number == 101
+    ist = STATE[0].inv
+    assert isinstance(ist, Sunsynk)
+    assert isinstance(ist.unit, SolarmanUnit)
+    assert ist.port == solar_port
+    assert ist.unit.dongle_serial_number == 101

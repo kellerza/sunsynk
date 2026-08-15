@@ -1,17 +1,6 @@
 # Configuration
 
-## Driver
-
-- `DRIVER` – pick one of **pymodbus**, **solarman**, or (dev-edge) **modbusrs**.
-
-  Legacy configs with **umodbus** are remapped to **pymodbus** at startup (log warning). For direct
-  serial, **modbusrs** is the recommended replacement on dev-edge (see below).
-
-  - <i-mdi-dev-to class="vp-edge-option-icon" /> **`modbusrs`** – Rust-backed driver
-    ([modbus-rs](https://pypi.org/project/modbus-rs/)). Use with `tcp://` toward a gateway, or
-    connect **directly** to a serial port (`/dev/ttyUSB0`) more reliably than `pymodbus` (which
-    often needs [mbusd](../guide/mbusd)). `serial-tcp://` / `serial-udp://` (RTU-over-TCP/UDP) are
-    not supported — use `pymodbus` for those.
+## Connection
 
 - `READ_SENSOR_BATCH_SIZE` – specifies how many registers may be read in a single request. Devices
   like the USR only allows 8 registers to be read. When using mbusd this can be much higher.
@@ -42,13 +31,13 @@ The following options are required per inverter:
 - `MODBUS_ID` – The Modbus Server ID is a number, typically 1. Might be different in multi-inverter
   setups.
 
-- `DONGLE_SERIAL_NUMBER` – The **solarman** driver requires the dongle's serial number.
+- `DONGLE_SERIAL_NUMBER` – Required for a **`solarman://`** PORT (Wi-Fi dongle serial number).
 
-- `PORT` – The port used for communications. Format depends on the driver. See [Port](#port)
+- `PORT` – The port used for communications. See [Port](#port)
 
 ### Port
 
-The port for RS485 communications, which can be either:
+The transport is selected by the `PORT` URL scheme:
 
 - A `tcp://` port toward a Modbus TCP gateway. Either mbusd or one of the hardware options
 
@@ -58,22 +47,23 @@ The port for RS485 communications, which can be either:
   ```
 
   If your gateway do not support Modbus TCP to Modbus RTU conversion, you can try using
-  `serial-tcp://` or `serial-udp://` as the port protocol. This will send Modbus RTU framed data
-  over TCP/UDP (RTU-over-TCP).
-  ::: details Solarman driver details
-  The Solarman driver typically uses `tcp://`, with a port value of **8899**. You will need to find
-  the dongle's local IP on your network. You can find the IP on your router, or use a utility like
-  [netscan](https://www.portablefreeware.com/?id=730).
-
-  You probably want to set a fixed IP for the dongle on your router.
+  `serial-tcp://` as the port protocol. This will send Modbus RTU framed data over TCP
+  (RTU-over-TCP). `serial-udp://` is not supported.
+  ::: details Solarman Wi-Fi dongle
+  Use `solarman://` with the dongle's local IP (typically port **8899**) and set
+  `DONGLE_SERIAL_NUMBER`. Find the IP on your router, or use a utility like
+  [netscan](https://www.portablefreeware.com/?id=730). Prefer a fixed IP for the dongle.
 
   ```yaml
-  DRIVER: solarman
-  INVERTER:
-    - PORT: tcp://192.168.1.182:8899
+  INVERTERS:
+    - PORT: solarman://192.168.1.182:8899
+      DONGLE_SERIAL_NUMBER: "1234567890"
   ```
 
-  Refer to the [Schedules](./schedules) section for recommended schedule overrides.
+  Reduce read frequency for Solarman — see [Schedules](./schedules).
+
+  Legacy configs with `DRIVER: solarman` and `PORT: tcp://...` (or a non-zero
+  `DONGLE_SERIAL_NUMBER`) are remapped to `solarman://` at startup.
   :::
   ::: tip Shared RS485 bus (one connector, many inverters)
   You can repeat the **same** `PORT` value for **multiple** `INVERTERS` entries. Each inverter still
@@ -88,35 +78,13 @@ The port for RS485 communications, which can be either:
   **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
 
   ```yaml
-  DRIVER: pymodbus
   INVERTERS:
     - PORT: /dev/ttyUSB0
   ```
 
-  ::: details Direct serial with modbusrs (dev-edge)
-  On dev-edge, **`modbusrs`** can talk RTU on a local serial port without mbusd:
-
-  ```yaml
-  DRIVER: modbusrs
-  INVERTERS:
-    - PORT: /dev/ttyUSB0
-  ```
-
-  Or via TCP through mbusd:
-
-  ```yaml
-  DRIVER: modbusrs
-  INVERTERS:
-    - PORT: tcp://homeassistant.local:502
-  ```
-
-  :::
-  ::: tip This repository contains a [mbusd](../guide/mbusd) add-on, a very reliable Modbus TCP to
-  Modbus RTU gateway.
-
-  If you have any issues connecting directly to a serial port, please try mbusd - also see
-  [this](https://github.com/kellerza/sunsynk/issues/131) issue
-  :::
+  Direct serial RTU uses the tmodbus backend. If you have any issues connecting directly to a serial
+  port, please try [mbusd](../guide/mbusd) — also see
+  [this](https://github.com/kellerza/sunsynk/issues/131) issue.
 
 - For the first inverter in the list, you can use an empty string. The serial port selected under
   `DEBUG_DEVICE` will be used (located at the bottom of you config)*

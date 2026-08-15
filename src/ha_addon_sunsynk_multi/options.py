@@ -15,24 +15,32 @@ from .timer_schedule import Schedule
 _LOG = logging.getLogger(__name__)
 
 
+def is_solarman_port(port: str) -> bool:
+    """Check if the port selects the Solarman dongle transport."""
+    return urlparse(port).scheme == "solarman"
+
+
 def _normalize_legacy_port(port: str) -> str:
-    """Strip legacy umodbus ``serial://`` prefix for pymodbus."""
+    """Strip legacy umodbus ``serial://`` prefix."""
     parsed = urlparse(port)
     if parsed.scheme == "serial" and parsed.path:
         return parsed.path
     return port
 
 
-def _remap_umodbus_driver(driver: str) -> str:
-    """Map removed umodbus driver to pymodbus."""
-    if driver == "umodbus":
-        _LOG.warning(
-            "*umodbus* was removed; using *pymodbus* instead. "
-            "For direct serial on dev-edge, use DRIVER: modbusrs, or mbusd with pymodbus. "
-            "Update DRIVER in your configuration."
-        )
-        return "pymodbus"
-    return driver
+def as_solarman_port(port: str) -> str:
+    """Rewrite a host URL (or bare host) to ``solarman://host:port``."""
+    if is_solarman_port(port):
+        return port
+    url = urlparse(port)
+    if url.hostname:
+        return f"solarman://{url.hostname}:{url.port or 8899}"
+    if port and "://" not in port and not port.startswith("/"):
+        host, _, p = port.partition(":")
+        return f"solarman://{host}:{p or 8899}"
+    raise ValueError(
+        f"Cannot use Solarman with PORT {port!r}; expected solarman://host:8899"
+    )
 
 
 @dataclass
@@ -41,7 +49,7 @@ class InverterOptions:
 
     port: str = ""
     driver: str = ""
-    """Optional driver override."""
+    """Obsolete; kept so legacy configs still load. Prefer ``solarman://`` PORT."""
     modbus_id: int = 0
     ha_prefix: str = ""
     serial_nr: str = ""
@@ -71,7 +79,8 @@ class Options(MQTTOptions):
     """Quiet period (seconds) with no normal polling before a serial-only probe and possible recovery."""
 
     debug: int = 0
-    driver: str = "pymodbus"
+    driver: str = ""
+    """Obsolete; kept so legacy configs still load. Prefer ``solarman://`` PORT."""
     manufacturer: str = "Sunsynk"
     debug_device: str = ""
     mute_logs: list[Time] = field(default_factory=list)
@@ -81,43 +90,60 @@ class Options(MQTTOptions):
         await super().init_addon()
         logging.addLevelName(LOG_TRACE, "TRACE")
 
-        self.driver = _remap_umodbus_driver(self.driver)
+        global_solarman = self.driver == "solarman"
+        if self.driver:
+            _LOG.warning(
+                "DRIVER is obsolete and ignored; use PORT schemes "
+                "(tcp://, serial-tcp://, udp://, /dev/..., or solarman://). "
+                "Got DRIVER=%r",
+                self.driver,
+            )
+        self.driver = ""
 
         for inv in self.inverters:
             inv.ha_prefix = slug(inv.ha_prefix.strip())
 
-            inv.driver = _remap_umodbus_driver(inv.driver) if inv.driver else inv.driver
+            inv_solarman = inv.driver == "solarman"
+            if inv.driver:
+                _LOG.warning(
+                    "%s: per-inverter DRIVER is obsolete and ignored "
+                    "(got %r); use PORT: solarman://... for Solarman",
+                    inv.ha_prefix or inv.serial_nr,
+                    inv.driver,
+                )
+            inv.driver = ""
 
             if inv.port:
                 normalized = _normalize_legacy_port(inv.port)
                 if normalized != inv.port:
                     _LOG.warning(
-                        "%s: Normalized legacy port %r to %r for pymodbus",
+                        "%s: Normalized legacy port %r to %r",
                         inv.ha_prefix or inv.serial_nr,
                         inv.port,
                         normalized,
                     )
                     inv.port = normalized
 
-            if inv.dongle_serial_number:
-                if inv.driver and inv.driver != "solarman":
+            want_solarman = (
+                is_solarman_port(inv.port)
+                or inv_solarman
+                or global_solarman
+                or bool(inv.dongle_serial_number)
+            )
+            if want_solarman and inv.port and not is_solarman_port(inv.port):
+                try:
+                    rewritten = as_solarman_port(inv.port)
+                except ValueError as err:
+                    _LOG.warning("%s: %s", inv.ha_prefix or inv.serial_nr, err)
+                else:
                     _LOG.warning(
-                        "%s: DONGLE_SERIAL_NUMBER requires the driver to be 'solarman'",
-                        inv.ha_prefix,
+                        "%s: Remapped PORT %r to %r "
+                        "(use solarman:// and DONGLE_SERIAL_NUMBER; DRIVER is obsolete)",
+                        inv.ha_prefix or inv.serial_nr,
+                        inv.port,
+                        rewritten,
                     )
-                inv.driver = "solarman"
-
-            if not inv.port or inv.port.lower().startswith(("serial:", "/dev")):
-                active_driver = inv.driver or self.driver
-                if active_driver == "pymodbus":
-                    _LOG.warning(
-                        "Use mbusd with pymodbus for serial, or DRIVER: modbusrs "
-                        "(dev-edge) for direct serial"
-                    )
-                elif active_driver != "modbusrs":
-                    _LOG.warning(
-                        "Use mbusd instead of connecting directly to a serial port"
-                    )
+                    inv.port = rewritten
 
             if not inv.port:
                 _LOG.warning(

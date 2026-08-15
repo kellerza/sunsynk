@@ -4,11 +4,11 @@ import asyncio
 import logging
 import statistics
 import time
-from collections.abc import AsyncGenerator, Iterable
-from contextlib import asynccontextmanager
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from modbus_connection.tmodbus import ModbusConnection
 from mqtt_entity import MQTTDevice, MQTTSensorEntity
 
 from sunsynk.helpers import slug
@@ -42,6 +42,9 @@ class AInverter:
 
     index: int
     opt: InverterOptions
+    inv: Sunsynk
+    """Per-inverter Sunsynk (unit id fixed at construction)."""
+
     ss: dict[str, ASensor] = field(default_factory=dict)
     """Sensor states."""
 
@@ -69,35 +72,13 @@ class AInverter:
     cb: AsyncCallback = field(init=False)
 
     state: InverterState = field(default_factory=InverterState)
-    """The inverter state, which tracks all sensors and their values.
+    """The inverter state, which tracks all sensors and their values."""
 
-    During a lock_io this will be the state on the sunsynk driver."""
+    connections: ClassVar[dict[str, ModbusConnection]] = {}
+    """Shared Modbus connections, keyed by port."""
 
-    connectors: ClassVar[dict[tuple[str, str], tuple[Sunsynk, asyncio.Lock]]] = {}
-    """Inverter connectors and locks, keyed by (port, driver)."""
-
-    @classmethod
-    def add_connector(cls, inv_opt: InverterOptions, ss: Sunsynk) -> None:
-        """Add a connector."""
-        if (inv_opt.port, inv_opt.driver) in cls.connectors:
-            raise ValueError(
-                f"Connector for port {inv_opt.port} and driver {inv_opt.driver} already exists"
-            )
-        cls.connectors[(inv_opt.port, inv_opt.driver)] = (ss, asyncio.Lock())
-
-    @property
-    def connector(self) -> tuple[Sunsynk, asyncio.Lock]:
-        """Get the connector for this inverter."""
-        return self.connectors[(self.opt.port, self.opt.driver)]
-
-    @asynccontextmanager
-    async def lock_io(self) -> AsyncGenerator[Sunsynk]:
-        """Lock the IO."""
-        inv, lock = self.connector
-        async with lock:
-            inv.server_id = self.opt.modbus_id
-            inv.state = self.state
-            yield inv
+    solarman_ports: ClassVar[set[str]] = set()
+    """Ports already used for a Solarman unit (sharing is untested)."""
 
     @property
     def availability_topic(self) -> str:
@@ -145,17 +126,16 @@ class AInverter:
             await self.set_lifecycle("stale_quiet")
             return
 
-        await self.connector[0].connect()
+        await self.inv.connect()
 
         await self.set_lifecycle("stale_probing")
 
-        async with self.lock_io() as inv:
-            try:
-                await asyncio.sleep(0.005)
-                await inv.read_sensors(sensors=[DEFS.serial])
-            except Exception as err:
-                await self.lifecycle_enter_stale(f"Inverter probe failed: {err!s}")
-                return
+        try:
+            await asyncio.sleep(0.005)
+            await self.inv.read_sensors(sensors=[DEFS.serial])
+        except Exception as err:
+            await self.lifecycle_enter_stale(f"Inverter probe failed: {err!s}")
+            return
 
         try:
             self.serial_matches_config()
@@ -177,43 +157,39 @@ class AInverter:
 
     async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> bool:
         """Read from the Modbus interface."""
-        async with self.lock_io() as inv:
-            await asyncio.sleep(0.005)
-            try:
-                async with asyncio.timeout(OPT.timeout * 2):
-                    await inv.read_sensors(sensors)
-                self.read_errors = 0
-                self._stale_enter_at = (
-                    time.monotonic() + OPT.stale_inverter_after_seconds
-                )
-                return True
-            except TimeoutError:
-                self.read_errors += 1
-                await self.lifecycle_enter_stale("read timeout")
-                return False
-            except ExceptionGroup as err:
-                self.read_errors += 1
-                if await self.lifecycle_enter_stale():
-                    return False
-                if msg:
-                    arg0, *argn = err.args if err.args else ("",)
-                    err.args = tuple([f"{arg0} {msg}".strip(), *argn])
-
-                if msg:
-                    msg += ": "
-                msg += compact_exception_group(err)
-                if OPT.debug > 1:
-                    _LOG.error("ExceptionGroup: %s", msg, exc_info=err)
-                else:
-                    _LOG.error("ExceptionGroup: %s", msg)
+        await asyncio.sleep(0.005)
+        try:
+            async with asyncio.timeout(OPT.timeout * 2):
+                await self.inv.read_sensors(sensors)
+            self.read_errors = 0
+            self._stale_enter_at = time.monotonic() + OPT.stale_inverter_after_seconds
+            return True
+        except TimeoutError:
+            self.read_errors += 1
+            await self.lifecycle_enter_stale("read timeout")
             return False
+        except ExceptionGroup as err:
+            self.read_errors += 1
+            if await self.lifecycle_enter_stale():
+                return False
+            if msg:
+                arg0, *argn = err.args if err.args else ("",)
+                err.args = tuple([f"{arg0} {msg}".strip(), *argn])
+
+            if msg:
+                msg += ": "
+            msg += compact_exception_group(err)
+            if OPT.debug > 1:
+                _LOG.error("ExceptionGroup: %s", msg, exc_info=err)
+            else:
+                _LOG.error("ExceptionGroup: %s", msg)
+        return False
 
     async def write_sensor(
         self, sensor: RWSensor, value: ValType, *, msg: str = ""
     ) -> None:
         """Write to the Modbus interface."""
-        async with self.lock_io() as inv:
-            await inv.write_sensor(sensor, value, msg=msg)
+        await self.inv.write_sensor(sensor, value, msg=msg)
 
     async def read_sensors_retry(self, *, sensors: list[Sensor], msg: str = "") -> bool:
         """Read sensors with a retry."""
@@ -256,14 +232,13 @@ class AInverter:
     async def connect(self) -> None:
         """Connect."""
         await self.set_lifecycle("starting")
-        async with self.lock_io() as inv:
-            _LOG.info("Connecting to %s", inv.port)
-            try:
-                await inv.connect()
-            except ConnectionError as exc:
-                raise ConnectionError(
-                    f"Could not connect to {inv.port}: {exc}"
-                ) from exc
+        _LOG.info("Connecting to %s", self.inv.port)
+        try:
+            await self.inv.connect()
+        except ConnectionError as exc:
+            raise ConnectionError(
+                f"Could not connect to {self.inv.port}: {exc}"
+            ) from exc
 
         sensors = list(SOPT.startup)
         _LOG.info("Reading startup sensors %s", ", ".join(s.name for s in sensors))
@@ -382,7 +357,7 @@ class AInverter:
 
     async def publish_stats(self, period: int) -> None:
         """Publish stats."""
-        await self.entity_timeout.send_state(MQTT, self.connector[0].timeouts)
+        await self.entity_timeout.send_state(MQTT, self.inv.timeouts)
 
         # calc stats
         times = self.cb.stat_time
