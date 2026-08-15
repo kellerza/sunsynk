@@ -19,6 +19,11 @@ SENSORS += (
     Sensor(588, "Battery SOC", "%"),
     Sensor(590, "Battery power", WATT, -1),
     Sensor(591, "Battery current", AMPS, -0.01),
+    Sensor(589, "Battery 2 SOC", "%"),
+    Sensor(593, "Battery 2 voltage", VOLT, 0.01),
+    Sensor(594, "Battery 2 current", AMPS, -0.01),
+    Sensor(595, "Battery 2 power", WATT, -1),
+    TempSensor(596, "Battery 2 temperature", CELSIUS, 0.1),
 )
 
 SENSORS.deprecated.update(
