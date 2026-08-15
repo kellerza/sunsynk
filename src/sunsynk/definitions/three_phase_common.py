@@ -423,6 +423,13 @@ SENSORS += (
     NumberRWSensor(
         165, "Prog6 voltage", VOLT, 0.01, min=BATTERY_LOW_VOLT, max=BATTERY_FLOAT_VOLT
     ),
+    # Sell sensors - see #635 for details - bit 7, mask 0x40
+    SwitchRWSensor(172, "Prog1 sell", bitmask=0x20, on=0x20),
+    SwitchRWSensor(173, "Prog2 sell", bitmask=0x20, on=0x20),
+    SwitchRWSensor(174, "Prog3 sell", bitmask=0x20, on=0x20),
+    SwitchRWSensor(175, "Prog4 sell", bitmask=0x20, on=0x20),
+    SwitchRWSensor(176, "Prog5 sell", bitmask=0x20, on=0x20),
+    SwitchRWSensor(177, "Prog6 sell", bitmask=0x20, on=0x20),
 )
 
 ########

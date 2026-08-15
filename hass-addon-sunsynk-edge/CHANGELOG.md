@@ -62,8 +62,8 @@ The following are major changes, but should accept and convert older configurati
 - **Single-phase / three-phase** – Commented register notes for **Essential power** math sensors;
   continued tweaks in `single_phase.py` and `three_phase_common.py` (including **Gen** / **AUX**
   port sensors) toward clearer parity across definitions.
-- **Program slot SELL (proposed)** – Commented **`Prog1 sell` … `Prog6 sell`** `SwitchRWSensor`
-  lines (one per slot) for the new firmware **SELL** bit; left disabled pending verification—see
+- **Program slot SELL** – Enabled **`Prog1 sell` … `Prog6 sell`** `SwitchRWSensor` lines (one per
+  slot) for the firmware **SELL** bit (`0x40` single-phase, `0x20` three-phase)—see
   [#635](https://github.com/kellerza/sunsynk/issues/635).
 - **Tooling and docs** – `gen_sensors.py`, **Solarman** read path, generated **reference group**
   HTML, and power-flow / Lovelace examples updated to stay in sync with definition changes.
