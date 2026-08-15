@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "src/ha_addon_sunsynk_multi/a_inverter.py": {
-    "mtime": 1786807017.880309,
-    "ast_hash": "096bace44f0c1e5dd9aa4d38381b0b51",
+    "mtime": 1786819164.227158,
+    "ast_hash": "97519649359f09adba6e929895e749a8",
     "semantic_hash": ""
   },
   "src/ha_addon_sunsynk_multi/a_sensor.py": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "src/ha_addon_sunsynk_multi/sensor_callback.py": {
-    "mtime": 1786799091.9785426,
-    "ast_hash": "d97cfe56564f9a8c1176b2256563b5d3",
+    "mtime": 1786819153.832704,
+    "ast_hash": "20ce52949923c587f036a0f0f2e0116a",
     "semantic_hash": ""
   },
   "src/ha_addon_sunsynk_multi/sensor_options.py": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/sunsynk/definitions/single_phase.py": {
-    "mtime": 1785868572.2351694,
-    "ast_hash": "fb76f0cf02bb43ddb66a71243306b653",
+    "mtime": 1786809978.108324,
+    "ast_hash": "e997de176a7366fa3488c2bdc485b676",
     "semantic_hash": ""
   },
   "src/sunsynk/definitions/single_phase_16kw.py": {
@@ -110,8 +110,8 @@
     "semantic_hash": ""
   },
   "src/sunsynk/definitions/three_phase_common.py": {
-    "mtime": 1785868572.235304,
-    "ast_hash": "f911cb45d318317ba545e58024a5a40a",
+    "mtime": 1786809978.1084597,
+    "ast_hash": "188d3fb0cc9dd9725df544db7c7fd9a8",
     "semantic_hash": ""
   },
   "src/sunsynk/definitions/three_phase_hv.py": {
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "src/sunsynk/definitions/three_phase_lv.py": {
-    "mtime": 1785868572.2354767,
-    "ast_hash": "74b824692f64037e02547d867fd614a0",
+    "mtime": 1786816268.249883,
+    "ast_hash": "99bf2f1636950bc77b520f2b8c088f3b",
     "semantic_hash": ""
   },
   "src/sunsynk/helpers.py": {
@@ -415,8 +415,8 @@
     "semantic_hash": ""
   },
   "hass-addon-sunsynk-edge/CHANGELOG.md": {
-    "mtime": 1786807017.8800707,
-    "ast_hash": "e76ace11d3a6f8e82309206b270cb6ab",
+    "mtime": 1786818823.0926979,
+    "ast_hash": "ddb6f109eca83efb1d0ac608589e46d1",
     "semantic_hash": ""
   },
   "hass-addon-sunsynk-edge/DOCS.md": {
@@ -435,8 +435,8 @@
     "semantic_hash": ""
   },
   "hass-addon-sunsynk-edge/config.yaml": {
-    "mtime": 1786807017.880125,
-    "ast_hash": "a04d3161b23d70b8198e01c7aa27a224",
+    "mtime": 1786816268.2443624,
+    "ast_hash": "6ed97ce082a6193c94e80b99808fd999",
     "semantic_hash": ""
   },
   "hass-addon-sunsynk-edge/translations/en.yaml": {
@@ -595,52 +595,52 @@
     "semantic_hash": ""
   },
   "www/docs/reference/groups/advanced.yml": {
-    "mtime": 1786807195.394968,
+    "mtime": 1786816186.1704984,
     "ast_hash": "f4729a6c32d9ac6c54c847f5e32dce69",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/all.html": {
-    "mtime": 1786807195.4006793,
-    "ast_hash": "247ad021c4f7ded1132652d76062ec03",
+    "mtime": 1786816268.250045,
+    "ast_hash": "458b7b51ac09f0332da99feaf21fe69e",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/battery.yml": {
-    "mtime": 1786807195.3951623,
+    "mtime": 1786816186.1706882,
     "ast_hash": "a851d84599e8b756b8365c3de555139b",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/diagnostics.yml": {
-    "mtime": 1786807195.3950994,
+    "mtime": 1786816186.1706219,
     "ast_hash": "ab6ea022c8b2d774f835fc48ca4e1b4d",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/energy_management.yml": {
-    "mtime": 1786807195.3945465,
+    "mtime": 1786816186.1701698,
     "ast_hash": "18c27f715af8b60eafe25123070703a1",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/generator.yml": {
-    "mtime": 1786807195.3950303,
+    "mtime": 1786816186.170555,
     "ast_hash": "400c2daff059d585656c772e4229d2e9",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/parallel.yml": {
-    "mtime": 1786807195.3952057,
+    "mtime": 1786816186.1707325,
     "ast_hash": "934cb0ffd0061a4a0b666c009ddac050",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/power_flow_card.yml": {
-    "mtime": 1786807195.3947034,
+    "mtime": 1786816186.1703246,
     "ast_hash": "07fc7367330f80514c6bf01121d640f2",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/settings.yml": {
-    "mtime": 1786807195.394794,
+    "mtime": 1786816186.1704142,
     "ast_hash": "c90314fb527ec0c3e313ee32a7aeefe7",
     "semantic_hash": ""
   },
   "www/docs/reference/groups/ups.yml": {
-    "mtime": 1786807195.3952549,
+    "mtime": 1786816186.1707833,
     "ast_hash": "fd3e25cf2f6c57b79f621d17a2b9e5d8",
     "semantic_hash": ""
   },
@@ -655,8 +655,8 @@
     "semantic_hash": ""
   },
   "www/docs/reference/schedules.md": {
-    "mtime": 1785868572.2528899,
-    "ast_hash": "aef30dee0f53323c360a4ea5159493ed",
+    "mtime": 1786818818.8310966,
+    "ast_hash": "5d648a8130d05fad9188d6ec759435f5",
     "semantic_hash": ""
   },
   "www/docs/reference/sensor-modifiers.md": {
@@ -882,6 +882,16 @@
   "src/tests/sunsynk/test_solarman.py": {
     "mtime": 1786799103.8778048,
     "ast_hash": "1267a9308642b57c0612837d01736545",
+    "semantic_hash": ""
+  },
+  "src/ha_addon_sunsynk_multi/near_realtime.py": {
+    "mtime": 1786819149.6852386,
+    "ast_hash": "6d30056bca70a244ac80e844f3f627e1",
+    "semantic_hash": ""
+  },
+  "src/tests/ha_addon_sunsynk_multi/test_near_realtime.py": {
+    "mtime": 1786819169.510271,
+    "ast_hash": "16f0ec031627b9693c4e3615f148374c",
     "semantic_hash": ""
   }
 }

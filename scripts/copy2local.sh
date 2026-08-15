@@ -21,6 +21,7 @@ rsync_excl() {
     rsync -a \
         --exclude '__pycache__' \
         --exclude '*.egg-info' \
+        --exclude '.*' \
         --exclude 'tests' \
         --exclude '.mypy_cache' \
         --exclude 'config.localtest.yaml' \

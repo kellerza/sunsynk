@@ -106,3 +106,12 @@ to 30s instead of the default 15s.
 ```
 
 you can also use the sensor name 'battery_soc'
+
+## Near realtime (power)
+
+Home Assistant gets a **Near realtime** switch on the first inverter (config entity). While it is
+on, every sensor with unit `W` is published to MQTT immediately after each Modbus read (last sample,
+not the usual average / `CHANGE_BY` gate). Read timing is unchanged — still controlled by
+`SCHEDULES` (`KEY: W`). The switch turns itself **off after 10 minutes**.
+
+See [issue #401](https://github.com/kellerza/sunsynk/issues/401).

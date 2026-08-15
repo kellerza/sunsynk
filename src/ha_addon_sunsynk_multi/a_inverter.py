@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from modbus_connection.tmodbus import ModbusConnection
-from mqtt_entity import MQTTDevice, MQTTSensorEntity
+from mqtt_entity import MQTTDevice, MQTTSensorEntity, MQTTSwitchEntity
 
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
@@ -18,6 +18,7 @@ from sunsynk.sunsynk import Sensor, Sunsynk, ValType
 from sunsynk.utils import percentile, pretty_table_sensors
 
 from .a_sensor import MQTT, SS_TOPIC, ASensor
+from .near_realtime import NEAR_REALTIME
 from .options import OPT, InverterOptions
 from .sensor_options import DEFS, SOPT, SensorOptions
 from .timer_callback import AsyncCallback
@@ -69,6 +70,7 @@ class AInverter:
     # Reporting stats
     entity_timeout: MQTTSensorEntity = field(init=False)
     entity_cbstats: MQTTSensorEntity = field(init=False)
+    entity_near_realtime: MQTTSwitchEntity | None = field(default=None, init=False)
     cb: AsyncCallback = field(init=False)
 
     state: InverterState = field(default_factory=InverterState)
@@ -315,6 +317,8 @@ class AInverter:
         self.hass_create_discovery_info()
         await MQTT.connect(OPT)
         MQTT.monitor_homeassistant_status()
+        if self.entity_near_realtime is not None:
+            await self.entity_near_realtime.send_state(MQTT, "OFF", retain=True)
         return True
 
     def init_sensors(self, soptions: SensorOptions | None = None) -> None:
@@ -354,6 +358,39 @@ class AInverter:
             default_entity_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
         )
         self.mqtt_dev.components[name] = self.entity_cbstats
+
+        if self.index == 0:
+            self._create_near_realtime_switch(dev_id)
+
+    def _create_near_realtime_switch(self, dev_id: str) -> None:
+        """MQTT switch: publish every W reading for 10 minutes (#401)."""
+        name = "near_realtime"
+        state_topic = f"{SS_TOPIC}/{self.opt.ha_prefix}/{name}"
+
+        async def on_command(val: float | str | bool, _: str) -> None:
+            enabled = val in (True, "ON", "on", 1, "1")
+            NEAR_REALTIME.set(enabled)
+            assert self.entity_near_realtime is not None
+            await self.entity_near_realtime.send_state(
+                MQTT, "ON" if enabled else "OFF", retain=True
+            )
+
+        async def on_auto_off() -> None:
+            if self.entity_near_realtime is None:
+                return
+            await self.entity_near_realtime.send_state(MQTT, "OFF", retain=True)
+
+        self.entity_near_realtime = MQTTSwitchEntity(
+            name="Near realtime",
+            unique_id=f"{dev_id}_{name}",
+            state_topic=state_topic,
+            command_topic=f"{state_topic}_set",
+            entity_category="config",
+            default_entity_id=slug(f"{self.opt.ha_prefix} {name}".strip()),
+            on_command=on_command,
+        )
+        self.mqtt_dev.components[name] = self.entity_near_realtime
+        NEAR_REALTIME.on_auto_off = on_auto_off
 
     async def publish_stats(self, period: int) -> None:
         """Publish stats."""

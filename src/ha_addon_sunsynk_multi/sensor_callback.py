@@ -6,11 +6,12 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Self
 
-from sunsynk import RWSensor, Sensor, ValType
+from sunsynk import WATT, RWSensor, Sensor, ValType
 from sunsynk.utils import pretty_table, table_data
 
 from .a_inverter import AInverter
 from .a_sensor import ASensor, SensorOption
+from .near_realtime import NEAR_REALTIME
 from .sensor_options import SOPT
 from .timer_callback import AsyncCallback
 
@@ -112,6 +113,14 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
         # Check significant change reporting
         for asen in sensors_to_publish:
             sensor = asen.opt.sensor
+            # Near realtime (#401): publish last W sample after every read
+            if (
+                NEAR_REALTIME.enabled
+                and sensor.unit == WATT
+                and sensor in ist.state.history
+            ):
+                pub[asen] = ist.state.history[sensor][-1]
+                continue
             if sensor in ist.state.historynn:
                 hist = ist.state.historynn[sensor]
                 chg = hist[0] != hist[-1]
@@ -146,6 +155,8 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
                     if asen in pub:
                         continue
                     sensor = asen.opt.sensor
+                    if NEAR_REALTIME.enabled and sensor.unit == WATT:
+                        continue
                     # Non-numeric value
                     if sensor in ist.state.historynn:
                         pub[asen] = ist.state.historynn[sensor][-1]

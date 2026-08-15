@@ -35,6 +35,9 @@ The following are major changes, but should accept and convert older configurati
   program slot; **commented-out** proposed `SwitchRWSensor` definitions (`Prog1 sell` …
   `Prog6 sell`) are in `single_phase.py` for review—**not enabled** until register/bitmask behaviour
   is **verified** on hardware. Issue **open**.
+- [#401](https://github.com/kellerza/sunsynk/issues/401) – **Near realtime** MQTT switch on the
+  first inverter: while on, every unit-`W` sensor publishes its last sample after each Modbus read
+  (schedules unchanged). Auto-offs after **10 minutes**.
 
 ### Add-on behaviour
 
