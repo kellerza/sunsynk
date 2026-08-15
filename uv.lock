@@ -353,6 +353,15 @@ wheels = [
 ]
 
 [[package]]
+name = "modbus-connection"
+version = "4.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/05/f3651ec9e8f827b27c253c1cab8d73017cb431dd25adc9e963c63cab59d4/modbus_connection-4.7.0.tar.gz", hash = "sha256:4339e2181afceaae9870fb673bb304ee62857b67bb1401246c106e0faa749f2e", size = 251983, upload-time = "2026-08-14T08:30:32.808Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ad/75/8d88f7b1b5f5089e7be30f7b3d9a8c4d04d331b58fdaab195d6a2813c968/modbus_connection-4.7.0-py3-none-any.whl", hash = "sha256:02cf37957a3eaee785a469a6bb5df637e452982128aff0c85b93dca2d192b64c", size = 77068, upload-time = "2026-08-14T08:30:31.657Z" },
+]
+
+[[package]]
 name = "modbus-rs"
 version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -832,6 +841,7 @@ version = "0.9.3"
 source = { editable = "." }
 dependencies = [
     { name = "cattrs" },
+    { name = "modbus-connection" },
     { name = "mqtt-entity", extra = ["options"] },
     { name = "prettytable" },
     { name = "pymodbus", extra = ["serial"] },
@@ -863,6 +873,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "cattrs", specifier = ">=25,<27" },
+    { name = "modbus-connection", specifier = ">=4.7.0" },
     { name = "modbus-rs", marker = "extra == 'modbusrs'", specifier = ">=0.15" },
     { name = "mqtt-entity", extras = ["options"], specifier = ">=1.1" },
     { name = "prettytable", specifier = ">=3.17,<4" },
