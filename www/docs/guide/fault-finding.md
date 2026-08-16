@@ -11,22 +11,18 @@ The addon follows the following startup process:
 
 2. Connect to the Inverter
 
-   Connect and read the Inverter details (i.e. serial number). This is the first step to ensure the
-   connection is working.
+   Connect and read the inverter identity (device type, protocol, serial) from registers 0–7, then
+   rated power from the selected sensor definitions. This is the first step to ensure the connection
+   is working.
 
    If this read fails, you need to follow the fault finding guide below. It could be a cabling
    issue, a configuration issue, or a hardware issue.
 
-   If successful, the only check is that you have the correct serial number in your config. The log
-   will show:
+   If successful, the serial number in your config is checked against the inverter. A warning is
+   logged when `SENSOR_DEFINITIONS` does not match the device type. The log will show identity
+   details and the rated-power startup read.
 
-    ```txt
-    INFO    ############################################################
-    INFO                Inverter serial number '*1234'
-    INFO    ############################################################
-    ```
-
-   If the device settings was read successfully, it will read all configured sensors to ensure you
+   If the identity and rated power reads succeed, it will read all configured sensors to ensure you
    have some values at startup
 
 3. Connect to the MQTT server

@@ -66,16 +66,16 @@ Two libraries means two decode paths until v1 is deleted. The decode is the prod
 
 ## Modelling mismatch
 
-| | sunsynk `Sensor` | `modbus_connection.model` field |
-| --- | --- | --- |
-| Address | tuple of **arbitrary** registers | one start + **consecutive** `count` |
-| Layout | instances in a dict, subset chosen at runtime | class attributes, plan cached on first update |
-| 32-bit | `Sensor16((633, 691), …)` — two far-apart regs, stateful 16/32 heuristic | `uint32(n)` = registers `n` and `n+1`, stateless codec |
-| Combine | `MathSensor((175, 169, 166), factors=(1, 1, -1))` | `@property` over other fields |
-| Packed bits | `bitmask=` + read-modify-write | `bit` / `bits` / `flags` (this part is **better**) |
-| Word order | always little (`<h` / `<2H`) | default **big**; would need `word_order="little"` everywhere |
-| Writes | FC16 even for one register | FC06 unless `force_fc16=True` |
-| Cache | raw regs + decoded values + history + `onchange` | last decoded value on the component |
+|             | sunsynk `Sensor`                                                         | `modbus_connection.model` field                              |
+| ----------- | ------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Address     | tuple of **arbitrary** registers                                         | one start + **consecutive** `count`                          |
+| Layout      | instances in a dict, subset chosen at runtime                            | class attributes, plan cached on first update                |
+| 32-bit      | `Sensor16((633, 691), …)` — two far-apart regs, stateful 16/32 heuristic | `uint32(n)` = registers `n` and `n+1`, stateless codec       |
+| Combine     | `MathSensor((175, 169, 166), factors=(1, 1, -1))`                        | `@property` over other fields                                |
+| Packed bits | `bitmask=` + read-modify-write                                           | `bit` / `bits` / `flags` (this part is **better**)           |
+| Word order  | always little (`<h` / `<2H`)                                             | default **big**; would need `word_order="little"` everywhere |
+| Writes      | FC16 even for one register                                               | FC06 unless `force_fc16=True`                                |
+| Cache       | raw regs + decoded values + history + `onchange`                         | last decoded value on the component                          |
 
 `Sensor16` and `MathSensor` block a straight rewrite. A `Component` field cannot be “registers 633
 and 691”. You would split them into two integers plus a stateful `@property` — and that state (last
@@ -123,12 +123,12 @@ Two inverters on one adapter: one connection, two units — no swapping `server_
 
 ## What stays in sunsynk
 
-| Keep | Why |
-| --- | --- |
-| `Sensor` / definitions / `mysensors.py` | Public API and the Deye map |
-| `group_sensors` | Same job as Component `max_gap` / `max_span`, but over a dynamic subset |
-| `InverterState` | Raw regs for bitmask writes; history for MQTT; `onchange` for discovery; RW dependencies |
-| Schedules / MQTT | Application layer; Component `_values` is only “last poll” |
+| Keep                                    | Why                                                                                      |
+| --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `Sensor` / definitions / `mysensors.py` | Public API and the Deye map                                                              |
+| `group_sensors`                         | Same job as Component `max_gap` / `max_span`, but over a dynamic subset                  |
+| `InverterState`                         | Raw regs for bitmask writes; history for MQTT; `onchange` for discovery; RW dependencies |
+| Schedules / MQTT                        | Application layer; Component `_values` is only “last poll”                               |
 
 ## If Components come later
 
@@ -138,6 +138,9 @@ the source of truth and keep `Sensor` as the HA/mysensors view.
 
 `MathSensor` / `Sensor16` / `FaultSensor` / `SystemTimeRWSensor` stay as properties or custom
 converters. Do not migrate decode and transport at once.
+
+Identity (regs 0–7: device type, protocol, serial) is already a `Component`
+(`sunsynk.identity.Identity`); scheduled polls stay on `Sensor` + `group_sensors`.
 
 ## Sequence
 

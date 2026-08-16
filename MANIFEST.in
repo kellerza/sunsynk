@@ -1,3 +1,0 @@
-include LICENSE README.md
-recursive-exclude * *.py[co]
-graft src

@@ -12,6 +12,7 @@ from modbus_connection.tmodbus import ModbusConnection
 from mqtt_entity import MQTTDevice, MQTTSensorEntity, MQTTSwitchEntity
 
 from sunsynk.helpers import slug
+from sunsynk.identity import Identity, suggested_sensor_definitions
 from sunsynk.rwsensors import RWSensor
 from sunsynk.state import InverterState
 from sunsynk.sunsynk import Sensor, Sunsynk, ValType
@@ -76,6 +77,9 @@ class AInverter:
     state: InverterState = field(default_factory=InverterState)
     """The inverter state, which tracks all sensors and their values."""
 
+    identity: Identity | None = field(default=None, init=False)
+    """Last read identity (regs 0-7); source of truth for type/protocol/serial."""
+
     connections: ClassVar[dict[str, ModbusConnection]] = {}
     """Shared Modbus connections, keyed by port."""
 
@@ -134,7 +138,7 @@ class AInverter:
 
         try:
             await asyncio.sleep(0.005)
-            await self.inv.read_sensors(sensors=[DEFS.serial])
+            await self.read_identity()
         except Exception as err:
             await self.lifecycle_enter_stale(f"Inverter probe failed: {err!s}")
             return
@@ -147,10 +151,37 @@ class AInverter:
             await self.lifecycle_enter_stale(str(err))
             return
 
+    async def read_identity(self) -> Identity:
+        """Read device type, protocol, and serial via the Identity Component."""
+        # HoldingUnit duck-types ModbusUnit for FC03; SolarmanUnit is the same shape.
+        identity = Identity(self.inv.unit)  # type: ignore[arg-type]
+        await identity.async_update()
+        self.identity = identity
+        return identity
+
+    def warn_device_type_config(self) -> None:
+        """Warn when SENSOR_DEFINITIONS does not match the identity device type."""
+        if self.identity is None:
+            return
+        code = self.identity.device_type_code
+        label = self.identity.device_type
+        suggested = suggested_sensor_definitions(code)
+        cfg = OPT.sensor_definitions
+        if suggested != cfg:
+            _LOG.warning(
+                "Device type %s (%s) suggests SENSOR_DEFINITIONS=%s, config has %s",
+                label,
+                hex(code),
+                suggested,
+                cfg,
+            )
+
     def serial_matches_config(self) -> bool:
-        """Return whether the last read left the serial register matching config."""
+        """Return whether the last identity read left the serial matching config."""
+        if self.identity is None:
+            raise ValueError("Identity not read yet")
         expected_ser = self.opt.serial_nr.replace("_", "")
-        actual_ser = str(self.state[DEFS.serial])
+        actual_ser = str(self.identity.serial)
         if expected_ser != actual_ser:
             raise ValueError(
                 f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
@@ -242,6 +273,26 @@ class AInverter:
                 f"Could not connect to {self.inv.port}: {exc}"
             ) from exc
 
+        _LOG.info("Reading inverter identity (registers 0-7)")
+        try:
+            await self.read_identity()
+        except Exception as exc:
+            raise ConnectionError(
+                f"No response on the Modbus interface {self.opt.port}, "
+                "see https://kellerza.github.io/sunsynk/guide/fault-finding"
+            ) from exc
+
+        assert self.identity is not None
+        _LOG.info(
+            "Identity: device_type=%s (%s) protocol=%s serial=****%s",
+            self.identity.device_type,
+            hex(self.identity.device_type_code),
+            self.identity.protocol,
+            str(self.identity.serial)[-5:],
+        )
+        self.warn_device_type_config()
+        self.serial_matches_config()
+
         sensors = list(SOPT.startup)
         _LOG.info("Reading startup sensors %s", ", ".join(s.name for s in sensors))
 
@@ -250,12 +301,9 @@ class AInverter:
                 f"No response on the Modbus interface {self.opt.port}, "
                 "see https://kellerza.github.io/sunsynk/guide/fault-finding"
             )
-        self.serial_matches_config()
         await self.set_lifecycle("running")
 
-        # All seem ok
-        add_info = {"device_type": [f"config: {OPT.sensor_definitions}"]}
-        tab = pretty_table_sensors(sensors, self.state, ["Info"], add_info)
+        tab = pretty_table_sensors(sensors, self.state, [], {})
         _LOG.info("Inverter %s - startup sensors\n%s", self.index, tab)
 
         # Initial read for all sensors

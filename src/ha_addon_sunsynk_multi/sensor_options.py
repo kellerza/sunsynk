@@ -71,7 +71,8 @@ class SensorOptions(dict[Sensor, SensorOption]):
                 DEFS.override(OPT.overrides)
         self.clear()
 
-        self.startup = [DEFS.device_type, DEFS.protocol, DEFS.serial, DEFS.rated_power]
+        # Identity (device type / protocol / serial) is read via Identity Component.
+        self.startup = [DEFS.rated_power]
         sensors_all = list(get_sensors(target=self, names=OPT.sensors))
         sensors_1st = list(get_sensors(target=self, names=OPT.sensors_first_inverter))
 

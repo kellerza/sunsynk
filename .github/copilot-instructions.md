@@ -17,10 +17,10 @@ to work in this repository.
 
 ## Current rule files (index)
 
-| Path | Typical scope | Topic |
-| ------ | ---------------- | -------- |
-| `.cursor/rules/sunsynk-addons.mdc` | Home Assistant add-ons, add-on Python (`src/ha_addon_sunsynk_multi/`), `www/docs/reference/multi-options.md` | Edit **`hass-addon-sunsynk-edge/`** for packaging; do not hand-edit **`hass-addon-sunsynk-multi/`** unless the user explicitly asks for stable-multi work; keep Supervisor options, docs, and `options.py` in sync as described in the rule. |
-| `.cursor/rules/sunsynk-definitions.mdc` | `src/sunsynk/definitions/**` | Inverter Modbus definitions: profiles, inheritance, single- vs three-phase; how to extend `ALL_DEFS` and avoid wrong cross-profile register assumptions. |
+| Path                                    | Typical scope                                                                                                | Topic                                                                                                                                                                                                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.cursor/rules/sunsynk-addons.mdc`      | Home Assistant add-ons, add-on Python (`src/ha_addon_sunsynk_multi/`), `www/docs/reference/multi-options.md` | Edit **`hass-addon-sunsynk-edge/`** for packaging; do not hand-edit **`hass-addon-sunsynk-multi/`** unless the user explicitly asks for stable-multi work; keep Supervisor options, docs, and `options.py` in sync as described in the rule. |
+| `.cursor/rules/sunsynk-definitions.mdc` | `src/sunsynk/definitions/**`                                                                                 | Inverter Modbus definitions: profiles, inheritance, single- vs three-phase; how to extend `ALL_DEFS` and avoid wrong cross-profile register assumptions.                                                                                     |
 
 If this index drifts, **trust the `.mdc` files**; update this table when you add or rename rules.
 

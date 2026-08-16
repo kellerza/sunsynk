@@ -1,3 +1,7 @@
+# Graphify output
+graphify-out/cost.json      # local only
+graphify-out/cache          # optional: commit for speed, skip to keep repo small
+
 # private/local config
 hass-addon-sunsynk-edge/sunsynk
 hass-addon-sunsynk-edge/VERSION
@@ -39,6 +43,3 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
-
-.DS_store

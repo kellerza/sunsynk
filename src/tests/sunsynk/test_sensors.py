@@ -175,11 +175,11 @@ def test_all_groups() -> None:
     for i in range(2, 6):
         _LOG.warning("waste with %d gap: %s", i, waste(group_sensors(s, i)))
 
-    grp = group_sensors(s)
+    grp = list(group_sensors(s))
 
-    grplen = [len(i) for i in grp]
-
-    assert grplen[:1] == [7]
+    # group sizes for the first 2 groups rated_power(16,17) and date_time(22,23,24)
+    assert grp[0] == [16, 17]
+    assert grp[1] == [22, 23, 24]
 
 
 def waste(groups: Iterable[list[int]]) -> Sequence[int]:

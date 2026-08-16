@@ -2,11 +2,11 @@
 
 import logging
 
-from sunsynk import EnumSensor, SensorDefinitions
-from sunsynk.sensors import ProtocolVersionSensor, SerialSensor
+from sunsynk import SensorDefinitions
 from sunsynk.utils import import_module
 
 COMMON = SensorDefinitions()
+"""Shared empty base; identity (regs 0-7) lives in ``sunsynk.identity.Identity``."""
 
 PROG_CHARGE_OPTIONS = {
     0: "No Grid or Gen",
@@ -20,27 +20,6 @@ PROG_MODE_OPTIONS = {
     2 << 2: "Backup",
     3 << 2: "Charge",
 }
-
-COMMON += (
-    EnumSensor(
-        0,
-        "Device type",
-        options={
-            2: "String Inverter",  # String unit
-            3: "Single-phase hybrid",  # Single-Phase Low-Voltage Energy Storage Unit
-            4: "Micro-inverter",
-            5: "Low-voltage three-phase hybrid",  # Three-Phase Low-Voltage Energy Storage Unit
-            6: "High-voltage three-phase hybrid",  # Three-Phase High-Voltage Energy Storage Unit
-            0x200: "Single-phase LV hybrid (3x MTTP)",
-            0x103: "Single-phase hybrid",  # SUN-6K-OG01LP1-EU-AM2
-            0x500: "Low-voltage three-phase hybrid 10kW",  # SUN-10K-SG05LP3-EU-SM2
-            0x601: "High-voltage three-phase hybrid 6-15kW",
-            0x602: "High-voltage three-phase hybrid 20-50kW",
-        },
-    ),
-    ProtocolVersionSensor(2, "Protocol"),
-    SerialSensor((3, 4, 5, 6, 7), "Serial"),
-)
 
 
 def import_defs(name: str) -> SensorDefinitions:

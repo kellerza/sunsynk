@@ -32,7 +32,7 @@ rsync_excl() {
 copy_sunsynk() {
     print "Copy sunsynk package for '$1'"
     mkdir -p "$DEST/$1/sunsynk"
-    for f in pyproject.toml MANIFEST.in LICENSE README.md uv.lock; do
+    for f in pyproject.toml LICENSE README.md uv.lock; do
         cp -f "$f" "$DEST/$1/sunsynk/"
     done
     rsync_excl src/ "$DEST/$1/sunsynk/src/"

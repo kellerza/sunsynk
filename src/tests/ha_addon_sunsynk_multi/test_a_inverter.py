@@ -10,6 +10,7 @@ from ha_addon_sunsynk_multi.a_sensor import MQTT
 from ha_addon_sunsynk_multi.options import OPT, InverterOptions
 from ha_addon_sunsynk_multi.sensor_options import DEFS, import_definitions
 from sunsynk.definitions.single_phase import SENSORS
+from sunsynk.identity import Identity
 from sunsynk.state import InverterState
 from sunsynk.sunsynk import Sunsynk
 
@@ -56,8 +57,9 @@ async def test_ss_tcp_read(
     unit = MagicMock()
     unit.read_holding_registers = AsyncMock(side_effect=TimeoutError("test"))
     ss = Sunsynk(unit=unit, port="tcp://1.1.1.1", state=state)
+    battery_soc = SENSORS.all["battery_soc"]
     ss.state.track(SENSORS.rated_power)
-    ss.state.track(SENSORS.serial)
+    ss.state.track(battery_soc)
 
     inv_opt = InverterOptions(modbus_id=1, ha_prefix="test")
     ist = _ist(inv_opt, ss, state=state)
@@ -72,7 +74,7 @@ async def test_ss_tcp_read(
     assert "Could not read" not in caplog.text
 
     # more sensors to retry individual
-    sensors.append(SENSORS.serial)
+    sensors.append(battery_soc)
 
     res = await ist.read_sensors_retry(sensors=sensors)
     assert res is False
@@ -99,18 +101,18 @@ async def test_stale_skip_after_successive_read_errors(state: InverterState) -> 
         mock_ss.connect = AsyncMock()
 
         import_definitions()
-        state.track(DEFS.serial)
+        state.track(DEFS.rated_power)
         ist = _ist(inv_opt, mock_ss, state=state)
 
         with P_MOCK_MQTT_PUBLISH_AVAILABILITY:
             # Finite deadline: failures before deadline only increment read_errors.
             ist._stale_enter_at = time.monotonic() + 100.0
-            assert await ist.read_sensors(sensors=[DEFS.serial]) is False
+            assert await ist.read_sensors(sensors=[DEFS.rated_power]) is False
             assert ist.lifecycle == "starting"
             assert ist.read_errors == 1
 
             ist._stale_enter_at = time.monotonic() - 1.0
-            assert await ist.read_sensors(sensors=[DEFS.serial]) is False
+            assert await ist.read_sensors(sensors=[DEFS.rated_power]) is False
             assert ist.lifecycle == "stale_quiet"
             assert ist._stale_quiet_until > 0
             assert ist.read_errors == 2
@@ -142,14 +144,14 @@ async def test_attempt_stale_recovery_quiet_period_skips_connect(
         mock_ss.connect = AsyncMock()
 
         import_definitions()
-        state.track(DEFS.serial)
+        state.track(DEFS.rated_power)
         ist = _ist(inv_opt, mock_ss, state=state)
         # Arm stale: failures only count after a successful read set a finite deadline;
         # simulate "deadline already passed" for this scenario.
         ist._stale_enter_at = time.monotonic() - 1.0
 
         with P_MOCK_MQTT_PUBLISH_AVAILABILITY:
-            assert await ist.read_sensors(sensors=[DEFS.serial]) is False
+            assert await ist.read_sensors(sensors=[DEFS.rated_power]) is False
             assert ist.lifecycle == "stale_quiet"
 
             await ist.lifecycle_attempt_recovery()
@@ -162,7 +164,7 @@ async def test_attempt_stale_recovery_quiet_period_skips_connect(
 async def test_attempt_stale_recovery_probe_success_returns_to_running(
     state: InverterState,
 ) -> None:
-    """After quiet elapses, probe reads serial and resumes when it matches config."""
+    """After quiet elapses, identity probe resumes when serial matches config."""
     old_skip = OPT.stale_inverter_skip_seconds
     try:
         OPT.stale_inverter_skip_seconds = 60
@@ -174,16 +176,19 @@ async def test_attempt_stale_recovery_probe_success_returns_to_running(
             port="tcp://stale-probe-ok:502",
         )
         mock_ss = MagicMock()
-
-        async def probe_sets_serial(*_a: object, **_k: object) -> None:
-            state.values[DEFS.serial] = "888"
-
-        mock_ss.read_sensors = AsyncMock(side_effect=probe_sets_serial)
         mock_ss.connect = AsyncMock()
 
         import_definitions()
-        state.track(DEFS.serial)
         ist = _ist(inv_opt, mock_ss, state=state)
+
+        async def fake_read_identity() -> Identity:
+            identity = MagicMock(spec=Identity)
+            identity.serial = "888"
+            identity.device_type_code = 3
+            identity.device_type = "Single-phase hybrid"
+            identity.protocol = "1.0"
+            ist.identity = identity
+            return identity
 
         mono = [0.0]
 
@@ -199,6 +204,7 @@ async def test_attempt_stale_recovery_probe_success_returns_to_running(
                 "ha_addon_sunsynk_multi.a_inverter.asyncio.sleep",
                 new_callable=AsyncMock,
             ),
+            patch.object(ist, "read_identity", side_effect=fake_read_identity),
             P_MOCK_MQTT_PUBLISH_AVAILABILITY,
         ):
             await ist.lifecycle_enter_stale("test setup")
@@ -206,7 +212,6 @@ async def test_attempt_stale_recovery_probe_success_returns_to_running(
             await ist.lifecycle_attempt_recovery()
 
         mock_ss.connect.assert_called_once()
-        mock_ss.read_sensors.assert_called_once()
         assert ist.lifecycle == "running"
     finally:
         OPT.stale_inverter_skip_seconds = old_skip
@@ -215,7 +220,7 @@ async def test_attempt_stale_recovery_probe_success_returns_to_running(
 async def test_attempt_stale_recovery_probe_failure_reenters_stale(
     state: InverterState,
 ) -> None:
-    """If the serial probe read fails, lifecycle returns to stale_quiet."""
+    """If the identity probe fails, lifecycle returns to stale_quiet."""
     old_skip = OPT.stale_inverter_skip_seconds
     try:
         OPT.stale_inverter_skip_seconds = 60
@@ -227,11 +232,9 @@ async def test_attempt_stale_recovery_probe_failure_reenters_stale(
             port="tcp://stale-probe-fail:502",
         )
         mock_ss = MagicMock()
-        mock_ss.read_sensors = AsyncMock(side_effect=OSError("bus"))
         mock_ss.connect = AsyncMock()
 
         import_definitions()
-        state.track(DEFS.serial)
         ist = _ist(inv_opt, mock_ss, state=state)
 
         mono = [0.0]
@@ -248,6 +251,7 @@ async def test_attempt_stale_recovery_probe_failure_reenters_stale(
                 "ha_addon_sunsynk_multi.a_inverter.asyncio.sleep",
                 new_callable=AsyncMock,
             ),
+            patch.object(ist, "read_identity", side_effect=OSError("bus")),
             P_MOCK_MQTT_PUBLISH_AVAILABILITY,
         ):
             await ist.lifecycle_enter_stale("test setup")

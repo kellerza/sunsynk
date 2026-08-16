@@ -7,7 +7,14 @@ name = "sunsynk"
 version = "0.9.3"
 description = "Library to interface Deye/Sunsynk Hybrid Inverters"
 readme = "README.md"
-keywords = [ "asyncio", "deye", "inverter", "modbus", "sunsynk" ]
+keywords = [
+  "asyncio",
+  "deye",
+  "inverter",
+  "modbus",
+  "modbus-connection",
+  "sunsynk",
+]
 license = "Apache-2.0"
 license-files = [ "LICENSE" ]
 authors = [ { name = "Johann Kellerman", email = "kellerza@gmail.com" } ]
@@ -111,3 +118,5 @@ MD013.tables = false
 MD013.reflow = true
 MD013.reflow-mode = "normalize"
 MD033.allowed-elements = [ "br", "i-mdi-dev-to" ]
+MD060.enabled = true
+MD060.style = "aligned"

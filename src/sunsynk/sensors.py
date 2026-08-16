@@ -180,21 +180,6 @@ class SensorDefinitions:
     """map of 'old_name': 'new_name'"""
 
     @property
-    def device_type(self) -> Sensor:
-        """Get the device type."""
-        return self.all["device_type"]
-
-    @property
-    def protocol(self) -> Sensor:
-        """Get the device type."""
-        return self.all["protocol"]
-
-    @property
-    def serial(self) -> Sensor:
-        """Get the serial sensor."""
-        return self.all["serial"]
-
-    @property
     def rated_power(self) -> Sensor:
         """Get the rated power sensor."""
         return self.all["rated_power"]
@@ -370,11 +355,8 @@ class EnumSensor(TextSensor):
         if res is None:
             if self.unknown:
                 return self.unknown.format(regsm[0])
-            url = {
-                "device_type": "https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions/__init__.py#L28"
-            }.get(
-                self.id,
-                "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions",
+            url = (
+                "https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions"
             )
             if self._warn:
                 _LOG.warning(
