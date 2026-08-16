@@ -33,8 +33,8 @@ Any suggestions on proposed registers is welcome.
 
 ### Logs (if applicable)
 
-```logs
+```conf
 
-paste logs in 3x backticks...
+# paste logs in 3x backticks...
 
 ```

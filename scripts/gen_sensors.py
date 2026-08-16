@@ -31,6 +31,8 @@ def generate_all_sensors(
     sensors = defaultdict[str, dict[str, Sensor | str]](dict[str, Sensor | str])
     for name, defs in all_defs.items():
         for key, sen in defs.all.items():
+            if key != sen.id:
+                continue  # alias slug → same Sensor; Name column already lists aliases
             sensors[key][name] = sen
             sensors[key]["Group"] = "<br>".join(sorted(sen_groups.get(sen.id, [])))
 

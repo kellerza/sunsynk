@@ -19,6 +19,8 @@ A clear and concise description of what you expected to happen.
 
 ### Logs (if applicable)
 
-```txt
-paste logs in 3x backticks...
+```conf
+
+# paste logs in 3x backticks...
+
 ```

@@ -18,17 +18,17 @@ A clear and concise description of what the bug is.
 
 ### Your environment
 
-- Home Assistant version: 2026.1.x
+- Home Assistant version: 2026.8.x
 - Addon:
   - Name: sunsynk-multi
-  - Version: 2026-01-11
+  - Version: 1.0.0 / edge
 - Inverter:
   - Make: Sunsynk/Deye/Sol-Ark/...
   - Model: \_\_
   - Firmware: \_\_
 - Adaptor details:
   - RS485/RS232/solarman
-  - RS485/RS232 brand
+  - Adaptor brand
 
 ### Your configuration
 
@@ -37,7 +37,10 @@ first line (three backticks and `yaml`) and the last line (three backticks only)
 it as a code block.
 
 ```yaml
+
 # replace this line with your full configuration
+# keep the 3x backticks to START and END of the formatted block
+
 ```
 
 ### Logs
@@ -45,6 +48,9 @@ it as a code block.
 Same idea for logs: paste between the fences (replace the placeholder). Use the most recent lines
 that show the error.
 
-```text
+```conf
+
 # replace this line with relevant log lines
+# keep the 3x backticks to START and END of the formatted block
+
 ```

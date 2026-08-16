@@ -220,8 +220,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_gen_sensors",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "gen_sensors.py"
     },
     {
@@ -231,8 +231,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "scripts_gen_sensors_main",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "main()"
     },
     {
@@ -242,30 +242,30 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "scripts_gen_sensors_generate_all_sensors",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "generate_all_sensors()"
     },
     {
       "label": "simple_def_name()",
       "file_type": "code",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L70",
+      "source_location": "L72",
       "_origin": "ast",
       "id": "scripts_gen_sensors_simple_def_name",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "simple_def_name()"
     },
     {
       "label": "generate_group_sensors()",
       "file_type": "code",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L75",
+      "source_location": "L77",
       "_origin": "ast",
       "id": "scripts_gen_sensors_generate_group_sensors",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "generate_group_sensors()"
     },
     {
@@ -275,30 +275,30 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "scripts_gen_sensors_rationale_30",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "generate groups/all.html."
     },
     {
       "label": "Shorten the definition name.",
       "file_type": "rationale",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L71",
+      "source_location": "L73",
       "_origin": "ast",
-      "id": "scripts_gen_sensors_rationale_71",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "id": "scripts_gen_sensors_rationale_73",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "shorten the definition name."
     },
     {
       "label": "Generate groups/{name}.yml.",
       "file_type": "rationale",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L78",
+      "source_location": "L80",
       "_origin": "ast",
-      "id": "scripts_gen_sensors_rationale_78",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "id": "scripts_gen_sensors_rationale_80",
+      "community": 82,
+      "community_name": "gen_sensors.py",
       "norm_label": "generate groups/{name}.yml."
     },
     {
@@ -319,8 +319,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_main",
-      "community": 12,
-      "community_name": "__main__.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "__main__.py"
     },
     {
@@ -331,7 +331,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_main_main_loop",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "main_loop()"
     },
     {
@@ -342,7 +342,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "a_inverter.py"
     },
     {
@@ -352,7 +352,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": "ainverter"
     },
@@ -363,7 +363,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_availability_topic",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": ".availability_topic()"
     },
@@ -375,7 +375,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_set_lifecycle",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".set_lifecycle()"
     },
     {
@@ -386,7 +386,7 @@
       "_origin": "ast",
       "id": "ainverterlifecycle",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "ainverterlifecycle"
     },
     {
@@ -397,7 +397,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_lifecycle_enter_stale",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".lifecycle_enter_stale()"
     },
     {
@@ -408,7 +408,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_lifecycle_attempt_recovery",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".lifecycle_attempt_recovery()"
     },
     {
@@ -419,7 +419,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_read_identity",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".read_identity()"
     },
     {
@@ -430,7 +430,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_warn_device_type_config",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".warn_device_type_config()"
     },
     {
@@ -441,7 +441,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_serial_matches_config",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".serial_matches_config()"
     },
     {
@@ -452,7 +452,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_read_sensors",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".read_sensors()"
     },
     {
@@ -462,7 +462,7 @@
       "source_location": "L221",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_write_sensor",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": ".write_sensor()"
     },
@@ -473,7 +473,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_py_valtype",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": "valtype"
     },
@@ -485,7 +485,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_read_sensors_retry",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".read_sensors_retry()"
     },
     {
@@ -495,7 +495,7 @@
       "source_location": "L254",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_publish_sensors",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": ".publish_sensors()"
     },
@@ -507,7 +507,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_connect",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".connect()"
     },
     {
@@ -517,7 +517,7 @@
       "source_location": "L317",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_rated_power",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": ".rated_power()"
     },
@@ -528,7 +528,7 @@
       "source_location": "L324",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_log_bold",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": ".log_bold()"
     },
@@ -539,8 +539,8 @@
       "source_location": "L330",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_hass_create_discovery_info",
-      "community": 81,
-      "community_name": "slug",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": ".hass_create_discovery_info()"
     },
     {
@@ -550,8 +550,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_hass_discover_sensors",
-      "community": 81,
-      "community_name": "slug",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": ".hass_discover_sensors()"
     },
     {
@@ -572,8 +572,8 @@
       "source_location": "L385",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_create_stats_entities",
-      "community": 81,
-      "community_name": "slug",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": ".create_stats_entities()"
     },
     {
@@ -583,8 +583,8 @@
       "source_location": "L413",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_ainverter_create_near_realtime_switch",
-      "community": 81,
-      "community_name": "slug",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": "._create_near_realtime_switch()"
     },
     {
@@ -605,8 +605,8 @@
       "source_location": "L474",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_compact_exception_group",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": "compact_exception_group()"
     },
     {
@@ -616,8 +616,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "exceptiongroup",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 7,
+      "community_name": "test_a_inverter.py",
       "norm_label": "exceptiongroup"
     },
     {
@@ -627,7 +627,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_43",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": "addon inverter state (per inverter)."
     },
@@ -638,7 +638,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_91",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": "mqtt topic: ``online`` / ``offline`` reflect poll-loop lifecycle (retained)."
     },
@@ -650,7 +650,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_95",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "publish retained lifecycle availability (no-op if mqtt is not connected)."
     },
     {
@@ -661,7 +661,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_110",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "start or extend stale quiet: refresh deadline, set lifecycle, and log."
     },
     {
@@ -672,7 +672,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_128",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "handle stale quiet or run a serial probe when quiet has elapsed."
     },
     {
@@ -683,7 +683,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_155",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "read device type, protocol, and serial via the identity component."
     },
     {
@@ -694,7 +694,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_163",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "warn when sensor_definitions does not match the identity device type."
     },
     {
@@ -705,7 +705,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_180",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "return whether the last identity read left the serial matching config."
     },
     {
@@ -716,7 +716,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_192",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "read from the modbus interface."
     },
     {
@@ -726,7 +726,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_224",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": "write to the modbus interface."
     },
@@ -738,7 +738,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_228",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "read sensors with a retry."
     },
     {
@@ -748,7 +748,7 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_255",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": "publish state to hassh."
     },
@@ -759,7 +759,7 @@
       "source_location": "L318",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_318",
-      "community": 50,
+      "community": 26,
       "community_name": "AInverter",
       "norm_label": "return the inverter power."
     },
@@ -770,8 +770,8 @@
       "source_location": "L331",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_331",
-      "community": 81,
-      "community_name": "slug",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": "create discovery info for the inverter."
     },
     {
@@ -781,8 +781,8 @@
       "source_location": "L364",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_364",
-      "community": 81,
-      "community_name": "slug",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": "discover all sensors."
     },
     {
@@ -803,8 +803,8 @@
       "source_location": "L414",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_414",
-      "community": 81,
-      "community_name": "slug",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": "mqtt switch: publish every w reading for 10 minutes (#401)."
     },
     {
@@ -814,8 +814,8 @@
       "source_location": "L475",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_inverter_rationale_475",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 26,
+      "community_name": "AInverter",
       "norm_label": "compact exception group."
     },
     {
@@ -825,8 +825,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_sensor",
-      "community": 7,
-      "community_name": "sensor_options.py",
+      "community": 15,
+      "community_name": "RWSensor",
       "norm_label": "a_sensor.py"
     },
     {
@@ -968,8 +968,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_a_sensor_rationale_1",
-      "community": 7,
-      "community_name": "sensor_options.py",
+      "community": 15,
+      "community_name": "RWSensor",
       "norm_label": "state of a sensor & entity."
     },
     {
@@ -1068,7 +1068,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "driver.py"
     },
     {
@@ -1079,7 +1079,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_callback_discovery_info",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "callback_discovery_info()"
     },
     {
@@ -1090,7 +1090,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_sensor_on_update",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "sensor_on_update()"
     },
     {
@@ -1101,7 +1101,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_py_valtype",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "valtype"
     },
     {
@@ -1112,7 +1112,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_shared_modbus_connection",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "_shared_modbus_connection()"
     },
     {
@@ -1123,7 +1123,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_py_modbusconnection",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "modbusconnection"
     },
     {
@@ -1134,7 +1134,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_create_sunsynk",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "create_sunsynk()"
     },
     {
@@ -1145,7 +1145,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_init_driver",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "init_driver()"
     },
     {
@@ -1156,7 +1156,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_rationale_27",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "update hass discovery & write rwsensors."
     },
     {
@@ -1167,7 +1167,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_rationale_42",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "react to sensor updates."
     },
     {
@@ -1178,7 +1178,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_rationale_54",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "one ``modbusconnection`` per port; reused across modbus_ids."
     },
     {
@@ -1189,7 +1189,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_rationale_66",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "build a per-inverter ``sunsynk`` (shared connection when modbus)."
     },
     {
@@ -1200,7 +1200,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_driver_rationale_105",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "init sunsynk driver for each inverter."
     },
     {
@@ -1211,7 +1211,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_errors",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "errors.py"
     },
     {
@@ -1221,8 +1221,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_errors_log_error",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "log_error()"
     },
     {
@@ -1233,7 +1233,7 @@
       "_origin": "ast",
       "id": "exception",
       "community": 2,
-      "community_name": ".read_sensors",
+      "community_name": "Sunsynk",
       "norm_label": "exception"
     },
     {
@@ -1244,7 +1244,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_errors_print_errors",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "print_errors()"
     },
     {
@@ -1254,8 +1254,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_errors_rationale_12",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "print an error message."
     },
     {
@@ -1265,8 +1265,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_helpers",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "ha_addon_sunsynk_multi/helpers.py"
     },
     {
@@ -1276,8 +1276,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_helpers_get_root",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "get_root()"
     },
     {
@@ -1287,8 +1287,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_helpers_py_path",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "path"
     },
     {
@@ -1298,8 +1298,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_helpers_import_mysensors",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "import_mysensors()"
     },
     {
@@ -1309,8 +1309,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_helpers_py_any",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "any"
     },
     {
@@ -1320,8 +1320,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_helpers_rationale_15",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "get the root folder for data and mysensors."
     },
     {
@@ -1332,7 +1332,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_near_realtime",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "near_realtime.py"
     },
     {
@@ -1376,7 +1376,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_near_realtime_rationale_1",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "near-realtime mqtt publish mode for power sensors (#401)."
     },
     {
@@ -1419,8 +1419,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "options.py"
     },
     {
@@ -1430,8 +1430,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_is_solarman_port",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "is_solarman_port()"
     },
     {
@@ -1441,8 +1441,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_normalize_legacy_port",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "_normalize_legacy_port()"
     },
     {
@@ -1452,8 +1452,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_as_solarman_port",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "as_solarman_port()"
     },
     {
@@ -1464,7 +1464,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_inverteroptions",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "inverteroptions"
     },
     {
@@ -1475,7 +1475,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_options",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "options"
     },
     {
@@ -1486,7 +1486,7 @@
       "_origin": "ast",
       "id": "mqttoptions",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "mqttoptions"
     },
     {
@@ -1496,8 +1496,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_options_init_addon",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": ".init_addon()"
     },
     {
@@ -1508,7 +1508,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_options_load_dict",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": ".load_dict()"
     },
     {
@@ -1518,8 +1518,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "register_structure_hook",
-      "community": 19,
-      "community_name": "sunsynk.py",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "register_structure_hook"
     },
     {
@@ -1529,8 +1529,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_time_structure_hook",
-      "community": 19,
-      "community_name": "sunsynk.py",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "time_structure_hook()"
     },
     {
@@ -1540,8 +1540,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "time",
-      "community": 19,
-      "community_name": "sunsynk.py",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "time"
     },
     {
@@ -1551,8 +1551,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_rationale_19",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "check if the port selects the solarman dongle transport."
     },
     {
@@ -1562,8 +1562,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_rationale_24",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "strip legacy umodbus ``serial://`` prefix."
     },
     {
@@ -1573,8 +1573,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_rationale_32",
-      "community": 5,
-      "community_name": "Sunsynk",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "rewrite a host url (or bare host) to ``solarman://host:port``."
     },
     {
@@ -1585,7 +1585,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_rationale_48",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "options for an inverter."
     },
     {
@@ -1596,7 +1596,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_rationale_166",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "load options from dict."
     },
     {
@@ -1606,8 +1606,8 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_options_rationale_184",
-      "community": 19,
-      "community_name": "sunsynk.py",
+      "community": 16,
+      "community_name": "options.py",
       "norm_label": "convert a string to a time."
     },
     {
@@ -1618,7 +1618,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "sensor_callback.py"
     },
     {
@@ -1629,7 +1629,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_sensorrun",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "sensorrun"
     },
     {
@@ -1640,7 +1640,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_sensorschedule",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "sensorschedule"
     },
     {
@@ -1651,7 +1651,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_sensorschedule_build_schedules",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": ".build_schedules()"
     },
     {
@@ -1662,7 +1662,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_py_self",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "self"
     },
     {
@@ -1673,7 +1673,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_sensorschedule_print_schedule",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": ".print_schedule()"
     },
     {
@@ -1684,7 +1684,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_build_callback_schedule",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "build_callback_schedule()"
     },
     {
@@ -1695,7 +1695,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_rationale_59",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "print the sensor schedule."
     },
     {
@@ -1706,7 +1706,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_callback_rationale_70",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "build the callback schedule."
     },
     {
@@ -1716,8 +1716,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options",
-      "community": 7,
-      "community_name": "sensor_options.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "sensor_options.py"
     },
     {
@@ -1749,8 +1749,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_sensoroptions",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "sensoroptions"
     },
     {
@@ -1760,8 +1760,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_sensoroptions_add_sensor",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "._add_sensor()"
     },
     {
@@ -1771,8 +1771,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_sensoroptions_init_sensors",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": ".init_sensors()"
     },
     {
@@ -1783,7 +1783,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_import_definitions",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "import_definitions()"
     },
     {
@@ -1793,8 +1793,8 @@
       "source_location": "L330",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_get_sensors",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "get_sensors()"
     },
     {
@@ -1804,8 +1804,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_rationale_1",
-      "community": 7,
-      "community_name": "sensor_options.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "parse sensors from options."
     },
     {
@@ -1826,8 +1826,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_rationale_42",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "a dict of sensors from the configuration."
     },
     {
@@ -1837,8 +1837,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_rationale_54",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "add a sensor. keep dependencies for later."
     },
     {
@@ -1848,8 +1848,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_rationale_67",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "parse options and get the various sensor lists."
     },
     {
@@ -1860,7 +1860,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_sensor_options_rationale_118",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "load definitions according to options."
     },
     {
@@ -1871,7 +1871,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "timer_callback.py"
     },
     {
@@ -1882,7 +1882,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_callback",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "callback"
     },
     {
@@ -1893,7 +1893,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_callback_call",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": ".call()"
     },
     {
@@ -1903,8 +1903,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_callback_post_init",
-      "community": 81,
-      "community_name": "slug",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".__post_init__()"
     },
     {
@@ -1915,7 +1915,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_synccallback",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "synccallback"
     },
     {
@@ -1925,8 +1925,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_synccallback_call",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".call()"
     },
     {
@@ -1936,8 +1936,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_togglelogcallback",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "togglelogcallback"
     },
     {
@@ -1947,8 +1947,8 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_togglelogcallback_calc_next_run",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".calc_next_run()"
     },
     {
@@ -1958,8 +1958,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_togglelogcallback_next_run0",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".next_run0()"
     },
     {
@@ -1969,8 +1969,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_togglelogcallback_post_init",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".__post_init__()"
     },
     {
@@ -1980,8 +1980,8 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_togglelogcallback_mute_log",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".mute_log()"
     },
     {
@@ -1991,8 +1991,8 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_togglelogcallback_call",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".call()"
     },
     {
@@ -2003,7 +2003,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_asynccallback",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "asynccallback"
     },
     {
@@ -2014,7 +2014,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_asynccallback_post_init",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": ".__post_init__()"
     },
     {
@@ -2024,8 +2024,8 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_asynccallback_wrap_callback",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": ".wrap_callback()"
     },
     {
@@ -2036,7 +2036,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_asynccallback_call",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": ".call()"
     },
     {
@@ -2047,7 +2047,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_run_callbacks",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "run_callbacks()"
     },
     {
@@ -2058,7 +2058,7 @@
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_1",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "timer class to run callbacks every x seconds."
     },
     {
@@ -2068,8 +2068,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_54",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "catch unhandled exceptions."
     },
     {
@@ -2079,8 +2079,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_70",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "toggle the log level to critical for a short time, to suppress expected errors."
     },
     {
@@ -2090,8 +2090,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_82",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "calculate the next run times."
     },
     {
@@ -2101,8 +2101,8 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_93",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "return next run seconds of entry 0."
     },
     {
@@ -2112,8 +2112,8 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_105",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "set log level to critical, and reset after duration."
     },
     {
@@ -2123,8 +2123,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_127",
-      "community": 16,
-      "community_name": "ToggleLogCallback",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "toggle the log level."
     },
     {
@@ -2134,8 +2134,8 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_callback_rationale_152",
-      "community": 2,
-      "community_name": ".read_sensors",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "catch unhandled exceptions."
     },
     {
@@ -2145,8 +2145,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "timer_schedule.py"
     },
     {
@@ -2156,8 +2156,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule_schedule",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "schedule"
     },
     {
@@ -2167,8 +2167,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule_schedule_post_init",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": ".__post_init__()"
     },
     {
@@ -2178,8 +2178,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule_schedule_read_once",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": ".read_once()"
     },
     {
@@ -2211,8 +2211,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule_get_schedule",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "get_schedule()"
     },
     {
@@ -2222,8 +2222,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule_init_schedules",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "init_schedules()"
     },
     {
@@ -2244,8 +2244,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule_rationale_65",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "get the schedule for the sensor."
     },
     {
@@ -2255,8 +2255,8 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_ha_addon_sunsynk_multi_timer_schedule_rationale_109",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "initialize the schedules."
     },
     {
@@ -2267,7 +2267,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_init",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "src/sunsynk/__init__.py"
     },
     {
@@ -2278,7 +2278,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_connection",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "connection.py"
     },
     {
@@ -2289,7 +2289,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_connection_url_to_params",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "url_to_params()"
     },
     {
@@ -2300,7 +2300,7 @@
       "_origin": "ast",
       "id": "connectionparams",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "connectionparams"
     },
     {
@@ -2311,7 +2311,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_connection_open_connection",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "open_connection()"
     },
     {
@@ -2322,7 +2322,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_connection_py_modbusconnection",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "modbusconnection"
     },
     {
@@ -2333,7 +2333,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_connection_rationale_1",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "build a ``modbusconnection`` from the add-on / library port url schemes."
     },
     {
@@ -2344,7 +2344,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_connection_rationale_14",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "map a port url (or serial device path) to connection params."
     },
     {
@@ -2355,7 +2355,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_connection_rationale_46",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "create a tmodbus ``modbusconnection`` for ``port`` (does not connect yet)."
     },
     {
@@ -2366,7 +2366,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_init",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "src/sunsynk/definitions/__init__.py"
     },
     {
@@ -2377,7 +2377,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_init_import_defs",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "import_defs()"
     },
     {
@@ -2388,7 +2388,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_init_import_all_defs",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "import_all_defs()"
     },
     {
@@ -2399,7 +2399,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_init_rationale_43",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "get all sensor definitions."
     },
     {
@@ -2410,7 +2410,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_single_phase",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "single_phase.py"
     },
     {
@@ -2421,7 +2421,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_single_phase_rationale_1",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sunsynk 5kw&8kw hybrid inverter sensor definitions."
     },
     {
@@ -2432,7 +2432,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_single_phase_16kw",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "single_phase_16kw.py"
     },
     {
@@ -2443,7 +2443,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_single_phase_16kw_rationale_1",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sunsynk / deye 16kw hybrid inverter sensor definitions."
     },
     {
@@ -2454,7 +2454,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_three_phase_common",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "three_phase_common.py"
     },
     {
@@ -2465,7 +2465,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_three_phase_common_rationale_1",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sunsynk 5kw&8kw hybrid 3-phase inverter sensor definitions."
     },
     {
@@ -2476,7 +2476,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_three_phase_hv",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "three_phase_hv.py"
     },
     {
@@ -2487,7 +2487,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_three_phase_hv_rationale_1",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sunsynk/deye hybrid 3-phase high voltage (hv) inverter sensor definitions."
     },
     {
@@ -2498,7 +2498,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_three_phase_lv",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "three_phase_lv.py"
     },
     {
@@ -2509,7 +2509,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_definitions_three_phase_lv_rationale_1",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sunsynk/deye hybrid 3-phase lv inverter sensor definitions."
     },
     {
@@ -2519,8 +2519,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_sunsynk_helpers",
-      "community": 7,
-      "community_name": "sensor_options.py",
+      "community": 4,
+      "community_name": "Sensor",
       "norm_label": "sunsynk/helpers.py"
     },
     {
@@ -2563,8 +2563,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_sunsynk_helpers_ensure_tuple",
-      "community": 28,
-      "community_name": "ensure_tuple",
+      "community": 23,
+      "community_name": "test_helpers.py",
       "norm_label": "ensure_tuple()"
     },
     {
@@ -2574,8 +2574,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_sunsynk_helpers_py_t",
-      "community": 28,
-      "community_name": "ensure_tuple",
+      "community": 23,
+      "community_name": "test_helpers.py",
       "norm_label": "t"
     },
     {
@@ -2629,8 +2629,8 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_sunsynk_helpers_slug",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": "slug()"
     },
     {
@@ -2640,8 +2640,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "src_sunsynk_helpers_hex_str",
-      "community": 83,
-      "community_name": "hex_str",
+      "community": 23,
+      "community_name": "test_helpers.py",
       "norm_label": "hex_str()"
     },
     {
@@ -2652,7 +2652,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_helpers_patch_bitmask",
       "community": 83,
-      "community_name": "hex_str",
+      "community_name": "patch_bitmask",
       "norm_label": "patch_bitmask()"
     },
     {
@@ -2739,8 +2739,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_sunsynk_helpers_rationale_115",
-      "community": 83,
-      "community_name": "hex_str",
+      "community": 23,
+      "community_name": "test_helpers.py",
       "norm_label": "convert register values to hex strings."
     },
     {
@@ -2751,7 +2751,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_helpers_rationale_123",
       "community": 83,
-      "community_name": "hex_str",
+      "community_name": "patch_bitmask",
       "norm_label": "combine bitmask values."
     },
     {
@@ -2828,7 +2828,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "identity.py"
     },
     {
@@ -2839,7 +2839,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity_device_type_label",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "_device_type_label()"
     },
     {
@@ -2850,7 +2850,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity_protocol_version",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "_protocol_version()"
     },
     {
@@ -2861,7 +2861,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity_identity",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "identity"
     },
     {
@@ -2872,7 +2872,7 @@
       "_origin": "ast",
       "id": "component",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "component"
     },
     {
@@ -2883,7 +2883,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity_suggested_sensor_definitions",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "suggested_sensor_definitions()"
     },
     {
@@ -2894,7 +2894,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity_rationale_1",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "inverter identity from holding registers 0-7 (modbus_connection component)."
     },
     {
@@ -2905,7 +2905,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity_rationale_35",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "device type, protocol, and serial \u2014 shared by all deye/sunsynk families."
     },
     {
@@ -2916,7 +2916,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_identity_rationale_44",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "return the sensor_definitions profile for ``device_type_code`` (default single-..."
     },
     {
@@ -2927,7 +2927,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "rwsensors.py"
     },
     {
@@ -2948,8 +2948,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rwsensor_reg",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": ".reg()"
     },
     {
@@ -2959,8 +2959,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_py_regtype",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "regtype"
     },
     {
@@ -2970,8 +2970,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rwsensor_value_to_reg",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".value_to_reg()"
     },
     {
@@ -2981,8 +2981,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_py_valtype",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "valtype"
     },
     {
@@ -2992,8 +2992,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rwsensor_post_init",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3036,8 +3036,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_numberrwsensor_value_to_reg",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": ".value_to_reg()"
     },
     {
@@ -3069,8 +3069,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_selectrwsensor_value_to_reg",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": ".value_to_reg()"
     },
     {
@@ -3080,8 +3080,8 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_selectrwsensor_reg_to_value",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".reg_to_value()"
     },
     {
@@ -3102,8 +3102,8 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_switchrwsensor0_post_init",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3113,8 +3113,8 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_switchrwsensor",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 4,
+      "community_name": "Sensor",
       "norm_label": "switchrwsensor"
     },
     {
@@ -3124,8 +3124,8 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_switchrwsensor_post_init",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3135,8 +3135,8 @@
       "source_location": "L164",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_switchrwsensor_reg_to_value",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".reg_to_value()"
     },
     {
@@ -3146,8 +3146,8 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_switchrwsensor_value_to_reg",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".value_to_reg()"
     },
     {
@@ -3157,8 +3157,8 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_systemtimerwsensor",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "systemtimerwsensor"
     },
     {
@@ -3168,8 +3168,8 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_systemtimerwsensor_post_init",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3179,8 +3179,8 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_systemtimerwsensor_value_to_reg",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".value_to_reg()"
     },
     {
@@ -3190,8 +3190,8 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_systemtimerwsensor_reg_to_value",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".reg_to_value()"
     },
     {
@@ -3223,8 +3223,8 @@
       "source_location": "L250",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_timerwsensor_dependencies",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 15,
+      "community_name": "RWSensor",
       "norm_label": ".dependencies()"
     },
     {
@@ -3234,8 +3234,8 @@
       "source_location": "L254",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_timerwsensor_reg_to_value",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": ".reg_to_value()"
     },
     {
@@ -3245,8 +3245,8 @@
       "source_location": "L258",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_timerwsensor_value_to_reg",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": ".value_to_reg()"
     },
     {
@@ -3257,7 +3257,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_1",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sensor classes represent modbus registers for an inverter."
     },
     {
@@ -3267,8 +3267,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_32",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": "check the registers are within the bitmask."
     },
     {
@@ -3278,8 +3278,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_44",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "get the reg value from a display value."
     },
     {
@@ -3311,8 +3311,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_77",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": "get the reg value from a display value."
     },
     {
@@ -3344,8 +3344,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_108",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": "get the reg value from a display value, or the current reg value if out of..."
     },
     {
@@ -3366,8 +3366,8 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_136",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "ensure correct parameters."
     },
     {
@@ -3377,8 +3377,8 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_149",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 4,
+      "community_name": "Sensor",
       "norm_label": "switch. similar to binarysensor, but writeable."
     },
     {
@@ -3388,8 +3388,8 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_157",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "ensure correct parameters."
     },
     {
@@ -3399,8 +3399,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_165",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "reg to value for binary."
     },
     {
@@ -3410,8 +3410,8 @@
       "source_location": "L174",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_174",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "get the reg value from a display value, or the current reg value if out of..."
     },
     {
@@ -3421,8 +3421,8 @@
       "source_location": "L185",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_185",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "read & write time sensor."
     },
     {
@@ -3432,8 +3432,8 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_196",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "get the reg value from a display value."
     },
     {
@@ -3454,8 +3454,8 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_251",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 15,
+      "community_name": "RWSensor",
       "norm_label": "get a list of sensors upon which this sensor depends."
     },
     {
@@ -3465,8 +3465,8 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_255",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 14,
+      "community_name": "RegType",
       "norm_label": "decode the time from a register."
     },
     {
@@ -3476,8 +3476,8 @@
       "source_location": "L259",
       "_origin": "ast",
       "id": "src_sunsynk_rwsensors_rationale_259",
-      "community": 15,
-      "community_name": "RWSensor",
+      "community": 85,
+      "community_name": ".value_to_reg",
       "norm_label": "get the reg value from a display value."
     },
     {
@@ -3488,7 +3488,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sensors.py"
     },
     {
@@ -3498,8 +3498,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_ensure_slugs",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 88,
+      "community_name": "ensure_slugs",
       "norm_label": "ensure_slugs()"
     },
     {
@@ -3509,7 +3509,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor",
-      "community": 8,
+      "community": 4,
       "community_name": "Sensor",
       "norm_label": "sensor"
     },
@@ -3520,8 +3520,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor_post_init",
-      "community": 28,
-      "community_name": "ensure_tuple",
+      "community": 23,
+      "community_name": "test_helpers.py",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3542,8 +3542,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor_id",
-      "community": 81,
-      "community_name": "slug",
+      "community": 50,
+      "community_name": "a_inverter.py",
       "norm_label": ".id()"
     },
     {
@@ -3553,8 +3553,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor_source",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 90,
+      "community_name": ".source",
       "norm_label": ".source()"
     },
     {
@@ -3597,7 +3597,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor_hash",
-      "community": 8,
+      "community": 4,
       "community_name": "Sensor",
       "norm_label": ".__hash__()"
     },
@@ -3608,8 +3608,8 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor_eq",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 91,
+      "community_name": ".__eq__",
       "norm_label": ".__eq__()"
     },
     {
@@ -3619,7 +3619,7 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_constant",
-      "community": 8,
+      "community": 4,
       "community_name": "Sensor",
       "norm_label": "constant"
     },
@@ -3631,7 +3631,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_constant_post_init",
       "community": 28,
-      "community_name": "ensure_tuple",
+      "community_name": ".__post_init__",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3653,7 +3653,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor16",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "sensor16"
     },
     {
@@ -3675,7 +3675,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensor16_post_init",
       "community": 28,
-      "community_name": "ensure_tuple",
+      "community_name": ".__post_init__",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3686,7 +3686,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_textsensor",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "textsensor"
     },
     {
@@ -3696,7 +3696,7 @@
       "source_location": "L158",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_binarysensor",
-      "community": 8,
+      "community": 4,
       "community_name": "Sensor",
       "norm_label": "binarysensor"
     },
@@ -3718,7 +3718,7 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensordefinitions",
-      "community": 0,
+      "community": 21,
       "community_name": "SensorDefinitions",
       "norm_label": "sensordefinitions"
     },
@@ -3729,7 +3729,7 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensordefinitions_rated_power",
-      "community": 0,
+      "community": 21,
       "community_name": "SensorDefinitions",
       "norm_label": ".rated_power()"
     },
@@ -3740,8 +3740,8 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensordefinitions_add",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 88,
+      "community_name": "ensure_slugs",
       "norm_label": ".__add__()"
     },
     {
@@ -3751,8 +3751,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_py_self",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 88,
+      "community_name": "ensure_slugs",
       "norm_label": "self"
     },
     {
@@ -3762,7 +3762,7 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensordefinitions_copy",
-      "community": 0,
+      "community": 21,
       "community_name": "SensorDefinitions",
       "norm_label": ".copy()"
     },
@@ -3774,7 +3774,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sensordefinitions_override",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": ".override()"
     },
     {
@@ -3784,8 +3784,8 @@
       "source_location": "L254",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_mathsensor",
-      "community": 4,
-      "community_name": "sensors.py",
+      "community": 8,
+      "community_name": "test_sensors.py",
       "norm_label": "mathsensor"
     },
     {
@@ -3807,7 +3807,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_mathsensor_post_init",
       "community": 28,
-      "community_name": "ensure_tuple",
+      "community_name": ".__post_init__",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3818,7 +3818,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_tempsensor",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "tempsensor"
     },
     {
@@ -3840,7 +3840,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_sdstatussensor",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sdstatussensor"
     },
     {
@@ -3862,7 +3862,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_inverterstatesensor",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "inverterstatesensor"
     },
     {
@@ -3884,7 +3884,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_serialsensor",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "serialsensor"
     },
     {
@@ -3906,7 +3906,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_enumsensor",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "enumsensor"
     },
     {
@@ -3916,8 +3916,8 @@
       "source_location": "L347",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_enumsensor_available_values",
-      "community": 4,
-      "community_name": "sensors.py",
+      "community": 89,
+      "community_name": ".available_values",
       "norm_label": ".available_values()"
     },
     {
@@ -3938,8 +3938,8 @@
       "source_location": "L375",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_faultsensor",
-      "community": 4,
-      "community_name": "sensors.py",
+      "community": 8,
+      "community_name": "test_sensors.py",
       "norm_label": "faultsensor"
     },
     {
@@ -3961,7 +3961,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_hvfaultsensor",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "hvfaultsensor"
     },
     {
@@ -3983,7 +3983,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_protocolversionsensor",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "protocolversionsensor"
     },
     {
@@ -4005,7 +4005,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_1",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sensor classes represent modbus registers for an inverter."
     },
     {
@@ -4015,8 +4015,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_24",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 88,
+      "community_name": "ensure_slugs",
       "norm_label": "ensure a list of slugs."
     },
     {
@@ -4026,8 +4026,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_61",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 90,
+      "community_name": ".source",
       "norm_label": "return the source of the sensor."
     },
     {
@@ -4059,8 +4059,8 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_95",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 91,
+      "community_name": ".__eq__",
       "norm_label": "sensor equality is based on the id only."
     },
     {
@@ -4070,7 +4070,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_103",
-      "community": 8,
+      "community": 4,
       "community_name": "Sensor",
       "norm_label": "sensor that always returns a constant value."
     },
@@ -4082,7 +4082,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_108",
       "community": 28,
-      "community_name": "ensure_tuple",
+      "community_name": ".__post_init__",
       "norm_label": "post-initialization processing."
     },
     {
@@ -4104,7 +4104,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_120",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "sensor with a 16-bit/32-bit register registers."
     },
     {
@@ -4126,7 +4126,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_147",
       "community": 28,
-      "community_name": "ensure_tuple",
+      "community_name": ".__post_init__",
       "norm_label": "ensure correct parameters."
     },
     {
@@ -4137,7 +4137,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_154",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "text/non-numeric sensors are discovered differently."
     },
     {
@@ -4158,7 +4158,7 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_184",
-      "community": 0,
+      "community": 21,
       "community_name": "SensorDefinitions",
       "norm_label": "get the rated power sensor."
     },
@@ -4169,7 +4169,7 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_197",
-      "community": 0,
+      "community": 21,
       "community_name": "SensorDefinitions",
       "norm_label": "copy the sensor definitions."
     },
@@ -4181,7 +4181,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_201",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "override existing sensors with new definitions."
     },
     {
@@ -4191,8 +4191,8 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_255",
-      "community": 4,
-      "community_name": "sensors.py",
+      "community": 8,
+      "community_name": "test_sensors.py",
       "norm_label": "math sensor, add multiple registers."
     },
     {
@@ -4214,7 +4214,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_276",
       "community": 28,
-      "community_name": "ensure_tuple",
+      "community_name": ".__post_init__",
       "norm_label": "ensure correct parameters."
     },
     {
@@ -4225,7 +4225,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_287",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "offset by 100 for temperature."
     },
     {
@@ -4269,7 +4269,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_331",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "decode the inverter serial number."
     },
     {
@@ -4291,7 +4291,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_340",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "sensor with a set of enum values. like a read-only selectrwsensor."
     },
     {
@@ -4301,8 +4301,8 @@
       "source_location": "L348",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_348",
-      "community": 4,
-      "community_name": "sensors.py",
+      "community": 89,
+      "community_name": ".available_values",
       "norm_label": "get the available values for this sensor."
     },
     {
@@ -4312,8 +4312,8 @@
       "source_location": "L376",
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_376",
-      "community": 4,
-      "community_name": "sensors.py",
+      "community": 8,
+      "community_name": "test_sensors.py",
       "norm_label": "decode inverter faults."
     },
     {
@@ -4335,7 +4335,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_409",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "decode hv inverter faults."
     },
     {
@@ -4357,7 +4357,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sensors_rationale_492",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "protocol version sensor."
     },
     {
@@ -4576,7 +4576,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_sunsynk_state",
-      "community": 8,
+      "community": 4,
       "community_name": "Sensor",
       "norm_label": "state.py"
     },
@@ -4709,7 +4709,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_state_group_sensors",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "group_sensors()"
     },
     {
@@ -4720,7 +4720,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_state_register_map",
       "community": 2,
-      "community_name": ".read_sensors",
+      "community_name": "Sunsynk",
       "norm_label": "register_map()"
     },
     {
@@ -4808,7 +4808,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_state_rationale_155",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "group sensor registers into blocks for reading."
     },
     {
@@ -4819,7 +4819,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_state_rationale_172",
       "community": 2,
-      "community_name": ".read_sensors",
+      "community_name": "Sunsynk",
       "norm_label": "turn the registers into a dictionary or map."
     },
     {
@@ -4829,8 +4829,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk",
-      "community": 19,
-      "community_name": "sunsynk.py",
+      "community": 4,
+      "community_name": "Sensor",
       "norm_label": "sunsynk.py"
     },
     {
@@ -4895,7 +4895,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_sunsynk",
-      "community": 5,
+      "community": 2,
       "community_name": "Sunsynk",
       "norm_label": "sunsynk"
     },
@@ -4907,7 +4907,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_sunsynk_from_url",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": ".from_url()"
     },
     {
@@ -4917,7 +4917,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_sunsynk_connect",
-      "community": 5,
+      "community": 2,
       "community_name": "Sunsynk",
       "norm_label": ".connect()"
     },
@@ -4928,8 +4928,8 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_sunsynk_write_register",
-      "community": 13,
-      "community_name": "HoldingUnit",
+      "community": 2,
+      "community_name": "Sunsynk",
       "norm_label": ".write_register()"
     },
     {
@@ -4939,8 +4939,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_sunsynk_write_sensor",
-      "community": 83,
-      "community_name": "hex_str",
+      "community": 2,
+      "community_name": "Sunsynk",
       "norm_label": ".write_sensor()"
     },
     {
@@ -4950,8 +4950,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_py_valtype",
-      "community": 83,
-      "community_name": "hex_str",
+      "community": 2,
+      "community_name": "Sunsynk",
       "norm_label": "valtype"
     },
     {
@@ -4961,8 +4961,8 @@
       "source_location": "L138",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_sunsynk_read_holding_registers",
-      "community": 83,
-      "community_name": "hex_str",
+      "community": 2,
+      "community_name": "Sunsynk",
       "norm_label": ".read_holding_registers()"
     },
     {
@@ -4973,7 +4973,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_sunsynk_read_sensors",
       "community": 2,
-      "community_name": ".read_sensors",
+      "community_name": "Sunsynk",
       "norm_label": ".read_sensors()"
     },
     {
@@ -4983,8 +4983,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_rationale_1",
-      "community": 19,
-      "community_name": "sunsynk.py",
+      "community": 4,
+      "community_name": "Sensor",
       "norm_label": "sunsync modbus interface."
     },
     {
@@ -5038,7 +5038,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_rationale_44",
-      "community": 5,
+      "community": 2,
       "community_name": "Sunsynk",
       "norm_label": "sunsync inverter reached through a holding-register unit."
     },
@@ -5050,7 +5050,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_rationale_68",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "create a ``sunsynk`` that owns a tmodbus connection for ``port``."
     },
     {
@@ -5060,7 +5060,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_rationale_82",
-      "community": 5,
+      "community": 2,
       "community_name": "Sunsynk",
       "norm_label": "connect the owned link, or a unit that implements ``connect`` (solarman)."
     },
@@ -5071,8 +5071,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_rationale_96",
-      "community": 13,
-      "community_name": "HoldingUnit",
+      "community": 2,
+      "community_name": "Sunsynk",
       "norm_label": "write to a register - sunsynk support function code 0x10."
     },
     {
@@ -5082,8 +5082,8 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_rationale_139",
-      "community": 83,
-      "community_name": "hex_str",
+      "community": 2,
+      "community_name": "Sunsynk",
       "norm_label": "read holding registers (fc03)."
     },
     {
@@ -5094,7 +5094,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_sunsynk_rationale_148",
       "community": 2,
-      "community_name": ".read_sensors",
+      "community_name": "Sunsynk",
       "norm_label": "read a list of sensors - sunsynk supports function code 0x03."
     },
     {
@@ -5105,7 +5105,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_init",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "utils/__init__.py"
     },
     {
@@ -5115,8 +5115,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_sunsynk_utils_init_import_module",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "import_module()"
     },
     {
@@ -5126,8 +5126,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_sunsynk_utils_init_py_path",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "path"
     },
     {
@@ -5137,8 +5137,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "moduletype",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 81,
+      "community_name": "import_module",
       "norm_label": "moduletype"
     },
     {
@@ -5149,7 +5149,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_pretty_table",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "pretty_table.py"
     },
     {
@@ -5182,7 +5182,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_pretty_table_pretty_table",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "pretty_table()"
     },
     {
@@ -5193,7 +5193,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_pretty_table_py_t",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "t"
     },
     {
@@ -5204,7 +5204,7 @@
       "_origin": "ast",
       "id": "prettytable",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "prettytable"
     },
     {
@@ -5215,7 +5215,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_pretty_table_table_data",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "table_data()"
     },
     {
@@ -5226,7 +5226,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_pretty_table_pretty_table_sensors",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "pretty_table_sensors()"
     },
     {
@@ -5248,7 +5248,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_pretty_table_rationale_58",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "convert a list of dictionaries to a table data format."
     },
     {
@@ -5259,7 +5259,7 @@
       "_origin": "ast",
       "id": "src_sunsynk_utils_pretty_table_rationale_73",
       "community": 11,
-      "community_name": "timer_schedule.py",
+      "community_name": "utils/__init__.py",
       "norm_label": "generate a pretty table for the given sensors."
     },
     {
@@ -5468,7 +5468,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_conftest",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "ha_addon_sunsynk_multi/conftest.py"
     },
     {
@@ -5501,7 +5501,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "test_a_inverter.py"
     },
     {
@@ -5512,7 +5512,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_ist",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "_ist()"
     },
     {
@@ -5523,7 +5523,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_test_set_lifecycle_publish_availability_uses_retain",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "test_set_lifecycle_publish_availability_uses_retain()"
     },
     {
@@ -5534,7 +5534,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_test_ss_tcp_read",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "test_ss_tcp_read()"
     },
     {
@@ -5545,7 +5545,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_py_logcapturefixture",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "logcapturefixture"
     },
     {
@@ -5556,7 +5556,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_test_stale_skip_after_successive_read_errors",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "test_stale_skip_after_successive_read_errors()"
     },
     {
@@ -5567,7 +5567,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_test_attempt_stale_recovery_quiet_period_skips_connect",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "test_attempt_stale_recovery_quiet_period_skips_connect()"
     },
     {
@@ -5578,7 +5578,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_test_attempt_stale_recovery_probe_success_returns_to_running",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "test_attempt_stale_recovery_probe_success_returns_to_running()"
     },
     {
@@ -5589,7 +5589,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_test_attempt_stale_recovery_probe_failure_reenters_stale",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "test_attempt_stale_recovery_probe_failure_reenters_stale()"
     },
     {
@@ -5600,7 +5600,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_1",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "tests for ha_addon_sunsynk_multi.a_inverter."
     },
     {
@@ -5611,7 +5611,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_25",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "build an ainverter with the given sunsynk."
     },
     {
@@ -5622,7 +5622,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_30",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "per-inverter lifecycle mqtt must be retained (ha after broker restart)."
     },
     {
@@ -5633,7 +5633,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_53",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "simulate a timeout during retry read...."
     },
     {
@@ -5644,7 +5644,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_85",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "enter stale quiet after read failures once the grace window (seconds) has..."
     },
     {
@@ -5655,7 +5655,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_127",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "during stale quiet, attempt_stale_recovery does not call connect."
     },
     {
@@ -5666,7 +5666,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_167",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "after quiet elapses, identity probe resumes when serial matches config."
     },
     {
@@ -5677,7 +5677,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_a_inverter_rationale_223",
       "community": 7,
-      "community_name": "sensor_options.py",
+      "community_name": "test_a_inverter.py",
       "norm_label": "if the identity probe fails, lifecycle returns to stale_quiet."
     },
     {
@@ -5732,7 +5732,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_driver",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "test_driver.py"
     },
     {
@@ -5743,7 +5743,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_driver_test_init",
       "community": 5,
-      "community_name": "Sunsynk",
+      "community_name": "driver.py",
       "norm_label": "test_init()"
     },
     {
@@ -5754,7 +5754,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_near_realtime",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "test_near_realtime.py"
     },
     {
@@ -5787,7 +5787,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_near_realtime_test_near_realtime_auto_off",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "test_near_realtime_auto_off()"
     },
     {
@@ -5798,7 +5798,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_near_realtime_test_near_realtime_cancel_on_disable",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "test_near_realtime_cancel_on_disable()"
     },
     {
@@ -5820,7 +5820,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_near_realtime_rationale_1",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "near-realtime mode tests (#401)."
     },
     {
@@ -5842,7 +5842,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_near_realtime_rationale_40",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "auto-off clears the flag and invokes the registered callback."
     },
     {
@@ -5853,7 +5853,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_near_realtime_rationale_55",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "disabling cancels the auto-off timer."
     },
     {
@@ -5974,7 +5974,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_sensor_callback",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "test_sensor_callback.py"
     },
     {
@@ -5984,8 +5984,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_sensor_callback_test_build_callback_schedule",
-      "community": 50,
-      "community_name": "AInverter",
+      "community": 18,
+      "community_name": "ASensor",
       "norm_label": "test_build_callback_schedule()"
     },
     {
@@ -5996,7 +5996,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_sensor_callback_rationale_1",
       "community": 50,
-      "community_name": "AInverter",
+      "community_name": "a_inverter.py",
       "norm_label": "test sensor callbacks."
     },
     {
@@ -6006,8 +6006,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_sensor_callback_rationale_20",
-      "community": 50,
-      "community_name": "AInverter",
+      "community": 18,
+      "community_name": "ASensor",
       "norm_label": "test build_callback_schedule."
     },
     {
@@ -6062,7 +6062,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_timer",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "test_timer.py"
     },
     {
@@ -6073,7 +6073,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_timer_test_timer",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "test_timer()"
     },
     {
@@ -6083,8 +6083,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_timer_test_schedule",
-      "community": 11,
-      "community_name": "timer_schedule.py",
+      "community": 12,
+      "community_name": "timer_callback.py",
       "norm_label": "test_schedule()"
     },
     {
@@ -6095,7 +6095,7 @@
       "_origin": "ast",
       "id": "src_tests_ha_addon_sunsynk_multi_test_timer_rationale_1",
       "community": 12,
-      "community_name": "__main__.py",
+      "community_name": "timer_callback.py",
       "norm_label": "the the timer module."
     },
     {
@@ -6172,7 +6172,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_definitions_test_init",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "test_init.py"
     },
     {
@@ -6183,7 +6183,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_definitions_test_init_test_import_defs",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "test_import_defs()"
     },
     {
@@ -6194,7 +6194,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_definitions_test_init_test_all_defs",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "test_all_defs()"
     },
     {
@@ -6205,7 +6205,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_definitions_test_init_rationale_1",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "test sensor definitions."
     },
     {
@@ -6216,7 +6216,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_definitions_test_init_rationale_7",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "test importing sensors."
     },
     {
@@ -6227,7 +6227,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_definitions_test_init_rationale_20",
       "community": 0,
-      "community_name": "SensorDefinitions",
+      "community_name": "src/sunsynk/definitions/__init__.py",
       "norm_label": "test all sensor definitions."
     },
     {
@@ -6238,7 +6238,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "test_connection.py"
     },
     {
@@ -6249,7 +6249,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_test_url_to_params",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "test_url_to_params()"
     },
     {
@@ -6260,7 +6260,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_test_open_connection_builds_tmodbus",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "test_open_connection_builds_tmodbus()"
     },
     {
@@ -6271,7 +6271,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_test_from_url_mock_unit",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "test_from_url_mock_unit()"
     },
     {
@@ -6282,7 +6282,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_test_write_register_timeout",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "test_write_register_timeout()"
     },
     {
@@ -6293,7 +6293,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_test_read_holding_registers_timeout",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "test_read_holding_registers_timeout()"
     },
     {
@@ -6304,7 +6304,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_rationale_1",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "connection url helpers and sunsynk.from_url."
     },
     {
@@ -6315,7 +6315,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_rationale_15",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "port schemes map to the expected params."
     },
     {
@@ -6326,7 +6326,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_rationale_33",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "open_connection returns a tmodbus modbusconnection (lazy connect)."
     },
     {
@@ -6337,7 +6337,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_rationale_41",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "sunsynk.from_url owns a connection; i/o goes through the unit."
     },
     {
@@ -6348,7 +6348,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_rationale_64",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "timeouts on write increment the counter and return false."
     },
     {
@@ -6359,7 +6359,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_connection_rationale_73",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "timeouts on read increment the counter and raise oserror."
     },
     {
@@ -6402,8 +6402,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_helpers_test_ensure_tuple",
-      "community": 28,
-      "community_name": "ensure_tuple",
+      "community": 23,
+      "community_name": "test_helpers.py",
       "norm_label": "test_ensure_tuple()"
     },
     {
@@ -6413,8 +6413,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_helpers_test_hex_str",
-      "community": 83,
-      "community_name": "hex_str",
+      "community": 23,
+      "community_name": "test_helpers.py",
       "norm_label": "test_hex_str()"
     },
     {
@@ -6491,7 +6491,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_helpers_test_patch_bitmask",
       "community": 83,
-      "community_name": "hex_str",
+      "community_name": "patch_bitmask",
       "norm_label": "test_patch_bitmask()"
     },
     {
@@ -6579,7 +6579,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_helpers_rationale_160",
       "community": 83,
-      "community_name": "hex_str",
+      "community_name": "patch_bitmask",
       "norm_label": "test patch_bitmask function."
     },
     {
@@ -6601,7 +6601,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "test_identity.py"
     },
     {
@@ -6612,7 +6612,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_fakeunit",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "_fakeunit"
     },
     {
@@ -6623,7 +6623,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_fakeunit_init",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".__init__()"
     },
     {
@@ -6634,7 +6634,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_fakeunit_read_holding_registers",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": ".read_holding_registers()"
     },
     {
@@ -6645,7 +6645,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_serial_regs",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "_serial_regs()"
     },
     {
@@ -6656,7 +6656,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_test_identity_decode",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "test_identity_decode()"
     },
     {
@@ -6667,7 +6667,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_test_identity_unknown_device_type",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "test_identity_unknown_device_type()"
     },
     {
@@ -6678,7 +6678,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_rationale_1",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "tests for sunsynk.identity.identity."
     },
     {
@@ -6689,7 +6689,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_rationale_9",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "minimal holdingunit returning a fixed identity block."
     },
     {
@@ -6700,7 +6700,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_rationale_21",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "pack ascii into five holding registers (two chars per word)."
     },
     {
@@ -6711,7 +6711,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_rationale_27",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "identity component decodes device type, protocol, and serial."
     },
     {
@@ -6722,7 +6722,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_identity_rationale_47",
       "community": 26,
-      "community_name": "Identity",
+      "community_name": "AInverter",
       "norm_label": "unknown device type code gets a fallback label; defs default to single-phase."
     },
     {
@@ -6920,7 +6920,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_sensors.py"
     },
     {
@@ -6931,7 +6931,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_binary_sensor",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_binary_sensor()"
     },
     {
@@ -6942,7 +6942,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_sen",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_sen()"
     },
     {
@@ -6953,7 +6953,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_sensor_hash",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_sensor_hash()"
     },
     {
@@ -6964,7 +6964,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_sensor16",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_sensor16()"
     },
     {
@@ -6975,7 +6975,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_group",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_group()"
     },
     {
@@ -6986,7 +6986,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_group_max_size",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_group_max_size()"
     },
     {
@@ -6997,7 +6997,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_all_groups",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_all_groups()"
     },
     {
@@ -7008,7 +7008,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_waste",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "waste()"
     },
     {
@@ -7018,8 +7018,8 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_ids",
-      "community": 0,
-      "community_name": "SensorDefinitions",
+      "community": 88,
+      "community_name": "ensure_slugs",
       "norm_label": "test_ids()"
     },
     {
@@ -7030,7 +7030,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_other_sensors",
       "community": 4,
-      "community_name": "sensors.py",
+      "community_name": "Sensor",
       "norm_label": "test_other_sensors()"
     },
     {
@@ -7041,7 +7041,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_math",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_math()"
     },
     {
@@ -7052,7 +7052,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_update_func",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_update_func()"
     },
     {
@@ -7063,7 +7063,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_decode_fault",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_decode_fault()"
     },
     {
@@ -7073,7 +7073,7 @@
       "source_location": "L283",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_sensor_alias_registered_as_slug",
-      "community": 0,
+      "community": 21,
       "community_name": "SensorDefinitions",
       "norm_label": "test_sensor_alias_registered_as_slug()"
     },
@@ -7084,8 +7084,8 @@
       "source_location": "L293",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_sensor_alias_tuple",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 21,
+      "community_name": "SensorDefinitions",
       "norm_label": "test_sensor_alias_tuple()"
     },
     {
@@ -7096,7 +7096,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_source",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "test_source()"
     },
     {
@@ -7106,8 +7106,8 @@
       "source_location": "L315",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_override",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 21,
+      "community_name": "SensorDefinitions",
       "norm_label": "test_override()"
     },
     {
@@ -7117,8 +7117,8 @@
       "source_location": "L326",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_override_const",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 21,
+      "community_name": "SensorDefinitions",
       "norm_label": "test_override_const()"
     },
     {
@@ -7128,8 +7128,8 @@
       "source_location": "L351",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_test_override_many",
-      "community": 20,
-      "community_name": "NumberRWSensor",
+      "community": 21,
+      "community_name": "SensorDefinitions",
       "norm_label": "test_override_many()"
     },
     {
@@ -7140,7 +7140,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_rationale_1",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "sunsynk sensor tests."
     },
     {
@@ -7151,7 +7151,7 @@
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_rationale_186",
       "community": 8,
-      "community_name": "Sensor",
+      "community_name": "test_sensors.py",
       "norm_label": "calculate amount of unused registers in this grouping."
     },
     {
@@ -7161,7 +7161,7 @@
       "source_location": "L284",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_rationale_284",
-      "community": 0,
+      "community": 21,
       "community_name": "SensorDefinitions",
       "norm_label": "string ``alias`` is one alternate name; registry keys match ``slug()`` (config..."
     },
@@ -7172,8 +7172,8 @@
       "source_location": "L294",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_sensors_rationale_294",
-      "community": 8,
-      "community_name": "Sensor",
+      "community": 21,
+      "community_name": "SensorDefinitions",
       "norm_label": "multiple alternate names from a tuple each get a slug key."
     },
     {
@@ -7271,8 +7271,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test_state.py"
     },
     {
@@ -7282,8 +7282,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_test_history",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test_history()"
     },
     {
@@ -7293,8 +7293,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_test_history_raise",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test_history_raise()"
     },
     {
@@ -7304,8 +7304,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_test_history_nn",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test_history_nn()"
     },
     {
@@ -7315,8 +7315,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_test_history_nn_binary",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test_history_nn_binary()"
     },
     {
@@ -7326,8 +7326,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_rationale_1",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "sunsynk sensor state."
     },
     {
@@ -7337,8 +7337,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_rationale_15",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test history with numeric values."
     },
     {
@@ -7348,8 +7348,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_rationale_38",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test if we have a valueerror."
     },
     {
@@ -7359,8 +7359,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_rationale_56",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test history with non-numeric values."
     },
     {
@@ -7370,8 +7370,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_tests_sunsynk_test_state_rationale_70",
-      "community": 25,
-      "community_name": "InverterState",
+      "community": 30,
+      "community_name": "test_state.py",
       "norm_label": "test history with non-numeric values."
     },
     {
@@ -8772,6 +8772,83 @@
       "norm_label": "docs/.vitepress/build_sitemap.ts"
     },
     {
+      "label": "SKILL.md",
+      "file_type": "document",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "cursor_skills_release_skill",
+      "community": 87,
+      "community_name": "Release",
+      "norm_label": "skill.md"
+    },
+    {
+      "label": "Release",
+      "file_type": "document",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "cursor_skills_release_skill_release",
+      "community": 87,
+      "community_name": "Release",
+      "norm_label": "release"
+    },
+    {
+      "label": "Parameter",
+      "file_type": "document",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "cursor_skills_release_skill_parameter",
+      "community": 87,
+      "community_name": "Release",
+      "norm_label": "parameter"
+    },
+    {
+      "label": "Preconditions (abort if unmet)",
+      "file_type": "document",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "cursor_skills_release_skill_preconditions_abort_if_unmet",
+      "community": 87,
+      "community_name": "Release",
+      "norm_label": "preconditions (abort if unmet)"
+    },
+    {
+      "label": "Steps",
+      "file_type": "document",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "cursor_skills_release_skill_steps",
+      "community": 87,
+      "community_name": "Release",
+      "norm_label": "steps"
+    },
+    {
+      "label": "Implementation notes",
+      "file_type": "document",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L45",
+      "_origin": "ast",
+      "id": "cursor_skills_release_skill_implementation_notes",
+      "community": 87,
+      "community_name": "Release",
+      "norm_label": "implementation notes"
+    },
+    {
+      "label": "Done message",
+      "file_type": "document",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "cursor_skills_release_skill_done_message",
+      "community": 87,
+      "community_name": "Release",
+      "norm_label": "done message"
+    },
+    {
       "label": "addon.md",
       "file_type": "document",
       "source_file": ".github/ISSUE_TEMPLATE/addon.md",
@@ -8830,7 +8907,7 @@
       "label": "Logs",
       "file_type": "document",
       "source_file": ".github/ISSUE_TEMPLATE/addon.md",
-      "source_location": "L43",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "github_issue_template_addon_logs",
       "community": 44,
@@ -9047,10 +9124,21 @@
       "norm_label": "installation"
     },
     {
-      "label": "Sunsynk Python Library",
+      "label": "Running outside Home Assistant OS",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L36",
+      "_origin": "ast",
+      "id": "readme_running_outside_home_assistant_os",
+      "community": 45,
+      "community_name": "Deye/Sunsynk Inverters",
+      "norm_label": "running outside home assistant os"
+    },
+    {
+      "label": "Sunsynk Python Library",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "readme_sunsynk_python_library",
       "community": 45,
@@ -9064,8 +9152,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "modbus-connection-plan.md"
     },
     {
@@ -9075,8 +9163,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_modbusunit_underlay",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "modbusunit underlay"
     },
     {
@@ -9086,8 +9174,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_class_layout",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "class layout"
     },
     {
@@ -9097,8 +9185,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_for_unit_is_the_server_id",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "`for_unit` is the server id"
     },
     {
@@ -9108,8 +9196,8 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_reading_an_arbitrary_holding_register_block",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "reading an arbitrary holding-register block"
     },
     {
@@ -9119,8 +9207,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_construction",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "construction"
     },
     {
@@ -9130,8 +9218,8 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_why_not_a_parallel_v2_component_rewrite",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "why not a parallel v2 / component rewrite"
     },
     {
@@ -9141,8 +9229,8 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_library_files",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "library files"
     },
     {
@@ -9152,8 +9240,8 @@
       "source_location": "L172",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_add_on",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "add-on"
     },
     {
@@ -9163,8 +9251,8 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_user_facing_docs_implementation",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "user-facing docs (implementation)"
     },
     {
@@ -9174,8 +9262,8 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "docs_modbus_connection_plan_out_of_scope",
-      "community": 14,
-      "community_name": "ModbusUnit underlay",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "out of scope"
     },
     {
@@ -9186,7 +9274,7 @@
       "_origin": "ast",
       "id": "docs_modbus_connection",
       "community": 19,
-      "community_name": "sunsynk.py",
+      "community_name": "test_connection.py",
       "norm_label": "modbus-connection.md"
     },
     {
@@ -9196,8 +9284,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_modbus_connection_architecture_modbus_connection_and_sunsynk",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "architecture: modbus-connection and sunsynk"
     },
     {
@@ -9207,8 +9295,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "docs_modbus_connection_layers",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "layers"
     },
     {
@@ -9218,8 +9306,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "docs_modbus_connection_what_hurts_today",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "what hurts today"
     },
     {
@@ -9229,8 +9317,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "docs_modbus_connection_why_not_a_parallel_v2_library",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "why not a parallel v2 library"
     },
     {
@@ -9240,8 +9328,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "docs_modbus_connection_modelling_mismatch",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "modelling mismatch"
     },
     {
@@ -9251,8 +9339,8 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "docs_modbus_connection_class_layout",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "class layout"
     },
     {
@@ -9262,8 +9350,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "docs_modbus_connection_what_stays_in_sunsynk",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "what stays in sunsynk"
     },
     {
@@ -9273,8 +9361,8 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "docs_modbus_connection_if_components_come_later",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "if components come later"
     },
     {
@@ -9284,8 +9372,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "docs_modbus_connection_sequence",
-      "community": 21,
-      "community_name": "Architecture: modbus-connection and sunsynk",
+      "community": 19,
+      "community_name": "test_connection.py",
       "norm_label": "sequence"
     },
     {
@@ -9428,7 +9516,7 @@
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "hass-addon-sunsynk-edge/changelog.md"
     },
     {
@@ -9439,7 +9527,7 @@
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_changelog",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "changelog"
     },
     {
@@ -9450,84 +9538,95 @@
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_unreleased",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "unreleased"
+    },
+    {
+      "label": "Release 1.0.0",
+      "file_type": "document",
+      "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
+      "community": 36,
+      "community_name": "Release 1.0.0",
+      "norm_label": "release 1.0.0"
     },
     {
       "label": "Major changes",
       "file_type": "document",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L9",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_major_changes",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "major changes"
     },
     {
       "label": "GitHub issues (in progress)",
       "file_type": "document",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L23",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_github_issues_in_progress",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "github issues (in progress)"
     },
     {
       "label": "Add-on behaviour",
       "file_type": "document",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L42",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_add_on_behaviour",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "add-on behaviour"
     },
     {
       "label": "Sensor definitions",
       "file_type": "document",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L58",
+      "source_location": "L62",
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_sensor_definitions",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "sensor definitions"
     },
     {
       "label": "Diagnostics and library",
       "file_type": "document",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L74",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_diagnostics_and_library",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "diagnostics and library"
     },
     {
       "label": "Docs and repo hygiene",
       "file_type": "document",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L79",
+      "source_location": "L83",
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_docs_and_repo_hygiene",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "docs and repo hygiene"
     },
     {
       "label": "Internal / developer",
       "file_type": "document",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L90",
+      "source_location": "L94",
       "_origin": "ast",
       "id": "hass_addon_sunsynk_edge_changelog_internal_developer",
       "community": 36,
-      "community_name": "Unreleased",
+      "community_name": "Release 1.0.0",
       "norm_label": "internal / developer"
     },
     {
@@ -10323,136 +10422,92 @@
       "norm_label": "standalone-deployment.md"
     },
     {
-      "label": "Run standalone using docker compose",
+      "label": "Run standalone using Docker",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_run_standalone_using_docker_compose",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "run standalone using docker compose"
+      "id": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "run standalone using docker"
     },
     {
-      "label": "Local Docker-Compose Builds",
+      "label": "Example docker-compose.yaml",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L13",
+      "source_location": "L10",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_local_docker_compose_builds",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "local docker-compose builds"
+      "id": "www_docs_guide_standalone_deployment_example_docker_compose_yaml",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "example docker-compose.yaml"
     },
     {
-      "label": "Sunsynk Multi",
+      "label": "Addon configuration \u2014 options.yaml",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L22",
+      "source_location": "L44",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_sunsynk_multi",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "sunsynk multi"
+      "id": "www_docs_guide_standalone_deployment_addon_configuration_options_yaml",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "addon configuration \u2014 options.yaml"
     },
     {
-      "label": "Mbusd",
+      "label": "Mbusd configuration \u2014 mbusd.conf",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L71",
+      "source_location": "L89",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_mbusd",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "mbusd"
+      "id": "www_docs_guide_standalone_deployment_mbusd_configuration_mbusd_conf",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "mbusd configuration \u2014 mbusd.conf"
     },
     {
-      "label": "Using Pre-built Docker Images",
+      "label": "Start the stack",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L81",
+      "source_location": "L114",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_using_pre_built_docker_images",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "using pre-built docker images"
+      "id": "www_docs_guide_standalone_deployment_start_the_stack",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "start the stack"
     },
     {
-      "label": "Docker-Compose examples",
+      "label": "Addon configuration \u2014 environment variables",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L99",
+      "source_location": "L123",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_docker_compose_examples",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "docker-compose examples"
+      "id": "www_docs_guide_standalone_deployment_addon_configuration_environment_variables",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "addon configuration \u2014 environment variables"
     },
     {
-      "label": "amd64 / aarch64 / armv6 / armv7",
+      "label": "Environment variable notes",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L101",
+      "source_location": "L172",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_amd64_aarch64_armv6_armv7",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "amd64 / aarch64 / armv6 / armv7"
+      "id": "www_docs_guide_standalone_deployment_environment_variable_notes",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "environment variable notes"
     },
     {
-      "label": "Docker CLI examples",
+      "label": "Docker CLI",
       "file_type": "document",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L134",
+      "source_location": "L179",
       "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_docker_cli_examples",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "docker cli examples"
-    },
-    {
-      "label": "CLI: amd64 / aarch64 / armv6 / armv7",
-      "file_type": "document",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L140",
-      "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_cli_amd64_aarch64_armv6_armv7",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "cli: amd64 / aarch64 / armv6 / armv7"
-    },
-    {
-      "label": "Using Environment Variables with Docker Compose",
-      "file_type": "document",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L149",
-      "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_using_environment_variables_with_docker_compose",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "using environment variables with docker compose"
-    },
-    {
-      "label": "Example Configuration",
-      "file_type": "document",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L155",
-      "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_example_configuration",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "example configuration"
-    },
-    {
-      "label": "Explanation of Environment Variables",
-      "file_type": "document",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L183",
-      "_origin": "ast",
-      "id": "www_docs_guide_standalone_deployment_explanation_of_environment_variables",
-      "community": 30,
-      "community_name": "Run standalone using docker compose",
-      "norm_label": "explanation of environment variables"
+      "id": "www_docs_guide_standalone_deployment_docker_cli",
+      "community": 86,
+      "community_name": "Run standalone using Docker",
+      "norm_label": "docker cli"
     },
     {
       "label": "tested-inverters.md",
@@ -11436,7 +11491,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L75",
+      "source_location": "L77",
       "weight": 1.0,
       "_origin": "ast",
       "source": "scripts_gen_sensors",
@@ -11458,7 +11513,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1.0,
       "_origin": "ast",
       "source": "scripts_gen_sensors",
@@ -11591,7 +11646,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L57",
+      "source_location": "L59",
       "weight": 1.0,
       "_origin": "ast",
       "source": "scripts_gen_sensors_generate_all_sensors",
@@ -11603,7 +11658,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L56",
+      "source_location": "L58",
       "weight": 1.0,
       "_origin": "ast",
       "source": "scripts_gen_sensors_generate_all_sensors",
@@ -11625,7 +11680,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L92",
+      "source_location": "L94",
       "weight": 1.0,
       "_origin": "ast",
       "source": "scripts_gen_sensors_generate_group_sensors",
@@ -11636,10 +11691,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L71",
+      "source_location": "L73",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "scripts_gen_sensors_rationale_71",
+      "source": "scripts_gen_sensors_rationale_73",
       "target": "scripts_gen_sensors_simple_def_name",
       "confidence_score": 1.0
     },
@@ -11648,7 +11703,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L75",
+      "source_location": "L77",
       "weight": 1.0,
       "_origin": "ast",
       "source": "scripts_gen_sensors_generate_group_sensors",
@@ -11659,10 +11714,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "scripts/gen_sensors.py",
-      "source_location": "L78",
+      "source_location": "L80",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "scripts_gen_sensors_rationale_78",
+      "source": "scripts_gen_sensors_rationale_80",
       "target": "scripts_gen_sensors_generate_group_sensors",
       "confidence_score": 1.0
     },
@@ -30893,6 +30948,72 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "cursor_skills_release_skill",
+      "target": "cursor_skills_release_skill_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L64",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "cursor_skills_release_skill_release",
+      "target": "cursor_skills_release_skill_done_message",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "cursor_skills_release_skill_release",
+      "target": "cursor_skills_release_skill_implementation_notes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "cursor_skills_release_skill_release",
+      "target": "cursor_skills_release_skill_parameter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "cursor_skills_release_skill_release",
+      "target": "cursor_skills_release_skill_preconditions_abort_if_unmet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".cursor/skills/release/SKILL.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "cursor_skills_release_skill_release",
+      "target": "cursor_skills_release_skill_steps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": ".github/ISSUE_TEMPLATE/addon.md",
       "source_location": "L9",
       "weight": 1.0,
@@ -30916,7 +31037,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".github/ISSUE_TEMPLATE/addon.md",
-      "source_location": "L43",
+      "source_location": "L46",
       "weight": 1.0,
       "_origin": "ast",
       "source": "github_issue_template_addon_issue_related_to",
@@ -31104,6 +31225,17 @@
       "confidence": "EXTRACTED",
       "source_file": "README.md",
       "source_location": "L36",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "readme_deye_sunsynk_inverters",
+      "target": "readme_running_outside_home_assistant_os",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast",
       "source": "readme_deye_sunsynk_inverters",
@@ -31466,6 +31598,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "hass_addon_sunsynk_edge_changelog_changelog",
+      "target": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
@@ -31477,10 +31620,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L42",
+      "source_location": "L46",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "hass_addon_sunsynk_edge_changelog_unreleased",
+      "source": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
       "target": "hass_addon_sunsynk_edge_changelog_add_on_behaviour",
       "confidence_score": 1.0
     },
@@ -31488,10 +31631,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L74",
+      "source_location": "L78",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "hass_addon_sunsynk_edge_changelog_unreleased",
+      "source": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
       "target": "hass_addon_sunsynk_edge_changelog_diagnostics_and_library",
       "confidence_score": 1.0
     },
@@ -31499,10 +31642,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L79",
+      "source_location": "L83",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "hass_addon_sunsynk_edge_changelog_unreleased",
+      "source": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
       "target": "hass_addon_sunsynk_edge_changelog_docs_and_repo_hygiene",
       "confidence_score": 1.0
     },
@@ -31510,10 +31653,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L23",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "hass_addon_sunsynk_edge_changelog_unreleased",
+      "source": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
       "target": "hass_addon_sunsynk_edge_changelog_github_issues_in_progress",
       "confidence_score": 1.0
     },
@@ -31521,10 +31664,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L90",
+      "source_location": "L94",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "hass_addon_sunsynk_edge_changelog_unreleased",
+      "source": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
       "target": "hass_addon_sunsynk_edge_changelog_internal_developer",
       "confidence_score": 1.0
     },
@@ -31532,10 +31675,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L9",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "hass_addon_sunsynk_edge_changelog_unreleased",
+      "source": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
       "target": "hass_addon_sunsynk_edge_changelog_major_changes",
       "confidence_score": 1.0
     },
@@ -31543,10 +31686,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hass-addon-sunsynk-edge/CHANGELOG.md",
-      "source_location": "L58",
+      "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "hass_addon_sunsynk_edge_changelog_unreleased",
+      "source": "hass_addon_sunsynk_edge_changelog_release_1_0_0",
       "target": "hass_addon_sunsynk_edge_changelog_sensor_definitions",
       "confidence_score": 1.0
     },
@@ -32251,14 +32394,14 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "www_docs_guide_standalone_deployment",
-      "target": "www_docs_guide_standalone_deployment_run_standalone_using_docker_compose",
+      "target": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
       "confidence_score": 1.0
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L88",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "www_docs_guide_standalone_deployment",
@@ -32269,121 +32412,77 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L13",
+      "source_location": "L123",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker_compose",
-      "target": "www_docs_guide_standalone_deployment_local_docker_compose_builds",
+      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
+      "target": "www_docs_guide_standalone_deployment_addon_configuration_environment_variables",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L149",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker_compose",
-      "target": "www_docs_guide_standalone_deployment_using_environment_variables_with_docker_compose",
+      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
+      "target": "www_docs_guide_standalone_deployment_addon_configuration_options_yaml",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L81",
+      "source_location": "L179",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker_compose",
-      "target": "www_docs_guide_standalone_deployment_using_pre_built_docker_images",
+      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
+      "target": "www_docs_guide_standalone_deployment_docker_cli",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L71",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_local_docker_compose_builds",
-      "target": "www_docs_guide_standalone_deployment_mbusd",
+      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
+      "target": "www_docs_guide_standalone_deployment_example_docker_compose_yaml",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L22",
+      "source_location": "L89",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_local_docker_compose_builds",
-      "target": "www_docs_guide_standalone_deployment_sunsynk_multi",
+      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
+      "target": "www_docs_guide_standalone_deployment_mbusd_configuration_mbusd_conf",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L134",
+      "source_location": "L114",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_using_pre_built_docker_images",
-      "target": "www_docs_guide_standalone_deployment_docker_cli_examples",
+      "source": "www_docs_guide_standalone_deployment_run_standalone_using_docker",
+      "target": "www_docs_guide_standalone_deployment_start_the_stack",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L99",
+      "source_location": "L172",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_using_pre_built_docker_images",
-      "target": "www_docs_guide_standalone_deployment_docker_compose_examples",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L101",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_docker_compose_examples",
-      "target": "www_docs_guide_standalone_deployment_amd64_aarch64_armv6_armv7",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L140",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_docker_cli_examples",
-      "target": "www_docs_guide_standalone_deployment_cli_amd64_aarch64_armv6_armv7",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L155",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_using_environment_variables_with_docker_compose",
-      "target": "www_docs_guide_standalone_deployment_example_configuration",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "www/docs/guide/standalone-deployment.md",
-      "source_location": "L183",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "www_docs_guide_standalone_deployment_using_environment_variables_with_docker_compose",
-      "target": "www_docs_guide_standalone_deployment_explanation_of_environment_variables",
+      "source": "www_docs_guide_standalone_deployment_addon_configuration_environment_variables",
+      "target": "www_docs_guide_standalone_deployment_environment_variable_notes",
       "confidence_score": 1.0
     },
     {
@@ -33114,5 +33213,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e0a82a060c5a59922479cbb2d34d12a209cd1fc1"
+  "built_at_commit": "5bc30ad0c977571393ec92ad94033e4c95db8c34"
 }
