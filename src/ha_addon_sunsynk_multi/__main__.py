@@ -43,7 +43,7 @@ async def main_loop() -> int:
                 break
     except Exception:
         pass
-    _LOG.info("sunsynk library version: %s (%s)", VERSION, ver)
+    _LOG.info("sunsynk library - commit %s - last stable version %s", ver, VERSION)
 
     try:
         init_driver(OPT)

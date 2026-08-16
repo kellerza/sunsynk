@@ -109,6 +109,17 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.UV_VERSION }}
+      - name: Check tag matches pyproject.toml
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"   # allow v0.9.3 or 0.9.3
+          VER=$(sed -n 's/^version = "\([^"]*\)"/\1/p' pyproject.toml | head -1)
+          echo "tag=$TAG pyproject=$VER"
+          if [ "$TAG" = "$VER" ]; then
+            echo "::notice title=Version check::tag=$TAG matches pyproject.toml"
+          else
+            echo "::error title=Version mismatch::tag=$TAG does not match pyproject.toml ($VER)"
+            exit 1
+          fi
       - name: Build a binary wheel and a source tarball
         run: uv build
       - name: Publish distribution 📦 to PyPI
