@@ -1,29 +1,49 @@
-# Run standalone using docker compose
+# Run standalone using Docker
 
-If you are running only Home Assistant Core, or do not have Home Assistant Supervisor, you might
-want to run this addon as a standalone service. Docker Compose is commonly used to manage services
-that run in docker containers.
+If you are running only Home Assistant Core, or do not have Home Assistant Supervisor, you can run
+the Sunsynk Multi add-on as a standalone Docker service. It does not need Home Assistant Core,
+Supervisor, or HAOS — only an MQTT broker to publish to.
 
-As a standalone service, this addon does not depend on Home Assistant Core, Supervisor or OS. You
-can run this addon and send data to any MQTT server without using other HA services.
+A common setup is Docker Compose on a Raspberry Pi (or similar) with `mbusd` converting an RS-485
+serial link to Modbus TCP.
 
-Another benefit of this setup is to run this addon along with `mbusd` on a Raspberry Pi without
-having to install Home Assistant on it.
+## Example docker-compose.yaml
 
-## Local Docker-Compose Builds
+```yaml
+services:
+  sunsynk-multi:
+    restart: unless-stopped
+    image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
+    volumes:
+      - ${PWD}/options.yaml:/data/options.yaml
+      - /etc/localtime:/etc/localtime:ro  # map localtime for whenever - #670
+      - ${PWD}/mysensors.py:/share/hass-addon-sunsynk/mysensors.py # custom sensors - optional
 
-In these example commands we prefix the `docker-compose build` commands with the environment
-variable definition `BUILD_FROM=...`, which specifies which base image is used. For a Raspberry Pi
-you would need to use `BUILD_FROM=ghcr.io/home-assistant/armhf-base-python:3.12`, and for a 64bit PC
-you would use `BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12`. A list of available base
-images can be found in `hass-addon-sunsynk-edge/Dockerfile` and `hass-addon-mbusd/build.yaml`. Use
-the one that is most appropriate for your host computer.
+  mbusd:
+    restart: unless-stopped
+    image: 3cky/mbusd:0.5.3
+    ports:
+      - 502:502
+    privileged: true
+    volumes:
+      - /dev/ttyRS485:/dev/ttyUSB0
+      - ${PWD}/mbusd.conf:/etc/mbusd.conf
+```
 
-### Sunsynk Multi
+Notes:
 
-::: details **options.yaml** example
+* Pre-built images are on the
+  [Github Container Registry](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
+* Tags `:stable` and `:edge` match the two add-ons (Multi and Edge).
+* Change `/dev/ttyRS485` on the host side of the `mbusd` volume to your RS-485 serial device. Keep
+  `/dev/ttyUSB0` as the path inside the container (see `mbusd.conf` below).
+* For [custom sensors](../reference/mysensors.md), place `mysensors.py` next to `options.yaml` and
+  mount it at **`/share/hass-addon-sunsynk/mysensors.py`**. Remove that volume line if you do not
+  use custom sensors.
 
-Create your own `options.yaml` file with the following content:
+## Addon configuration — options.yaml
+
+Create **options.yaml** next to your compose file:
 
 ```yaml
 ---
@@ -59,55 +79,54 @@ MQTT_PASSWORD: ""
 # DEBUG_DEVICE: "/dev/ttyAMA0"
 ```
 
-Adjust the `INVERTERS` section to match your inverter setup. `tcp://mbusd:502` points toward a DNS
-entry, or most likely container named `mbusd` included in this docker compose stack.
+Adjust `INVERTERS` for your setup. `PORT: tcp://mbusd:502` reaches the `mbusd` service on the
+Compose network (the service name is the hostname).
 
-:::
+Set `MQTT_HOST` to your broker hostname. On a standalone stack that is usually another Compose
+service name (for example `mqtt`), not `core-mosquitto` (that name is for Home Assistant OS
+add-ons).
 
-* Build the image `BUILD_FROM=<base_image> docker compose build sunsynk-multi`
-* Run the container `docker compose up -d sunsynk-multi`
-* See the container logs `docker compose logs -f sunsynk-multi`
+## Mbusd configuration — mbusd.conf
 
-### Mbusd
+Create **mbusd.conf** next to your compose file (see also
+[3cky/mbusd](https://github.com/3cky/mbusd)):
 
-* Edit `docker-compose.yaml` changing the values under `environment` to match your configuration,
-  leaving the device set to `/dev/ttyUSB0` as we mount the correct port to this location in the next
-  step.
-* Under `volumes` change `/dev/ttyRS485` to the RS485 port of your host computer.
-* Build the image `BUILD_FROM=<base_image> docker compose build mbusd`
-* Run the container `docker compose up mbusd`
-* View container logs `docker compose logs -f mbusd`
+```conf
+# Logging
+loglevel = 2
+logfile = -
 
-## Using Pre-built Docker Images
+# Serial port (device path inside the container)
+device = /dev/ttyUSB0
+speed = 9600
+mode = 8N1
 
-The repo also contains prebuilt Docker images, which is available from the
-[Github Container Registry](https://github.com/kellerza?tab=packages&repo_name=sunsynk).
-
-::: info
-
-To use [custom sensors](../reference/mysensors.md) in Docker, ensure your `mysensors.py` exists next
-to your config `options.yaml` and mount it at **`/share/hass-addon-sunsynk/mysensors.py`**, for
-example:
-
-```yaml
-    volumes:
-      - ${PWD}/mysensors.py:/share/hass-addon-sunsynk/mysensors.py
+# TCP
+address = 0.0.0.0
+port = 502
+timeout = 5
 ```
 
-:::
+`device` must stay `/dev/ttyUSB0` when you use the volume mapping in the compose example. Baud rate
+and mode should match your inverter’s RS-485 settings. `logfile = -` sends logs to stdout for
+`docker compose logs`.
 
-### Docker-Compose examples
+## Start the stack
 
-#### amd64 / aarch64 / armv6 / armv7
-
-```yaml
-services:
-  sunsynk-multi:
-    restart: unless-stopped
-    image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
-    volumes:
-      - ${PWD}/options.yaml:/data/options.yaml
+```bash
+docker compose up -d
+docker compose logs -f
 ```
+
+Or start services individually: `docker compose up -d mbusd sunsynk-multi`.
+
+## Addon configuration — environment variables
+
+Instead of (or in addition to) `options.yaml`, you can pass the same options as environment
+variables. You must set `S6_KEEP_ENV=1` so the s6 init system forwards them (see
+[s6-overlay](https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour)).
+
+Minimal example (MQTT via env; other options still from `options.yaml`):
 
 ```yaml
 services:
@@ -124,44 +143,12 @@ services:
       S6_KEEP_ENV: 1
 ```
 
-For env vars to work, you need to add `S6_KEEP_ENV` (more from
-[just-containers](https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour))
-
-```yaml
-S6_KEEP_ENV: 1
-```
-
-### Docker CLI examples
-
-Below are examples using the docker CLI.
-
-> ℹ️ **Note:** Replace `${PWD}` with the path to the location of your `options.yaml` file.
-
-#### CLI: amd64 / aarch64 / armv6 / armv7
-
-```bash
-docker run -d --name sunsynk-multi \
---restart unless-stopped \
--v ${PWD}/options.yaml:/data/options.yaml \
-ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
-```
-
-## Using Environment Variables with Docker Compose
-
-If you prefer to use environment variables instead of an `options.yaml` file, you can configure the
-Sunsynk Multi service entirely with environment variables. All configuration options that would
-normally be set in the `options.yaml` file can be set as environment variables.
-
-### Example Configuration
-
-Here is an example of how to run the Sunsynk Multi service using environment variables in a
-`docker-compose.yml` file:
+::: details Full example (all options via environment)
 
 ```yaml
 services:
-  sunsynk-multi-amd64:
+  sunsynk-multi:
     restart: unless-stopped
-    profiles: ['sunsynk-amd64']
     image: ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
     environment:
       MQTT_HOST: mqtt
@@ -180,20 +167,24 @@ services:
       SCHEDULES: '[{"key":"w","read_every":5,"report_every":60,"change_by":80,"change_percent":0,"change_any":0}]'
 ```
 
-### Explanation of Environment Variables
+:::
 
-* **MQTT_HOST**: The MQTT broker host.
-* **MQTT_PORT**: The MQTT broker port (typically 1883).
-* **MQTT_USERNAME**: The username for the MQTT broker.
-* **MQTT_PASSWORD**: The password for the MQTT broker.
-* **S6_KEEP_ENV**: Set to `1` to ensure environment variables are passed to the container processes
-  when using the `s6` init system.
-* **INVERTERS**: A JSON string representing the configuration for your inverters. Adjust the values
-  for `SERIAL_NR`, `HA_PREFIX`, `MODBUS_ID`, `DONGLE_SERIAL_NUMBER`, and `PORT` to match your setup.
-  Use `PORT: solarman://host:8899` (plus dongle serial) for Solarman; otherwise `tcp://`,
+### Environment variable notes
+
+* Keys match `options.yaml`: uppercase with underscores (`SENSOR_DEFINITIONS`, `READ_ALLOW_GAP`, …).
+* **INVERTERS** and **SCHEDULES** are JSON strings.
+* For Solarman use `PORT` like `solarman://host:8899` (plus dongle serial); otherwise `tcp://`,
   `serial-tcp://`, `udp://`, or a serial device path.
-* **SCHEDULES**: A JSON string representing the schedules for sensor reading and reporting.
-* **Other Configuration Options**: Any other configuration option that is typically defined in
-  `options.yaml` can be passed as an environment variable. The keys from `options.yaml` should be
-  written in uppercase and underscores (e.g., `SENSOR_DEFINITIONS`, `READ_ALLOW_GAP`, `SENSORS`,
-  etc.).
+
+## Docker CLI
+
+Without Compose:
+
+> ℹ️ **Note:** Replace `${PWD}` with the directory that contains your `options.yaml`.
+
+```bash
+docker run -d --name sunsynk-multi \
+  --restart unless-stopped \
+  -v ${PWD}/options.yaml:/data/options.yaml \
+  ghcr.io/kellerza/hass-addon-sunsynk-multi:stable
+```

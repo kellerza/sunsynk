@@ -33,6 +33,11 @@ Below an example of the HomeAssistant Energy management dashboard using sensors 
 
 ![HASS Energy management](//github.com/kellerza/sunsynk/raw/main/www/docs/images/energy.png)
 
+## Running outside Home Assistant OS
+
+See the [standalone-deploment](https://kellerza.github.io/sunsynk/guide/standalone-deployment)
+documentation for detail on how to deploy with Docker Compose.
+
 ## Sunsynk Python Library
 
 [![PyPI version](https://badge.fury.io/py/sunsynk.svg)](https://pypi.org/project/sunsynk/)
