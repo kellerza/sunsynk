@@ -1,6 +1,7 @@
 # Graphify output
 graphify-out/cost.json
 graphify-out/cache/
+graphify-out/
 
 # private/local config
 hass-addon-sunsynk-edge/sunsynk
