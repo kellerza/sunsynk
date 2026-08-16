@@ -889,7 +889,7 @@ wheels = [
 
 [[package]]
 name = "sunsynk"
-version = "0.9.3"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "cattrs" },
