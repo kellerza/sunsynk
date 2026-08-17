@@ -187,6 +187,7 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "non_essential_power",
         "overall_state",
         "priority_load",
+        "pv_power",
         "use_timer",
     ],
     "settings": [
@@ -316,6 +317,10 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "ups_load_l3_power",
         "ups_load_total_power",
     ],
+    **{
+        f"pv{n}": [f"pv{n}_power", f"pv{n}_current", f"pv{n}_voltage"]
+        for n in range(1, 9)
+    },
 }
 
 

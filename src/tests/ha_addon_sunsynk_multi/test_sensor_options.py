@@ -48,6 +48,41 @@ def test_pv_power_hv_all_mppts() -> None:
     assert pv_total.address == (672, 673, 674, 675, 727, 728, 729, 730)
 
 
+def test_power_flow_card_plus_pv1() -> None:
+    """power_flow_card includes pv_power; pv1 limits the total to that MPPT."""
+    _reload_defs("single-phase")
+    OPT.sensors = ["power_flow_card", "pv1"]
+    OPT.sensors_first_inverter = []
+    SOPT.init_sensors()
+    visible = {s.id for s in SOPT if SOPT[s].visible}
+    assert {"pv_power", "pv1_power", "pv1_current", "pv1_voltage"} <= visible
+    assert "pv2_power" not in {s.id for s in SOPT}
+    assert DEFS.all["pv_power"].address == (186,)
+
+
+def test_pv1_group() -> None:
+    """pv1 group expands to power, current and voltage."""
+    _reload_defs("single-phase")
+    OPT.sensors = ["pv1"]
+    OPT.sensors_first_inverter = []
+    SOPT.init_sensors()
+    assert {s.id for s in SOPT if SOPT[s].visible} == {
+        "pv1_current",
+        "pv1_power",
+        "pv1_voltage",
+    }
+
+
+def test_pv8_group_hv_power_only() -> None:
+    """pv8 on HV has power; voltage/current are not defined."""
+    _reload_defs("three-phase-hv")
+    OPT.sensors = ["pv8"]
+    OPT.sensors_first_inverter = []
+    SOPT.init_sensors()
+    visible = {s.id for s in SOPT if SOPT[s].visible}
+    assert visible == {"pv8_power"}
+
+
 def test_opt1() -> None:
     """Sensors."""
     _reload_defs("single-phase")

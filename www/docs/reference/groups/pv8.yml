@@ -1,0 +1,4 @@
+SENSORS:
+ - pv8_current # 
+ - pv8_power # 3PH-hv
+ - pv8_voltage # 

@@ -1,0 +1,4 @@
+SENSORS:
+ - pv7_current # 
+ - pv7_power # 3PH-hv
+ - pv7_voltage # 

@@ -57,7 +57,8 @@ SENSOR_DEFINITIONS: single-phase
 SENSORS:
   - energy_management
   - power_flow_card
-  - pv2_power
+  - pv1
+  - pv2
 SENSORS_FIRST_INVERTER:
   - settings
 MANUFACTURER: Sunsynk
@@ -157,7 +158,7 @@ services:
       MQTT_PASSWORD: ${MQTT_PASSWORD}
       S6_KEEP_ENV: 1
       SENSOR_DEFINITIONS: "single-phase"
-      SENSORS: '["energy_management", "power_flow_card", "pv2_power"]'
+      SENSORS: '["energy_management", "power_flow_card", "pv1", "pv2"]'
       SENSORS_FIRST_INVERTER: '["settings"]'
       MANUFACTURER: "Sunsynk"
       READ_ALLOW_GAP: 2

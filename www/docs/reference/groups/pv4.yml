@@ -1,0 +1,4 @@
+SENSORS:
+ - pv4_current # 3PH, 3PH-hv
+ - pv4_power # 3PH, 3PH-hv
+ - pv4_voltage # 3PH, 3PH-hv

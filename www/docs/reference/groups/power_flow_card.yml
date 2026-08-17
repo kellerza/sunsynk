@@ -36,4 +36,5 @@ SENSORS:
  - non_essential_power # 1PH, 1PH-16kw
  - overall_state
  - priority_load
+ - pv_power
  - use_timer

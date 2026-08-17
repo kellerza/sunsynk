@@ -16,6 +16,8 @@ The Sunsynk Power Flow card can be installed by adding a custom Lovelace reposit
 ```yaml
 SENSORS:
   - power_flow_card
+  - pv1
+  - pv2
 ```
 
 ::: details Lovelace yaml

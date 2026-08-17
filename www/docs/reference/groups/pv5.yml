@@ -1,0 +1,4 @@
+SENSORS:
+ - pv5_current # 
+ - pv5_power # 3PH-hv
+ - pv5_voltage # 

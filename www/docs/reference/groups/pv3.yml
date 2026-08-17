@@ -1,0 +1,4 @@
+SENSORS:
+ - pv3_current
+ - pv3_power
+ - pv3_voltage

@@ -88,11 +88,14 @@ SENSORS:
 
 ### Power Flow Card
 
-These are all sensors used by the [Power Flow Card](../examples/lovelace#sunsynk-power-flow-card)
+These are all sensors used by the [Power Flow Card](../examples/lovelace#sunsynk-power-flow-card),
+including `pv_power` (total). Add `pv1` … `pv8` for the MPPT trackers you want.
 
 ```yaml
 SENSORS:
   - power_flow_card
+  - pv1
+  - pv2
 ```
 
 ::: details Sensors included
@@ -212,6 +215,83 @@ SENSORS:
 
 ```yaml
 <!--@include: ./groups/ups.yml-->
+```
+
+:::
+
+### PV / MPPT
+
+Each `pv1` … `pv8` group includes that tracker's live power, current and voltage. Sensors that do
+not exist on your inverter type are skipped (`pv5`–`pv8` are three-phase HV only, and those extra
+trackers currently have power only). The `pv_power` total is already in `power_flow_card`.
+
+```yaml
+SENSORS:
+  - power_flow_card
+  - pv1
+  - pv2
+```
+
+::: details Sensors included in `pv1`
+
+```yaml
+<!--@include: ./groups/pv1.yml-->
+```
+
+:::
+
+::: details Sensors included in `pv2`
+
+```yaml
+<!--@include: ./groups/pv2.yml-->
+```
+
+:::
+
+::: details Sensors included in `pv3`
+
+```yaml
+<!--@include: ./groups/pv3.yml-->
+```
+
+:::
+
+::: details Sensors included in `pv4`
+
+```yaml
+<!--@include: ./groups/pv4.yml-->
+```
+
+:::
+
+::: details Sensors included in `pv5`
+
+```yaml
+<!--@include: ./groups/pv5.yml-->
+```
+
+:::
+
+::: details Sensors included in `pv6`
+
+```yaml
+<!--@include: ./groups/pv6.yml-->
+```
+
+:::
+
+::: details Sensors included in `pv7`
+
+```yaml
+<!--@include: ./groups/pv7.yml-->
+```
+
+:::
+
+::: details Sensors included in `pv8`
+
+```yaml
+<!--@include: ./groups/pv8.yml-->
 ```
 
 :::
