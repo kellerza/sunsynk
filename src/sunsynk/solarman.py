@@ -14,6 +14,13 @@ _LOG = logging.getLogger(__name__)
 RETRY_ATTEMPTS = 5
 
 
+def _exc_label(err: BaseException) -> str:
+    """Type name, plus message when the exception string is empty (TimeoutError)."""
+    text = str(err).strip()
+    name = type(err).__name__
+    return f"{name}: {text}" if text else name
+
+
 @dataclass(kw_only=True)
 class SolarmanUnit:
     """Holding-register I/O over a Solarman Wi-Fi dongle (not a ModbusConnection)."""
@@ -95,10 +102,20 @@ class SolarmanUnit:
                 return list(await client.read_holding_registers(address, count) or [])
             except Exception as err:
                 attempt += 1
-                _LOG.error("Error reading: %s (retry %s)", err, attempt)
+                detail = _exc_label(err)
+                _LOG.error(
+                    "Solarman read register %s (count %s): %s (retry %s/%s)",
+                    address,
+                    count,
+                    detail,
+                    attempt,
+                    RETRY_ATTEMPTS,
+                )
                 await self.disconnect()
                 if attempt >= RETRY_ATTEMPTS:
-                    raise OSError(f"Failed to read register {address}") from err
+                    raise OSError(
+                        f"Failed to read register {address}: {detail}"
+                    ) from err
                 await asyncio.sleep(2)
 
     async def write_registers(self, address: int, values: list[int]) -> None:

@@ -262,3 +262,30 @@ async def test_attempt_stale_recovery_probe_failure_reenters_stale(
         assert ist.lifecycle == "stale_quiet"
     finally:
         OPT.stale_inverter_skip_seconds = old_skip
+
+
+async def test_connect_identity_failure_includes_cause() -> None:
+    """Identity read failure must keep the underlying error in ConnectionError."""
+    inv_opt = InverterOptions(
+        modbus_id=1,
+        ha_prefix="id",
+        serial_nr="888",
+        port="solarman://192.168.5.30:50500",
+    )
+    mock_ss = MagicMock(spec=Sunsynk)
+    mock_ss.connect = AsyncMock()
+    mock_ss.port = inv_opt.port
+    ist = AInverter(index=0, opt=inv_opt, inv=mock_ss, ss={})  # type: ignore[arg-type]
+
+    with (
+        patch.object(
+            ist,
+            "read_identity",
+            side_effect=OSError("Failed to read register 0: TimeoutError"),
+        ),
+        P_MOCK_MQTT_PUBLISH_AVAILABILITY,
+        pytest.raises(ConnectionError, match="TimeoutError") as raised,
+    ):
+        await ist.connect()
+
+    assert "solarman://192.168.5.30:50500" in str(raised.value)

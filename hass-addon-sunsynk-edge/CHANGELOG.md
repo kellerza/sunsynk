@@ -14,6 +14,8 @@ All items below are changes since add-on **1.0.0** (stable release on GitHub `ma
 - Serial `TIMEOUT` should now be passed to tmodbus
   [modbus-connection#213](https://github.com/home-assistant-libs/modbus-connection/pull/213). See
   [#672](https://github.com/kellerza/sunsynk/issues/672).
+- Solarman identity/register read errors now include the exception type and register (empty
+  `TimeoutError` used to log as `Error reading: (retry N)`).
 
 ## Release 1.0.0
 

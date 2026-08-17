@@ -1,5 +1,6 @@
 """Solarman unit."""
 
+import logging
 from typing import Any
 from unittest.mock import AsyncMock, patch
 
@@ -42,3 +43,23 @@ async def test_uss_sensor(connect: Any) -> None:
     ss = Sunsynk(unit=unit, port="tcp://127.0.0.1:502")
     await ss.write_register(address=1, value=2)
     assert wrr.called
+
+
+async def test_read_holding_registers_logs_empty_timeout(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Empty TimeoutError strings must still log the exception type."""
+    unit = SolarmanUnit(port="solarman://127.0.0.1:8899", dongle_serial_number=101)
+    client = AsyncMock()
+    client.read_holding_registers = AsyncMock(side_effect=TimeoutError())
+
+    with (
+        patch.object(unit, "_connected_client", AsyncMock(return_value=client)),
+        patch("sunsynk.solarman.asyncio.sleep", new_callable=AsyncMock),
+        caplog.at_level(logging.ERROR),
+    ):
+        with pytest.raises(OSError, match="TimeoutError"):
+            await unit.read_holding_registers(0, 8)
+
+    assert "Solarman read register 0 (count 8): TimeoutError" in caplog.text
+    assert "(retry 1/" in caplog.text

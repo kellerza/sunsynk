@@ -277,8 +277,9 @@ class AInverter:
         try:
             await self.read_identity()
         except Exception as exc:
+            detail = str(exc).strip() or type(exc).__name__
             raise ConnectionError(
-                f"No response on the Modbus interface {self.opt.port}, "
+                f"No response on the Modbus interface {self.opt.port}: {detail}, "
                 "see https://kellerza.github.io/sunsynk/guide/fault-finding"
             ) from exc
 
