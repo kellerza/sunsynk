@@ -78,13 +78,12 @@ class SolarmanUnit:
             mb_slave_id=self.server_id,
             auto_reconnect=True,
             verbose=False,
-            socket_timeout=self.timeout * 2,
+            socket_timeout=self.timeout,
             v5_error_correction=True,
             error_correction=True,  # bug?
         )
         try:
-            async with asyncio.timeout(self.timeout):
-                await client.connect()
+            await client.connect()
         except TimeoutError:
             self.client = None
             raise ConnectionError("Failed to connect: timeout") from None
@@ -100,6 +99,15 @@ class SolarmanUnit:
             try:
                 client = await self._connected_client()
                 return list(await client.read_holding_registers(address, count) or [])
+            except TimeoutError as err:
+                _LOG.error(
+                    "Solarman read register %s (count %s): %s",
+                    address,
+                    count,
+                    _exc_label(err),
+                )
+                await self.disconnect()
+                raise
             except Exception as err:
                 attempt += 1
                 detail = _exc_label(err)
@@ -123,10 +131,9 @@ class SolarmanUnit:
         try:
             client = await self._connected_client()
             _LOG.debug("DBG: write_registers: %s ==> ...", values)
-            async with asyncio.timeout(self.timeout):
-                res = await client.write_multiple_holding_registers(
-                    register_addr=address, values=values
-                )
+            res = await client.write_multiple_holding_registers(
+                register_addr=address, values=values
+            )
             _LOG.debug("DBG: write_registers: %s ==> %s", values, res)
         except Exception:
             await self.disconnect()

@@ -192,15 +192,10 @@ class AInverter:
         """Read from the Modbus interface."""
         await asyncio.sleep(0.005)
         try:
-            async with asyncio.timeout(OPT.timeout * 2):
-                await self.inv.read_sensors(sensors)
+            await self.inv.read_sensors(sensors)
             self.read_errors = 0
             self._stale_enter_at = time.monotonic() + OPT.stale_inverter_after_seconds
             return True
-        except TimeoutError:
-            self.read_errors += 1
-            await self.lifecycle_enter_stale("read timeout")
-            return False
         except ExceptionGroup as err:
             self.read_errors += 1
             if await self.lifecycle_enter_stale():

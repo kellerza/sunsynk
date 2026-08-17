@@ -55,11 +55,13 @@ async def test_read_holding_registers_logs_empty_timeout(
 
     with (
         patch.object(unit, "_connected_client", AsyncMock(return_value=client)),
-        patch("sunsynk.solarman.asyncio.sleep", new_callable=AsyncMock),
+        patch("sunsynk.solarman.asyncio.sleep", new_callable=AsyncMock) as sleep,
         caplog.at_level(logging.ERROR),
     ):
-        with pytest.raises(OSError, match="TimeoutError"):
+        with pytest.raises(TimeoutError):
             await unit.read_holding_registers(0, 8)
 
+    sleep.assert_not_awaited()
+    assert client.read_holding_registers.await_count == 1
     assert "Solarman read register 0 (count 8): TimeoutError" in caplog.text
-    assert "(retry 1/" in caplog.text
+    assert "(retry" not in caplog.text

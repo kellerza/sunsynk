@@ -14,6 +14,10 @@ All items below are changes since add-on **1.0.0** (stable release on GitHub `ma
 - Serial `TIMEOUT` should now be passed to tmodbus
   [modbus-connection#213](https://github.com/home-assistant-libs/modbus-connection/pull/213). See
   [#672](https://github.com/kellerza/sunsynk/issues/672).
+- `TIMEOUT` is the client/socket deadline for connect and each register I/O. Nested
+  `asyncio.timeout` wrappers (including the **`2 × TIMEOUT`** batch cap) are removed so a hang is
+  not cancelled twice. Solarman uses the same `TIMEOUT` for `socket_timeout` and does not retry
+  `TimeoutError` (AInverter still retries the whole read).
 - Solarman identity/register read errors now include the exception type and register (empty
   `TimeoutError` used to log as `Error reading: (retry N)`).
 

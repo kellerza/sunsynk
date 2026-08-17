@@ -1,5 +1,6 @@
 """Test sunsynk library."""
 
+import asyncio
 import logging
 from collections.abc import Sequence
 from unittest.mock import MagicMock, call, patch
@@ -131,6 +132,20 @@ async def test_ss_read_sensors(rhr: MagicMock, state: InverterState) -> None:
     with pytest.raises(ExceptionGroup) as excinfo:
         await ss.read_sensors(sensors)
     assert len(excinfo.value.exceptions) == 2
+
+
+@patch("sunsynk.Sunsynk.read_holding_registers")
+async def test_ss_read_sensors_propagates_cancelled(
+    rhr: MagicMock, state: InverterState
+) -> None:
+    """Task cancellation must not be swallowed as a per-group read error."""
+    ss = _ss()
+    ss.state = state
+    sen = Sensor(1, "One")
+    state.track(sen)
+    rhr.side_effect = asyncio.CancelledError
+    with pytest.raises(asyncio.CancelledError):
+        await ss.read_sensors([sen])
 
 
 @pytest.mark.parametrize("response", ([9], [9, 8, 7]))

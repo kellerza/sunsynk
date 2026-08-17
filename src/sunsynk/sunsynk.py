@@ -95,8 +95,7 @@ class Sunsynk:
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk support function code 0x10."""
         try:
-            async with asyncio.timeout(self.timeout):
-                await self.unit.write_registers(address, [value])
+            await self.unit.write_registers(address, [value])
             return True
         except TimeoutError:
             _LOG.error("timeout writing register %s=%s", address, value)
@@ -138,8 +137,7 @@ class Sunsynk:
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read holding registers (FC03)."""
         try:
-            async with asyncio.timeout(self.timeout):
-                return await self.unit.read_holding_registers(start, length)
+            return await self.unit.read_holding_registers(start, length)
         except TimeoutError:
             self.timeouts += 1
             raise OSError(f"timeout reading register {start}") from None
@@ -171,17 +169,6 @@ class Sunsynk:
                     grp[0],
                     f"{perf:.2f}",
                 )
-            except TimeoutError:
-                errs.append(
-                    TimeoutError(f"timeout reading {glen} registers from {grp[0]}")
-                )
-                self.timeouts += 1
-                continue
-            except asyncio.exceptions.CancelledError:
-                errs.append(
-                    Exception(f"cancelled reading {glen} registers from {grp[0]}")
-                )
-                continue
             except Exception as err:
                 errs.append(
                     Exception(
