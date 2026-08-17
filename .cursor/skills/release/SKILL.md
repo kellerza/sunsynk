@@ -37,9 +37,10 @@ Run from the **sunsynk** repo root. Stop with a clear message unless **all** pas
 2. Bump the version in `pyproject.toml` according to the input
 3. Use the new version string and change the `## Unreleased` heading in
    `hass-addon-sunsynk-edge/CHANGELOG.md` to `## Release x.x.x`
-4. Commit using the release number (`0.0.0` form) as the message and push to GitHub
-5. Create a draft GitHub release with tag `v0.0.0` (semantic version preceded by `v`)
-6. Notify the user to review and **publish** the draft release on GitHub to start the release
+4. Copy `hass-addon-sunsynk-edge/CHANGELOG.md` to `hass-addon-sunsynk-multi/CHANGELOG.md`
+5. Commit using the release number (`0.0.0` form) as the message and push to GitHub
+6. Create a draft GitHub release with tag `v0.0.0` (semantic version preceded by `v`)
+7. Notify the user to review and **publish** the draft release on GitHub to start the release
    process
 
 ## Implementation notes
@@ -47,7 +48,9 @@ Run from the **sunsynk** repo root. Stop with a clear message unless **all** pas
 - Read current version from `[project]` → `version = "..."` in `pyproject.toml`.
 - Heading match is case-insensitive for `## Unreleased`; write `## Release <new_version>` (no `v`
   prefix).
-- Stage only `pyproject.toml` and `hass-addon-sunsynk-edge/CHANGELOG.md`.
+- Stage only `pyproject.toml`, `hass-addon-sunsynk-edge/CHANGELOG.md`, and
+  `hass-addon-sunsynk-multi/CHANGELOG.md`. The multi copy is the one allowed hand-edit under
+  `hass-addon-sunsynk-multi/` in this skill (overwrite; do not merge).
 - Commit message is exactly the new version string (e.g. `0.9.4`), nothing else.
 - Push: `git push` to `origin` on `main` (this skill authorizes push).
 - Draft release (after push), with network/`gh` permissions as needed:

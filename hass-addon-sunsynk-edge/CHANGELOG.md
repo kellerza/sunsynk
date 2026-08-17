@@ -11,9 +11,9 @@ All items below are changes since add-on **1.0.0** (stable release on GitHub `ma
 - Sensor groups `pv1`–`pv8` include that MPPT's `pvN_power`, `pvN_current` and `pvN_voltage`.
 - `pv_power` is a dynamic total: it sums only the configured `pvN_power` sensors (or all profile
   MPPTs when `pv_power` is enabled alone) - #671. Added for single-phase profiles.
-- Serial `TIMEOUT` is ignored by tmodbus until
-  [modbus-connection#213](https://github.com/home-assistant-libs/modbus-connection/pull/213) (pass
-  timeout into the RTU/ASCII client). See [#672](https://github.com/kellerza/sunsynk/issues/672).
+- Serial `TIMEOUT` should now be passed to tmodbus
+  [modbus-connection#213](https://github.com/home-assistant-libs/modbus-connection/pull/213). See
+  [#672](https://github.com/kellerza/sunsynk/issues/672).
 
 ## Release 1.0.0
 
