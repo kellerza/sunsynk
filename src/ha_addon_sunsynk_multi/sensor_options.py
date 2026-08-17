@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from sunsynk.definitions import import_defs
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import Constant, Sensor, SensorDefinitions
+from sunsynk.sensors import Constant, PVDynamicTotalSensor, Sensor, SensorDefinitions
 
 from .helpers import import_mysensors
 from .options import OPT
@@ -75,6 +75,11 @@ class SensorOptions(dict[Sensor, SensorOption]):
         self.startup = [DEFS.rated_power]
         sensors_all = list(get_sensors(target=self, names=OPT.sensors))
         sensors_1st = list(get_sensors(target=self, names=OPT.sensors_first_inverter))
+
+        configured = set(sensors_all) | set(sensors_1st)
+        for sen in configured:
+            if isinstance(sen, PVDynamicTotalSensor):
+                self._deps.update(sen.resolve(DEFS.all, configured))
 
         # 1. Add startup sensors to all inverters. Visible if configured anywhere.
         for sen in self.startup:
@@ -182,19 +187,6 @@ SENSOR_GROUPS: dict[str, list[str]] = {
         "non_essential_power",
         "overall_state",
         "priority_load",
-        "pv_power",
-        "pv1_current",
-        "pv1_power",
-        "pv1_voltage",
-        "pv2_current",
-        "pv2_power",
-        "pv2_voltage",
-        "pv3_current",
-        "pv3_power",
-        "pv3_voltage",
-        "pv4_current",
-        "pv4_power",
-        "pv4_voltage",
         "use_timer",
     ],
     "settings": [

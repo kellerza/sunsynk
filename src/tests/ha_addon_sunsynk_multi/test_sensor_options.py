@@ -2,13 +2,57 @@
 
 import logging
 
-from ha_addon_sunsynk_multi.sensor_options import OPT, SOPT
+from ha_addon_sunsynk_multi.sensor_options import DEFS, OPT, SOPT, import_definitions
 
 _LOG = logging.getLogger(__name__)
 
 
+def _reload_defs(profile: str) -> None:
+    OPT.sensor_definitions = profile
+    import_definitions()
+
+
+def test_pv_power_resolves_hidden_deps() -> None:
+    """pv_power only adds hidden pvN_power sensors."""
+    _reload_defs("single-phase")
+    OPT.sensors = ["pv_power"]
+    OPT.sensors_first_inverter = []
+    SOPT.init_sensors()
+
+    assert "pv_power" in {s.id for s in SOPT if SOPT[s].visible}
+    hidden = {s.id for s in SOPT if not SOPT[s].visible}
+    assert {"pv1_power", "pv2_power", "pv3_power"} <= hidden
+    pv_total = DEFS.all["pv_power"]
+    assert pv_total.address == (186, 187, 188)
+
+
+def test_pv_power_subset_registers() -> None:
+    """pv1 + pv_power reads only pv1 register for the total."""
+    _reload_defs("three-phase")
+    OPT.sensors = ["pv1_power", "pv_power"]
+    OPT.sensors_first_inverter = []
+    SOPT.init_sensors()
+
+    pv_total = DEFS.all["pv_power"]
+    assert pv_total.address == (672,)
+
+
+def test_pv_power_hv_all_mppts() -> None:
+    """HV pv_power alone tracks pv1-8."""
+    _reload_defs("three-phase-hv")
+    OPT.sensors = ["pv_power"]
+    OPT.sensors_first_inverter = []
+    SOPT.init_sensors()
+
+    pv_total = DEFS.all["pv_power"]
+    assert pv_total.address == (672, 673, 674, 675, 727, 728, 729, 730)
+
+
 def test_opt1() -> None:
     """Sensors."""
+    _reload_defs("single-phase")
+    OPT.sensors = []
+    OPT.sensors_first_inverter = []
     SOPT.init_sensors()
     assert sorted(s.id for s in SOPT) == [
         "rated_power",
@@ -33,6 +77,7 @@ def test_opt1() -> None:
 
 def test_opt_1st() -> None:
     """Sensors."""
+    _reload_defs("single-phase")
     OPT.sensors = ["rated_power"]
     OPT.sensors_first_inverter = ["prog1_time"]
     SOPT.init_sensors()
@@ -62,6 +107,7 @@ def test_opt_1st() -> None:
 
 def test_opt_1st_visible() -> None:
     """Sensors."""
+    _reload_defs("single-phase")
     OPT.sensors = []
     OPT.sensors_first_inverter = ["rated_power"]
     SOPT.init_sensors()

@@ -1,6 +1,7 @@
 """Sensor classes represent modbus registers for an inverter."""
 
 import logging
+from collections.abc import Iterable, Mapping
 from dataclasses import InitVar, dataclass, field, replace
 from statistics import mean
 from typing import Self
@@ -280,6 +281,66 @@ class MathSensor(Sensor):
             raise ValueError(
                 f"MathSensor requires the same number of registers and factors! {self.name} [registers={self.address}, factors={self.factors}]"
             )
+
+
+@dataclass(slots=True, eq=False)
+class PVDynamicTotalSensor(Sensor):
+    """PV total: sum registers from configured pvN_power sources.
+
+    ``source_ids`` lists every MPPT this library knows about. Profiles that
+    omit some (1PH has no pv4-8, LV has no pv5-8) simply skip those ids.
+    """
+
+    source_ids: tuple[str, ...] = tuple(f"pv{i}_power" for i in range(1, 9))
+    sources: tuple[Sensor, ...] = field(init=False, default=())
+    factors: tuple[float, ...] = field(init=False, default=())
+
+    @property
+    def source(self) -> str:
+        """Registers after resolve, else the configured-source recipe."""
+        if self.sources:
+            return super().source
+        return "sum(pvN_power)"
+
+    def resolve(
+        self, defs: Mapping[str, Sensor], configured: Iterable[Sensor]
+    ) -> tuple[Sensor, ...]:
+        """Set address/factors from tracked pvN_power; return hidden deps to track."""
+        configured_set = set(configured)
+        all_sources = tuple(defs[sid] for sid in self.source_ids if sid in defs)
+
+        configured_sources = tuple(s for s in all_sources if s in configured_set)
+        if configured_sources:
+            sources = configured_sources
+        elif self in configured_set:
+            sources = all_sources
+        else:
+            return ()
+
+        if not sources:
+            _LOG.warning(
+                "PVDynamicTotalSensor %s: no pvN_power sources in defs", self.id
+            )
+            self.sources = ()
+            self.address = ()  # type:ignore[misc]
+            self.factors = ()
+            return ()
+
+        self.sources = sources
+        self.address = tuple(addr for s in sources for addr in s.address)  # type:ignore[misc]
+        self.factors = tuple(s.factor for s in sources)
+        return tuple(s for s in sources if s not in configured_set)
+
+    def reg_to_value(self, regs: RegType) -> ValType:
+        """Sum each register using its source sensor decode rules."""
+        if not self.sources:
+            return None
+        total = 0.0
+        for src, reg in zip(self.sources, regs, strict=True):
+            val = src.reg_to_value((reg,))
+            if isinstance(val, int | float):
+                total += val
+        return int_round(total)
 
 
 @dataclass(slots=True, eq=False)

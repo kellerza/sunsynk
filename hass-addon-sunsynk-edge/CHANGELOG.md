@@ -6,7 +6,13 @@
 
 All items below are changes since add-on **1.0.0** (stable release on GitHub `main`).
 
-- Documentation update
+- **Breaking:** `power_flow_card` no longer includes PV live sensors (`pv1_power`, `pv_power`,
+  etc.). Add the MPPT slugs you need explicitly under `SENSORS`.
+- `pv_power` is a dynamic total: it sums only the configured `pvN_power` sensors (or all profile
+  MPPTs when `pv_power` is enabled alone). Added for single-phase profiles.
+- Serial `TIMEOUT` is ignored by tmodbus until
+  [modbus-connection#213](https://github.com/home-assistant-libs/modbus-connection/pull/213) (pass
+  timeout into the RTU/ASCII client). See [#672](https://github.com/kellerza/sunsynk/issues/672).
 
 ## Release 1.0.0
 

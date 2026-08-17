@@ -111,7 +111,7 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:  # noqa: PLR0911, PLR0912
+    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:  # noqa: PLR0911
         """Create HASS entity."""
         dev_id = ist.opt.serial_nr
         if not self.visible_on(ist):

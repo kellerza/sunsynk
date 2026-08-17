@@ -2,11 +2,15 @@
 
 import logging
 
-from sunsynk import SensorDefinitions
+from sunsynk import WATT, SensorDefinitions
+from sunsynk.sensors import PVDynamicTotalSensor
 from sunsynk.utils import import_module
 
 COMMON = SensorDefinitions()
-"""Shared empty base; identity (regs 0-7) lives in ``sunsynk.identity.Identity``."""
+"""Shared base. Identity (regs 0-7) lives in ``sunsynk.identity.Identity``."""
+
+# Sums whichever pvN_power sensors exist on the loaded profile and are tracked.
+COMMON += PVDynamicTotalSensor(0, "PV power", WATT)
 
 PROG_CHARGE_OPTIONS = {
     0: "No Grid or Gen",

@@ -119,15 +119,6 @@ SENSORS += (
     Sensor16((643, 699), "UPS Load total power", WATT, 1),
 )
 
-###################
-# Power on Outputs
-###################
-SENSORS += (
-    MathSensor(
-        (672, 673, 674, 675), "PV power", WATT, factors=(1, 1, 1, 1)
-    ),  # pv1,pv2,pv3,pv4 power
-)
-
 #####################
 # MPPT 1 Solar Power
 #####################

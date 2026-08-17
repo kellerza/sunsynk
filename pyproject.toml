@@ -79,6 +79,7 @@ lint.select = [
 ]
 lint.ignore = [ "D203", "D213", "E203", "E501", "PLR2004" ]
 lint.pylint.max-args = 7
+lint.pylint.max-branches = 20
 
 [tool.codespell]
 ignore-words-list = "HASS,hass,Hass,ist"

@@ -11,7 +11,6 @@ from sunsynk.sensors import (
     BinarySensor,
     EnumSensor,
     HVFaultSensor,
-    MathSensor,
     Sensor,
     TempSensor,
 )
@@ -43,18 +42,6 @@ SENSORS += (
     Sensor(595, "Battery 2 power", WATT, -10),
     TempSensor(596, "Battery 2 temperature", CELSIUS, 0.1),
     SwitchRWSensor(110, "Parallel Bat1&Bat2", on=1),
-)
-
-##############
-# Solar Power
-##############
-SENSORS += (
-    MathSensor(
-        (672, 673, 674, 675, 727, 728, 729, 730),
-        "PV power",
-        WATT,
-        factors=(10, 10, 10, 10, 10, 10, 10, 10),
-    ),  # pv1,pv2,pv3,pv4,pv5,pv6,pv7,pv8 power
 )
 
 ################
