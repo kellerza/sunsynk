@@ -62,8 +62,8 @@ The transport is selected by the `PORT` URL scheme:
 
   Reduce read frequency for Solarman — see [Schedules](./schedules).
 
-  Legacy configs with `DRIVER: solarman` and `PORT: tcp://...` (or a non-zero
-  `DONGLE_SERIAL_NUMBER`) are remapped to `solarman://` at startup.
+  A non-zero `DONGLE_SERIAL_NUMBER` with `tcp://host` is remapped to `solarman://`. `DRIVER` is
+  obsolete; the add-on will not start if it is still set.
   :::
   ::: tip Shared RS485 bus (one connector, many inverters)
   You can repeat the **same** `PORT` value for **multiple** `INVERTERS` entries. Each inverter still

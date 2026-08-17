@@ -56,6 +56,12 @@ class InverterOptions:
     dongle_serial_number: int = 0
 
 
+DRIVER_ERROR_MSG = (
+    "DRIVER is obsolete; remove it and use PORT schemes "
+    "(tcp://, serial-tcp://, udp://, /dev/..., or solarman://)."
+)
+
+
 @dataclass
 class Options(MQTTOptions):
     """HASS Addon Options."""
@@ -90,28 +96,18 @@ class Options(MQTTOptions):
         await super().init_addon()
         logging.addLevelName(LOG_TRACE, "TRACE")
 
-        global_solarman = self.driver == "solarman"
         if self.driver:
-            _LOG.warning(
-                "DRIVER is obsolete and ignored; use PORT schemes "
-                "(tcp://, serial-tcp://, udp://, /dev/..., or solarman://). "
-                "Got DRIVER=%r",
-                self.driver,
-            )
-        self.driver = ""
+            _LOG.error(DRIVER_ERROR_MSG)
+            raise ValueError(DRIVER_ERROR_MSG)
 
         for inv in self.inverters:
             inv.ha_prefix = slug(inv.ha_prefix.strip())
+            if not inv.ha_prefix:
+                raise ValueError(f"Inverter {inv.serial_nr}: HA_PREFIX is required")
 
-            inv_solarman = inv.driver == "solarman"
             if inv.driver:
-                _LOG.warning(
-                    "%s: per-inverter DRIVER is obsolete and ignored "
-                    "(got %r); use PORT: solarman://... for Solarman",
-                    inv.ha_prefix or inv.serial_nr,
-                    inv.driver,
-                )
-            inv.driver = ""
+                _LOG.error(DRIVER_ERROR_MSG)
+                raise ValueError(DRIVER_ERROR_MSG)
 
             if inv.port:
                 normalized = _normalize_legacy_port(inv.port)
@@ -124,21 +120,17 @@ class Options(MQTTOptions):
                     )
                     inv.port = normalized
 
-            want_solarman = (
-                is_solarman_port(inv.port)
-                or inv_solarman
-                or global_solarman
-                or bool(inv.dongle_serial_number)
-            )
-            if want_solarman and inv.port and not is_solarman_port(inv.port):
+            if is_solarman_port(inv.port) or bool(inv.dongle_serial_number):
                 try:
                     rewritten = as_solarman_port(inv.port)
                 except ValueError as err:
-                    _LOG.warning("%s: %s", inv.ha_prefix or inv.serial_nr, err)
-                else:
+                    raise ValueError(
+                        f"{inv.ha_prefix or inv.serial_nr}: {err}"
+                    ) from err
+                if rewritten != inv.port:
                     _LOG.warning(
                         "%s: Remapped PORT %r to %r "
-                        "(use solarman:// and DONGLE_SERIAL_NUMBER; DRIVER is obsolete)",
+                        "(use solarman:// and DONGLE_SERIAL_NUMBER)",
                         inv.ha_prefix or inv.serial_nr,
                         inv.port,
                         rewritten,

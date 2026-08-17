@@ -53,10 +53,10 @@ def test_load_env_bad() -> None:
 
 @patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")
 async def test_legacy_port_migration(mock_init: MagicMock) -> None:
-    """Legacy DRIVER / serial:// / tcp+dongle migrate via PORT schemes."""
+    """Legacy serial:// and tcp+dongle migrate via PORT schemes."""
+    OPT.driver = ""
     OPT.load_dict(
         {
-            "driver": "pymodbus",
             "inverters": [
                 {
                     "ha_prefix": "inv1",
@@ -71,7 +71,6 @@ async def test_legacy_port_migration(mock_init: MagicMock) -> None:
 
     OPT.load_dict(
         {
-            "driver": "solarman",
             "inverters": [
                 {
                     "ha_prefix": "inv1",
@@ -90,9 +89,9 @@ async def test_legacy_port_migration(mock_init: MagicMock) -> None:
             "inverters": [
                 {
                     "ha_prefix": "inv1",
-                    "port": "tcp://192.168.1.182:8899",
+                    "port": "solarman://192.168.1.182:8899",
                     "serial_nr": "1",
-                    "dongle_serial_number": 99,
+                    "dongle_serial_number": 1,
                 }
             ],
         }
@@ -102,8 +101,65 @@ async def test_legacy_port_migration(mock_init: MagicMock) -> None:
 
 
 @patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")
+async def test_init_addon_rejects_incorrect_config(mock_init: MagicMock) -> None:
+    """DRIVER, empty HA_PREFIX, and unusable Solarman PORT fail startup."""
+    OPT.load_dict(
+        {
+            "driver": "pymodbus",
+            "inverters": [
+                {"ha_prefix": "inv1", "port": "/dev/ttyUSB0", "serial_nr": "1"}
+            ],
+        }
+    )
+    with pytest.raises(ValueError, match="DRIVER is obsolete"):
+        await OPT.init_addon()
+
+    OPT.driver = ""
+    OPT.load_dict(
+        {
+            "inverters": [
+                {
+                    "ha_prefix": "inv1",
+                    "port": "/dev/ttyUSB0",
+                    "serial_nr": "1",
+                    "driver": "solarman",
+                }
+            ],
+        }
+    )
+    with pytest.raises(ValueError, match="DRIVER is obsolete"):
+        await OPT.init_addon()
+
+    OPT.load_dict(
+        {
+            "inverters": [
+                {"ha_prefix": "", "port": "tcp://192.168.1.1:502", "serial_nr": "1"}
+            ],
+        }
+    )
+    with pytest.raises(ValueError, match="HA_PREFIX is required"):
+        await OPT.init_addon()
+
+    OPT.load_dict(
+        {
+            "inverters": [
+                {
+                    "ha_prefix": "inv1",
+                    "port": "/dev/ttyUSB0",
+                    "serial_nr": "1",
+                    "dongle_serial_number": 99,
+                }
+            ],
+        }
+    )
+    with pytest.raises(ValueError, match="Cannot use Solarman"):
+        await OPT.init_addon()
+
+
+@patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")
 async def test_unique(mock_init: MagicMock) -> None:
     """Tests."""
+    OPT.driver = ""
     invs = [
         {"ha_prefix": "inv1", "port": "a"},
         {"ha_prefix": "inv2", "port": "b"},

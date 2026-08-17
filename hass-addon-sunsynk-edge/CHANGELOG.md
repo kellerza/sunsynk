@@ -6,6 +6,9 @@
 
 All items below are changes since add-on **1.0.0** (stable release on GitHub `main`).
 
+- **Breaking:** leftover `DRIVER` is no longer ignored — startup fails until it is removed. `tcp://`
+  plus a non-zero `DONGLE_SERIAL_NUMBER` still remaps to `solarman://`; a dongle serial with a
+  serial device path fails instead of warning.
 - **Breaking:** `power_flow_card` no longer includes per-MPPT live sensors (`pv1_power`, etc.). It
   still includes `pv_power` (dynamic total). Add `pv1`–`pv8` for the trackers you want.
 - Sensor groups `pv1`–`pv8` include that MPPT's `pvN_power`, `pvN_current` and `pvN_voltage`.
