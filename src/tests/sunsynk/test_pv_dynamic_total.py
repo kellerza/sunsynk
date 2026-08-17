@@ -24,12 +24,14 @@ def test_resolve_subset() -> None:
     """pv1 + pv2 + pv_power → only those two registers; pv3-8 absent or unused."""
     defs = _pv_defs()
     total = PVDynamicTotalSensor(0, "PV power", WATT)
+    assert total.source == "sum(pvN_power)"
     pv1, pv2 = defs["pv1_power"], defs["pv2_power"]
     hidden = total.resolve(defs, {pv1, pv2, total})
 
     assert total.address == (186, 187)
     assert total.factors == (-1, -1)
     assert hidden == ()
+    assert total.source == "[186,187]"
 
 
 def test_resolve_pv_power_only() -> None:

@@ -299,7 +299,7 @@ class PVDynamicTotalSensor(Sensor):
     def source(self) -> str:
         """Registers after resolve, else the configured-source recipe."""
         if self.sources:
-            return super().source
+            return super(PVDynamicTotalSensor, self).source
         return "sum(pvN_power)"
 
     def resolve(
