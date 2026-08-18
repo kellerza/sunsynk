@@ -18,7 +18,6 @@ map:
   - app_config:rw
   - share:rw
 options:
-  DRIVER: "pymodbus"
   INVERTERS:
     - SERIAL_NR: "007"
       HA_PREFIX: SS
@@ -47,7 +46,6 @@ options:
   NUMBER_ENTITY_MODE: "auto"
   PROG_TIME_INTERVAL: 15
 schema:
-  DRIVER: list(pymodbus|solarman)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
