@@ -49,8 +49,11 @@ Run from the **sunsynk** repo root. Stop with a clear message unless **all** pas
 - Heading match is case-insensitive for `## Unreleased`; write `## Release <new_version>` (no `v`
   prefix).
 - Stage only `pyproject.toml`, `hass-addon-sunsynk-edge/CHANGELOG.md`, and
-  `hass-addon-sunsynk-multi/CHANGELOG.md`. The multi copy is the one allowed hand-edit under
-  `hass-addon-sunsynk-multi/` in this skill (overwrite; do not merge).
+  `hass-addon-sunsynk-multi/CHANGELOG.md`. Include `uv.lock` if the version bump changed it. The
+  multi CHANGELOG copy is the one allowed hand-edit under `hass-addon-sunsynk-multi/` in this skill
+  (overwrite; do not merge).
+- Do not copy `config.yaml` here. On a published release, `deployer2.yml` copies edge `config.yaml`
+  onto stable except `name`/`slug`, then sets `version` to the tag.
 - Commit message is exactly the new version string (e.g. `0.9.4`), nothing else.
 - Push: `git push` to `origin` on `main` (this skill authorizes push).
 - Draft release (after push), with network/`gh` permissions as needed:
