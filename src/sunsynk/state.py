@@ -127,27 +127,6 @@ class InverterState:
         self.history[sensor].append(res)
         return res
 
-    # def history_done(self) -> None:
-    #     """Flush the history."""
-    #     self.history.clear()
-
-    # def history_significant_change(
-    #     self, change: float, percent: int
-    # ) -> dict[Sensor, NumType]:
-    #     """Check if there has been a significant change in the history."""
-    #     changes: dict[Sensor, NumType] = {}
-    #     for sen, hist in self.history.items():
-    #         if len(hist) < 2:
-    #             continue
-    #         _change = abs(hist[-1] - hist[-2]) > change
-    #         _percent = abs(hist[-1]) > abs(hist[-2]) * (percent / 100)
-    #         if _change or _percent:
-    #             changes[sen] = hist[-1]
-    #             hist.clear()
-    #             hist.append(changes[sen])
-
-    #     return changes
-
 
 def group_sensors(
     sensors: Iterable[Sensor], allow_gap: int = 3, max_group_size: int = 60
