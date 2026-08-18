@@ -74,16 +74,36 @@ async def test_from_url_mock_unit(state: InverterState) -> None:
 
 
 async def test_write_register_timeout(state: InverterState) -> None:
-    """Timeouts on write increment the counter and return False."""
+    """Timeouts on write increment the counter, flush the link, and return False."""
     unit = MagicMock()
     unit.write_registers = AsyncMock(side_effect=TimeoutError)
-    ss = Sunsynk(unit=unit, state=state)
+    conn = MagicMock()
+    conn.connected = True
+    conn.disconnect = AsyncMock()
+    ss = Sunsynk(unit=unit, state=state, connection=conn)
     assert await ss.write_register(address=1, value=1) is False
     assert ss.timeouts == 1
+    conn.disconnect.assert_awaited_once()
 
 
 async def test_read_holding_registers_timeout(state: InverterState) -> None:
-    """Timeouts on read increment the counter and raise OSError."""
+    """Timeouts on read increment the counter, flush the link, and raise OSError."""
+    unit = MagicMock()
+    unit.read_holding_registers = AsyncMock(side_effect=TimeoutError)
+    conn = MagicMock()
+    conn.connected = True
+    conn.disconnect = AsyncMock()
+    ss = Sunsynk(unit=unit, state=state, connection=conn)
+    with pytest.raises(OSError, match="timeout reading"):
+        await ss.read_holding_registers(1, 1)
+    assert ss.timeouts == 1
+    conn.disconnect.assert_awaited_once()
+
+
+async def test_read_holding_registers_timeout_without_connection(
+    state: InverterState,
+) -> None:
+    """Solarman-style units have no ModbusConnection to flush."""
     unit = MagicMock()
     unit.read_holding_registers = AsyncMock(side_effect=TimeoutError)
     ss = Sunsynk(unit=unit, state=state)

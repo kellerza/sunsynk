@@ -37,6 +37,13 @@ configuration:
   READ_SENSORS_BATCH_SIZE:
     name: Read batch size
     description: Maximum number of registers to read in one Modbus request.
+  READ_MESSAGE_SPACING:
+    name: Read message spacing
+    description: |
+      Seconds to wait after each successful Modbus reply before the next request.
+
+      Default **0.05**. Increase on flaky RS485 / USB-FTDI links. **0** disables the gap.
+      Raising TIMEOUT only waits longer for a missing reply; it does not add this pause.
   STALE_INVERTER_AFTER_SECONDS:
     name: Stale inverter after (seconds)
     description: |

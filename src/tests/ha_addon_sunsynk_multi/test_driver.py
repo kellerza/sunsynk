@@ -20,13 +20,30 @@ def test_init() -> None:
     AInverter.solarman_ports.clear()
     mock_conn = MagicMock()
     mock_conn.for_unit.return_value = MagicMock()
-    with patch("ha_addon_sunsynk_multi.driver.open_connection", return_value=mock_conn):
+    with patch(
+        "ha_addon_sunsynk_multi.driver.open_connection", return_value=mock_conn
+    ) as open_conn:
         init_driver(OPT)
     assert len(STATE) == 1
     ist = STATE[0].inv
     assert isinstance(ist, Sunsynk)
     assert ist.port == inv_port
     mock_conn.for_unit.assert_called_once_with(1)
+    open_conn.assert_called_once_with(
+        inv_port, timeout=OPT.timeout, message_spacing=0.05
+    )
+
+    AInverter.connections.clear()
+    AInverter.solarman_ports.clear()
+    OPT.read_message_spacing = 0
+    mock_conn = MagicMock()
+    mock_conn.for_unit.return_value = MagicMock()
+    with patch(
+        "ha_addon_sunsynk_multi.driver.open_connection", return_value=mock_conn
+    ) as open_conn:
+        init_driver(OPT)
+    open_conn.assert_called_once_with(inv_port, timeout=OPT.timeout, message_spacing=0)
+    OPT.read_message_spacing = 0.05
 
     AInverter.connections.clear()
     AInverter.solarman_ports.clear()

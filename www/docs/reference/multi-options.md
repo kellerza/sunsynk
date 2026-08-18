@@ -9,10 +9,14 @@
   it makes more sense to read a couple of additional registers in 1 or two requests, than trying to
   read exactly what you are looking for in multiple requests.
 
+- <i-mdi-dev-to class="vp-edge-option-icon" /> `READ_MESSAGE_SPACING` – Seconds to wait after each
+  successful Modbus reply before the next request on the same link (serial, `tcp://`,
+  `serial-tcp://`, `udp://`). Default **0.05**. **0** disables the gap. Increase on flaky RS485 /
+  USB-FTDI links. Not used for `solarman://`.
+
 - `TIMEOUT` – Modbus timeout in **seconds** for connect and register read/write attempts. Default
-  **10**; increase it if you see spurious timeouts on slow links. Direct serial and RS485 gateways
-  also wait **50ms** after each reply so the inverter can turn the bus around. Raising `TIMEOUT`
-  does not add that gap.
+  **10**; increase it if you see spurious timeouts on slow links. Raising `TIMEOUT` does not add a
+  gap between successful requests.
 
 ## Inverters
 

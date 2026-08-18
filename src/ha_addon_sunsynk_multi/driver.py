@@ -54,7 +54,9 @@ def _shared_modbus_connection(opt: Options, *, port: str) -> ModbusConnection:
     """One ``ModbusConnection`` per port; reused across MODBUS_IDs."""
     conn = AInverter.connections.get(port)
     if conn is None:
-        conn = open_connection(port, timeout=opt.timeout)
+        conn = open_connection(
+            port, timeout=opt.timeout, message_spacing=opt.read_message_spacing
+        )
         AInverter.connections[port] = conn
         _LOG.debug("Opened Modbus connection for %s", port)
     else:

@@ -40,13 +40,17 @@ These apply to Modbus (serial / TCP) and Solarman alike.
 
 ### Message spacing
 
-For Modbus connections opened via [`open_connection()`](../src/sunsynk/connection.py), the library
-sets **`message_spacing = 0.05`** (50ms) by default. modbus-connection waits that long after the
-**previous request finished** before starting the next one on the same link (shared across all
-`for_unit()` handles on that port).
+For Modbus connections opened via [`open_connection()`](../src/sunsynk/connection.py), the add-on
+passes **`READ_MESSAGE_SPACING`** (default **0.05** seconds). modbus-connection waits that long
+after the **previous request finished** before starting the next one on the same link (shared across
+all `for_unit()` handles on that port). **0** disables the gap.
 
-Pass `message_spacing=0` to `open_connection()` to disable. There is no add-on option for this yet;
-the default is fixed in code (`DEFAULT_MESSAGE_SPACING`).
+Library callers that omit `message_spacing` still get `DEFAULT_MESSAGE_SPACING` (0.05).
+
+On **timeout**, `Sunsynk` calls `ModbusConnection.disconnect()` (not `close()`) so the next FC03
+reconnects with an empty receive buffer. tmodbus already disconnects on desync (bad function code /
+header mismatch); it did not disconnect on timeout, which left garbage bytes for the next poll
+(`Received data with no pending requests`, `0x79`).
 
 ---
 
@@ -81,18 +85,25 @@ v1.0.0 **tmodbus** is stricter:
 5. **Buffer not flushed on timeout** — on RTU timeout, tmodbus leaves unread bytes in the protocol
    buffer. The next request can then see garbage (`Received data with no pending requests`,
    `Cannot frame response with unsupported function code 0x79`) until the link recovers or the
-   add-on is restarted.
+   add-on is restarted. The library now **disconnects** after timeout so the next request reopens
+   the port.
 
 Increasing **`TIMEOUT`** alone does not fix (1)–(3); it only waits longer before declaring failure.
 
-### Fix: 50ms message spacing
+### Fix: `READ_MESSAGE_SPACING` (default 0.05s)
 
-`sunsynk.connection.open_connection()` now defaults to **50ms** `message_spacing` for all Modbus
-ports (including serial). That gap is enforced **after each completed request** by
-modbus-connection’s `Pacer`, giving the inverter and adapter time to turn the bus around.
+`sunsynk.connection.open_connection()` defaults to **0.05s** `message_spacing` for all Modbus ports
+(including serial). That gap is enforced **after each completed request** by modbus-connection’s
+`Pacer`, giving the inverter and adapter time to turn the bus around.
 
-This matches common RS485 guidance (roughly **50–100ms** between commands on slow devices) and is
-the main code-side mitigation for #672 on direct serial.
+Tune it with **`READ_MESSAGE_SPACING`**. This matches common RS485 guidance (roughly **0.05–0.1s**
+between commands on slow devices) and is the main pacing mitigation for #672 on direct serial.
+
+| Symptom                                                      | Try                                                                                                        |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Intermittent ~10s timeouts on FTDI serial                    | `READ_MESSAGE_SPACING: 0.05` (default), then **0.1–0.15**                                                  |
+| Still desync / `0x79` / “no pending requests” after timeouts | disconnect-on-timeout should help; if not, report logs with the spacing value                              |
+| Pure Modbus TCP (no RS485 behind gateway)                    | can try **0** to rule out pacing as cause (serial/TCP still share the same default for now)                |
 
 ### What still helps on serial
 
@@ -126,7 +137,7 @@ Implementation: [`connection.py`](../src/sunsynk/connection.py),
 **PORT examples:** `tcp://192.168.1.50:502`, `serial-tcp://gateway:502`, `udp://host:502`
 
 Modbus TCP, RTU-over-TCP, and UDP use the same **tmodbus** / modbus-connection stack as serial. The
-add-on passes **`TIMEOUT`** and the default **50ms** `message_spacing` into `open_connection()`.
+add-on passes **`TIMEOUT`** and **`READ_MESSAGE_SPACING`** into `open_connection()`.
 
 ### `tcp://` (Modbus TCP / MBAP)
 
@@ -148,16 +159,16 @@ Timeouts here are usually **gateway or multi-master** issues rather than RTU tur
   repeated timeouts, not necessarily total loss of connectivity (external Modbus tools may still
   work).
 
-Raising `TIMEOUT` can help on **slow gateways** or long RTU legs behind TCP. The **50ms spacing**
-still applies between requests on the shared connection (including when two `MODBUS_ID`s share one
-`tcp://` PORT).
+Raising `TIMEOUT` can help on **slow gateways** or long RTU legs behind TCP. The same
+**`READ_MESSAGE_SPACING`** still applies between requests on the shared connection (including when
+two `MODBUS_ID`s share one `tcp://` PORT).
 
 ### `serial-tcp://` (RTU-over-TCP)
 
 Same as TCP for the socket side, but the framer is **RTU**. The gateway translates RTU frames on the
 RS485 side. Spacing and turnaround constraints from [Serial](#serial) apply
-**on the bus behind the gateway**; the 50ms default helps gateways that forward requests immediately
-without pacing.
+**on the bus behind the gateway**; the default **0.05s** spacing helps gateways that forward
+requests immediately without pacing.
 
 If the gateway buffers poorly under rapid polling, prefer **`tcp://`** (native Modbus TCP) when the
 device supports it, or reduce batch size / read frequency.
@@ -209,24 +220,24 @@ No shared `ModbusConnection`; one Solarman client per inverter port entry.
 
 ## Quick reference
 
-| Topic                          | Serial / TCP                          | Solarman                             |
-| ------------------------------ | ------------------------------------- | ------------------------------------ |
-| Library                        | modbus-connection + tmodbus           | PySolarmanV5Async                    |
-| Add-on `TIMEOUT`               | Per connect / FC03 / FC16 attempt     | `socket_timeout`                     |
-| Default gap after each reply   | **50ms** (`message_spacing`)          | —                                    |
-| Driver retry on `TimeoutError` | No (immediate error)                  | No (disconnect)                      |
-| Add-on batch retry             | Yes (`read_sensors_retry`)            | Yes (same)                           |
-| Multi-inverter same PORT       | One connection, `for_unit(MODBUS_ID)` | Not supported (one dongle per entry) |
+| Topic                          | Serial / TCP                                   | Solarman                             |
+| ------------------------------ | ---------------------------------------------- | ------------------------------------ |
+| Library                        | modbus-connection + tmodbus                    | PySolarmanV5Async                    |
+| Add-on `TIMEOUT`               | Per connect / FC03 / FC16 attempt              | `socket_timeout`                     |
+| Default gap after each reply   | **`READ_MESSAGE_SPACING`** (default **0.05s**) | —                                    |
+| Driver retry on `TimeoutError` | No (disconnect then error)                     | No (disconnect)                      |
+| Add-on batch retry             | Yes (`read_sensors_retry`)                     | Yes (same)                           |
+| Multi-inverter same PORT       | One connection, `for_unit(MODBUS_ID)`          | Not supported (one dongle per entry) |
 
 ### Add-on options that affect this
 
 User-facing keys from [multi-options](../www/docs/reference/multi-options.md) (and
-[schedules](../www/docs/reference/schedules.md)). There is **no** add-on option for
-`message_spacing`; it is fixed at 50ms in `open_connection()`.
+[schedules](../www/docs/reference/schedules.md)).
 
 | Option                          | Role                                                                                          |
 | ------------------------------- | --------------------------------------------------------------------------------------------- |
 | `TIMEOUT`                       | Deadline in **seconds** for connect and each register read/write (default **10**)             |
+| `READ_MESSAGE_SPACING`          | Seconds to wait after each successful Modbus reply (default **0.05**; **0** disables)         |
 | `READ_SENSORS_BATCH_SIZE`       | Max registers per FC03 group (smaller → more requests, less time per request)                 |
 | `READ_ALLOW_GAP`                | Extra registers allowed between addresses so groups merge (fewer requests)                    |
 | `STALE_INVERTER_AFTER_SECONDS`  | Grace after last good read before the inverter is marked stale                                |

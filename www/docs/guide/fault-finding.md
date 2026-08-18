@@ -114,8 +114,9 @@ If you get many timeouts, or if the addon does not read all your sensors on star
 **Retrying individual sensors** in the log), you can try the following:
 
 - Set `READ_SENSORS_BATCH_SIZE` to a smaller value, i.e. 8.
-- Direct serial already waits 50ms between requests. Raising `TIMEOUT` only waits longer for a
-  missing reply; it does not add that gap.
+- Direct serial and TCP wait `READ_MESSAGE_SPACING` seconds after each reply (default **0.05**).
+  Raising `TIMEOUT` only waits longer for a missing reply; it does not add that gap. Try **0.1** or
+  **0.15** if timeouts continue.
 - The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd
   at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote
   device.

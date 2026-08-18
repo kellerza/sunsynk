@@ -76,6 +76,8 @@ class Options(MQTTOptions):
     sensors_first_inverter: list[str] = field(default_factory=list)
     read_allow_gap: int = 2
     read_sensors_batch_size: int = 20
+    read_message_spacing: float = 0.05
+    """Seconds to wait after each Modbus reply before the next request (0 disables)."""
     schedules: list[Schedule] = field(default_factory=list)
     timeout: int = 10
 
