@@ -2,7 +2,7 @@
 
 <https://github.com/kellerza/sunsynk/commits/>
 
-## Unreleased
+## Release 1.1.0
 
 All items below are changes since add-on **1.0.0** (stable release on GitHub `main`).
 
