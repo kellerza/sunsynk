@@ -84,8 +84,6 @@ def create_sunsynk(opt: Options, iopt: InverterOptions) -> Sunsynk:
             allow_gap=opt.read_allow_gap,
         )
     else:
-        if iopt.dongle_serial_number:
-            _LOG.warning("Ignoring dongle_serial_number for non-solarman PORT %s", port)
         conn = _shared_modbus_connection(opt, port=port)
         ss = Sunsynk(
             # ponytail: see Sunsynk.from_url — TmodbusUnit vs HoldingUnit Coroutine typing

@@ -10,7 +10,9 @@
   read exactly what you are looking for in multiple requests.
 
 - `TIMEOUT` – Modbus timeout in **seconds** for connect and register read/write attempts. Default
-  **10**; increase it if you see spurious timeouts on slow links.
+  **10**; increase it if you see spurious timeouts on slow links. Direct serial and RS485 gateways
+  also wait **50ms** after each reply so the inverter can turn the bus around. Raising `TIMEOUT`
+  does not add that gap.
 
 ## Inverters
 
@@ -157,13 +159,12 @@ Refer to [Schedules](./schedules)
 Used when several inverters share one RS485 bus so a dead unit does not stall everyone. These
 options are **global** (not per inverter).
 
-- <i-mdi-dev-to class="vp-edge-option-icon" /> `STALE_INVERTER_AFTER_SECONDS` – After each
-  **successful** Modbus read, the add-on arms a deadline this many seconds in the future. If reads
-  are still failing once that deadline has passed (since the last success), the inverter enters
-  **stale quiet** and normal polling pauses. Default `120`.
+- `STALE_INVERTER_AFTER_SECONDS` – After each **successful** Modbus read, the add-on arms a deadline
+  this many seconds in the future. If reads are still failing once that deadline has passed (since
+  the last success), the inverter enters **stale quiet** and normal polling pauses. Default `120`.
 
-- <i-mdi-dev-to class="vp-edge-option-icon" /> `STALE_INVERTER_SKIP_SECONDS` – How long to stay in
-  stale quiet before a one-off serial probe and possible recovery. Default `600`.
+- `STALE_INVERTER_SKIP_SECONDS` – How long to stay in stale quiet before a one-off serial probe and
+  possible recovery. Default `600`.
 
 ::: tip
 

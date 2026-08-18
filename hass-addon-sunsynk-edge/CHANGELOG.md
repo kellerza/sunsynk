@@ -17,6 +17,9 @@ All items below are changes since add-on **1.0.0** (stable release on GitHub `ma
 - Serial `TIMEOUT` should now be passed to tmodbus
   [modbus-connection#213](https://github.com/home-assistant-libs/modbus-connection/pull/213). See
   [#672](https://github.com/kellerza/sunsynk/issues/672).
+- Modbus requests wait **50ms** after each reply (`message_spacing`). tmodbus's RTU 3.5-character
+  gap is measured from *send*, so v1.0.0 issued the next poll as soon as the previous reply was
+  parsed — too fast for Deye + USB-FTDI / RS485 gateways. Raising `TIMEOUT` does not add that gap.
 - `TIMEOUT` is the client/socket deadline for connect and each register I/O. Nested
   `asyncio.timeout` wrappers (including the **`2 × TIMEOUT`** batch cap) are removed so a hang is
   not cancelled twice. Solarman uses the same `TIMEOUT` for `socket_timeout` and does not retry
@@ -49,7 +52,7 @@ The following are major changes, but should accept and convert older configurati
   failure to the affected device. Issue remains **open** until validated in the field.
 - [#642](https://github.com/kellerza/sunsynk/issues/642) – Ongoing work to improve
   **AUX / generator port** alignment between **single-phase** and **three-phase** sensor definitions
-  (issue **not closed**). _(GitHub thread title may also cover related inverter-side options.)_
+  (issue **not closed**). *(GitHub thread title may also cover related inverter-side options.)*
 - [#641](https://github.com/kellerza/sunsynk/issues/641) – Solarman / dongle connectivity (e.g. Fuji
   micro-inverter setups); **clearer warnings and validation** around **`DONGLE_SERIAL_NUMBER`** so
   misconfiguration shows up early in logs. Issue **open** while scenarios are confirmed.

@@ -6,7 +6,7 @@ import pytest
 from modbus_connection import ModbusSerialParams, ModbusTcpParams, ModbusUdpParams
 from modbus_connection.mock import MockModbusConnection
 
-from sunsynk.connection import open_connection, url_to_params
+from sunsynk.connection import DEFAULT_MESSAGE_SPACING, open_connection, url_to_params
 from sunsynk.state import InverterState
 from sunsynk.sunsynk import Sunsynk
 
@@ -35,6 +35,19 @@ def test_open_connection_builds_tmodbus() -> None:
     assert conn.connected is False
     unit = conn.for_unit(1)
     assert unit is not None
+    assert conn._pacer._message_spacing == DEFAULT_MESSAGE_SPACING
+
+
+def test_open_connection_serial_spacing() -> None:
+    """Serial (and default TCP) get a 50ms gap; explicit 0 disables it."""
+    serial = open_connection("/dev/ttyUSB0", timeout=5)
+    assert serial._pacer._message_spacing == DEFAULT_MESSAGE_SPACING
+    rtu_tcp = open_connection("serial-tcp://host:8899", timeout=5)
+    assert rtu_tcp._pacer._message_spacing == DEFAULT_MESSAGE_SPACING
+    no_gap = open_connection("/dev/ttyUSB0", timeout=5, message_spacing=0)
+    assert no_gap._pacer._message_spacing == 0.0
+    custom = open_connection("tcp://127.0.0.1:502", timeout=5, message_spacing=0.1)
+    assert custom._pacer._message_spacing == 0.1
 
 
 async def test_from_url_mock_unit(state: InverterState) -> None:

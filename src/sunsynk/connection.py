@@ -9,6 +9,12 @@ from modbus_connection.tmodbus import ModbusConnection
 
 type ConnectionParams = ModbusTcpParams | ModbusUdpParams | ModbusSerialParams
 
+# ponytail: Deye + USB-FTDI need a pause after each reply. tmodbus's RTU 3.5-char
+# gap is counted from *send*, so it is already elapsed when the response arrives
+# and the next poll goes out immediately. Ceiling: a noisy bus still times out;
+# then retry/flush on timeout belongs in tmodbus (buffer is not cleared today).
+DEFAULT_MESSAGE_SPACING = 0.05
+
 
 def url_to_params(port: str, baudrate: int = 9600) -> ConnectionParams:
     """Map a port URL (or serial device path) to connection params."""
@@ -40,10 +46,16 @@ def open_connection(
     *,
     baudrate: int = 9600,
     timeout: float = 10,
-    message_spacing: float = 0.0,
+    message_spacing: float | None = None,
     connect_delay: float = 0.0,
 ) -> ModbusConnection:
-    """Create a tmodbus ``ModbusConnection`` for ``port`` (does not connect yet)."""
+    """Create a tmodbus ``ModbusConnection`` for ``port`` (does not connect yet).
+
+    ``message_spacing`` defaults to ``DEFAULT_MESSAGE_SPACING`` (50ms) so serial
+    and RS485 gateways get a turnaround gap. Pass ``0`` to disable.
+    """
+    if message_spacing is None:
+        message_spacing = DEFAULT_MESSAGE_SPACING
     return ModbusConnection(
         url_to_params(port, baudrate),
         timeout=timeout,

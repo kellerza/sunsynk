@@ -38,15 +38,12 @@ can probably continue using the addon, but can consider reducing sensors, relaxi
 schedules, etc.
 
 If you poll several inverters on one RS485 bus and one unit stops replying, it might enter a
-**stale** state so the bus is not blocked. On the **dev/edge** add-on you can tune
-`STALE_INVERTER_AFTER_SECONDS`
-<i-mdi-dev-to class="vp-edge-option-icon" title="dev/edge add-on only" /> and
-`STALE_INVERTER_SKIP_SECONDS`
-<i-mdi-dev-to class="vp-edge-option-icon" title="dev/edge add-on only" /> in the Supervisor options
-(see [Multi add-on options](../reference/multi-options#stale-inverter-global)). After each
-**successful** Modbus read, a timer is armed: if reads are still failing once that many seconds have
-passed since the last success, the add-on pauses normal polling for that inverter for the configured
-skip period, then probes the serial register once before resuming or extending stale quiet.
+**stale** state so the bus is not blocked. Tune `STALE_INVERTER_AFTER_SECONDS` and
+`STALE_INVERTER_SKIP_SECONDS` in the Supervisor options (see
+[Multi add-on options](../reference/multi-options#stale-inverter-global)). After each **successful**
+Modbus read, a timer is armed: if reads are still failing once that many seconds have passed since
+the last success, the add-on pauses normal polling for that inverter for the configured skip period,
+then probes the serial register once before resuming or extending stale quiet.
 
 If you fail to get a reply from the inverter, typically if step #2 fails, please check the
 following:
@@ -117,6 +114,8 @@ If you get many timeouts, or if the addon does not read all your sensors on star
 **Retrying individual sensors** in the log), you can try the following:
 
 - Set `READ_SENSORS_BATCH_SIZE` to a smaller value, i.e. 8.
+- Direct serial already waits 50ms between requests. Raising `TIMEOUT` only waits longer for a
+  missing reply; it does not add that gap.
 - The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd
   at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote
   device.
