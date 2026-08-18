@@ -47,10 +47,11 @@ all `for_unit()` handles on that port). **0** disables the gap.
 
 Library callers that omit `message_spacing` still get `DEFAULT_MESSAGE_SPACING` (0.05).
 
-On **timeout**, `Sunsynk` calls `ModbusConnection.disconnect()` (not `close()`) so the next FC03
-reconnects with an empty receive buffer. tmodbus already disconnects on desync (bad function code /
-header mismatch); it did not disconnect on timeout, which left garbage bytes for the next poll
-(`Received data with no pending requests`, `0x79`).
+On **timeout** and **gateway target failed to respond** (Modbus exception **0x0B** /
+`GatewayTargetError`), `Sunsynk` calls `ModbusConnection.disconnect()` (not `close()`) so the next
+FC03 reconnects with an empty receive buffer. Gateways often return 0x0B when the inverter misses
+the reply window; a late frame then shows up as `Received unexpected response with Transaction ID`.
+tmodbus already disconnects on desync (bad function code / header mismatch).
 
 ---
 
@@ -74,8 +75,8 @@ v1.0.0 **tmodbus** is stricter:
    before a new frame. tmodbus enforces that gap from the **send** time (`_last_frame_ended_at` is
    updated when the request is written). By the time the inverter replies, that interval has already
    elapsed, so the **next poll can go out immediately** after the response is parsed.
-2. **Slow slaves** — Deye inverters and USB-FTDI adapters often need tens of milliseconds after a
-   reply before they accept another master request. Polling back-to-back produces intermittent
+2. **Slow servers** — Deye inverters and USB-FTDI adapters often need tens of milliseconds after a
+   reply before they accept another client request. Polling back-to-back produces intermittent
    timeouts (~every 10s with default `TIMEOUT`, matching field reports in #672).
 3. **FTDI latency** — FT232R and similar chips buffer serial data (default latency timer ~16ms).
    tmodbus documents that true inter-frame silence detection is unreliable on USB serial; it sizes
@@ -150,7 +151,7 @@ Requests are serialized on **one `ModbusConnection` per PORT** string. Multiple 
 same gateway share that connection; modbus-connection’s lock and pacer ensure only one transaction
 is in flight at a time.
 
-Timeouts here are usually **gateway or multi-master** issues rather than RTU turnaround:
+Timeouts here are usually **gateway or multi-client** issues rather than RTU turnaround:
 
 - **`Received unexpected response with Transaction ID`** — another client is talking to the same
   gateway, or the gateway returned a late MBAP frame for an earlier request (#672, multi-inverter
@@ -252,6 +253,7 @@ addon timeout.
 - [modbus-connection#213](https://github.com/home-assistant-libs/modbus-connection/pull/213) —
   serial `timeout` passed through to tmodbus (fixes `TIMEOUT` being ignored on RTU; does not add
   spacing).
-- **50ms `message_spacing`** in `open_connection()` — addresses back-to-back polling on serial /
+- **`READ_MESSAGE_SPACING`** (default **0.05s**) plus **disconnect** on timeout and gateway **0x0B**
+  (`GatewayTargetError`) — addresses back-to-back polling and late gateway replies on serial /
   RTU-backed links ([#672](https://github.com/kellerza/sunsynk/issues/672)).
 - Removal of nested **`asyncio.timeout`** wrappers — avoids double cancellation; see edge CHANGELOG.

@@ -498,7 +498,7 @@ SENSORS += (
     SelectRWSensor(
         336,
         "Parallel Mode",
-        options={0: "Slave", 1 << 1: "Master"},
+        options={0: "Server", 1 << 1: "Client"},  # inverter LCD: Slave / Master
         bitmask=1 << 1,
     ),
     SelectRWSensor(

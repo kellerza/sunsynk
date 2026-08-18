@@ -45,6 +45,10 @@ Modbus read, a timer is armed: if reads are still failing once that many seconds
 the last success, the add-on pauses normal polling for that inverter for the configured skip period,
 then probes the serial register once before resuming or extending stale quiet.
 
+A parallel AC setup (inverter **Parallel Mode** Client / Server) does **not** mean both inverters
+share the RS485 Modbus bus. If the second inverter never appears, see
+[Parallel inverters](#parallel-inverters) below.
+
 If you fail to get a reply from the inverter, typically if step #2 fails, please check the
 following:
 
@@ -149,3 +153,40 @@ RS485 devices are typically multi-drop with a termination resistor on the first 
 However, the RS485 BMS port may only be intended to connect to a single device.
 
 ![RS485](../images/rs485-term.jpg =70%x)
+
+## (D) Parallel inverters — second inverter not responding {#parallel-inverters}
+
+The add-on can poll several inverters on **one** adaptor when they share a physical RS485 bus: same
+`PORT`, unique `MODBUS_ID` (and `SERIAL_NR` / `HA_PREFIX`) per unit. See
+[Shared RS485 bus](../reference/multi-options#port).
+
+Parallel Mode does **not** automatically daisy-chain Modbus. If only one inverter answers, or the
+other goes **stale** / startup shows no response, test **one inverter at a time** with the **same**
+USB adaptor. Change only which RJ45 you plug into and the single `INVERTERS` entry. The inverter LCD
+may still say Master / Slave for Parallel Mode; this add-on uses **Client** / **Server**. See
+[Modbus](./overview.md#modbus).
+
+1. **Baseline — inverter 1 only.** Plug the cable into inverter 1. Configure one `INVERTERS` entry
+   for that unit (`MODBUS_ID` matching its **Modbus SN**). If this fails, it is a normal connection
+   problem — follow (A)–(C).
+
+2. **Inverter 2 on its own socket.** Move the **same** cable to inverter 2. Change the config to
+   inverter 2 only (`HA_PREFIX`, `MODBUS_ID`, `SERIAL_NR`). If this fails while plugged into
+   inverter 2, inverter 2 is not answering Modbus: check its Modbus SN, cabling, and whether that
+   model exposes RS485 on the port you are using when Parallel Mode is Server.
+
+3. **Is the bus shared?** Plug the cable back into inverter 1. Keep the **inverter 1** config. Then
+   move the cable to inverter 2 **without changing the config**.
+
+   - If inverter 1 still answers with the cable on inverter 2, the RS485 bus **is** shared — use the
+     **same** `PORT` for both `INVERTERS` entries, with unique `MODBUS_ID`s.
+   - If it goes silent, the bus is **not** shared. Use **two adaptors** (two `PORT`s), one per
+     inverter.
+
+4. **Optional cross-check.** Cable on inverter 1, config for inverter 2 only. A reply means inverter
+   2 is reachable through inverter 1's socket (shared bus). No reply means the bus is not shared, or
+   inverter 2's `MODBUS_ID` is wrong.
+
+When using two adaptors, `MODBUS_ID` must match whatever unit actually answers on **that** adaptor.
+Some units in Server mode still answer as `1` on their own RS485 port even when the display shows a
+different Modbus SN.

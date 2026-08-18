@@ -185,7 +185,10 @@ SENSORS:
 
 ### Parallel
 
-Sensors used for parallel inverter configuration and management.
+Sensors used for parallel inverter configuration and management. **Parallel Mode** options are
+**Client** (formerly Master) and **Server** (formerly Slave). The inverter display may still use the
+old names. These labels are not the Modbus client/server roles — see
+[Modbus](../guide/overview#modbus).
 
 ```yaml
 SENSORS:

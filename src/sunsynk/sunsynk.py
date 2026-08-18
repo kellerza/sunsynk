@@ -9,7 +9,7 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import Protocol, cast, runtime_checkable
 
-from modbus_connection import ModbusTimeoutError
+from modbus_connection import GatewayTargetError, ModbusTimeoutError
 from modbus_connection.tmodbus import ModbusConnection
 
 from sunsynk.connection import open_connection
@@ -92,11 +92,11 @@ class Sunsynk:
         if connect is not None:
             await connect()
 
-    async def _flush_modbus_connection(self) -> None:
+    async def _flush_modbus_connection(self, *, reason: str) -> None:
         """Drop the tmodbus link so the next request reconnects with an empty buffer."""
         if self.connection is None or not self.connection.connected:
             return
-        _LOG.debug("Flushing Modbus connection after timeout (%s)", self.port)
+        _LOG.debug("Flushing Modbus connection after %s (%s)", reason, self.port)
         await self.connection.disconnect()
 
     async def write_register(self, *, address: int, value: int) -> bool:
@@ -107,7 +107,13 @@ class Sunsynk:
         except TimeoutError:
             _LOG.error("timeout writing register %s=%s", address, value)
             self.timeouts += 1
-            await self._flush_modbus_connection()
+            await self._flush_modbus_connection(reason="timeout")
+        except GatewayTargetError as err:
+            _LOG.error(
+                "gateway target failed writing register %s=%s: %s", address, value, err
+            )
+            self.timeouts += 1
+            await self._flush_modbus_connection(reason="gateway target error")
         except Exception as err:
             _LOG.error("failed to write register %s=%s: %s", address, value, err)
         return False
@@ -148,8 +154,12 @@ class Sunsynk:
             return await self.unit.read_holding_registers(start, length)
         except TimeoutError:
             self.timeouts += 1
-            await self._flush_modbus_connection()
+            await self._flush_modbus_connection(reason="timeout")
             raise OSError(f"timeout reading register {start}") from None
+        except GatewayTargetError:
+            self.timeouts += 1
+            await self._flush_modbus_connection(reason="gateway target error")
+            raise
 
     async def read_sensors(self, sensors: Iterable[Sensor]) -> None:
         """Read a list of sensors - Sunsynk supports function code 0x03."""

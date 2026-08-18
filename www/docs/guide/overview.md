@@ -21,6 +21,23 @@ when to report.
 For the Add-On you require Home Assistant OS and a RS-485 adaptor to connect to your Sunsynk
 inverter. Sensors are read using the Modbus protocol and sent to a MQTT server.
 
+## Modbus {#modbus}
+
+The add-on is a Modbus **client** (it initiates requests). Each inverter is a Modbus **server** (it
+processes requests and replies). Those names replace the older *master* / *slave* wording:
+
+| Role       | Meaning                                                                                                                                               |
+| :--------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Client** | Device that **initiates** requests. This add-on is a client.                                                                                          |
+| **Server** | Device that **processes** requests and sends the reply. Each inverter is a server. `MODBUS_ID` is that server's address (the inverter **Modbus SN**). |
+
+Several servers can share one RS485 bus if each has a unique `MODBUS_ID`. See
+[Addon options](../reference/multi-options#inverters).
+
+Three-phase **Parallel Mode** uses the same Client / Server labels for the inverter's own parallel
+bus (the LCD may still say Master / Slave). That is not the Modbus role: every inverter remains a
+Modbus **server**.
+
 ## Alternatives
 
 There are several alternative ways to access your inverter data. These include:

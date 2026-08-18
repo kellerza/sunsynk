@@ -64,8 +64,8 @@ classDiagram
 
 ## `for_unit` is the server id
 
-Yes. `connection.for_unit(id)` is the Modbus **unit id** (also called slave id, device id, or server
-id). It is the same value as:
+Yes. `connection.for_unit(id)` is the Modbus **unit id** (server id; device id). It is the same
+value as:
 
 - `Sunsynk.server_id` today
 - add-on `MODBUS_ID` / `InverterOptions.modbus_id`

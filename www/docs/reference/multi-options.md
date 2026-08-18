@@ -34,8 +34,9 @@ The following options are required per inverter:
 
 - `HA_PREFIX` – A prefix to add to MQTT discovered Home Assistant entities (default: SS).
 
-- `MODBUS_ID` – The Modbus Server ID is a number, typically 1. Might be different in multi-inverter
-  setups.
+- `MODBUS_ID` – The Modbus **server** id (the inverter answers requests). A number, typically 1.
+  Must match the inverter **Modbus SN**. Unique per inverter on a shared bus. See
+  [Modbus](../guide/overview#modbus).
 
 - `DONGLE_SERIAL_NUMBER` – Required for a **`solarman://`** PORT (Wi-Fi dongle serial number).
 

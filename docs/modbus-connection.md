@@ -22,8 +22,8 @@ The public API stays `Sensor` + `Sunsynk.read_sensors(sensors)`. Internally, hol
 goes to a unit. The add-on stores one `ModbusConnection` per port and passes
 `connection.for_unit(modbus_id)` into each inverter.
 
-`for_unit(id)` is the Modbus **server id** (slave / device id): today’s `Sunsynk.server_id` and
-add-on `MODBUS_ID`. It is not a register address.
+`for_unit(id)` is the Modbus **server id** (device id): today’s `Sunsynk.server_id` and add-on
+`MODBUS_ID`. It is not a register address.
 
 ## What hurts today
 

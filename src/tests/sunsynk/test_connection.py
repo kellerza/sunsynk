@@ -3,7 +3,12 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from modbus_connection import ModbusSerialParams, ModbusTcpParams, ModbusUdpParams
+from modbus_connection import (
+    GatewayTargetError,
+    ModbusSerialParams,
+    ModbusTcpParams,
+    ModbusUdpParams,
+)
 from modbus_connection.mock import MockModbusConnection
 
 from sunsynk.connection import DEFAULT_MESSAGE_SPACING, open_connection, url_to_params
@@ -110,3 +115,19 @@ async def test_read_holding_registers_timeout_without_connection(
     with pytest.raises(OSError, match="timeout reading"):
         await ss.read_holding_registers(1, 1)
     assert ss.timeouts == 1
+
+
+async def test_read_holding_registers_gateway_target_flushes(
+    state: InverterState,
+) -> None:
+    """Gateway 0x0B (target failed to respond) flushes the link like a timeout."""
+    unit = MagicMock()
+    unit.read_holding_registers = AsyncMock(side_effect=GatewayTargetError())
+    conn = MagicMock()
+    conn.connected = True
+    conn.disconnect = AsyncMock()
+    ss = Sunsynk(unit=unit, state=state, connection=conn)
+    with pytest.raises(GatewayTargetError):
+        await ss.read_holding_registers(176, 2)
+    assert ss.timeouts == 1
+    conn.disconnect.assert_awaited_once()
