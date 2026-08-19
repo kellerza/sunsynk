@@ -1,122 +1,48 @@
 # Configuration
 
-## Connection
+A typical Home Assistant OS setup needs three things: inverter type, which sensors to poll, and one
+`INVERTERS` entry. MQTT is discovered from the Supervisor. Tune [Connection](#connection) and
+[Stale inverter](#stale-inverter-global) only if the bus is flaky or you share RS485 between units.
 
-- `READ_SENSOR_BATCH_SIZE` – specifies how many registers may be read in a single request. Devices
-  like the USR only allows 8 registers to be read. When using mbusd this can be much higher.
+1. Set `SENSOR_DEFINITIONS` and `SENSORS` (groups or names — see [Sensors](#sensors)).
+2. Add one `INVERTERS` item: `SERIAL_NR`, `PORT`, `MODBUS_ID`, `HA_PREFIX`.
+3. Leave MQTT blank on Home Assistant OS.
+4. If reads fail or several inverters share a wire, lower the batch size, add spacing, or use the
+   stale options.
 
-- `READ_ALLOW_GAP` – allows you to set the amount of gap between requested registers. In some cases
-  it makes more sense to read a couple of additional registers in 1 or two requests, than trying to
-  read exactly what you are looking for in multiple requests.
+```yaml
+SENSOR_DEFINITIONS: single-phase
+SENSORS:
+  - energy_management
+  - power_flow_card
+  - pv1
+SENSORS_FIRST_INVERTER:
+  - settings
+INVERTERS:
+  - SERIAL_NR: "007"
+    HA_PREFIX: SS
+    MODBUS_ID: 1
+    PORT: tcp://homeassistant.local:502
+```
 
-- <i-mdi-dev-to class="vp-edge-option-icon" /> `READ_MESSAGE_SPACING` – Seconds to wait after each
-  successful Modbus reply before the next request on the same link (serial, `tcp://`,
-  `serial-tcp://`, `udp://`). Default **0.05**. **0** disables the gap. Increase on flaky RS485 /
-  USB-FTDI links. Not used for `solarman://`.
-
-- `TIMEOUT` – Modbus timeout in **seconds** for connect and register read/write attempts. Default
-  **10**; increase it if you see spurious timeouts on slow links. Raising `TIMEOUT` does not add a
-  gap between successful requests.
-
-## Inverters
-
-The `INVERTERS` option contains a list of inverters
-
-The following options are required per inverter:
-
-- `SERIAL_NR` – The serial number of your inverter. When you start the add-on the connected serial
-  will be displayed in the log.
-
-  The add-on will not run if the expected/configured serial number is not found.
-  ::: tip
-  This must be a string. So if your serial is a number only surround it with quotes `'1000'`
-  :::
-
-- `HA_PREFIX` – A prefix to add to MQTT discovered Home Assistant entities (default: SS).
-
-- `MODBUS_ID` – The Modbus **server** id (the inverter answers requests). A number, typically 1.
-  Must match the inverter **Modbus SN**. Unique per inverter on a shared bus. See
-  [Modbus](../guide/overview#modbus).
-
-- `DONGLE_SERIAL_NUMBER` – Required for a **`solarman://`** PORT (Wi-Fi dongle serial number).
-
-- `PORT` – The port used for communications. See [Port](#port)
-
-### Port
-
-The transport is selected by the `PORT` URL scheme:
-
-- A `tcp://` port toward a Modbus TCP gateway. Either mbusd or one of the hardware options
-
-  ```yaml
-  INVERTERS:
-    - PORT: tcp://homeassistant.local:502
-  ```
-
-  If your gateway do not support Modbus TCP to Modbus RTU conversion, you can try using
-  `serial-tcp://` as the port protocol. This will send Modbus RTU framed data over TCP
-  (RTU-over-TCP). `serial-udp://` is not supported.
-  ::: details Solarman Wi-Fi dongle
-  Use `solarman://` with the dongle's local IP (typically port **8899**) and set
-  `DONGLE_SERIAL_NUMBER`. Find the IP on your router, or use a utility like
-  [netscan](https://www.portablefreeware.com/?id=730). Prefer a fixed IP for the dongle.
-
-  ```yaml
-  INVERTERS:
-    - PORT: solarman://192.168.1.182:8899
-      DONGLE_SERIAL_NUMBER: "1234567890"
-  ```
-
-  Reduce read frequency for Solarman — see [Schedules](./schedules).
-
-  A non-zero `DONGLE_SERIAL_NUMBER` with `tcp://host` is remapped to `solarman://`. `DRIVER` is
-  obsolete; the add-on will not start if it is still set.
-  :::
-  ::: tip Shared RS485 bus (one connector, many inverters)
-  You can repeat the **same** `PORT` value for **multiple** `INVERTERS` entries. Each inverter still
-  needs its own **`MODBUS_ID`** (and the usual unique `SERIAL_NR` & `HA_PREFIX`). One physical
-  gateway or shared Modbus bus can then reach every unit on that wire. This is the **recommended**
-  layout when all inverters share a single physical bus: the add-on ensures
-  **only one I/O request is active at a time** on a shared port, which reduces contention compared
-  to several clients fighting the same link.
-  :::
-
-- A serial port. List of available ports under _Supervisor_ -> _System_ tab -> _Host_ card
-  **&vellip;** -> _Hardware_ (You can also use the text in the DEBUG_PORT as reference)
-
-  ```yaml
-  INVERTERS:
-    - PORT: /dev/ttyUSB0
-  ```
-
-  Direct serial RTU uses the tmodbus backend. If you have any issues connecting directly to a serial
-  port, please try [mbusd](../guide/mbusd) — also see
-  [this](https://github.com/kellerza/sunsynk/issues/131) issue.
-
-- For the first inverter in the list, you can use an empty string. The serial port selected under
-  `DEBUG_DEVICE` will be used (located at the bottom of you config)*
-
-  ```yaml
-  INVERTERS:
-    - PORT: ""
-  ```
+::: tip
+Options with a <i-mdi-dev-to class="vp-edge-option-icon" /> icon appear only in the **edge** add-on
+and are not in **sunsynk-multi** yet.
+:::
 
 ## Sensors
 
-For information about available sensors, refer to the sensor [definitions](./definitions).
+Sensor ids, groups, and custom sensors are listed under [definitions](./definitions).
 
-- `SENSOR_DEFINITIONS` – Allows you to select between `single-phase`, `single-phase-16kw`,
-  `three-phase` and `three-phase-hv` sensor definitions.
+- `SENSOR_DEFINITIONS` – Inverter family: `single-phase`, `single-phase-16kw`, `three-phase`, or
+  `three-phase-hv`.
 
-- `SENSORS` – Accepts a list of sensors to poll. This list applies to all inverters.
+- `SENSORS` – Groups or sensor ids to poll on **every** inverter (`energy_management`,
+  `battery_soc`, `pv1`, …).
 
-- `SENSORS_FIRST_INVERTER` – Accepts a list of additional sensors for the first inverter, typically
-  settings.
+- `SENSORS_FIRST_INVERTER` – Extra sensors for the **first** inverter only (typically `settings`).
 
-- `SENSOR_OVERRIDES` – Allows you to override sensor definitions. This is a list of strings, each
-  string should be in the format `key=value`.
-
-  Example yaml:
+- `SENSOR_OVERRIDES` – List of `key=value` strings that override a sensor attribute.
 
   ```yaml
   SENSOR_OVERRIDES:
@@ -126,8 +52,8 @@ For information about available sensors, refer to the sensor [definitions](./def
   ```
 
   ::: details The log will show if an override was applied.
-  During startup, the log prints all overrides. You can find this in the logs directly after the
-  logs showing which sensor definitions were loaded
+  During startup, the log prints all overrides, directly after the line that shows which sensor
+  definitions were loaded.
 
   ```log
   [08:19:42] INFO    Importing sensor definitions single-phase (view the source online: https://github.com/kellerza/sunsynk/tree/main/src/sunsynk/definitions/single_phase.py )
@@ -143,85 +69,140 @@ For information about available sensors, refer to the sensor [definitions](./def
 
   :::
   ::: details Trace the value of any sensor.
-  Using sensor overrides you can add a trace to any sensor. This will print a message in the log
-  every time the value changes, showing the old and new value, and the raw register values. This is
-  not recommended for regular use, but can be very helpful when debugging sensors and sensor
-  definitions.
+  Set `.trace=1` on a sensor to log every change (old/new value and raw registers). Useful when
+  debugging definitions; leave it off for normal use.
 
   ```yaml
   SENSOR_OVERRIDES:
-  - prog4_power.trace=1
+    - prog4_power.trace=1
   ```
 
   :::
 
+## Inverters
+
+`INVERTERS` is a list. Each item needs:
+
+- `SERIAL_NR` – Inverter serial. On startup the connected serial is printed in the log. The add-on
+  will not run if this does not match.
+  ::: tip
+  This must be a string. Quote a numeric serial, especially if it starts with a zero: `'01000'`.
+  :::
+
+- `HA_PREFIX` – Unique per inverter. Used as the Home Assistant device name and as the prefix on
+  entity ids (default `SS`). Must be unique when you have more than one inverter.
+
+- `MODBUS_ID` – Modbus **server** id (the inverter answers requests). Typically `1`. Must match the
+  inverter **Modbus SN**. Unique per inverter on a shared bus. See
+  [Modbus](../guide/overview#modbus).
+
+- `DONGLE_SERIAL_NUMBER` – Required for `solarman://`. A non-zero value also remaps `tcp://host` to
+  Solarman.
+
+- `PORT` – Transport URL or serial path. See [Port](#port).
+
+### Port
+
+| Scheme                   | When                                                | Extra                                                                                                           |
+| ------------------------ | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `tcp://host:502`         | Modbus TCP gateway or [mbusd](../guide/mbusd)       | —                                                                                                               |
+| `serial-tcp://host:port` | Gateway that does **not** convert Modbus TCP to RTU | Sends RTU frames over TCP. `serial-udp://` is not supported                                                     |
+| `udp://host:port`        | Modbus UDP                                          | —                                                                                                               |
+| `solarman://host:8899`   | Solarman / Wi-Fi dongle                             | Set `DONGLE_SERIAL_NUMBER`. Prefer a fixed IP                                                                   |
+| `/dev/ttyUSB0`           | Direct USB RS485                                    | tmodbus. If it fails, try [mbusd](../guide/mbusd) ([issue 131](https://github.com/kellerza/sunsynk/issues/131)) |
+| `""`                     | First inverter only                                 | Uses `DEBUG_DEVICE` from the bottom of the config                                                               |
+
+```yaml
+INVERTERS:
+  - PORT: tcp://homeassistant.local:502
+```
+
+List USB serial devices under _Supervisor_ → _System_ → _Host_ **&vellip;** → _Hardware_ (or copy
+the path from `DEBUG_DEVICE`).
+
+`DRIVER` is obsolete. The add-on will not start if it is still set.
+
+::: details Solarman Wi-Fi dongle
+Use `solarman://` with the dongle's local IP (typically port **8899**) and set
+`DONGLE_SERIAL_NUMBER`. Find the IP on your router, or use a utility like
+[netscan](https://www.portablefreeware.com/?id=730). Prefer a fixed IP.
+
+```yaml
+INVERTERS:
+  - PORT: solarman://192.168.1.182:8899
+    DONGLE_SERIAL_NUMBER: "1234567890"
+```
+
+Reduce how often you read — see [Schedules](./schedules#proposed-schedule-overrides-for-solarman).
+:::
+
+::: tip Shared RS485 bus (one connector, many inverters)
+Repeat the **same** `PORT` on each `INVERTERS` entry. Each unit still needs its own `MODBUS_ID`,
+`SERIAL_NR`, and `HA_PREFIX`. The add-on runs **one I/O request at a time** on that shared port so
+several clients are not fighting the same link. This is the recommended layout when every inverter
+is on one physical bus.
+:::
+
+## Connection
+
+Global. Change these when a gateway or RS485 link is unreliable.
+
+- `READ_SENSORS_BATCH_SIZE` – Max registers per Modbus read (default **20**). USR-style devices
+  often need **8**. mbusd can go higher.
+
+- `READ_ALLOW_GAP` – Unused registers allowed inside one sequential read block (default **2**). A
+  slightly larger block is often cheaper than extra requests.
+
+- `READ_MESSAGE_SPACING` – Seconds to wait after each successful Modbus reply before the next
+  request on the same link (serial, `tcp://`, `serial-tcp://`, `udp://`). Default **0.05**. **0**
+  disables the gap. Increase on flaky RS485 / USB-FTDI links. Not used for `solarman://`. Raising
+  `TIMEOUT` does not add this pause.
+
+- `TIMEOUT` – Modbus timeout in seconds for connect and register read/write (default **10**, max
+  **15**). Increase on slow links. If timeouts persist, lower `READ_SENSORS_BATCH_SIZE` or increase
+  `READ_MESSAGE_SPACING`.
+
 ## Schedules
 
-Refer to [Schedules](./schedules)
+`SCHEDULES` controls how often sensors are read and published. Defaults and Solarman-friendly
+overrides: [Schedules](./schedules).
 
 ## Stale inverter (global)
 
-Used when several inverters share one RS485 bus so a dead unit does not stall everyone. These
-options are **global** (not per inverter).
+If several inverters share one RS485 bus and one unit stops answering, pause polling **that** unit
+so the others keep running.
 
-- `STALE_INVERTER_AFTER_SECONDS` – After each **successful** Modbus read, the add-on arms a deadline
-  this many seconds in the future. If reads are still failing once that deadline has passed (since
-  the last success), the inverter enters **stale quiet** and normal polling pauses. Default `120`.
+- `STALE_INVERTER_AFTER_SECONDS` – After each **successful** read, if failures continue for this
+  many seconds, polling that inverter pauses. Default `120`.
 
-- `STALE_INVERTER_SKIP_SECONDS` – How long to stay in stale quiet before a one-off serial probe and
-  possible recovery. Default `600`.
+- `STALE_INVERTER_SKIP_SECONDS` – How long to stay paused before one serial probe and a possible
+  resume. Default `600`.
 
-::: tip
-
-Options with a <i-mdi-dev-to class="vp-edge-option-icon" /> icon only appear in the edge addon and
-is not part of the sunsynk-multi addon yet
-
-:::
+See also [Fault finding](../guide/fault-finding).
 
 ## Home Assistant Discovery options
 
-- `HA_PREFIX` – a per-inverter option that will be used for the Device (Inverter) name and as prefix
-  for all the entity Ids in Home Assistant
+- `HA_PREFIX` – See [Inverters](#inverters). Device name and prefix on every entity id.
 
-- `MANUFACTURER` - allows you to rename the inverter manufacturer that will be displayed on the Home
-  Assistant device. It does not have to be Sunsynk ;-)
+- `MANUFACTURER` – Name shown on the Home Assistant device. It does not have to be Sunsynk ;-)
 
-- `NUMBER_ENTITY_MODE` - allows you to change how read/write number entities display in Home
-  Assistant. The default display mode is `auto`. This setting controls how the number entity should
-  be displayed in the UI. Can be set to `box` or `slider` to force a display mode.
+- `NUMBER_ENTITY_MODE` – How read/write number entities display: `auto` (default), `box`, or
+  `slider`.
 
-- `PROG_TIME_INTERVAL` – allows you to change the time interval in the lists for setting the program
-  time. Be aware that if you set this to 5 minutes you will have a very long select list of times to
-  scroll through.
+- `PROG_TIME_INTERVAL` – Step in minutes for program-time select lists (`5`, `10`, `15`, `30`, `45`,
+  `60`). **5** produces a very long list.
 
 ## MQTT Settings
 
-If you are running on a standard Home Assistant OS installation, you don't need any MQTT
-configuration. The add-on will query the HA Supervisor for the MQTT server and login details. If
-successful, it will prefer information from the supervisor and ignore the configuration.
+On a standard Home Assistant OS install you do not need MQTT settings. The add-on asks the
+Supervisor for the broker and credentials and ignores YAML when that succeeds.
 
-The MQTT integration in Home Assistant needs to publish MQTT Birth (**online**) and Last will
-(**offline**) messages to `homeassistant/status`. This can be done by clicking _Re-configure MQTT_
-in the UI.
-
-Device discovery uses two **retained** availability topics (mode **all**: Home Assistant requires
-**both** payloads to be **online** for entities to show available):
-
-- **`SS/availability_<joined>`** – MQTT session for the whole add-on. `<joined>` is **every**
-  inverter’s `HA_PREFIX` (already slugged), **sorted alphabetically**, joined with `_`. Examples:
-  one inverter `ss` → `SS/availability_ss`; two inverters `shed` and `house` →
-  `SS/availability_house_shed`. **offline** when the MQTT client disconnects (broker last will) or
-  crashes before the will is cleared.
-- **`SS/availability_1_<HA_PREFIX>`** – per inverter Modbus / poll-loop lifecycle for that device
-  only. **offline** when that inverter is not in the normal poll loop (for example after repeated
-  read errors / stale skip, or while reconnecting Modbus while the broker session is still up).
-
-Discovery merges these into the device’s `availability` list in that order (`mqtt-entity` appends
-the client topic after each device’s `availability_topics`).
+The MQTT integration should publish birth (**online**) and last will (**offline**) to
+`homeassistant/status` (_Re-configure MQTT_ in the UI).
 
 ::: details MQTT configuration options (optional)
 
-Configuration from the supervisor will be preferred if you don't have `MQTT_CUSTOM: true` set.
+Supervisor discovery is used unless `MQTT_CUSTOM: true` is set.
 
 ```yaml
 MQTT_CUSTOM: true   # Force the add-on to use this MQTT configuration
@@ -233,18 +214,33 @@ MQTT_PASSWORD: my-secure-password
 
 :::
 
+::: details Availability topics (advanced)
+
+Discovery uses two **retained** topics. Home Assistant availability mode **all** requires **both**
+to be **online**:
+
+- **`SS/availability_<joined>`** – MQTT session for the whole add-on. `<joined>` is every inverter’s
+  slugged `HA_PREFIX`, sorted alphabetically, joined with `_`. Examples: one inverter `ss` →
+  `SS/availability_ss`; two inverters `shed` and `house` → `SS/availability_house_shed`. **offline**
+  when the MQTT client disconnects (broker last will) or crashes before the will is cleared.
+- **`SS/availability_1_<HA_PREFIX>`** – Per-inverter poll loop. **offline** when that inverter is
+  not polling (repeated read errors / stale skip, or reconnecting Modbus while the broker session is
+  still up).
+
+:::
+
 ## Debug options
 
-- `DEBUG`
-
-  The values received will continuously be printed to the add-on's log. This will confirm that you
-  receive values.
+- `DEBUG` – Log verbosity (`0`–`5`). `0` is normal.
 
   | Value | Description                  |
   | ----- | ---------------------------- |
-  | `0`   | No debug messages.           |
+  | `0`   | No extra debug messages.     |
   | `1`   | Messages for filter changes. |
   | `2`   | Debug level logging.         |
 
-- `DEBUG_DEVICE` allows you to select the USB port in the UI. It will only be used if `PORT` is
-  empty. But you have to select something.
+- `DEBUG_DEVICE` – USB serial picker in the UI. Used only when `PORT` is empty. Supervisor still
+  requires a device to be selected.
+
+- `MUTE_LOGS` – Local times (`hh:mm`) when logging is raised to critical for 60 seconds to hide
+  noisy expected messages.

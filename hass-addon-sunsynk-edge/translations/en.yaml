@@ -72,7 +72,7 @@ configuration:
     description: |
       Modbus timeout in seconds for connect and register read/write attempts.
 
-      Default **10** seconds. Increase if you see spurious timeouts on slow links.
+      Default **10** seconds (max **15**). Increase if you see spurious timeouts on slow links.
   MQTT_CUSTOM:
     name: Custom MQTT
     description: |

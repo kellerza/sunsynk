@@ -112,10 +112,11 @@ access the USB port: mbusd, Node RED, the normal and dev addon version.
 If you need to have multiple connections to the serial port: ONLY connect mbusd to the serial port.
 Connect all addons to mbusd (e.g. tcp://192.168.1.x:503).
 
-## (C) Reducing timeouts
+## (C) Reducing timeouts {#c-reducing-timeouts}
 
 If you get many timeouts, or if the addon does not read all your sensors on startup (i.e. you see
-**Retrying individual sensors** in the log), you can try the following:
+**Retrying individual sensors** in the log), you can try the following. The **RS485 timeout**
+diagnostic sensor on each inverter ([Stats](#stats)) shows whether timeouts are still climbing.
 
 - Set `READ_SENSORS_BATCH_SIZE` to a smaller value, i.e. 8.
 - Direct serial and TCP wait `READ_MESSAGE_SPACING` seconds after each reply (default **0.05**).
@@ -190,3 +191,25 @@ may still say Master / Slave for Parallel Mode; this add-on uses **Client** / **
 When using two adaptors, `MODBUS_ID` must match whatever unit actually answers on **that** adaptor.
 Some units in Server mode still answer as `1` on their own RS485 port even when the display shows a
 different Modbus SN.
+
+## Stats {#stats}
+
+Each inverter publishes two **diagnostic** MQTT entities (not listed under `SENSORS`). They appear
+on the inverter device in Home Assistant under **Diagnostic**, and update every **120 seconds**.
+
+### RS485 timeout
+
+Cumulative Modbus timeout count for that inverter since the add-on started (reads and writes,
+including gateway **0x0B**). Occasional increases are normal. A steadily rising count means the bus
+is dropping replies — see [(C) Reducing timeouts](#c-reducing-timeouts).
+
+### Callback stats
+
+Duration of that inverter's poll cycle. The state is the **mean** time in seconds over the last
+120s. Attributes add `count`, `min`, `max`, `median`, `stdev`, `p5`, `p95`, plus:
+
+- `busy_count` — a new poll was skipped because the previous one was still running
+- `error_count` — the poll raised an error
+
+If **mean** / **p95** approach the schedule interval, or **busy_count** climbs, the add-on cannot
+keep up: reduce sensors, relax schedules, or fix timeouts. `error_count` should stay near zero.
