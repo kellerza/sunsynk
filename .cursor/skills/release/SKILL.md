@@ -52,8 +52,9 @@ Run from the **sunsynk** repo root. Stop with a clear message unless **all** pas
   `hass-addon-sunsynk-multi/CHANGELOG.md`. Include `uv.lock` if the version bump changed it. The
   multi CHANGELOG copy is the one allowed hand-edit under `hass-addon-sunsynk-multi/` in this skill
   (overwrite; do not merge).
-- Do not copy `config.yaml` here. On a published release, `deployer2.yml` copies edge `config.yaml`
-  onto stable except `name`/`slug`, then sets `version` to the tag.
+- Do not copy `config.yaml` here. On a published release, `deployer2.yml` copies edge `config.yaml`,
+  `translations/`, and `apparmor.txt` onto stable except `name`/`slug`, then sets `version` to the
+  tag.
 - Commit message is exactly the new version string (e.g. `0.9.4`), nothing else.
 - Push: `git push` to `origin` on `main` (this skill authorizes push).
 - Draft release (after push), with network/`gh` permissions as needed:
