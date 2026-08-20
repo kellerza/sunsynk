@@ -104,9 +104,9 @@ SENSORS += (
     Sensor(661, "Gen L1 voltage", VOLT, 0.1, alias="AUX L1 voltage"),
     Sensor(662, "Gen L2 voltage", VOLT, 0.1, alias="AUX L2 voltage"),
     Sensor(663, "Gen L3 voltage", VOLT, 0.1, alias="AUX L3 voltage"),
-    Sensor(671, "Gen L1 current", AMPS, -0.01, alias="AUX L1 current"),
-    Sensor(672, "Gen L2 current", AMPS, -0.01, alias="AUX L2 current"),
-    Sensor(673, "Gen L3 current", AMPS, -0.01, alias="AUX L3 current"),
+    # Sensor(671, "Gen L1 current", AMPS, -0.01, alias="AUX L1 current"),
+    # Sensor(672, "Gen L2 current", AMPS, -0.01, alias="AUX L2 current"),
+    # Sensor(673, "Gen L3 current", AMPS, -0.01, alias="AUX L3 current"),
 )
 
 ####################
@@ -188,7 +188,6 @@ SENSORS += (
     # SDStatusSensor(0, "SD Status", ""),          # 3 Phase does not have SD Card but crashes when removed
     TempSensor(540, "DC transformer temperature", CELSIUS, 0.1),
     TempSensor(541, "Radiator temperature", CELSIUS, 0.1),
-    BinarySensor(552, "Grid Connected", bitmask=1 << 2),
     SystemTimeRWSensor((62, 63, 64), "Date Time", unit=""),
 )
 
@@ -198,7 +197,7 @@ SENSORS += (
 SENSORS += (
     BinarySensor(552, "INV Relay Status", bitmask=1 << 0),
     BinarySensor(552, "Undefined Load Relay Status", bitmask=1 << 1),
-    BinarySensor(552, "Grid Relay Status", bitmask=1 << 2),
+    BinarySensor(552, "Grid Connected", bitmask=1 << 2, alias="Grid Relay Status"),
     BinarySensor(552, "Generator Relay Status", bitmask=1 << 3),
     BinarySensor(552, "Grid Give Power to Relay Status", bitmask=1 << 4),
     BinarySensor(552, "Dry Contact1 Status", bitmask=1 << 5),
@@ -215,7 +214,6 @@ SENSORS += (
     NumberRWSensor(126, "Grid Charge Start Battery Voltage", VOLT, 0.01, max=6300),
     NumberRWSensor(127, "Grid Charge Start Battery SOC", "%"),
     SwitchRWSensor(130, "Grid Charge enabled", on=1),
-    SwitchRWSensor(146, "Use Timer"),
     SwitchRWSensor(145, "Solar Export", on=1),
     NumberRWSensor(143, "Export Limit power", WATT, max=RATED_POWER),
     NumberRWSensor(108, "Battery Max Charge current", AMPS, max=240),
@@ -357,6 +355,7 @@ SENSORS += (
         "Prog Time Of Use Enabled",
         on=1 << 0,
         bitmask=1 << 0,
+        alias="Use Timer",
     ),
     SwitchRWSensor(146, "Prog Monday Enabled", on=1 << 1, bitmask=1 << 1),
     SwitchRWSensor(146, "Prog Tuesday Enabled", on=1 << 2, bitmask=1 << 2),

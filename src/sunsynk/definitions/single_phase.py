@@ -80,12 +80,12 @@ SENSORS += (
         alias="Generator input",
     ),
     Sensor(166, "Gen power", WATT, -1, alias="AUX power"),
-    Sensor(181, "Gen L1 voltage", VOLT, 0.1, alias="AUX L1 voltage"),
-    Sensor(182, "Gen L2 voltage", VOLT, 0.1, alias="AUX L2 voltage"),
-    Sensor(183, "Gen L3 voltage", VOLT, 0.1, alias="AUX L3 voltage"),
-    Sensor(184, "Gen L1 current", AMPS, -0.01, alias="AUX L1 current"),
-    Sensor(185, "Gen L2 current", AMPS, -0.01, alias="AUX L2 current"),
-    Sensor(186, "Gen L3 current", AMPS, -0.01, alias="AUX L3 current"),
+    # Sensor(181, "Gen L1 voltage", VOLT, 0.1, alias="AUX L1 voltage"),
+    # Sensor(182, "Gen L2 voltage", VOLT, 0.1, alias="AUX L2 voltage"),
+    # Sensor(183, "Gen L3 voltage", VOLT, 0.1, alias="AUX L3 voltage"),
+    # Sensor(184, "Gen L1 current", AMPS, -0.01, alias="AUX L1 current"),
+    # Sensor(185, "Gen L2 current", AMPS, -0.01, alias="AUX L2 current"),
+    # Sensor(186, "Gen L3 current", AMPS, -0.01, alias="AUX L3 current"),
 )
 
 #####################

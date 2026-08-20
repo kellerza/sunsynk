@@ -1,6 +1,7 @@
 """Sensors."""
 
 import asyncio
+import sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -15,10 +16,27 @@ async def main() -> None:
     """Generate docs."""
     all_defs = import_all_defs()
 
+    check_register_bit_conflicts(all_defs)
+
     all_defs = {simple_def_name(k): v for k, v in all_defs.items()}
 
     sen_groups = generate_group_sensors(all_defs)
     generate_all_sensors(all_defs, sen_groups)
+
+
+def check_register_bit_conflicts(all_defs: dict[str, SensorDefinitions]) -> None:
+    """Fail if any definition has two sensors claiming the same register bits."""
+    lines: list[str] = []
+    for name, defs in all_defs.items():
+        for addr, a, b, bits in defs.register_bit_conflicts():
+            lines.append(
+                f"  {name}: reg {addr} bit overlap 0x{bits:X} — "
+                f"{a.id} (0x{a.bitmask:X}) vs {b.id} (0x{b.bitmask:X})"
+            )
+    if lines:
+        print("Register bit conflicts in sensor definitions:", file=sys.stderr)
+        print("\n".join(lines), file=sys.stderr)
+        raise SystemExit(1)
 
 
 TAB_ATTR = {"style": "overflow-x: unset;", "class": "bigt"}

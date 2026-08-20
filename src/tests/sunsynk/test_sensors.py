@@ -312,6 +312,38 @@ def test_source() -> None:
     assert Sensor((1, 2), "test_sensor", "V", bitmask=0xEF1A).source == "[1,2] & 0xEF1A"
 
 
+def test_register_bit_conflicts() -> None:
+    """Overlapping bits on the same register are reported; disjoint masks are not."""
+    defs = SensorDefinitions()
+    a = Sensor(10, "full")
+    b = Sensor(10, "also full")
+    defs += (a, b)
+    conflicts = defs.register_bit_conflicts()
+    assert len(conflicts) == 1
+    assert conflicts[0] == (10, a, b, 0xFFFF)
+
+    defs = SensorDefinitions()
+    low = BinarySensor(10, "low", bitmask=0x0F)
+    high = BinarySensor(10, "high", bitmask=0xF0)
+    defs += (low, high)
+    assert defs.register_bit_conflicts() == []
+
+    defs += BinarySensor(10, "overlap", bitmask=0x03)
+    conflicts = defs.register_bit_conflicts()
+    assert len(conflicts) == 1
+    assert conflicts[0][0] == 10
+    assert conflicts[0][3] == 0x03
+
+    # MathSensor reuses component registers on purpose.
+    defs = SensorDefinitions()
+    defs += (
+        Sensor(1, "l1"),
+        Sensor(2, "l2"),
+        MathSensor((1, 2), "sum", factors=(1, 1)),
+    )
+    assert defs.register_bit_conflicts() == []
+
+
 def test_override() -> None:
     """Tests."""
     sen = SensorDefinitions()

@@ -211,54 +211,6 @@
             <td>power_flow_card</td>
         </tr>
         <tr>
-            <td>Gen L1 voltage<br>AUX L1 voltage</td>
-            <td>[181] * 0.1</td>
-            <td>[181] * 0.1</td>
-            <td>[661] * 0.1</td>
-            <td>[661] * 0.1</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L2 voltage<br>AUX L2 voltage</td>
-            <td>[182] * 0.1</td>
-            <td>[182] * 0.1</td>
-            <td>[662] * 0.1</td>
-            <td>[662] * 0.1</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L3 voltage<br>AUX L3 voltage</td>
-            <td>[183] * 0.1</td>
-            <td>[183] * 0.1</td>
-            <td>[663] * 0.1</td>
-            <td>[663] * 0.1</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L1 current<br>AUX L1 current</td>
-            <td>[184] * 0.01</td>
-            <td>[184] * 0.01</td>
-            <td>[671] * 0.01</td>
-            <td>[671] * 0.01</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L2 current<br>AUX L2 current</td>
-            <td>[185] * 0.01</td>
-            <td>[185] * 0.01</td>
-            <td>[672] * 0.01</td>
-            <td>[672] * 0.01</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Gen L3 current<br>AUX L3 current</td>
-            <td>[186] * 0.01</td>
-            <td>[186] * 0.01</td>
-            <td>[673] * 0.01</td>
-            <td>[673] * 0.01</td>
-            <td></td>
-        </tr>
-        <tr>
             <td>PV1 power</td>
             <td>[186] S</td>
             <td>[186] S</td>
@@ -592,7 +544,7 @@
             <td>[194]</td>
             <td>[552] & 0x04</td>
             <td>[552] & 0x04</td>
-            <td>power_flow_card</td>
+            <td>diagnostics<br>power_flow_card</td>
         </tr>
         <tr>
             <td>Date time (R/W)</td>
@@ -766,8 +718,8 @@
             <td>Use Timer (R/W)</td>
             <td>[248] & 0x01</td>
             <td>[248] & 0x01</td>
-            <td>[146]</td>
-            <td>[146]</td>
+            <td></td>
+            <td></td>
             <td>power_flow_card<br>settings</td>
         </tr>
         <tr>
@@ -1427,6 +1379,30 @@
             <td></td>
         </tr>
         <tr>
+            <td>Gen L1 voltage<br>AUX L1 voltage</td>
+            <td></td>
+            <td></td>
+            <td>[661] * 0.1</td>
+            <td>[661] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L2 voltage<br>AUX L2 voltage</td>
+            <td></td>
+            <td></td>
+            <td>[662] * 0.1</td>
+            <td>[662] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Gen L3 voltage<br>AUX L3 voltage</td>
+            <td></td>
+            <td></td>
+            <td>[663] * 0.1</td>
+            <td>[663] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
             <td>UPS Load L1 power</td>
             <td></td>
             <td></td>
@@ -1505,14 +1481,6 @@
             <td>[552] & 0x02</td>
             <td>[552] & 0x02</td>
             <td></td>
-        </tr>
-        <tr>
-            <td>Grid Relay Status</td>
-            <td></td>
-            <td></td>
-            <td>[552] & 0x04</td>
-            <td>[552] & 0x04</td>
-            <td>diagnostics</td>
         </tr>
         <tr>
             <td>Generator Relay Status</td>
@@ -1779,12 +1747,12 @@
             <td></td>
         </tr>
         <tr>
-            <td>Prog Time Of Use Enabled (R/W)</td>
+            <td>Prog Time Of Use Enabled (R/W)<br>Use Timer</td>
             <td></td>
             <td></td>
             <td>[146] & 0x01</td>
             <td>[146] & 0x01</td>
-            <td></td>
+            <td>power_flow_card<br>settings</td>
         </tr>
         <tr>
             <td>Prog Monday Enabled (R/W)</td>
@@ -2243,14 +2211,6 @@
             <td></td>
         </tr>
         <tr>
-            <td>Parallel Bat1&Bat2 (R/W)</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>[110]</td>
-            <td></td>
-        </tr>
-        <tr>
             <td>PV5 power</td>
             <td></td>
             <td></td>
@@ -2315,19 +2275,11 @@
             <td>diagnostics</td>
         </tr>
         <tr>
-            <td>Parallel Battery 1 and 2 (R/W)</td>
+            <td>Parallel Battery 1 and 2 (R/W)<br>Parallel Bat1&Bat2</td>
             <td></td>
             <td></td>
             <td></td>
             <td>[110]</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Battery 1 Wake Up (R/W)</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>[112] & 0x01</td>
             <td></td>
         </tr>
         <tr>
@@ -2339,7 +2291,7 @@
             <td></td>
         </tr>
         <tr>
-            <td>Lithium HV BMS Protocol (R/W)</td>
+            <td>Lithium HV BMS Protocol (R/W)<br>Battery 1 BMS type</td>
             <td></td>
             <td></td>
             <td></td>
@@ -2376,14 +2328,6 @@
             <td></td>
             <td></td>
             <td>[222] & 0x08</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Battery 1 BMS type</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>[223]</td>
             <td></td>
         </tr>
         <tr>

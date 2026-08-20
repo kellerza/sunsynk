@@ -198,6 +198,34 @@ class SensorDefinitions:
         """Copy the sensor definitions."""
         return SensorDefinitions(all=self.all.copy(), deprecated=self.deprecated.copy())
 
+    def register_bit_conflicts(self) -> list[tuple[int, Sensor, Sensor, int]]:
+        """Find sensors that claim overlapping bits on the same register.
+
+        Returns ``(register, sensor_a, sensor_b, overlapping_bits)``.
+        A zero bitmask means the full 16-bit register (``0xFFFF``).
+        ``MathSensor`` / ``PVDynamicTotalSensor`` intentionally reuse other
+        sensors' registers and are skipped.
+        """
+        by_reg: dict[int, list[Sensor]] = {}
+        for key, sen in self.all.items():
+            if key != sen.id or not sen.address:
+                continue
+            # Forward refs: MathSensor / PVDynamicTotalSensor defined below.
+            if isinstance(sen, (MathSensor, PVDynamicTotalSensor)):
+                continue
+            for addr in sen.address:
+                by_reg.setdefault(addr, []).append(sen)
+
+        conflicts: list[tuple[int, Sensor, Sensor, int]] = []
+        for addr, sens in by_reg.items():
+            for i, a in enumerate(sens):
+                ma = a.bitmask or 0xFFFF
+                for b in sens[i + 1 :]:
+                    overlap = ma & (b.bitmask or 0xFFFF)
+                    if overlap:
+                        conflicts.append((addr, a, b, overlap))
+        return conflicts
+
     def override(self, values: dict[str, int | float]) -> None:
         """Override existing sensors with new definitions."""
         new_sensors = dict[str, Sensor]()

@@ -8,7 +8,6 @@ from sunsynk.rwsensors import (
     SwitchRWSensor,
 )
 from sunsynk.sensors import (
-    BinarySensor,
     EnumSensor,
     HVFaultSensor,
     Sensor,
@@ -41,7 +40,6 @@ SENSORS += (
     Sensor(594, "Battery 2 current", AMPS, -0.01),
     Sensor(595, "Battery 2 power", WATT, -10),
     TempSensor(596, "Battery 2 temperature", CELSIUS, 0.1),
-    SwitchRWSensor(110, "Parallel Bat1&Bat2", on=1),
 )
 
 ################
@@ -86,7 +84,6 @@ SENSORS += (
         bitmask=1 << 15,
     ),
     # SDStatusSensor(0, "SD Status", ""),
-    BinarySensor(552, "Grid Connected", bitmask=1 << 2),
 )
 
 ###########
@@ -101,12 +98,13 @@ SENSORS += (
 # Additional optional sensors
 SENSORS += (
     NumberRWSensor(104, "System Zero Export power", WATT, -10, min=-500, max=500),
-    SwitchRWSensor(110, "Parallel Battery 1 and 2"),
+    SwitchRWSensor(110, "Parallel Battery 1 and 2", alias="Parallel Bat1&Bat2"),
     SelectRWSensor(
         112,
-        "Battery 1 Wake Up",
+        "Battery Wake Up",
         options={0: "Enabled", 1 << 0: "Disabled"},
         bitmask=1 << 0,
+        alias="Battery 1 Wake Up",
     ),  # according to docs, 0 is enabled for this one
     SelectRWSensor(
         112,
@@ -178,6 +176,7 @@ SENSORS += (
             9: "Tianbanda 485 Protocol",
             10: "Shenggao Electrical CAN Protocol",
         },
+        alias="Battery 1 BMS type",
     ),
     EnumSensor(229, "Battery 1 Manufacturer", options=hv_battery_manufacturers),
     # Sensor(210, "Battery 1 BMS charging voltage", VOLT, 0.1),
@@ -210,7 +209,6 @@ SENSORS += (
         on=1 << 3,
         bitmask=1 << 3,
     ),
-    Sensor(223, "Battery 1 BMS type", ""),
     Sensor(224, "Battery 1 BMS SOH", "%"),
     Sensor(225, "Battery 1 BMS software version", ""),
     Sensor(226, "Battery 1 BMS rated AH", "Ah"),
