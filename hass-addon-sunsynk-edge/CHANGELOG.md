@@ -2,13 +2,24 @@
 
 <https://github.com/kellerza/sunsynk/commits/>
 
+## Unreleased
+
+- **`TIMEOUT`** is now **3** seconds per connect and each register **attempt**. Each
+  holding-register read (FC03) and write (FC16) is always tried **3** times (**3s × 3**), so a
+  missing reply can take up to **9** seconds before that operation fails. On timeout, **serial**
+  links disconnect so the next attempt reconnects with an empty buffer; TCP and Solarman do not.
+  Other I/O errors still flush.
+- Remove Gen L1/L2/L3 current sensors & check for duplicates. #676
+
 ## Release 1.1.1
+
+All items below are changes since add-on **1.1.0** (stable release on GitHub `main`).
 
 - Removed leftover `DRIVER` option from the add-on schema.
 
 ## Release 1.1.0
 
-All items below are changes since add-on **1.0.0** (stable release on GitHub `main`).
+All items below are changes since add-on **1.0.0**.
 
 - **Breaking:** three-phase **Parallel Mode** select options are **Client** (was Master) and
   **Server** (was Slave). The inverter LCD may still say Master/Slave. Update automations that match
@@ -42,7 +53,7 @@ All items below are changes since add-on **1.0.0** (stable release on GitHub `ma
 
 ## Release 1.0.0
 
-All items below are changes since add-on **0.10.1** (stable release on GitHub `main`).
+All items below are changes since add-on **0.10.1**.
 
 ### Major changes
 

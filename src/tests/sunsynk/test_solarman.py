@@ -1,6 +1,5 @@
 """Solarman unit."""
 
-import logging
 from typing import Any
 from unittest.mock import AsyncMock, patch
 
@@ -45,23 +44,16 @@ async def test_uss_sensor(connect: Any) -> None:
     assert wrr.called
 
 
-async def test_read_holding_registers_logs_empty_timeout(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Empty TimeoutError strings must still log the exception type."""
+async def test_read_holding_registers_disconnects_on_error() -> None:
+    """A failed read drops the client so the next Sunsynk retry reconnects."""
     unit = SolarmanUnit(port="solarman://127.0.0.1:8899", dongle_serial_number=101)
     client = AsyncMock()
-    client.read_holding_registers = AsyncMock(side_effect=TimeoutError())
+    client.read_holding_registers = AsyncMock(side_effect=ValueError())
+    unit.client = client
 
-    with (
-        patch.object(unit, "_connected_client", AsyncMock(return_value=client)),
-        patch("sunsynk.solarman.asyncio.sleep", new_callable=AsyncMock) as sleep,
-        caplog.at_level(logging.ERROR),
-    ):
-        with pytest.raises(TimeoutError):
-            await unit.read_holding_registers(0, 8)
+    with pytest.raises(ValueError):
+        await unit.read_holding_registers(0, 8)
 
-    sleep.assert_not_awaited()
     assert client.read_holding_registers.await_count == 1
-    assert "Solarman read register 0 (count 8): TimeoutError" in caplog.text
-    assert "(retry" not in caplog.text
+    client.disconnect.assert_awaited_once()
+    assert unit.client is None

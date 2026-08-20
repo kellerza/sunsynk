@@ -45,7 +45,7 @@ def open_connection(
     port: str,
     *,
     baudrate: int = 9600,
-    timeout: float = 10,
+    timeout: float = 3,
     message_spacing: float | None = None,
     connect_delay: float = 0.0,
 ) -> ModbusConnection:

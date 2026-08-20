@@ -79,7 +79,7 @@ class Options(MQTTOptions):
     read_message_spacing: float = 0.05
     """Seconds to wait after each Modbus reply before the next request (0 disables)."""
     schedules: list[Schedule] = field(default_factory=list)
-    timeout: int = 10
+    timeout: int = 3
 
     stale_inverter_after_seconds: int = 60
     """Grace window (seconds) after each successful read: if failures continue past this deadline, enter stale quiet."""

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from dataclasses import dataclass, field
 from urllib.parse import urlparse
@@ -10,15 +9,6 @@ from urllib.parse import urlparse
 from pysolarmanv5 import PySolarmanV5Async  # type: ignore[import-untyped]
 
 _LOG = logging.getLogger(__name__)
-
-RETRY_ATTEMPTS = 5
-
-
-def _exc_label(err: BaseException) -> str:
-    """Type name, plus message when the exception string is empty (TimeoutError)."""
-    text = str(err).strip()
-    name = type(err).__name__
-    return f"{name}: {text}" if text else name
 
 
 @dataclass(kw_only=True)
@@ -30,7 +20,7 @@ class SolarmanUnit:
 
     dongle_serial_number: int
     server_id: int = 1
-    timeout: int = 10
+    timeout: int = 3
     client: PySolarmanV5Async | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
@@ -93,38 +83,15 @@ class SolarmanUnit:
         return self.client
 
     async def read_holding_registers(self, address: int, count: int) -> list[int]:
-        """Read holding registers with retries (FC03)."""
-        attempt = 0
-        while True:
-            try:
-                client = await self._connected_client()
-                return list(await client.read_holding_registers(address, count) or [])
-            except TimeoutError as err:
-                _LOG.error(
-                    "Solarman read register %s (count %s): %s",
-                    address,
-                    count,
-                    _exc_label(err),
-                )
-                await self.disconnect()
-                raise
-            except Exception as err:
-                attempt += 1
-                detail = _exc_label(err)
-                _LOG.error(
-                    "Solarman read register %s (count %s): %s (retry %s/%s)",
-                    address,
-                    count,
-                    detail,
-                    attempt,
-                    RETRY_ATTEMPTS,
-                )
-                await self.disconnect()
-                if attempt >= RETRY_ATTEMPTS:
-                    raise OSError(
-                        f"Failed to read register {address}: {detail}"
-                    ) from err
-                await asyncio.sleep(2)
+        """Read holding registers (FC03)."""
+        try:
+            client = await self._connected_client()
+            return list(await client.read_holding_registers(address, count) or [])
+        except TimeoutError:
+            raise
+        except Exception as err:
+            await self.disconnect()
+            raise err
 
     async def write_registers(self, address: int, values: list[int]) -> None:
         """Write holding registers (FC16)."""
@@ -135,6 +102,8 @@ class SolarmanUnit:
                 register_addr=address, values=values
             )
             _LOG.debug("DBG: write_registers: %s ==> %s", values, res)
-        except Exception:
-            await self.disconnect()
+        except TimeoutError:
             raise
+        except Exception as err:
+            await self.disconnect()
+            raise err from err

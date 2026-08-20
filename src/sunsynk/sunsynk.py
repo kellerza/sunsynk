@@ -9,7 +9,7 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import Protocol, cast, runtime_checkable
 
-from modbus_connection import GatewayTargetError, ModbusTimeoutError
+from modbus_connection import ModbusSerialParams, ModbusTimeoutError
 from modbus_connection.tmodbus import ModbusConnection
 
 from sunsynk.connection import open_connection
@@ -19,6 +19,15 @@ from sunsynk.sensors import LOG_TRACE, Sensor, ValType
 from sunsynk.state import InverterState, group_sensors, register_map
 
 _LOG = logging.getLogger(__name__)
+
+RETRY_ATTEMPTS = 3
+
+
+def _exc_label(err: BaseException) -> str:
+    """Type name, plus message when the exception string is empty (TimeoutError)."""
+    text = str(err).strip()
+    name = type(err).__name__
+    return f"{name}: {text}" if text else name
 
 
 @runtime_checkable
@@ -50,7 +59,7 @@ class Sunsynk:
     state: InverterState = field(default_factory=InverterState)
     port: str = ""
     baudrate: int = 9600
-    timeout: int = 10
+    timeout: int = 3
     read_sensors_batch_size: int = 20
     allow_gap: int = 2
     timeouts: int = 0
@@ -62,7 +71,7 @@ class Sunsynk:
         *,
         server_id: int = 1,
         baudrate: int = 9600,
-        timeout: int = 10,
+        timeout: int = 3,
         **kwargs: object,
     ) -> Sunsynk:
         """Create a ``Sunsynk`` that owns a tmodbus connection for ``port``."""
@@ -101,21 +110,16 @@ class Sunsynk:
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk support function code 0x10."""
-        try:
-            await self.unit.write_registers(address, [value])
-            return True
-        except TimeoutError:
-            _LOG.error("timeout writing register %s=%s", address, value)
-            self.timeouts += 1
-            await self._flush_modbus_connection(reason="timeout")
-        except GatewayTargetError as err:
-            _LOG.error(
-                "gateway target failed writing register %s=%s: %s", address, value, err
-            )
-            self.timeouts += 1
-            await self._flush_modbus_connection(reason="gateway target error")
-        except Exception as err:
-            _LOG.error("failed to write register %s=%s: %s", address, value, err)
+        for _ in range(RETRY_ATTEMPTS):
+            try:
+                await self.unit.write_registers(address, [value])
+                return True
+            except TimeoutError:
+                _LOG.warning("timeout writing register %s=%s", address, value)
+                self.timeouts += 1
+            except Exception as err:
+                _LOG.error("failed to write register %s=%s: %s", address, value, err)
+                await self._flush_modbus_connection(reason=type(err).__name__)
         return False
 
     async def write_sensor(
@@ -150,16 +154,38 @@ class Sunsynk:
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read holding registers (FC03)."""
-        try:
-            return await self.unit.read_holding_registers(start, length)
-        except TimeoutError:
-            self.timeouts += 1
-            await self._flush_modbus_connection(reason="timeout")
-            raise OSError(f"timeout reading register {start}") from None
-        except GatewayTargetError:
-            self.timeouts += 1
-            await self._flush_modbus_connection(reason="gateway target error")
-            raise
+        errs: list[Exception] = []
+        for attempt in range(RETRY_ATTEMPTS):
+            try:
+                return await self.unit.read_holding_registers(start, length)
+            except TimeoutError as err:
+                self.timeouts += 1
+                errs.append(err)
+                _LOG.error(
+                    "Read register %s (count %s): %s [attempt %s/%s]",
+                    start,
+                    length,
+                    _exc_label(err),
+                    attempt + 1,
+                    RETRY_ATTEMPTS,
+                )
+                if self.connection is not None and isinstance(
+                    self.connection._params, ModbusSerialParams
+                ):
+                    await self._flush_modbus_connection(reason=type(err).__name__)
+            except Exception as err:
+                errs.append(err)
+                _LOG.error(
+                    "Read register %s (count %s): %s [attempt %s/%s]",
+                    start,
+                    length,
+                    _exc_label(err),
+                    attempt + 1,
+                    RETRY_ATTEMPTS,
+                )
+                await self._flush_modbus_connection(reason=type(err).__name__)
+
+        raise ExceptionGroup(f"Failed to read {length} registers at {start}", errs)
 
     async def read_sensors(self, sensors: Iterable[Sensor]) -> None:
         """Read a list of sensors - Sunsynk supports function code 0x03."""

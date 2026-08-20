@@ -70,9 +70,10 @@ configuration:
   TIMEOUT:
     name: Modbus timeout
     description: |
-      Modbus timeout in seconds for connect and register read/write attempts.
+      Seconds to wait for each connect and register read/write attempt.
 
-      Default **10** seconds (max **15**). Increase if you see spurious timeouts on slow links.
+      Default **3**. Each holding-register read is always tried 3 times, so a missing
+      reply can take up to 9 seconds before that group fails. Max **15**.
   MQTT_CUSTOM:
     name: Custom MQTT
     description: |
