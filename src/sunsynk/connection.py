@@ -56,8 +56,11 @@ def open_connection(
     """
     if message_spacing is None:
         message_spacing = DEFAULT_MESSAGE_SPACING
+    params = url_to_params(port, baudrate)
+    if isinstance(params, ModbusSerialParams):
+        connect_delay = 0.05
     return ModbusConnection(
-        url_to_params(port, baudrate),
+        params,
         timeout=timeout,
         message_spacing=message_spacing,
         connect_delay=connect_delay,

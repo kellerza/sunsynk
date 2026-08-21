@@ -211,6 +211,9 @@ class AInverter:
                 _LOG.error("ExceptionGroup: %s", msg, exc_info=err)
             else:
                 _LOG.error("ExceptionGroup: %s", msg)
+        except Exception as err:
+            _LOG.fatal("Exception: %s", err)
+
         return False
 
     async def write_sensor(

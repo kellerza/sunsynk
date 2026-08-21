@@ -103,10 +103,18 @@ class Sunsynk:
 
     async def _flush_modbus_connection(self, *, reason: str) -> None:
         """Drop the tmodbus link so the next request reconnects with an empty buffer."""
-        if self.connection is None or not self.connection.connected:
-            return
-        _LOG.debug("Flushing Modbus connection after %s (%s)", reason, self.port)
-        await self.connection.disconnect()
+        try:
+            if self.connection is None or not self.connection.connected:
+                return
+            _LOG.debug("Flushing Modbus connection after %s (%s)", reason, self.port)
+            await self.connection.disconnect()
+        except Exception as err:
+            _LOG.error(
+                "Failed to flush Modbus connection after %s (%s): %s",
+                reason,
+                self.port,
+                err,
+            )
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk support function code 0x10."""
