@@ -4,11 +4,11 @@
 
 ## Unreleased
 
-- **`TIMEOUT`** is now **3** seconds per connect and each register **attempt**. Each
-  holding-register read (FC03) and write (FC16) is always tried **3** times (**3s × 3**), so a
-  missing reply can take up to **9** seconds before that operation fails. On timeout, **serial**
-  links disconnect so the next attempt reconnects with an empty buffer; TCP and Solarman do not.
-  Other I/O errors still flush.
+- **`READ_ATTEMPTS`** (default **3**, max **5**) – tries per FC03 read and FC16 write. Worst-case
+  wait per group is **`TIMEOUT × READ_ATTEMPTS`**.
+- **`TIMEOUT`** is now **3** seconds per connect and each register **attempt**. On timeout,
+  **serial** links disconnect so the next attempt reconnects with an empty buffer; TCP and Solarman
+  do not. Other I/O errors still flush.
 - Add a 50ms `connect_delay` for serial
 - Remove Gen L1/L2/L3 current sensors & check for duplicates. #676
 

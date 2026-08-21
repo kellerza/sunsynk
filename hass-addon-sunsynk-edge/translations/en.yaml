@@ -44,6 +44,12 @@ configuration:
 
       Default **0.05**. Increase on flaky RS485 / USB-FTDI links. **0** disables the gap.
       Raising TIMEOUT only waits longer for a missing reply; it does not add this pause.
+  READ_ATTEMPTS:
+    name: Read attempts
+    description: |
+      How many times to try each holding-register read or write.
+
+      Default **3**. Worst-case wait per group is TIMEOUT × READ_ATTEMPTS.
   STALE_INVERTER_AFTER_SECONDS:
     name: Stale inverter after (seconds)
     description: |
@@ -72,8 +78,8 @@ configuration:
     description: |
       Seconds to wait for each connect and register read/write attempt.
 
-      Default **3**. Each holding-register read is always tried 3 times, so a missing
-      reply can take up to 9 seconds before that group fails. Max **15**.
+      Default **3**. Each holding-register read is tried READ_ATTEMPTS times (default 3),
+      so a missing reply can take up to TIMEOUT × READ_ATTEMPTS seconds. Max **15**.
   MQTT_CUSTOM:
     name: Custom MQTT
     description: |

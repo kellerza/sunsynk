@@ -80,6 +80,8 @@ class Options(MQTTOptions):
     """Seconds to wait after each Modbus reply before the next request (0 disables)."""
     schedules: list[Schedule] = field(default_factory=list)
     timeout: int = 3
+    read_attempts: int = 3
+    """FC03/FC16 tries per register group (worst-case wait is TIMEOUT * READ_ATTEMPTS)."""
 
     stale_inverter_after_seconds: int = 60
     """Grace window (seconds) after each successful read: if failures continue past this deadline, enter stale quiet."""

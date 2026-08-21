@@ -158,10 +158,13 @@ Global. Change these when a gateway or RS485 link is unreliable.
   disables the gap. Increase on flaky RS485 / USB-FTDI links. Not used for `solarman://`. Raising
   `TIMEOUT` does not add this pause.
 
+- <i-mdi-dev-to class="vp-edge-option-icon" /> `READ_ATTEMPTS` – Tries per holding-register read
+  (FC03) and write (FC16). Default **3**, max **5**. Worst-case wait per group is
+  `TIMEOUT × READ_ATTEMPTS`.
+
 - `TIMEOUT` – Seconds for connect and each register read/write attempt (default **3**, max **15**).
-  Each holding-register read is always tried **3** times (up to **9** seconds for a missing reply).
-  Increase on slow links. If timeouts persist, lower `READ_SENSORS_BATCH_SIZE` or increase
-  `READ_MESSAGE_SPACING`.
+  Each group is tried `READ_ATTEMPTS` times. Increase on slow links. If timeouts persist, lower
+  `READ_SENSORS_BATCH_SIZE` or increase `READ_MESSAGE_SPACING`.
 
 ## Schedules
 

@@ -82,6 +82,7 @@ def create_sunsynk(opt: Options, iopt: InverterOptions) -> Sunsynk:
             unit=unit,
             port=port,
             timeout=opt.timeout,
+            read_attempts=opt.read_attempts,
             read_sensors_batch_size=opt.read_sensors_batch_size,
             allow_gap=opt.read_allow_gap,
         )
@@ -93,6 +94,7 @@ def create_sunsynk(opt: Options, iopt: InverterOptions) -> Sunsynk:
             connection=conn,
             port=port,
             timeout=opt.timeout,
+            read_attempts=opt.read_attempts,
             read_sensors_batch_size=opt.read_sensors_batch_size,
             allow_gap=opt.read_allow_gap,
         )

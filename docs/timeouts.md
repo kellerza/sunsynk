@@ -17,8 +17,8 @@ The **`TIMEOUT`** option (default **3** seconds) is the deadline for:
 - opening the link (connect), and
 - each individual register read or write attempt.
 
-Each FC03 group is always attempted **`RETRY_ATTEMPTS` (3)** times, so a missing reply can take up
-to **9** seconds (`TIMEOUT` × 3) before that group fails.
+Each FC03 group is attempted **`READ_ATTEMPTS`** times (default **3**), so a missing reply can take
+up to **`TIMEOUT × READ_ATTEMPTS`** seconds before that group fails.
 
 It is **not** a cap on an entire sensor batch or poll cycle. `Sunsynk.read_sensors()` may issue many
 FC03 groups in one call; each group gets its own deadline.
@@ -50,10 +50,10 @@ all `for_unit()` handles on that port). **0** disables the gap.
 
 Library callers that omit `message_spacing` still get `DEFAULT_MESSAGE_SPACING` (0.05). On
 **timeout**, `Sunsynk.read_holding_registers()` logs, increments **`timeouts`**, and retries up to
-**`RETRY_ATTEMPTS` (3)** before raising **`ExceptionGroup`**. **Serial** links also call
-`ModbusConnection.disconnect()` (not `close()`) so the next FC03 reconnects with an empty receive
-buffer. TCP, UDP, and Solarman do not flush on timeout. Other read errors still flush. tmodbus
-already disconnects on desync (bad function code / header mismatch).
+**`read_attempts`** (add-on **`READ_ATTEMPTS`**, default **3**) before raising **`ExceptionGroup`**.
+**Serial** links also call `ModbusConnection.disconnect()` (not `close()`) so the next FC03
+reconnects with an empty receive buffer. TCP, UDP, and Solarman do not flush on timeout. Other read
+errors still flush. tmodbus already disconnects on desync (bad function code / header mismatch).
 
 ---
 
@@ -125,7 +125,7 @@ between commands on slow devices) and is the main pacing mitigation for #672 on 
 ```text
 AInverter.read_sensors()
   → Sunsynk.read_sensors()     # groups sensors, one FC03 per group
-    → Sunsynk.read_holding_registers()  # RETRY_ATTEMPTS, then ExceptionGroup
+    → Sunsynk.read_holding_registers()  # read_attempts, then ExceptionGroup
       → unit.read_holding_registers()
         → modbus-connection TmodbusUnit  # connect + Pacer (50ms) + tmodbus RTU
 ```
@@ -199,10 +199,10 @@ Solarman does **not** use modbus-connection or tmodbus. It uses
 
 - **`TIMEOUT`** maps to **`socket_timeout`** on the Solarman client (connect and reads).
 - FC03 retries live on **`Sunsynk.read_holding_registers`** (shared with serial/TCP): up to
-  **`RETRY_ATTEMPTS` (5)**, then **`ExceptionGroup`**. No sleep between tries.
+  **`read_attempts`** (default **3**), then **`ExceptionGroup`**. No sleep between tries.
 - **`TimeoutError`** / **`GatewayTargetError`**: log, increment **`timeouts`**, disconnect/flush,
   retry.
-- Other read errors: same loop; log includes `(retry n/5)`.
+- Other read errors: same loop; log includes `[attempt n/READ_ATTEMPTS]`.
 - **`SolarmanUnit`** is a single attempt and **disconnects** on error so the next retry reconnects.
 
 There is **no** `message_spacing` knob on Solarman; pacing is whatever the dongle and
@@ -232,7 +232,7 @@ No shared `ModbusConnection`; one Solarman client per inverter port entry.
 | Library                        | modbus-connection + tmodbus                    | PySolarmanV5Async                    |
 | Add-on `TIMEOUT`               | Per connect / FC03 / FC16 attempt              | `socket_timeout`                     |
 | Default gap after each reply   | **`READ_MESSAGE_SPACING`** (default **0.05s**) | —                                    |
-| Driver retry on `TimeoutError` | Yes (`RETRY_ATTEMPTS`, then `ExceptionGroup`)  | Yes (same, on `Sunsynk`)             |
+| Driver retry on `TimeoutError` | Yes (`read_attempts`, then `ExceptionGroup`)   | Yes (same, on `Sunsynk`)             |
 | Add-on batch retry             | Yes (`read_sensors_retry`)                     | Yes (same)                           |
 | Multi-inverter same PORT       | One connection, `for_unit(MODBUS_ID)`          | Not supported (one dongle per entry) |
 
@@ -243,7 +243,8 @@ User-facing keys from [multi-options](../www/docs/reference/multi-options.md) (a
 
 | Option                          | Role                                                                                          |
 | ------------------------------- | --------------------------------------------------------------------------------------------- |
-| `TIMEOUT`                       | Per-attempt deadline in **seconds** (default **3**); each FC03 read is tried **3** times      |
+| `TIMEOUT`                       | Per-attempt deadline in **seconds** (default **3**)                                           |
+| `READ_ATTEMPTS`                 | Tries per FC03/FC16 group (default **3**, max **5**); worst case `TIMEOUT × READ_ATTEMPTS`    |
 | `READ_MESSAGE_SPACING`          | Seconds to wait after each successful Modbus reply (default **0.05**; **0** disables)         |
 | `READ_SENSORS_BATCH_SIZE`       | Max registers per FC03 group (smaller → more requests, less time per request)                 |
 | `READ_ALLOW_GAP`                | Extra registers allowed between addresses so groups merge (fewer requests)                    |

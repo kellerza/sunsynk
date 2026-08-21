@@ -14,7 +14,7 @@ from modbus_connection.mock import MockModbusConnection
 
 from sunsynk.connection import DEFAULT_MESSAGE_SPACING, open_connection, url_to_params
 from sunsynk.state import InverterState
-from sunsynk.sunsynk import RETRY_ATTEMPTS, Sunsynk
+from sunsynk.sunsynk import Sunsynk
 
 
 def test_url_to_params() -> None:
@@ -88,8 +88,8 @@ async def test_write_register_timeout(state: InverterState) -> None:
     conn.disconnect = AsyncMock()
     ss = Sunsynk(unit=unit, state=state, connection=conn)
     assert await ss.write_register(address=1, value=1) is False
-    assert ss.timeouts == RETRY_ATTEMPTS
-    assert unit.write_registers.await_count == RETRY_ATTEMPTS
+    assert ss.timeouts == ss.read_attempts
+    assert unit.write_registers.await_count == ss.read_attempts
     conn.disconnect.assert_not_awaited()
 
 
@@ -104,9 +104,9 @@ async def test_read_holding_registers_timeout(state: InverterState) -> None:
     ss = Sunsynk(unit=unit, state=state, connection=conn)
     with pytest.raises(ExceptionGroup, match="Failed to read 1 registers at 1"):
         await ss.read_holding_registers(1, 1)
-    assert ss.timeouts == RETRY_ATTEMPTS
-    assert unit.read_holding_registers.await_count == RETRY_ATTEMPTS
-    assert conn.disconnect.await_count == RETRY_ATTEMPTS
+    assert ss.timeouts == ss.read_attempts
+    assert unit.read_holding_registers.await_count == ss.read_attempts
+    assert conn.disconnect.await_count == ss.read_attempts
 
 
 async def test_read_holding_registers_timeout_tcp_does_not_flush(
@@ -122,7 +122,7 @@ async def test_read_holding_registers_timeout_tcp_does_not_flush(
     ss = Sunsynk(unit=unit, state=state, connection=conn)
     with pytest.raises(ExceptionGroup, match="Failed to read"):
         await ss.read_holding_registers(1, 1)
-    assert ss.timeouts == RETRY_ATTEMPTS
+    assert ss.timeouts == ss.read_attempts
     conn.disconnect.assert_not_awaited()
 
 
@@ -135,7 +135,7 @@ async def test_read_holding_registers_timeout_without_connection(
     ss = Sunsynk(unit=unit, state=state)
     with pytest.raises(ExceptionGroup, match="Failed to read"):
         await ss.read_holding_registers(1, 1)
-    assert ss.timeouts == RETRY_ATTEMPTS
+    assert ss.timeouts == ss.read_attempts
 
 
 async def test_read_holding_registers_timeout_then_success(
@@ -152,6 +152,17 @@ async def test_read_holding_registers_timeout_then_success(
     assert list(await ss.read_holding_registers(5, 2)) == [9, 8]
     assert ss.timeouts == 1
     conn.disconnect.assert_awaited_once()
+
+
+async def test_read_holding_registers_one_attempt(state: InverterState) -> None:
+    """read_attempts=1 raises after a single timeout."""
+    unit = MagicMock()
+    unit.read_holding_registers = AsyncMock(side_effect=TimeoutError)
+    ss = Sunsynk(unit=unit, state=state, read_attempts=1)
+    with pytest.raises(ExceptionGroup, match="Failed to read"):
+        await ss.read_holding_registers(1, 1)
+    assert ss.timeouts == 1
+    assert unit.read_holding_registers.await_count == 1
 
 
 async def test_read_holding_registers_logs_empty_timeout(
@@ -182,4 +193,4 @@ async def test_read_holding_registers_gateway_target_flushes(
     with pytest.raises(ExceptionGroup, match="Failed to read 2 registers at 176"):
         await ss.read_holding_registers(176, 2)
     assert ss.timeouts == 0
-    assert conn.disconnect.await_count == RETRY_ATTEMPTS
+    assert conn.disconnect.await_count == ss.read_attempts

@@ -28,6 +28,7 @@ def test_init() -> None:
     ist = STATE[0].inv
     assert isinstance(ist, Sunsynk)
     assert ist.port == inv_port
+    assert ist.read_attempts == 3
     mock_conn.for_unit.assert_called_once_with(1)
     open_conn.assert_called_once_with(
         inv_port, timeout=OPT.timeout, message_spacing=0.05

@@ -20,8 +20,6 @@ from sunsynk.state import InverterState, group_sensors, register_map
 
 _LOG = logging.getLogger(__name__)
 
-RETRY_ATTEMPTS = 3
-
 
 def _exc_label(err: BaseException) -> str:
     """Type name, plus message when the exception string is empty (TimeoutError)."""
@@ -60,6 +58,7 @@ class Sunsynk:
     port: str = ""
     baudrate: int = 9600
     timeout: int = 3
+    read_attempts: int = 3
     read_sensors_batch_size: int = 20
     allow_gap: int = 2
     timeouts: int = 0
@@ -118,7 +117,7 @@ class Sunsynk:
 
     async def write_register(self, *, address: int, value: int) -> bool:
         """Write to a register - Sunsynk support function code 0x10."""
-        for _ in range(RETRY_ATTEMPTS):
+        for _ in range(self.read_attempts):
             try:
                 await self.unit.write_registers(address, [value])
                 return True
@@ -163,7 +162,7 @@ class Sunsynk:
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
         """Read holding registers (FC03)."""
         errs: list[Exception] = []
-        for attempt in range(RETRY_ATTEMPTS):
+        for attempt in range(self.read_attempts):
             try:
                 return await self.unit.read_holding_registers(start, length)
             except TimeoutError as err:
@@ -175,7 +174,7 @@ class Sunsynk:
                     length,
                     _exc_label(err),
                     attempt + 1,
-                    RETRY_ATTEMPTS,
+                    self.read_attempts,
                 )
                 if self.connection is not None and isinstance(
                     self.connection._params, ModbusSerialParams
@@ -189,7 +188,7 @@ class Sunsynk:
                     length,
                     _exc_label(err),
                     attempt + 1,
-                    RETRY_ATTEMPTS,
+                    self.read_attempts,
                 )
                 await self._flush_modbus_connection(reason=type(err).__name__)
 
