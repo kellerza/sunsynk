@@ -23,17 +23,17 @@ As part of the Github CI/CD pipeline VitePress will compile the static site and 
 
 ## Local testing
 
-Required: Node.js & git
+Required: bun & git
 
 1. Clone the repo (ideally your fork) & change to the folder.
 2. Install all required packages
 
     ```bash
-    npm install
+    bun install
     ```
 
 3. Run a local VitePress docs server. **--port** optional
 
     ```bash
-    npm run docs:dev
+    bun run docs:dev
     ```

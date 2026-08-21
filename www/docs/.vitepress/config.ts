@@ -156,4 +156,7 @@ export default defineConfig({
       }) as Plugin,
     ],
   },
+  sitemap: {
+    hostname: 'https://kellerza.github.io/sunsynk/'
+  },
 });

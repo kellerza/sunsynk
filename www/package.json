@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "postdocs:build": "node ./docs/.vitepress/build_sitemap.js",
+    "postdocs:build": "bun run. /docs/.vitepress/build_sitemap.js",
     "docs:serve": "vitepress serve docs"
   },
   "repository": {

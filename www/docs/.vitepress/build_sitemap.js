@@ -9,7 +9,8 @@ function buildEnd() {
     readable: true,
   });
 
-  generateSitemap(opt);
+  // use vitepress's sitemap plugin instead
+  // generateSitemap(opt);
 }
 
 buildEnd();
