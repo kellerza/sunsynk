@@ -183,9 +183,9 @@ class AInverter:
         expected_ser = self.opt.serial_nr.replace("_", "")
         actual_ser = str(self.identity.serial)
         if expected_ser != actual_ser:
-            raise ValueError(
-                f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
-            )
+            msg = f"Serial number mismatch. Expected {expected_ser}, got {actual_ser}"
+            self.log_bold(msg)
+            raise ValueError(msg)
         return True
 
     async def read_sensors(self, *, sensors: Iterable[Sensor], msg: str = "") -> bool:
@@ -282,13 +282,7 @@ class AInverter:
             ) from exc
 
         assert self.identity is not None
-        _LOG.info(
-            "Identity: device_type=%s (%s) protocol=%s serial=****%s",
-            self.identity.device_type,
-            hex(self.identity.device_type_code),
-            self.identity.protocol,
-            str(self.identity.serial)[-5:],
-        )
+        self.log_bold(str(self.identity))
         self.warn_device_type_config()
         self.serial_matches_config()
 

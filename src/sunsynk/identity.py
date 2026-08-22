@@ -39,6 +39,13 @@ class Identity(Component):
     protocol: str = NumberField(2, signed=False, convert=_protocol_version)  # type: ignore[assignment]
     serial: str = string(3, length=5)  # type: ignore[assignment]
 
+    def __str__(self) -> str:
+        """Return a string representation of the identity."""
+        return (
+            f"Identity: device_type={self.device_type} ({hex(self.device_type_code)}) "
+            f"protocol={self.protocol} serial=****{str(self.serial)[-5:]}"
+        )
+
 
 def suggested_sensor_definitions(device_type_code: int) -> str:
     """Return the SENSOR_DEFINITIONS profile for ``device_type_code`` (default single-phase)."""

@@ -37,6 +37,9 @@ async def test_identity_decode() -> None:
     assert identity.device_type == "Single-phase hybrid"
     assert identity.protocol == "1.2"
     assert identity.serial == "ABCDE12345"
+    assert str(identity) == (
+        "Identity: device_type=Single-phase hybrid (0x3) protocol=1.2 serial=****12345"
+    )
     assert suggested_sensor_definitions(3) == "single-phase"
     assert suggested_sensor_definitions(0x601) == "three-phase-hv"
     assert suggested_sensor_definitions(4) == "single-phase"

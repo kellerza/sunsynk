@@ -38,9 +38,12 @@ Run from the **sunsynk** repo root. Stop with a clear message unless **all** pas
 3. Use the new version string and change the `## Unreleased` heading in
    `hass-addon-sunsynk-edge/CHANGELOG.md` to `## Release x.x.x`
 4. Copy `hass-addon-sunsynk-edge/CHANGELOG.md` to `hass-addon-sunsynk-multi/CHANGELOG.md`
-5. Commit using the release number (`0.0.0` form) as the message and push to GitHub
-6. Create a draft GitHub release with tag `v0.0.0` (semantic version preceded by `v`)
-7. Notify the user to review and **publish** the draft release on GitHub to start the release
+5. In `www/docs/reference/multi-options.md`, remove every edge-only option prefix
+   `<i-mdi-dev-to class="vp-edge-option-icon" />` (list items and table cells). Leave the `::: tip`
+   block unchanged — it stays for future edge-only options.
+6. Commit using the release number (`0.0.0` form) as the message and push to GitHub
+7. Create a draft GitHub release with tag `v0.0.0` (semantic version preceded by `v`)
+8. Notify the user to review and **publish** the draft release on GitHub to start the release
    process
 
 ## Implementation notes
@@ -48,10 +51,14 @@ Run from the **sunsynk** repo root. Stop with a clear message unless **all** pas
 - Read current version from `[project]` → `version = "..."` in `pyproject.toml`.
 - Heading match is case-insensitive for `## Unreleased`; write `## Release <new_version>` (no `v`
   prefix).
-- Stage only `pyproject.toml`, `hass-addon-sunsynk-edge/CHANGELOG.md`, and
-  `hass-addon-sunsynk-multi/CHANGELOG.md`. Include `uv.lock` if the version bump changed it. The
-  multi CHANGELOG copy is the one allowed hand-edit under `hass-addon-sunsynk-multi/` in this skill
-  (overwrite; do not merge).
+- Stage only `pyproject.toml`, `hass-addon-sunsynk-edge/CHANGELOG.md`,
+  `hass-addon-sunsynk-multi/CHANGELOG.md`, and `www/docs/reference/multi-options.md` (if the edge
+  prefixes were present). Include `uv.lock` if the version bump changed it. The multi CHANGELOG copy
+  is the one allowed hand-edit under `hass-addon-sunsynk-multi/` in this skill (overwrite; do not
+  merge).
+- When stripping edge prefixes, delete the HTML tag and the space after it so bullets stay
+  `- \`OPTION\`` (or the table cell starts with the backtick). Do not touch the tip, and do not
+  rewrite surrounding option text.
 - Do not copy `config.yaml` here. On a published release, `deployer2.yml` copies edge `config.yaml`,
   `translations/`, and `apparmor.txt` onto stable except `name`/`slug`, then sets `version` to the
   tag.
