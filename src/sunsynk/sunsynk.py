@@ -10,9 +10,8 @@ from dataclasses import dataclass, field
 from typing import Protocol, cast, runtime_checkable
 
 from modbus_connection import ModbusSerialParams, ModbusTimeoutError
-from modbus_connection.tmodbus import ModbusConnection
 
-from sunsynk.connection import open_connection
+from sunsynk.connection import ModbusConnection, open_connection
 from sunsynk.helpers import hex_str, patch_bitmask
 from sunsynk.rwsensors import RWSensor
 from sunsynk.sensors import LOG_TRACE, Sensor, ValType

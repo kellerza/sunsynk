@@ -29,15 +29,27 @@ def test_url_to_params() -> None:
     assert url_to_params("/dev/ttyUSB0", baudrate=19200) == ModbusSerialParams(
         device="/dev/ttyUSB0", baudrate=19200
     )
-    with pytest.raises(NotImplementedError, match="serial-udp"):
+    with pytest.raises(NotImplementedError, match="pymodbus-"):
         url_to_params("serial-udp://host:502")
     with pytest.raises(NotImplementedError, match="Unknown scheme"):
         url_to_params("xcp://localhost:10")
 
 
+def test_url_to_params_serial_udp_with_allow() -> None:
+    """serial-udp maps to RTU-over-UDP when allowed (pymodbus backend)."""
+    assert url_to_params(
+        "serial-udp://host:502", allow_serial_udp=True
+    ) == ModbusUdpParams(host="host", port=502, framer="rtu")
+
+
 def test_open_connection_builds_tmodbus() -> None:
     """open_connection returns a tmodbus ModbusConnection (lazy connect)."""
+    from modbus_connection.tmodbus import (  # noqa: PLC0415
+        ModbusConnection as TmodbusConnection,
+    )
+
     conn = open_connection("tcp://127.0.0.1:502", timeout=5)
+    assert isinstance(conn, TmodbusConnection)
     assert conn.connected is False
     unit = conn.for_unit(1)
     assert unit is not None
@@ -54,6 +66,45 @@ def test_open_connection_serial_spacing() -> None:
     assert no_gap._pacer._message_spacing == 0.0
     custom = open_connection("tcp://127.0.0.1:502", timeout=5, message_spacing=0.1)
     assert custom._pacer._message_spacing == 0.1
+
+
+def test_open_connection_pymodbus_prefix() -> None:
+    """pymodbus- prefix selects the pymodbus backend."""
+    from modbus_connection.pymodbus import (  # noqa: PLC0415
+        ModbusConnection as PymodbusConnection,
+    )
+
+    conn = open_connection("pymodbus-tcp://127.0.0.1:502", timeout=5)
+    assert isinstance(conn, PymodbusConnection)
+    assert conn._params == ModbusTcpParams(host="127.0.0.1", port=502)
+
+
+def test_open_connection_pymodbus_serial_device() -> None:
+    """pymodbus- on a device path opens serial params."""
+    from modbus_connection.pymodbus import (  # noqa: PLC0415
+        ModbusConnection as PymodbusConnection,
+    )
+
+    conn = open_connection("pymodbus-/dev/ttyUSB0", timeout=5)
+    assert isinstance(conn, PymodbusConnection)
+    assert conn._params == ModbusSerialParams(device="/dev/ttyUSB0", baudrate=9600)
+
+
+def test_open_connection_pymodbus_serial_udp() -> None:
+    """pymodbus-serial-udp enables RTU-over-UDP."""
+    from modbus_connection.pymodbus import (  # noqa: PLC0415
+        ModbusConnection as PymodbusConnection,
+    )
+
+    conn = open_connection("pymodbus-serial-udp://host:502", timeout=5)
+    assert isinstance(conn, PymodbusConnection)
+    assert conn._params == ModbusUdpParams(host="host", port=502, framer="rtu")
+
+
+def test_open_connection_serial_udp_without_prefix() -> None:
+    """serial-udp without pymodbus- prefix is rejected."""
+    with pytest.raises(NotImplementedError, match="pymodbus-"):
+        open_connection("serial-udp://host:502")
 
 
 async def test_from_url_mock_unit(state: InverterState) -> None:

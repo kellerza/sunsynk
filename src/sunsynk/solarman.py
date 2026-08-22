@@ -16,7 +16,7 @@ class SolarmanUnit:
     """Holding-register I/O over a Solarman Wi-Fi dongle (not a ModbusConnection)."""
 
     port: str
-    """``solarman://host:8899`` address of the dongle."""
+    """``solarman-tcp://host:8899`` address of the dongle."""
 
     dongle_serial_number: int
     server_id: int = 1
@@ -33,7 +33,7 @@ class SolarmanUnit:
         except ValueError:
             raise ValueError(
                 "DONGLE_SERIAL_NUMBER must be a non-zero integer for a "
-                f"solarman:// PORT (Wi-Fi dongle). Got {raw!r}"
+                f"solarman-tcp:// PORT (Wi-Fi dongle). Got {raw!r}"
             ) from None
 
     @property

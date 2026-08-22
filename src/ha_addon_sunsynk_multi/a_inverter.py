@@ -8,9 +8,9 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from modbus_connection.tmodbus import ModbusConnection
 from mqtt_entity import MQTTDevice, MQTTSensorEntity, MQTTSwitchEntity
 
+from sunsynk.connection import ModbusConnection
 from sunsynk.helpers import slug
 from sunsynk.identity import Identity, suggested_sensor_definitions
 from sunsynk.rwsensors import RWSensor

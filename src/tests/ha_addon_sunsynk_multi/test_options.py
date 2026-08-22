@@ -82,7 +82,7 @@ async def test_legacy_port_migration(mock_init: MagicMock) -> None:
         }
     )
     await OPT.init_addon()
-    assert OPT.inverters[0].port == "solarman://192.168.1.182:8899"
+    assert OPT.inverters[0].port == "solarman-tcp://192.168.1.182:8899"
 
     OPT.load_dict(
         {
@@ -97,7 +97,22 @@ async def test_legacy_port_migration(mock_init: MagicMock) -> None:
         }
     )
     await OPT.init_addon()
-    assert OPT.inverters[0].port == "solarman://192.168.1.182:8899"
+    assert OPT.inverters[0].port == "solarman-tcp://192.168.1.182:8899"
+
+    OPT.load_dict(
+        {
+            "inverters": [
+                {
+                    "ha_prefix": "inv1",
+                    "port": "solarman-tcp://192.168.1.182:8899",
+                    "serial_nr": "1",
+                    "dongle_serial_number": 1,
+                }
+            ],
+        }
+    )
+    await OPT.init_addon()
+    assert OPT.inverters[0].port == "solarman-tcp://192.168.1.182:8899"
 
 
 @patch("ha_addon_sunsynk_multi.options.MQTTOptions.init_addon")

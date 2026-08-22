@@ -392,6 +392,9 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+pymodbus = [
+    { name = "pymodbus", extra = ["serial"] },
+]
 tmodbus = [
     { name = "tmodbus", extra = ["async-serial"] },
 ]
@@ -658,6 +661,20 @@ wheels = [
 ]
 
 [[package]]
+name = "pymodbus"
+version = "3.15.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e5/b8/03dace16e0e5d1c3eb16e8b9bcce9885f5e8a38db34345ec375cd70ed2e2/pymodbus-3.15.0.tar.gz", hash = "sha256:4c5f715128bfeba59f4c9fb3542b0c32a8afd4b90081111e39c12f7af0c89aae", size = 168238, upload-time = "2026-08-13T09:33:33.049Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/7b/fa75ca74270ad3786234c6573f3c6c524441d3eb686882e280c717ce6d04/pymodbus-3.15.0-py3-none-any.whl", hash = "sha256:74d8dee961f23845f18a8481253183504dca05c4fcd102890cd28f4d7ce09267", size = 167602, upload-time = "2026-08-13T09:33:31.474Z" },
+]
+
+[package.optional-dependencies]
+serial = [
+    { name = "pyserial" },
+]
+
+[[package]]
 name = "pyproject-fmt"
 version = "2.28.0"
 source = { registry = "https://pypi.org/simple" }
@@ -893,7 +910,7 @@ version = "1.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "cattrs" },
-    { name = "modbus-connection", extra = ["tmodbus"] },
+    { name = "modbus-connection", extra = ["pymodbus", "tmodbus"] },
     { name = "mqtt-entity", extra = ["options"] },
     { name = "prettytable" },
     { name = "whenever" },
@@ -921,7 +938,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "cattrs", specifier = ">=25,<27" },
-    { name = "modbus-connection", extras = ["tmodbus"], specifier = ">=4.7" },
+    { name = "modbus-connection", extras = ["pymodbus", "tmodbus"], specifier = ">=4.7" },
     { name = "mqtt-entity", extras = ["options"], specifier = ">=1.1" },
     { name = "prettytable", specifier = ">=3.17,<4" },
     { name = "pysolarmanv5", marker = "extra == 'solarman'", specifier = "==3.0.6" },

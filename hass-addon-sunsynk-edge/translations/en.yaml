@@ -8,9 +8,9 @@ configuration:
 
       If PORT is a blank string "" the selected DEBUG_DEVICE will be used.
 
-      Use PORT `solarman://host:8899` plus DONGLE_SERIAL_NUMBER for a
+      Use PORT `solarman-tcp://host:8899` plus DONGLE_SERIAL_NUMBER for a
       Solarman Wi-Fi dongle. Otherwise use tcp://, serial-tcp://, udp://,
-      or a serial device path (tmodbus).
+      or a serial device path (tmodbus). Prefix `pymodbus-` for the pymodbus backend.
   SENSOR_DEFINITIONS:
     name: Sensor definitions
     description: ""

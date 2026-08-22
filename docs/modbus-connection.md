@@ -105,8 +105,9 @@ Solarman subclass.
   a proprietary V5 tunnel with the same holding-register ops; that is a stronger reason to adopt a
   unit protocol than to rewrite sensors.
 
-tmodbus vs pymodbus is an import of `ModbusConnection`, not a Sunsynk type. `serial-udp`
-(RTU-over-UDP) is unsupported by tmodbus.
+tmodbus vs pymodbus is selected by a **`pymodbus-`** prefix on `PORT` (see
+[`open_connection()`](../src/sunsynk/connection.py)); both share the same `ModbusConnection` API.
+`serial-udp://` (RTU-over-UDP) is tmodbus-only unsupported — use `pymodbus-serial-udp://`.
 
 ```python
 conn = ModbusConnection(ModbusTcpParams(host="192.168.1.50", port=502))

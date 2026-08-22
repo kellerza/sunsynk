@@ -17,7 +17,7 @@ _LOG = logging.getLogger(__name__)
 
 def is_solarman_port(port: str) -> bool:
     """Check if the port selects the Solarman dongle transport."""
-    return urlparse(port).scheme == "solarman"
+    return urlparse(port).scheme in {"solarman", "solarman-tcp"}
 
 
 def _normalize_legacy_port(port: str) -> str:
@@ -29,17 +29,22 @@ def _normalize_legacy_port(port: str) -> str:
 
 
 def as_solarman_port(port: str) -> str:
-    """Rewrite a host URL (or bare host) to ``solarman://host:port``."""
-    if is_solarman_port(port):
-        return port
+    """Rewrite a host URL (or bare host) to ``solarman-tcp://host:port``."""
+    parsed = urlparse(port)
+    if parsed.scheme in {"solarman", "solarman-tcp"}:
+        if not parsed.hostname:
+            raise ValueError(
+                f"Cannot use Solarman with PORT {port!r}; expected solarman-tcp://host:8899"
+            )
+        return f"solarman-tcp://{parsed.hostname}:{parsed.port or 8899}"
     url = urlparse(port)
     if url.hostname:
-        return f"solarman://{url.hostname}:{url.port or 8899}"
+        return f"solarman-tcp://{url.hostname}:{url.port or 8899}"
     if port and "://" not in port and not port.startswith("/"):
         host, _, p = port.partition(":")
-        return f"solarman://{host}:{p or 8899}"
+        return f"solarman-tcp://{host}:{p or 8899}"
     raise ValueError(
-        f"Cannot use Solarman with PORT {port!r}; expected solarman://host:8899"
+        f"Cannot use Solarman with PORT {port!r}; expected solarman-tcp://host:8899"
     )
 
 
@@ -49,7 +54,7 @@ class InverterOptions:
 
     port: str = ""
     driver: str = ""
-    """Obsolete; kept so legacy configs still load. Prefer ``solarman://`` PORT."""
+    """Obsolete; kept so legacy configs still load. Prefer ``solarman-tcp://`` PORT."""
     modbus_id: int = 0
     ha_prefix: str = ""
     serial_nr: str = ""
@@ -58,7 +63,7 @@ class InverterOptions:
 
 DRIVER_ERROR_MSG = (
     "DRIVER is obsolete; remove it and use PORT schemes "
-    "(tcp://, serial-tcp://, udp://, /dev/..., or solarman://)."
+    "(tcp://, serial-tcp://, udp://, /dev/..., or solarman-tcp://)."
 )
 
 
@@ -90,7 +95,7 @@ class Options(MQTTOptions):
 
     debug: int = 0
     driver: str = ""
-    """Obsolete; kept so legacy configs still load. Prefer ``solarman://`` PORT."""
+    """Obsolete; kept so legacy configs still load. Prefer ``solarman-tcp://`` PORT."""
     manufacturer: str = "Sunsynk"
     debug_device: str = ""
     mute_logs: list[Time] = field(default_factory=list)
@@ -134,7 +139,7 @@ class Options(MQTTOptions):
                 if rewritten != inv.port:
                     _LOG.warning(
                         "%s: Remapped PORT %r to %r "
-                        "(use solarman:// and DONGLE_SERIAL_NUMBER)",
+                        "(use solarman-tcp:// and DONGLE_SERIAL_NUMBER)",
                         inv.ha_prefix or inv.serial_nr,
                         inv.port,
                         rewritten,

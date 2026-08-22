@@ -190,7 +190,7 @@ Same as serial; only `url_to_params()` differs ([`connection.py`](../src/sunsynk
 
 ## Solarman
 
-**PORT example:** `solarman://192.168.1.182:8899` plus **`DONGLE_SERIAL_NUMBER`**
+**PORT example:** `solarman-tcp://192.168.1.182:8899` plus **`DONGLE_SERIAL_NUMBER`**
 
 Solarman does **not** use modbus-connection or tmodbus. It uses
 [`SolarmanUnit`](../src/sunsynk/solarman.py) over **PySolarmanV5Async** (proprietary V5 tunnel).
@@ -210,7 +210,7 @@ PySolarmanV5Async implement, plus the add-on’s normal poll schedules.
 
 ### Tuning
 
-- Use **`solarman://`** explicitly (not `tcp://` with a dongle serial — that remaps at startup).
+- Use **`solarman-tcp://`** explicitly (not `tcp://` with a dongle serial — that remaps at startup).
 - Reduce read frequency in **Schedules**; Solarman links are slower than wired RS485.
 - Do not point a serial `PORT` at a Solarman dongle IP; that is a different transport (#672 reports
   conflating the two).

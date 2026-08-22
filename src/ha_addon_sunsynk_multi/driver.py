@@ -4,10 +4,8 @@
 import logging
 from typing import cast
 
-from modbus_connection.tmodbus import ModbusConnection
-
 from sunsynk import Sensor, Sunsynk, ValType
-from sunsynk.connection import open_connection
+from sunsynk.connection import ModbusConnection, open_connection
 from sunsynk.solarman import SolarmanUnit
 from sunsynk.sunsynk import HoldingUnit
 

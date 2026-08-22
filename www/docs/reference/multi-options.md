@@ -96,21 +96,27 @@ Sensor ids, groups, and custom sensors are listed under [definitions](./definiti
   inverter **Modbus SN**. Unique per inverter on a shared bus. See
   [Modbus](../guide/overview#modbus).
 
-- `DONGLE_SERIAL_NUMBER` – Required for `solarman://`. A non-zero value also remaps `tcp://host` to
-  Solarman.
+- `DONGLE_SERIAL_NUMBER` – Required for `solarman-tcp://`. A non-zero value also remaps `tcp://host`
+  to Solarman.
 
 - `PORT` – Transport URL or serial path. See [Port](#port).
 
 ### Port
 
-| Scheme                   | When                                                | Extra                                                                                                           |
-| ------------------------ | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `tcp://host:502`         | Modbus TCP gateway or [mbusd](../guide/mbusd)       | —                                                                                                               |
-| `serial-tcp://host:port` | Gateway that does **not** convert Modbus TCP to RTU | Sends RTU frames over TCP. `serial-udp://` is not supported                                                     |
-| `udp://host:port`        | Modbus UDP                                          | —                                                                                                               |
-| `solarman://host:8899`   | Solarman / Wi-Fi dongle                             | Set `DONGLE_SERIAL_NUMBER`. Prefer a fixed IP                                                                   |
-| `/dev/ttyUSB0`           | Direct USB RS485                                    | tmodbus. If it fails, try [mbusd](../guide/mbusd) ([issue 131](https://github.com/kellerza/sunsynk/issues/131)) |
-| `""`                     | First inverter only                                 | Uses `DEBUG_DEVICE` from the bottom of the config                                                               |
+| Scheme                                                                 | When                                                | Extra                                                                                                           |
+| ---------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `tcp://host:502`                                                       | Modbus TCP gateway or [mbusd](../guide/mbusd)       | tmodbus (default)                                                                                               |
+| `serial-tcp://host:port`                                               | Gateway that does **not** convert Modbus TCP to RTU | Sends RTU frames over TCP                                                                                       |
+| `udp://host:port`                                                      | Modbus UDP                                          | tmodbus                                                                                                         |
+| <i-mdi-dev-to class="vp-edge-option-icon" /> `pymodbus-tcp://…`        | Same as `tcp://`                                    | pymodbus backend; prefix any Modbus scheme (see below)                                                          |
+| <i-mdi-dev-to class="vp-edge-option-icon" /> `pymodbus-serial-udp://…` | RTU-over-UDP                                        | pymodbus only                                                                                                   |
+| `solarman-tcp://host:8899`                                             | Solarman / Wi-Fi dongle                             | Set `DONGLE_SERIAL_NUMBER`. Prefer a fixed IP                                                                   |
+| `/dev/ttyUSB0`                                                         | Direct USB RS485                                    | tmodbus. If it fails, try [mbusd](../guide/mbusd) ([issue 131](https://github.com/kellerza/sunsynk/issues/131)) |
+| `""`                                                                   | First inverter only                                 | Uses `DEBUG_DEVICE` from the bottom of the config                                                               |
+
+Prefix **`pymodbus-`** before any Modbus `PORT` to use the pymodbus backend instead of tmodbus (e.g.
+`pymodbus-tcp://host:502`, `pymodbus-/dev/ttyUSB0`). Shared-bus keys include the prefix, so `tcp://`
+and `pymodbus-tcp://` are separate connections.
 
 ```yaml
 INVERTERS:
@@ -123,13 +129,13 @@ the path from `DEBUG_DEVICE`).
 `DRIVER` is obsolete. The add-on will not start if it is still set.
 
 ::: details Solarman Wi-Fi dongle
-Use `solarman://` with the dongle's local IP (typically port **8899**) and set
+Use `solarman-tcp://` with the dongle's local IP (typically port **8899**) and set
 `DONGLE_SERIAL_NUMBER`. Find the IP on your router, or use a utility like
 [netscan](https://www.portablefreeware.com/?id=730). Prefer a fixed IP.
 
 ```yaml
 INVERTERS:
-  - PORT: solarman://192.168.1.182:8899
+  - PORT: solarman-tcp://192.168.1.182:8899
     DONGLE_SERIAL_NUMBER: "1234567890"
 ```
 
@@ -155,8 +161,8 @@ Global. Change these when a gateway or RS485 link is unreliable.
 
 - `READ_MESSAGE_SPACING` – Seconds to wait after each successful Modbus reply before the next
   request on the same link (serial, `tcp://`, `serial-tcp://`, `udp://`). Default **0.05**. **0**
-  disables the gap. Increase on flaky RS485 / USB-FTDI links. Not used for `solarman://`. Raising
-  `TIMEOUT` does not add this pause.
+  disables the gap. Increase on flaky RS485 / USB-FTDI links. Not used for `solarman-tcp://`.
+  Raising `TIMEOUT` does not add this pause.
 
 - <i-mdi-dev-to class="vp-edge-option-icon" /> `READ_ATTEMPTS` – Tries per holding-register read
   (FC03) and write (FC16). Default **3**, max **5**. Worst-case wait per group is

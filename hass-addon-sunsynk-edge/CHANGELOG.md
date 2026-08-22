@@ -4,6 +4,11 @@
 
 ## Unreleased
 
+- Prefix **`PORT`** with **`pymodbus-`** to use the pymodbus Modbus backend (e.g.
+  `pymodbus-tcp://host:502`, `pymodbus-/dev/ttyUSB0`). Default is tmodbus.
+  **`pymodbus-serial-udp://`** enables RTU-over-UDP (not supported on tmodbus).
+- Solarman **`PORT`** scheme is **`solarman-tcp://host:8899`** (legacy `solarman://` and dongle
+  - `tcp://` remap at startup).
 - **`READ_ATTEMPTS`** (default **3**, max **5**) – tries per FC03 read and FC16 write. Worst-case
   wait per group is **`TIMEOUT × READ_ATTEMPTS`**.
 - **`TIMEOUT`** is now **3** seconds per connect and each register **attempt**. On timeout,
