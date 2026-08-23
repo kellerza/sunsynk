@@ -281,23 +281,29 @@ def test_decode_fault() -> None:
 
 
 def test_sensor_alias_registered_as_slug() -> None:
-    """String ``alias`` is one alternate name; registry keys match ``slug()`` (config / get_sensors)."""
+    """String ``alias`` is one alternate name; that copy uses the alias as ``name``."""
     sen = SensorDefinitions()
     s = Sensor(1, "Gen power", WATT, -1, alias="AUX power")
     sen += s
     assert sen.all["gen_power"] is s
-    assert sen.all["aux_power"] is s
+    aux = sen.all["aux_power"]
+    assert aux is not s
+    assert aux.name == "AUX power"
+    assert aux.id == "aux_power"
+    assert aux.address == s.address
+    assert aux.alias is None
     assert set(sen.all) == {"gen_power", "aux_power"}
 
 
 def test_sensor_alias_tuple() -> None:
-    """Multiple alternate names from a tuple each get a slug key."""
+    """Each alias is a copy whose primary name is that alias."""
     sen = SensorDefinitions()
     s = Sensor(1, "X", WATT, -1, alias=("Alt one", "Alt two"))
     sen += s
     assert sen.all["x"] is s
-    assert sen.all["alt_one"] is s
-    assert sen.all["alt_two"] is s
+    assert sen.all["alt_one"].name == "Alt one"
+    assert sen.all["alt_two"].name == "Alt two"
+    assert sen.all["alt_one"].address == s.address
 
 
 def test_source() -> None:

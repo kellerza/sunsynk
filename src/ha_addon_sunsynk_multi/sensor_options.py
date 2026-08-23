@@ -8,7 +8,13 @@ from dataclasses import dataclass, field
 from sunsynk.definitions import import_defs
 from sunsynk.helpers import slug
 from sunsynk.rwsensors import RWSensor
-from sunsynk.sensors import Constant, PVDynamicTotalSensor, Sensor, SensorDefinitions
+from sunsynk.sensors import (
+    Constant,
+    PVDynamicTotalSensor,
+    Sensor,
+    SensorDefinitions,
+    ensure_slugs,
+)
 
 from .helpers import import_mysensors
 from .options import OPT
@@ -370,5 +376,9 @@ def get_sensors(
 
     # Add groups at the end
     for name in groups:
-        names = list(DEFS.all) if name == "all" else SENSOR_GROUPS[name]
+        if name == "all":
+            alias_ids = {a for s in DEFS.all.values() for a in ensure_slugs(s.alias)}
+            names = [k for k in DEFS.all if k not in alias_ids]
+        else:
+            names = SENSOR_GROUPS[name]
         yield from get_sensors(target=target, names=names, warn=False)

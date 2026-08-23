@@ -9,6 +9,7 @@ from ha_addon_sunsynk_multi.sensor_options import SENSOR_GROUPS
 from sunsynk import RWSensor, Sensor, SensorDefinitions
 from sunsynk.definitions import import_all_defs
 from sunsynk.helpers import ensure_tuple
+from sunsynk.sensors import ensure_slugs
 from sunsynk.utils import pretty_table, table_data
 
 
@@ -48,9 +49,10 @@ def generate_all_sensors(
     """Generate groups/all.html."""
     sensors = defaultdict[str, dict[str, Sensor | str]](dict[str, Sensor | str])
     for name, defs in all_defs.items():
+        alias_ids = {a for s in defs.all.values() for a in ensure_slugs(s.alias)}
         for key, sen in defs.all.items():
-            if key != sen.id:
-                continue  # alias slug → same Sensor; Name column already lists aliases
+            if key in alias_ids:
+                continue  # alias copy; Name column lists aliases on the canonical row
             sensors[key][name] = sen
             sensors[key]["Group"] = "<br>".join(sorted(sen_groups.get(sen.id, [])))
 

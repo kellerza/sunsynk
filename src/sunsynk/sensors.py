@@ -40,7 +40,7 @@ class Sensor:
     """Whether to trace changes for this sensor."""
 
     alias: str | tuple[str, ...] | None = None
-    """Alternate name(s); each is registered in ``SensorDefinitions.all`` under ``slug(name)``."""
+    """Alternate name(s). Each is registered as a copy whose ``name`` is the alias."""
 
     def __post_init__(self, address0: RegType | int) -> None:
         """Post init."""
@@ -190,8 +190,9 @@ class SensorDefinitions:
         sensors = item if isinstance(item, (tuple, list)) else [item]
         for sen in sensors:
             self.all[sen.id] = sen
-            for aid in ensure_slugs(sen.alias):
-                self.all[aid] = sen
+            for aname in ensure_tuple(sen.alias):
+                aliased = replace(sen, address0=sen.address, name=aname, alias=None)
+                self.all[aliased.id] = aliased
         return self
 
     def copy(self) -> "SensorDefinitions":
@@ -206,9 +207,10 @@ class SensorDefinitions:
         ``MathSensor`` / ``PVDynamicTotalSensor`` intentionally reuse other
         sensors' registers and are skipped.
         """
+        alias_ids = {a for s in self.all.values() for a in ensure_slugs(s.alias)}
         by_reg: dict[int, list[Sensor]] = {}
         for key, sen in self.all.items():
-            if key != sen.id or not sen.address:
+            if key in alias_ids or key != sen.id or not sen.address:
                 continue
             # Forward refs: MathSensor / PVDynamicTotalSensor defined below.
             if isinstance(sen, (MathSensor, PVDynamicTotalSensor)):

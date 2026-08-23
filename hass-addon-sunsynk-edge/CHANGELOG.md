@@ -16,6 +16,8 @@
   do not. Other I/O errors still flush.
 - Add a 50ms `connect_delay` for serial
 - Remove Gen L1/L2/L3 current sensors & check for duplicates. #676
+- Sensor **aliases** are registered as copies whose primary ``name`` is the alias (HA entity name
+  follows the id you put in ``SENSORS``).
 
 ## Release 1.1.1
 

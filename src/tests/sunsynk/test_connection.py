@@ -8,6 +8,7 @@ from modbus_connection import (
     GatewayTargetError,
     ModbusSerialParams,
     ModbusTcpParams,
+    ModbusTimeoutError,
     ModbusUdpParams,
 )
 from modbus_connection.mock import MockModbusConnection
@@ -133,7 +134,7 @@ async def test_from_url_mock_unit(state: InverterState) -> None:
 async def test_write_register_timeout(state: InverterState) -> None:
     """Timeouts on write increment the counter and return False after retries."""
     unit = MagicMock()
-    unit.write_registers = AsyncMock(side_effect=TimeoutError)
+    unit.write_registers = AsyncMock(side_effect=ModbusTimeoutError)
     conn = MagicMock()
     conn.connected = True
     conn.disconnect = AsyncMock()
@@ -147,7 +148,7 @@ async def test_write_register_timeout(state: InverterState) -> None:
 async def test_read_holding_registers_timeout(state: InverterState) -> None:
     """Serial timeouts increment the counter, flush, retry, then raise ExceptionGroup."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=TimeoutError)
+    unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
     conn = MagicMock()
     conn.connected = True
     conn.disconnect = AsyncMock()
@@ -165,7 +166,7 @@ async def test_read_holding_registers_timeout_tcp_does_not_flush(
 ) -> None:
     """TCP timeouts still retry but leave the socket up."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=TimeoutError)
+    unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
     conn = MagicMock()
     conn.connected = True
     conn.disconnect = AsyncMock()
@@ -182,7 +183,7 @@ async def test_read_holding_registers_timeout_without_connection(
 ) -> None:
     """Solarman-style units have no ModbusConnection to flush."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=TimeoutError)
+    unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
     ss = Sunsynk(unit=unit, state=state)
     with pytest.raises(ExceptionGroup, match="Failed to read"):
         await ss.read_holding_registers(1, 1)
@@ -194,7 +195,7 @@ async def test_read_holding_registers_timeout_then_success(
 ) -> None:
     """A later attempt can still succeed after a timeout flush."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=[TimeoutError, [9, 8]])
+    unit.read_holding_registers = AsyncMock(side_effect=[ModbusTimeoutError, [9, 8]])
     conn = MagicMock()
     conn.connected = True
     conn.disconnect = AsyncMock()
@@ -208,7 +209,7 @@ async def test_read_holding_registers_timeout_then_success(
 async def test_read_holding_registers_one_attempt(state: InverterState) -> None:
     """read_attempts=1 raises after a single timeout."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=TimeoutError)
+    unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
     ss = Sunsynk(unit=unit, state=state, read_attempts=1)
     with pytest.raises(ExceptionGroup, match="Failed to read"):
         await ss.read_holding_registers(1, 1)
@@ -220,14 +221,14 @@ async def test_read_holding_registers_logs_empty_timeout(
     state: InverterState,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Empty TimeoutError strings must still log the exception type."""
+    """Empty ModbusTimeoutError strings must still log the exception type."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=TimeoutError())
+    unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError())
     ss = Sunsynk(unit=unit, state=state)
     with caplog.at_level(logging.ERROR):
         with pytest.raises(ExceptionGroup):
             await ss.read_holding_registers(0, 8)
-    assert "Read register 0 (count 8): TimeoutError" in caplog.text
+    assert "Read register 0 x8: ModbusTimeoutError" in caplog.text
     assert "(retry" not in caplog.text
 
 

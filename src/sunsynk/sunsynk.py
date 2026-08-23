@@ -9,7 +9,11 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import Protocol, cast, runtime_checkable
 
-from modbus_connection import ModbusSerialParams, ModbusTimeoutError
+from modbus_connection import (
+    ModbusProtocolError,
+    ModbusSerialParams,
+    ModbusTimeoutError,
+)
 
 from sunsynk.connection import ModbusConnection, open_connection
 from sunsynk.helpers import hex_str, patch_bitmask
@@ -120,7 +124,7 @@ class Sunsynk:
             try:
                 await self.unit.write_registers(address, [value])
                 return True
-            except TimeoutError:
+            except ModbusTimeoutError:
                 _LOG.warning("timeout writing register %s=%s", address, value)
                 self.timeouts += 1
             except Exception as err:
@@ -164,11 +168,11 @@ class Sunsynk:
         for attempt in range(self.read_attempts):
             try:
                 return await self.unit.read_holding_registers(start, length)
-            except TimeoutError as err:
+            except ModbusTimeoutError as err:
                 self.timeouts += 1
                 errs.append(err)
                 _LOG.error(
-                    "Read register %s (count %s): %s [attempt %s/%s]",
+                    "Read register %s x%s: %s [attempt %s/%s]",
                     start,
                     length,
                     _exc_label(err),
@@ -179,10 +183,18 @@ class Sunsynk:
                     self.connection._params, ModbusSerialParams
                 ):
                     await self._flush_modbus_connection(reason=type(err).__name__)
+            except ModbusProtocolError:
+                _LOG.error(
+                    "Read register %s x%s: protocol error [attempt %s/%s]",
+                    start,
+                    length,
+                    attempt + 1,
+                    self.read_attempts,
+                )
             except Exception as err:
                 errs.append(err)
                 _LOG.error(
-                    "Read register %s (count %s): %s [attempt %s/%s]",
+                    "Read register %s x%s: %s [attempt %s/%s]",
                     start,
                     length,
                     _exc_label(err),
