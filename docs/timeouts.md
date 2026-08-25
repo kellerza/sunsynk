@@ -253,7 +253,8 @@ User-facing keys from [multi-options](../www/docs/reference/multi-options.md) (a
 
 `DRIVER` is obsolete and ignored (startup fails if it is still set). mbusd has its own `TIMEOUT` if
 you use that add-on as a serial-to-TCP gateway. The mbusd timeout should always be lower than the
-addon timeout.
+addon timeout. User-facing comparison (add-on / pymodbus / mbusd / Solarman):
+[Wait times by component](../www/docs/reference/multi-options.md#wait-times-by-component).
 
 ## Related changes (edge, post-1.0.0)
 

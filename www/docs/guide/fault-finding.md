@@ -124,7 +124,8 @@ diagnostic sensor on each inverter ([Stats](#stats)) shows whether timeouts are 
   **0.15** if timeouts continue.
 - The most reliable way to connect is to use mbusd to the serial port & connect the addon to mbusd
   at `tcp://<ip>:502`. The mbusd instance/addon can be on the same physical device or a remote
-  device.
+  device. mbusd, pymodbus, and the add-on each have their own wait — see
+  [Wait times by component](../reference/multi-options#wait-times-by-component).
 
 Check the cabling and connection again. Use a 1m cable and stand next to the inverter while testing.
 

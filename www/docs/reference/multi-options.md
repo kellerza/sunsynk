@@ -171,6 +171,18 @@ Global. Change these when a gateway or RS485 link is unreliable.
   Each group is tried `READ_ATTEMPTS` times. Increase on slow links. If timeouts persist, lower
   `READ_SENSORS_BATCH_SIZE` or increase `READ_MESSAGE_SPACING`.
 
+### Wait times by component
+
+Same three knobs at every layer. When the add-on talks through **pymodbus** or **mbusd**, those
+layers wait **as well**, so a missing reply can take longer than `TIMEOUT × READ_ATTEMPTS` alone.
+
+| Component                     | `READ_ATTEMPTS` | `TIMEOUT`         | `READ_MESSAGE_SPACING` | Notes                                                                                                                                                                                                                                         |
+| ----------------------------- | --------------- | ----------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Add-on default (tmodbus)      | **3**           | **3 s**           | **0.05 s**             | Per FC03/FC16 group. tmodbus does **not** retry a missing reply; the add-on does. Serial also waits **0.05 s** after connect. Worst case per group: `TIMEOUT × READ_ATTEMPTS`.                                                                |
+| pymodbus (`pymodbus-` `PORT`) | **3** (library) | Add-on `TIMEOUT`  | Add-on spacing         | pymodbus retries **3** times per request **on top of** the add-on. A silent bus waits longer than tmodbus.                                                                                                                                    |
+| mbusd                         | **3** (`-N`)    | **500 ms** (`-W`) | **100 ms** (`-R`)      | Serial-side gateway. Keep this RTU wait **shorter** than the add-on `TIMEOUT` so a dead inverter fails inside one add-on attempt. The mbusd add-on's own `TIMEOUT` option is TCP idle (`-T`, seconds), not `-W`. See [mbusd](../guide/mbusd). |
+| Solarman                      | **3**           | Add-on `TIMEOUT`  | —                      | `socket_timeout` only; no message gap. Prefer slower [schedules](./schedules).                                                                                                                                                                |
+
 ## Schedules
 
 `SCHEDULES` controls how often sensors are read and published. Defaults and Solarman-friendly
