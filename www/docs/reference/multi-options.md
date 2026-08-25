@@ -103,16 +103,16 @@ Sensor ids, groups, and custom sensors are listed under [definitions](./definiti
 
 ### Port
 
-| Scheme                                                                 | When                                                | Extra                                                                                                           |
-| ---------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `tcp://host:502`                                                       | Modbus TCP gateway or [mbusd](../guide/mbusd)       | tmodbus (default)                                                                                               |
-| `serial-tcp://host:port`                                               | Gateway that does **not** convert Modbus TCP to RTU | Sends RTU frames over TCP                                                                                       |
-| `udp://host:port`                                                      | Modbus UDP                                          | tmodbus                                                                                                         |
-| <i-mdi-dev-to class="vp-edge-option-icon" /> `pymodbus-tcp://…`        | Same as `tcp://`                                    | pymodbus backend; prefix any Modbus scheme (see below)                                                          |
-| <i-mdi-dev-to class="vp-edge-option-icon" /> `pymodbus-serial-udp://…` | RTU-over-UDP                                        | pymodbus only                                                                                                   |
-| `solarman-tcp://host:8899`                                             | Solarman / Wi-Fi dongle                             | Set `DONGLE_SERIAL_NUMBER`. Prefer a fixed IP                                                                   |
-| `/dev/ttyUSB0`                                                         | Direct USB RS485                                    | tmodbus. If it fails, try [mbusd](../guide/mbusd) ([issue 131](https://github.com/kellerza/sunsynk/issues/131)) |
-| `""`                                                                   | First inverter only                                 | Uses `DEBUG_DEVICE` from the bottom of the config                                                               |
+| Scheme                     | When                                                | Extra                                                                                                           |
+| -------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `tcp://host:502`           | Modbus TCP gateway or [mbusd](../guide/mbusd)       | tmodbus (default)                                                                                               |
+| `serial-tcp://host:port`   | Gateway that does **not** convert Modbus TCP to RTU | Sends RTU frames over TCP                                                                                       |
+| `udp://host:port`          | Modbus UDP                                          | tmodbus                                                                                                         |
+| `pymodbus-tcp://…`         | Same as `tcp://`                                    | pymodbus backend; prefix any Modbus scheme (see below)                                                          |
+| `pymodbus-serial-udp://…`  | RTU-over-UDP                                        | pymodbus only                                                                                                   |
+| `solarman-tcp://host:8899` | Solarman / Wi-Fi dongle                             | Set `DONGLE_SERIAL_NUMBER`. Prefer a fixed IP                                                                   |
+| `/dev/ttyUSB0`             | Direct USB RS485                                    | tmodbus. If it fails, try [mbusd](../guide/mbusd) ([issue 131](https://github.com/kellerza/sunsynk/issues/131)) |
+| `""`                       | First inverter only                                 | Uses `DEBUG_DEVICE` from the bottom of the config                                                               |
 
 Prefix **`pymodbus-`** before any Modbus `PORT` to use the pymodbus backend instead of tmodbus (e.g.
 `pymodbus-tcp://host:502`, `pymodbus-/dev/ttyUSB0`). Shared-bus keys include the prefix, so `tcp://`
@@ -164,9 +164,8 @@ Global. Change these when a gateway or RS485 link is unreliable.
   disables the gap. Increase on flaky RS485 / USB-FTDI links. Not used for `solarman-tcp://`.
   Raising `TIMEOUT` does not add this pause.
 
-- <i-mdi-dev-to class="vp-edge-option-icon" /> `READ_ATTEMPTS` – Tries per holding-register read
-  (FC03) and write (FC16). Default **3**, max **5**. Worst-case wait per group is
-  `TIMEOUT × READ_ATTEMPTS`.
+- `READ_ATTEMPTS` – Tries per holding-register read (FC03) and write (FC16). Default **3**, max
+  **5**. Worst-case wait per group is `TIMEOUT × READ_ATTEMPTS`.
 
 - `TIMEOUT` – Seconds for connect and each register read/write attempt (default **3**, max **15**).
   Each group is tried `READ_ATTEMPTS` times. Increase on slow links. If timeouts persist, lower

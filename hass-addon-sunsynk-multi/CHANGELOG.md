@@ -2,13 +2,35 @@
 
 <https://github.com/kellerza/sunsynk/commits/>
 
+## Release 1.2.0
+
+All items below are changes since add-on **1.1.1** (stable release on GitHub `main`).
+
+- tmodbus 0.6.0 - improved re-synchronization logic for RTU-streams that got out of sync.
+- Prefix **`PORT`** with **`pymodbus-`** to use the pymodbus Modbus backend (e.g.
+  `pymodbus-tcp://host:502`, `pymodbus-/dev/ttyUSB0`). Default is tmodbus.
+  **`pymodbus-serial-udp://`** enables RTU-over-UDP (not supported on tmodbus).
+- Solarman **`PORT`** scheme is **`solarman-tcp://host:8899`** (legacy `solarman://` and dongle
+  - `tcp://` remap at startup).
+- **`READ_ATTEMPTS`** (default **3**, max **5**) – tries per FC03 read and FC16 write. Worst-case
+  wait per group is **`TIMEOUT × READ_ATTEMPTS`**.
+- **`TIMEOUT`** is now **3** seconds per connect and each register **attempt**. On timeout,
+  **serial** links disconnect so the next attempt reconnects with an empty buffer; TCP and Solarman
+  do not. Other I/O errors still flush.
+- Add a 50ms `connect_delay` for serial
+- Remove Gen L1/L2/L3 current sensors & check for duplicates. #676
+- Sensor **aliases** are registered as copies whose primary ``name`` is the alias (HA entity name
+  follows the id you put in ``SENSORS``).
+
 ## Release 1.1.1
+
+All items below are changes since add-on **1.1.0**.
 
 - Removed leftover `DRIVER` option from the add-on schema.
 
 ## Release 1.1.0
 
-All items below are changes since add-on **1.0.0** (stable release on GitHub `main`).
+All items below are changes since add-on **1.0.0**.
 
 - **Breaking:** three-phase **Parallel Mode** select options are **Client** (was Master) and
   **Server** (was Slave). The inverter LCD may still say Master/Slave. Update automations that match
@@ -42,7 +64,7 @@ All items below are changes since add-on **1.0.0** (stable release on GitHub `ma
 
 ## Release 1.0.0
 
-All items below are changes since add-on **0.10.1** (stable release on GitHub `main`).
+All items below are changes since add-on **0.10.1**.
 
 ### Major changes
 
