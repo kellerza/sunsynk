@@ -1,7 +1,7 @@
 ---
 name: Sunsynk or Deye Inverter add-on (multi)
 description: Add-on for a Sunsynk/Deye branded Inverter
-version: "1.1.1"
+version: "1.2.0"
 slug: hass-addon-sunsynk-multi
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
 url: "https://kellerza.github.io/sunsynk"
@@ -36,7 +36,8 @@ options:
   READ_ALLOW_GAP: 2
   READ_SENSORS_BATCH_SIZE: 20
   READ_MESSAGE_SPACING: 0.05
-  TIMEOUT: 10
+  READ_ATTEMPTS: 3
+  TIMEOUT: 3
   STALE_INVERTER_AFTER_SECONDS: 120
   STALE_INVERTER_SKIP_SECONDS: 600
   SCHEDULES:
@@ -66,7 +67,8 @@ schema:
   READ_ALLOW_GAP: int(1,50)
   READ_SENSORS_BATCH_SIZE: int(1,100)
   READ_MESSAGE_SPACING: float(0,2)?
-  TIMEOUT: int(1,10)?
+  READ_ATTEMPTS: int(1,5)?
+  TIMEOUT: int(1,15)?
   STALE_INVERTER_AFTER_SECONDS: int(1,1000)?
   STALE_INVERTER_SKIP_SECONDS: int(60,86400)?
   SCHEDULES:
