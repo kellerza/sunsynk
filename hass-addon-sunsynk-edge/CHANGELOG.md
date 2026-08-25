@@ -4,6 +4,7 @@
 
 ## Unreleased
 
+- tmodbus 0.6.0 - improved re-synchronization logic for RTU-streams that got out of sync.
 - Prefix **`PORT`** with **`pymodbus-`** to use the pymodbus Modbus backend (e.g.
   `pymodbus-tcp://host:502`, `pymodbus-/dev/ttyUSB0`). Default is tmodbus.
   **`pymodbus-serial-udp://`** enables RTU-over-UDP (not supported on tmodbus).
