@@ -56,6 +56,7 @@ SENSORS += (
     Sensor(150, "Grid voltage", VOLT, 0.1),
     MathSensor((160, 161), "Grid current", AMPS, factors=(0.01, 0.01)),
     Sensor(172, "Grid CT power", WATT, -1),
+    NumberRWSensor(206, "Grid Trickle Feed power", "W", -1, min=-500, max=500),
 )
 
 #######
