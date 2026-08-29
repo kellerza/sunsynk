@@ -6,7 +6,6 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from ha_addon_sunsynk_multi.driver import HASS_DISCOVERY_INFO_UPDATE_QUEUE
 from sunsynk import VERSION
 from sunsynk.utils import pretty_table_sensors
 
@@ -55,8 +54,6 @@ async def main_loop() -> int:
     for ist in STATE:
         ist.init_sensors()
 
-    HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
-
     asyncio.get_event_loop().set_debug(OPT.debug > 0)
 
     # MQTT broker LWT + connect "online": SS/availability_<sorted HA_PREFIX list joined by _>
@@ -69,10 +66,10 @@ async def main_loop() -> int:
         AsyncCallback(name="discovery_info", every=5, callback=callback_discovery_info)
     )
 
-    for ist in STATE:
+    for idx, ist in enumerate(STATE):
         try:
             await ist.connect()
-            await ist.hass_discover_sensors()
+            await ist.hass_discover_sensors(mqtt_connect=idx == 0)
             build_callback_schedule(ist)
             CALLBACKS.append(ist.cb)
 

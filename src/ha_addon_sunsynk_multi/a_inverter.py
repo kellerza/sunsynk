@@ -353,11 +353,12 @@ class AInverter:
             except Exception as err:
                 _LOG.error("Could not create MQTT entity for %s: %s", s, err)
 
-    async def hass_discover_sensors(self) -> bool:
+    async def hass_discover_sensors(self, *, mqtt_connect: bool = False) -> bool:
         """Discover all sensors."""
         self.hass_create_discovery_info()
-        await MQTT.connect(OPT)
-        MQTT.monitor_homeassistant_status()
+        if mqtt_connect:
+            await MQTT.connect(OPT)
+            await MQTT.monitor_homeassistant_status()
         if self.entity_near_realtime is not None:
             await self.entity_near_realtime.send_state(MQTT, "OFF", retain=True)
         return True

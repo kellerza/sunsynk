@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.11,<0.12" ]
+requires = [ "uv-build>=0.12,<0.14" ]
 
 [project]
 name = "sunsynk"
@@ -31,7 +31,7 @@ classifiers = [
 dependencies = [
   "cattrs>=25,<27",
   "modbus-connection[pymodbus,tmodbus]>=4.7",
-  "mqtt-entity[options]>=1.1",
+  "mqtt-entity[options]>=1.2.5",
   "prettytable>=3.17,<4",
   "whenever>=0.10,<11",
 ]

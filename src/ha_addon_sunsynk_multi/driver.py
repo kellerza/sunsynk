@@ -10,27 +10,14 @@ from sunsynk.solarman import SolarmanUnit
 from sunsynk.sunsynk import HoldingUnit
 
 from .a_inverter import STATE, AInverter
-from .a_sensor import MQTT
 from .options import InverterOptions, Options, is_solarman_port
 from .sensor_options import SOPT
 
 _LOG = logging.getLogger(":")
 
 
-HASS_DISCOVERY_INFO_UPDATE_QUEUE: set[Sensor] = set()
-"""Update Sensor discovery info."""
-
-
 async def callback_discovery_info(now: int) -> None:
-    """Update HASS discovery & write RWSensors."""
-    # Flush any pending discovery info updates
-    if HASS_DISCOVERY_INFO_UPDATE_QUEUE:
-        for ist in STATE:
-            ist.hass_create_discovery_info()
-        await MQTT.publish_discovery_info()
-        HASS_DISCOVERY_INFO_UPDATE_QUEUE.clear()
-
-    # Publish statistics
+    """Publish inverter callback statistics."""
     if now % 120 == 0:
         for ist in STATE:
             await ist.publish_stats(120)
@@ -41,11 +28,15 @@ def sensor_on_update(sen: Sensor, _new: ValType, _old: ValType) -> None:
     if sen not in SOPT or not SOPT[sen].affects:
         return
     _LOG.debug(
-        "%s changed: Enqueue discovery info updates for %s",
+        "%s changed: Rebuild discovery for %s",
         sen.name,
         ", ".join(s.id for s in SOPT[sen].affects),
     )
-    HASS_DISCOVERY_INFO_UPDATE_QUEUE.update(SOPT[sen].affects)
+    for ist in STATE:
+        if ist.mqtt_dev.id == "":
+            continue
+        ist.hass_create_discovery_info()
+        ist.mqtt_dev.flag_discovery()
 
 
 def _shared_modbus_connection(opt: Options, *, port: str) -> ModbusConnection:

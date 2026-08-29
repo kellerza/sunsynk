@@ -18,7 +18,7 @@ print() {
 
 # rsync patterns equivalent to scripts/copyexclude.txt (xcopy substring match)
 rsync_excl() {
-    rsync -a \
+    rsync -a --inplace \
         --exclude '__pycache__' \
         --exclude '*.egg-info' \
         --exclude '.*' \
@@ -57,7 +57,7 @@ copy_builder() {
     print "Copy builder files for '$1'"
     mkdir -p "$DEST/$1"
     cp -f hass-addon-sunsynk-edge/Dockerfile "$DEST/$1/"
-    rsync -a hass-addon-sunsynk-edge/rootfs/ "$DEST/$1/rootfs/"
+    rsync -a --inplace hass-addon-sunsynk-edge/rootfs/ "$DEST/$1/rootfs/"
     echo 0.0.0 > "$DEST/$1/VERSION"
 }
 

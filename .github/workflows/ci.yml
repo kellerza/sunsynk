@@ -25,8 +25,8 @@ on:
       - ".github/workflows/ci.yml"
 
 env:
-  RUFF_VERSION: 0.15.4
-  UV_VERSION: 0.10.2
+  RUFF_VERSION: 0.16.5
+  UV_VERSION: 0.12.1
 
 jobs:
   ruff:
