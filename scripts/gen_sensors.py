@@ -43,6 +43,26 @@ def check_register_bit_conflicts(all_defs: dict[str, SensorDefinitions]) -> None
 TAB_ATTR = {"style": "overflow-x: unset;", "class": "bigt"}
 
 
+def getname(row: list[Sensor | str | None]) -> str:
+    """Row name for all.html: primary name, then unique aliases from all profiles."""
+    sensors = [item for item in row if item and not isinstance(item, str)]
+    if not sensors:
+        return "?"
+    first = sensors[0]
+    base = f"{first.name} (R/W)" if isinstance(first, RWSensor) else first.name
+    seen = {base.casefold()}
+    extra: list[str] = []
+    for sen in sensors:
+        for alias in ensure_tuple(sen.alias):
+            key = alias.casefold()
+            if key not in seen:
+                seen.add(key)
+                extra.append(alias)
+    if extra:
+        return "<br>".join((base, *extra))
+    return base
+
+
 def generate_all_sensors(
     all_defs: dict[str, SensorDefinitions], sen_groups: dict[str, set[str]]
 ) -> None:
@@ -55,18 +75,6 @@ def generate_all_sensors(
                 continue  # alias copy; Name column lists aliases on the canonical row
             sensors[key][name] = sen
             sensors[key]["Group"] = "<br>".join(sorted(sen_groups.get(sen.id, [])))
-
-    def getname(row: list[Sensor | str | None]) -> str:
-        """Get the name of the row (HTML: name, then aliases on separate lines)."""
-        for sen in row:
-            if not sen or isinstance(sen, str):
-                continue
-            base = f"{sen.name} (R/W)" if isinstance(sen, RWSensor) else sen.name
-            aliases = ensure_tuple(sen.alias)
-            if aliases:
-                return "<br>".join((base, *aliases))
-            return base
-        return "?"
 
     def get_sensor_info(sensor: Sensor | str | None) -> str:
         """Sensor info."""
