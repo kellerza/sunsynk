@@ -4,6 +4,7 @@ import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from modbus_connection import ModbusTimeoutError
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter
 from ha_addon_sunsynk_multi.a_sensor import MQTT
@@ -289,3 +290,22 @@ async def test_connect_identity_failure_includes_cause() -> None:
         await ist.connect()
 
     assert "solarman://192.168.5.30:50500" in str(raised.value)
+
+
+async def test_read_identity_retries_dropped_reply(state: InverterState) -> None:
+    """READ_ATTEMPTS must cover the identity read (regs 0-7), not only sensor reads."""
+    unit = MagicMock()
+    unit.read_holding_registers = AsyncMock(
+        side_effect=[
+            ModbusTimeoutError("no reply"),
+            # device type 6, protocol 1.4, serial "2303218594"
+            [6, 0, 0x0104, 0x3233, 0x3033, 0x3231, 0x3835, 0x3934],
+        ]
+    )
+    inv_opt = InverterOptions(modbus_id=1, ha_prefix="id", serial_nr="2303218594")
+    ss = Sunsynk(unit=unit, port="/dev/ttyUSB0", state=state, read_attempts=3)
+
+    identity = await _ist(inv_opt, ss, state=state).read_identity()
+
+    assert unit.read_holding_registers.await_count == 2
+    assert identity.serial == "2303218594"
