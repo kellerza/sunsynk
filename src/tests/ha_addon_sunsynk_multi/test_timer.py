@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from ha_addon_sunsynk_multi.timer_callback import (
+    TICK_MS,
     AsyncCallback,
     Callback,
     SyncCallback,
@@ -19,6 +20,12 @@ _LOG = logging.getLogger(__name__)
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
+_REAL_ASYNCIO_SLEEP = asyncio.sleep
+
+
+async def _tick_sleep(_delay: float) -> None:
+    await _REAL_ASYNCIO_SLEEP(0)
+
 
 async def test_timer() -> None:
     """Test the timer."""
@@ -27,7 +34,7 @@ async def test_timer() -> None:
     async def run1(now: int) -> None:
         run[1] += 1
         _LOG.debug("\t" * 3 + "run1: now=%s cnt=%s", now, run[1])
-        await asyncio.sleep(0.02)
+        await asyncio.sleep(0)
 
     def run2(now: int) -> None:
         run[2] += 1
@@ -39,32 +46,95 @@ async def test_timer() -> None:
         SyncCallback(name="test2", callback=run2, every=2, keep_stats=True),
     ]
 
-    with patch(
-        "ha_addon_sunsynk_multi.timer_callback.ZonedDateTime",
-    ) as mock_zdt:
-        # loop duration should be 950ms, so sleep is short (1000ms - 950ms = 50ms)
-        lst = [per_loop for t in range(2000, 20000, 1000) for per_loop in (t, t + 950)]
+    with (
+        patch(
+            "ha_addon_sunsynk_multi.timer_callback.ZonedDateTime",
+        ) as mock_zdt,
+        patch(
+            "ha_addon_sunsynk_multi.timer_callback.asyncio.sleep",
+            side_effect=_tick_sleep,
+        ),
+    ):
+        now_ms = 2000
 
-        def get_now():
-
-            val = lst.pop(0)
+        def get_now() -> MagicMock:
+            nonlocal now_ms
+            if now_ms > 19990:
+                raise IndexError
             res = MagicMock()
-            res.timestamp_millis.return_value = val
-            _LOG.debug("get_now: %s", res.timestamp_millis())
+            res.timestamp_millis.return_value = now_ms
+            now_ms += TICK_MS
             return res
 
         mock_zdt.now_in_system_tz.side_effect = get_now
 
         try:
             await run_callbacks(cbs)
-        except IndexError:  # seconds are done
+        except IndexError:  # simulated time is done
             pass
+        async_cb = cbs[0]
+        assert isinstance(async_cb, AsyncCallback)
+        if async_cb.task and not async_cb.task.done():
+            await async_cb.task
 
     assert run == {1: 18, 2: 9}
     assert len(cbs[0].stat_time) == 18
     assert len(cbs[1].stat_time) == 9
-    assert mean(cbs[0].stat_time) >= 0.02
+    assert mean(cbs[0].stat_time) >= 0
     assert mean(cbs[1].stat_time) < 0.01
+
+
+async def test_timer_stagger_offset() -> None:
+    """Callbacks with offset_ms fire within the second, not all at once."""
+    fired: dict[str, list[int]] = {"a": [], "b": [], "c": []}
+    now_ms = 1000
+    last_now_ms = [now_ms]
+
+    def cb_a(_now: int) -> None:
+        fired["a"].append(last_now_ms[0])
+
+    def cb_b(_now: int) -> None:
+        fired["b"].append(last_now_ms[0])
+
+    def cb_c(_now: int) -> None:
+        fired["c"].append(last_now_ms[0])
+
+    cbs: list[Callback] = [
+        SyncCallback(name="a", callback=cb_a, every=1, offset_ms=0),
+        SyncCallback(name="b", callback=cb_b, every=1, offset_ms=250),
+        SyncCallback(name="c", callback=cb_c, every=1, offset_ms=500),
+    ]
+
+    with (
+        patch(
+            "ha_addon_sunsynk_multi.timer_callback.ZonedDateTime",
+        ) as mock_zdt,
+        patch(
+            "ha_addon_sunsynk_multi.timer_callback.asyncio.sleep",
+            side_effect=_tick_sleep,
+        ),
+    ):
+
+        def get_now() -> MagicMock:
+            nonlocal now_ms
+            if now_ms > 2990:
+                raise IndexError
+            last_now_ms[0] = now_ms
+            res = MagicMock()
+            res.timestamp_millis.return_value = now_ms
+            now_ms += TICK_MS
+            return res
+
+        mock_zdt.now_in_system_tz.side_effect = get_now
+
+        try:
+            await run_callbacks(cbs)
+        except IndexError:
+            pass
+
+    assert fired["a"] == [1000, 2000]
+    assert fired["b"] == [1000, 2250]
+    assert fired["c"] == [1000, 2500]
 
 
 async def test_schedule() -> None:

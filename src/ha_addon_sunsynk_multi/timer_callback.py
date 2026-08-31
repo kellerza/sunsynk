@@ -14,6 +14,9 @@ from .errors import log_error
 
 _LOG = logging.getLogger(__name__)
 
+TICK_MS = 10
+"""Scheduler loop interval in milliseconds."""
+
 
 @dataclass(slots=True)
 class Callback:
@@ -23,6 +26,9 @@ class Callback:
 
     next_run: int = 0
     """Next run in seconds."""
+
+    offset_ms: int = 0
+    """Stagger start within the second (AsyncCallback)."""
 
     keep_stats: bool = False
     """Whether to keep execution time stats."""
@@ -36,6 +42,10 @@ class Callback:
     def call(self, now: int) -> None:
         """Call the callback."""
         raise NotImplementedError
+
+    def due_at_ms(self) -> int:
+        """Earliest wall-clock time (ms) this callback may run."""
+        return self.next_run * 1000 + self.offset_ms
 
     def __post_init__(self) -> None:
         """Init."""
@@ -170,39 +180,18 @@ class AsyncCallback(Callback):
         self.task = asyncio.create_task(self.wrap_callback(now))
 
 
-# async def run_callbacks_old(callbacks: Sequence[Callback]) -> None:
-#     """Run the timer."""
-#     sleep_task = asyncio.create_task(asyncio.sleep(0.5))
-#     while callbacks:
-#         await sleep_task
-#         frac, nowf = modf(time.time())
-#         sleep_task = asyncio.create_task(asyncio.sleep(1.05 - frac))
-#         now = int(nowf)
-#         for cb in callbacks:
-#             slip_s = now - cb.next_run
-#             if (now + cb.offset) % cb.every != 0 and slip_s < 0:
-#                 continue
-#             if cb.keep_stats and cb.next_run > 0:
-#                 cb.stat_slip.append(abs(slip_s))
-#             cb.call(now)
-
-#     await sleep_task
-
-
 async def run_callbacks(callbacks: list[Callback]) -> None:
     """Run the timer."""
     while True:
-        now_s = ZonedDateTime.now_in_system_tz().timestamp_millis() // 1000
+        now_s = 0
+        now_ms = ZonedDateTime.now_in_system_tz().timestamp_millis()
         for cb in callbacks:
-            if cb.next_run > now_s:
+            if now_ms < cb.due_at_ms():
                 continue
+            if now_s == 0:
+                now_s = now_ms // 1000
             cb.call(now_s)
-
-        end_s, ms = divmod(ZonedDateTime.now_in_system_tz().timestamp_millis(), 1000)
-        if end_s <= now_s:  # sleep remainder of the second, plus 10ms
-            await asyncio.sleep((1010 - ms) / 1000)
-        else:
-            await asyncio.sleep(0)  # yield to event loop
+        await asyncio.sleep(TICK_MS / 1000)
 
 
 CALLBACKS: list[Callback] = []

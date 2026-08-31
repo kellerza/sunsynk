@@ -177,4 +177,5 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
         every=1,
         callback=callback_sensor,
         keep_stats=True,
+        offset_ms=ist.index * 250,
     )
