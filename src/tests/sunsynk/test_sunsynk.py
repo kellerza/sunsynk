@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from collections.abc import Sequence
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 from modbus_connection import ModbusProtocolError
@@ -22,6 +22,20 @@ _LOG = logging.getLogger(__name__)
 def _ss(**kwargs: object) -> Sunsynk:
     """Sunsynk with a dummy unit."""
     return Sunsynk(unit=MagicMock(), **kwargs)  # type: ignore[arg-type]
+
+
+async def test_retrying_unit_routes_fc03_through_sunsynk() -> None:
+    """retrying_unit uses Sunsynk.read_holding_registers, not the raw unit."""
+    unit = MagicMock()
+    unit.connected = True
+    ss = Sunsynk(unit=unit)
+    ss.read_holding_registers = AsyncMock(return_value=[0, 1, 2])  # type: ignore[method-assign]
+
+    got = await ss.retrying_unit.read_holding_registers(0, 3)
+
+    assert got == [0, 1, 2]
+    ss.read_holding_registers.assert_awaited_once_with(0, 3)  # type: ignore[attr-defined]
+    unit.read_holding_registers.assert_not_called()
 
 
 @patch("sunsynk.Sunsynk.read_holding_registers")

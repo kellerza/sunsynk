@@ -153,11 +153,7 @@ class AInverter:
 
     async def read_identity(self) -> Identity:
         """Read device type, protocol, and serial via the Identity Component."""
-        # Read through Sunsynk, not self.inv.unit: same read_holding_registers
-        # signature, but with READ_ATTEMPTS retries and the serial flush.
-        # ponytail: only holds while Identity reads holding registers only. A field
-        # in another space would need the unit's read_coils/read_input_registers.
-        identity = Identity(self.inv)  # type: ignore[arg-type]
+        identity = Identity(self.inv.retrying_unit)  # type: ignore[arg-type]
         await identity.async_update()
         self.identity = identity
         return identity

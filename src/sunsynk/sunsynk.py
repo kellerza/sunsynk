@@ -49,6 +49,23 @@ class HoldingUnit(Protocol):
         ...
 
 
+@dataclass(frozen=True, slots=True)
+class _RetryingUnit:
+    """``HoldingUnit`` facade: FC03/FC16 through ``Sunsynk`` retry policy."""
+
+    ss: Sunsynk
+
+    @property
+    def connected(self) -> bool:
+        return self.ss.unit.connected
+
+    async def read_holding_registers(self, address: int, count: int) -> list[int]:
+        return list(await self.ss.read_holding_registers(address, count))
+
+    async def write_registers(self, address: int, values: list[int]) -> None:
+        await self.ss.unit.write_registers(address, values)
+
+
 @dataclass(kw_only=True)
 class Sunsynk:
     """Sunsync inverter reached through a holding-register unit."""
@@ -65,6 +82,11 @@ class Sunsynk:
     read_sensors_batch_size: int = 20
     allow_gap: int = 2
     timeouts: int = 0
+
+    @property
+    def retrying_unit(self) -> HoldingUnit:
+        """Unit handle for ``modbus_connection`` Components (retries + serial flush)."""
+        return _RetryingUnit(self)
 
     @classmethod
     def from_url(
