@@ -4,7 +4,7 @@ requires = [ "uv-build>=0.12,<0.14" ]
 
 [project]
 name = "sunsynk"
-version = "1.2.0"
+version = "1.3.0"
 description = "Library to interface Deye/Sunsynk Hybrid Inverters"
 readme = "README.md"
 keywords = [

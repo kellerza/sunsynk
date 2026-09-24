@@ -2,6 +2,16 @@
 
 <https://github.com/kellerza/sunsynk/commits/>
 
+## Release 1.3.0
+
+All items below are changes since add-on **1.2.0**.
+
+- Single-phase **Grid Trickle Feed power** number (register 206, −500…500 W).
+- mqtt-entity ≥ 1.2.5.
+- Per-inverter poll stagger so multi-inverter schedules do not all fire on the same second.
+- Identity/serial read uses **`READ_ATTEMPTS`**. #687
+- Components use a retrying holding-register unit (add-on retries + serial flush).
+
 ## Release 1.2.0
 
 All items below are changes since add-on **1.1.1** (stable release on GitHub `main`).
