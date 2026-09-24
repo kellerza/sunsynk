@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from unittest.mock import MagicMock, call, patch
 
 import pytest
+from modbus_connection import ModbusProtocolError
 
 from sunsynk import Sunsynk
 from sunsynk.rwsensors import NumberRWSensor
@@ -177,3 +178,14 @@ async def test_ss_rejects_response_length_mismatch(
     assert state[single] == 5
     assert state[pair] == 7 << 16
     assert state.registers == {1: 5, 10: 0, 11: 7}
+
+
+async def test_ss_protocol_error_raises_exception_group() -> None:
+    """Protocol errors must reach the ExceptionGroup, not leave it empty."""
+    unit = MagicMock()
+    unit.read_holding_registers.side_effect = ModbusProtocolError("desync")
+    ss = Sunsynk(unit=unit, read_attempts=2)  # type: ignore[arg-type]
+
+    with pytest.raises(ExceptionGroup) as excinfo:
+        await ss.read_holding_registers(622, 4)
+    assert len(excinfo.value.exceptions) == 2

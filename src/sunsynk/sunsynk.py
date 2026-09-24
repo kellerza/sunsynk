@@ -183,7 +183,8 @@ class Sunsynk:
                     self.connection._params, ModbusSerialParams
                 ):
                     await self._flush_modbus_connection(reason=type(err).__name__)
-            except ModbusProtocolError:
+            except ModbusProtocolError as err:
+                errs.append(err)
                 _LOG.error(
                     "Read register %s x%s: protocol error [attempt %s/%s]",
                     start,
