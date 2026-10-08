@@ -9,7 +9,7 @@ from pathlib import Path
 from sunsynk import VERSION
 from sunsynk.utils import pretty_table_sensors
 
-from .a_inverter import STATE
+from .a_inverter import STATE, republish_all_states
 from .a_sensor import MQTT, SS_TOPIC
 from .driver import callback_discovery_info, init_driver
 from .errors import print_errors
@@ -93,10 +93,18 @@ async def main_loop() -> int:
             )
             return 2
 
+    republish_task: asyncio.Task[None] | None = None
+
     async def on_ha_connected() -> None:
-        """When MQTT is connected, ensure we update MQTT availability states."""
+        """When HA comes online: update availability, schedule a state re-send."""
+        nonlocal republish_task
         for ist in STATE:
             await ist.set_lifecycle(None)
+        # HA does not keep non-retained states across a restart. Re-send them in
+        # the background: this runs under the discovery lock and must not wait.
+        if republish_task is not None and not republish_task.done():
+            republish_task.cancel()
+        republish_task = asyncio.create_task(republish_all_states())
 
     MQTT.on_ha_connected = on_ha_connected
 
