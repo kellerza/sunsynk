@@ -27,11 +27,11 @@ tested hardware.
 
 2. Install the Sunsynk Add-On from the **Add-On Store** and configure through the UI
 
-   ![Install Sunsynk Addon](//github.com/kellerza/sunsynk/raw/main/www/docs/images/addon-install.png)
+   ![Install Sunsynk Addon](https://github.com/kellerza/sunsynk/raw/main/www/docs/images/addon-install.png)
 
 Below an example of the HomeAssistant Energy management dashboard using sensors from the Sunsynk.
 
-![HASS Energy management](//github.com/kellerza/sunsynk/raw/main/www/docs/images/energy.png)
+![HASS Energy management](https://github.com/kellerza/sunsynk/raw/main/www/docs/images/energy.png)
 
 ## Running outside Home Assistant OS
 
