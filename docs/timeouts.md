@@ -169,10 +169,9 @@ two `MODBUS_ID`s share one `tcp://` PORT).
 
 ### `serial-tcp://` (RTU-over-TCP)
 
-Same as TCP for the socket side, but the framer is **RTU**. The gateway translates RTU frames on the
-RS485 side. Spacing and turnaround constraints from [Serial](#serial) apply
-**on the bus behind the gateway**; the default **0.05s** spacing helps gateways that forward
-requests immediately without pacing.
+Built as **`ModbusSerialParams(device="socket://host:port")`** (RTU over a TCP socket). The gateway
+translates RTU frames on the RS485 side. Spacing, **`connect_delay`**, and **disconnect-on-timeout**
+from [Serial](#serial) apply — the bus behind the gateway is still half-duplex RTU.
 
 If the gateway buffers poorly under rapid polling, prefer **`tcp://`** (native Modbus TCP) when the
 device supports it, or reduce batch size / read frequency.

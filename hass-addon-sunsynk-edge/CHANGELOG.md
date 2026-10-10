@@ -9,6 +9,8 @@ All items below are changes since add-on **1.3.0**.
 - Failed Modbus writes no longer update the local register cache. #692
 - Fix AsyncCallback checks. #693
 - Bump whenever to 0.11
+- `serial-tcp://` uses `ModbusSerialParams(socket://…)` (modbus-connection 4.12+); timeouts
+  disconnect like other serial links.
 
 ## Release 1.3.0
 

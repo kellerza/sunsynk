@@ -31,7 +31,9 @@ def url_to_params(
             case "tcp":
                 return ModbusTcpParams(host=host, port=tcp_port)
             case "serial-tcp":
-                return ModbusTcpParams(host=host, port=tcp_port, framer="rtu")
+                # RTU-over-TCP is a serial link; ModbusTcpParams(framer=) is deprecated (4.12+)
+                sock = f"[{host}]:{tcp_port}" if ":" in host else f"{host}:{tcp_port}"
+                return ModbusSerialParams(device=f"socket://{sock}", framer="rtu")
             case "udp":
                 return ModbusUdpParams(host=host, port=tcp_port)
             case "serial-udp":
