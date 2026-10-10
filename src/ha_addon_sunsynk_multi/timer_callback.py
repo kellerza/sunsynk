@@ -6,7 +6,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 
-from whenever import Time, ZonedDateTime
+from whenever import SYSTEM_TZ, Time, ZonedDateTime
 
 from sunsynk.helpers import slug
 
@@ -90,7 +90,7 @@ class ToggleLogCallback(Callback):
 
     def calc_next_run(self) -> None:
         """Calculate the next run times."""
-        now = ZonedDateTime.now_in_system_tz()
+        now = ZonedDateTime.now(SYSTEM_TZ)
         self.next_runs = [
             n if n > now else n.add(days=1)
             for n in (now.replace_time(t) for t in self.times)
@@ -101,19 +101,19 @@ class ToggleLogCallback(Callback):
     @property
     def next_run0(self) -> int:
         """Return next run seconds of entry 0."""
-        return self.next_runs[0].timestamp_millis() // 1000
+        return self.next_runs[0].timestamp(unit="millisecond") // 1000
 
     def __post_init__(self) -> None:
         """Init."""
         assert len(self.times) > 0
-        self.next_runs = [ZonedDateTime.now_in_system_tz()]
+        self.next_runs = [ZonedDateTime.now(SYSTEM_TZ)]
         self.task = None  # type:ignore[assignment]
         self.calc_next_run()
         self.original_level = _LOG.level
 
     async def mute_log(self) -> None:
         """Set log level to critical, and reset after duration."""
-        now, _, _ = ZonedDateTime.now_in_system_tz().format_iso().partition("T")
+        now, _, _ = ZonedDateTime.now(SYSTEM_TZ).format_iso().partition("T")
         _LOG.info(
             "[%s] Disabling the log for %s seconds",
             now,
@@ -184,7 +184,7 @@ async def run_callbacks(callbacks: list[Callback]) -> None:
     """Run the timer."""
     while True:
         now_s = 0
-        now_ms = ZonedDateTime.now_in_system_tz().timestamp_millis()
+        now_ms = ZonedDateTime.now(SYSTEM_TZ).timestamp(unit="millisecond")
         for cb in callbacks:
             if now_ms < cb.due_at_ms():
                 continue

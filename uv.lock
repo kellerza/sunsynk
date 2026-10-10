@@ -996,7 +996,7 @@ requires-dist = [
     { name = "mqtt-entity", extras = ["options"], specifier = ">=1.2.5" },
     { name = "prettytable", specifier = ">=3.17,<4" },
     { name = "pysolarmanv5", marker = "extra == 'solarman'", specifier = "==3.0.6" },
-    { name = "whenever", specifier = ">=0.10,<11" },
+    { name = "whenever", specifier = ">=0.11,<0.12" },
 ]
 provides-extras = ["solarman"]
 

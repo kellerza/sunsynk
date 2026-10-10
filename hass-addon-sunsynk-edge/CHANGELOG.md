@@ -8,6 +8,7 @@ All items below are changes since add-on **1.3.0**.
 
 - Failed Modbus writes no longer update the local register cache. #692
 - Fix AsyncCallback checks. #693
+- Bump whenever to 0.11
 
 ## Release 1.3.0
 
