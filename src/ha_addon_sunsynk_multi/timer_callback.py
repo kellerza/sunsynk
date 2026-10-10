@@ -173,10 +173,10 @@ class AsyncCallback(Callback):
 
     def call(self, now: int) -> None:
         """Create the task."""
+        self.next_run = now + self.every
         if self.task and not self.task.done():
             self.stat_busy_count += 1
             return
-        self.next_run = now + self.every
         self.task = asyncio.create_task(self.wrap_callback(now))
 
 
