@@ -89,10 +89,13 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
             if not isinstance(sensor, RWSensor):
                 continue
             await asyncio.sleep(0.1)
-            await ist.write_sensor(sensor, value)
-            await asyncio.sleep(0.05)
-            await ist.read_sensors(sensors=[sensor], msg=sensor.name)
-            sensors_to_publish.add(ist.ss[sensor.id])
+            try:
+                await ist.write_sensor(sensor, value)
+                await asyncio.sleep(0.05)
+                await ist.read_sensors(sensors=[sensor], msg=sensor.name)
+                sensors_to_publish.add(ist.ss[sensor.id])
+            except Exception as err:
+                _LOG.error("Failed to write %s=%s: %s", sensor.id, value, err)
 
         # add all read items
         for sec, srun in ist.sched.read.items():

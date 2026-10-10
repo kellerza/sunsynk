@@ -74,6 +74,24 @@ async def test_ss_write_sensor(
     assert "outside" in caplog.text
 
 
+@patch("sunsynk.Sunsynk.write_register", new_callable=AsyncMock)
+async def test_ss_write_sensor_raises_on_failed_write(
+    wreg: AsyncMock, state: InverterState
+) -> None:
+    """Failed write_register must not update the register cache (#692)."""
+    ss = _ss()
+    ss.state = state
+    sen = NumberRWSensor((1,), "s1")
+    state.track(sen)
+    wreg.return_value = False
+
+    with pytest.raises(OSError, match="Failed to write register 1"):
+        await ss.write_sensor(sen, 44)
+
+    assert state.registers == {}
+    wreg.assert_awaited_once_with(address=1, value=44)
+
+
 @patch("sunsynk.Sunsynk.read_holding_registers")
 @patch("sunsynk.Sunsynk.write_register")
 async def test_ss_write_sensor_bm(

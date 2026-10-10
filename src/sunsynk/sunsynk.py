@@ -181,7 +181,8 @@ class Sunsynk:
         for idx, addr in enumerate(sensor.address):
             if idx:
                 await asyncio.sleep(0.05)
-            await self.write_register(address=addr, value=regs[idx])
+            if not await self.write_register(address=addr, value=regs[idx]):
+                raise OSError(f"Failed to write register {addr}")
             self.state.registers[addr] = regs[idx]
 
     async def read_holding_registers(self, start: int, length: int) -> Sequence[int]:
