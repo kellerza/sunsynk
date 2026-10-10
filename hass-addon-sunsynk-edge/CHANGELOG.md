@@ -2,6 +2,12 @@
 
 <https://github.com/kellerza/sunsynk/commits/>
 
+## Unreleased
+
+- Re-send the last published sensor states 10 s and 60 s after Home Assistant comes back online, so
+  schedule-reported sensors (energy, temperatures) are no longer unknown for up to 5 min after an HA
+  restart.
+
 ## Release 1.3.0
 
 All items below are changes since add-on **1.2.0**.
