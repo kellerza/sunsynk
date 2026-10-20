@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from modbus_connection import (
     GatewayTargetError,
+    ModbusProtocolError,
     ModbusSerialParams,
     ModbusTcpParams,
     ModbusTimeoutError,
@@ -161,78 +162,62 @@ async def test_read_holding_registers_timeout(state: InverterState) -> None:
     assert conn.disconnect.await_count == ss.read_attempts
 
 
-async def test_read_holding_registers_timeout_tcp_does_not_flush(
+@pytest.mark.parametrize(
+    "params",
+    [
+        ModbusTcpParams(host="1.2.3.4", port=502),
+        ModbusUdpParams(host="1.2.3.4", port=502),
+    ],
+)
+async def test_read_holding_registers_timeout_nonserial_recycles(
     state: InverterState,
+    params: ModbusTcpParams | ModbusUdpParams,
 ) -> None:
-    """TCP timeouts still retry but leave the socket up."""
+    """TCP/UDP: every attempt timing out recycles the session once, not per attempt."""
     unit = MagicMock()
     unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
     conn = MagicMock()
     conn.connected = True
     conn.disconnect = AsyncMock()
-    conn._params = ModbusTcpParams(host="1.2.3.4", port=502)
-    ss = Sunsynk(unit=unit, state=state, connection=conn)
+    conn._params = params
+    ss = Sunsynk(unit=unit, state=state, connection=conn, read_attempts=2)
     with pytest.raises(ExceptionGroup, match="Failed to read"):
         await ss.read_holding_registers(1, 1)
-    assert ss.timeouts == ss.read_attempts
-    conn.disconnect.assert_not_awaited()
-
-
-async def test_read_holding_registers_tcp_dead_link_recycles(
-    state: InverterState,
-) -> None:
-    """Consecutive TCP timeouts across reads recycle the connection once."""
-    unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
-    conn = MagicMock()
-    conn.connected = True
-    conn.disconnect = AsyncMock()
-    conn._params = ModbusTcpParams(host="1.2.3.4", port=502)
-    ss = Sunsynk(
-        unit=unit, state=state, connection=conn, read_attempts=2, dead_link_timeouts=3
-    )
-    for _ in range(2):
-        with pytest.raises(ExceptionGroup, match="Failed to read"):
-            await ss.read_holding_registers(1, 1)
-    assert ss.timeouts == 4
+    assert ss.timeouts == 2
     conn.disconnect.assert_awaited_once()
 
 
-async def test_read_holding_registers_tcp_success_resets_dead_link_count(
+async def test_read_holding_registers_tcp_timeout_then_success_keeps_link(
     state: InverterState,
 ) -> None:
-    """Isolated TCP timeouts, each recovered by a retry, never recycle the link."""
+    """A TCP timeout recovered by a later attempt leaves the socket up."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(
-        side_effect=[ModbusTimeoutError, [1], ModbusTimeoutError, [2]] * 3
-    )
+    unit.read_holding_registers = AsyncMock(side_effect=[ModbusTimeoutError, [1]])
     conn = MagicMock()
     conn.connected = True
     conn.disconnect = AsyncMock()
     conn._params = ModbusTcpParams(host="1.2.3.4", port=502)
-    ss = Sunsynk(
-        unit=unit, state=state, connection=conn, read_attempts=2, dead_link_timeouts=2
-    )
-    for _ in range(6):
-        assert await ss.read_holding_registers(1, 1) in ([1], [2])
-    assert ss.timeouts == 6
+    ss = Sunsynk(unit=unit, state=state, connection=conn, read_attempts=2)
+    assert list(await ss.read_holding_registers(1, 1)) == [1]
+    assert ss.timeouts == 1
     conn.disconnect.assert_not_awaited()
 
 
-async def test_read_holding_registers_tcp_dead_link_disabled(
+async def test_read_holding_registers_tcp_mixed_errors_keep_link(
     state: InverterState,
 ) -> None:
-    """``dead_link_timeouts=0`` keeps the pre-existing TCP behaviour."""
+    """A non-timeout among the failures leaves the TCP session up."""
     unit = MagicMock()
-    unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
+    unit.read_holding_registers = AsyncMock(
+        side_effect=[ModbusTimeoutError, ModbusProtocolError("bad frame")]
+    )
     conn = MagicMock()
     conn.connected = True
     conn.disconnect = AsyncMock()
     conn._params = ModbusTcpParams(host="1.2.3.4", port=502)
-    ss = Sunsynk(unit=unit, state=state, connection=conn, dead_link_timeouts=0)
-    for _ in range(5):
-        with pytest.raises(ExceptionGroup, match="Failed to read"):
-            await ss.read_holding_registers(1, 1)
+    ss = Sunsynk(unit=unit, state=state, connection=conn, read_attempts=2)
+    with pytest.raises(ExceptionGroup, match="Failed to read"):
+        await ss.read_holding_registers(1, 1)
     conn.disconnect.assert_not_awaited()
 
 
@@ -254,10 +239,12 @@ async def test_read_holding_registers_dead_link_without_connection(
     """Without a ModbusConnection there is nothing to recycle: no false warning."""
     unit = MagicMock()
     unit.read_holding_registers = AsyncMock(side_effect=ModbusTimeoutError)
-    ss = Sunsynk(unit=unit, state=state, read_attempts=2, dead_link_timeouts=2)
-    for _ in range(3):
-        with pytest.raises(ExceptionGroup, match="Failed to read"):
-            await ss.read_holding_registers(1, 1)
+    ss = Sunsynk(unit=unit, state=state, read_attempts=2)
+    with (
+        caplog.at_level(logging.WARNING),
+        pytest.raises(ExceptionGroup, match="Failed to read"),
+    ):
+        await ss.read_holding_registers(1, 1)
     assert "recycling the Modbus connection" not in caplog.text
 
 

@@ -82,18 +82,6 @@ class Sunsynk:
     read_sensors_batch_size: int = 20
     allow_gap: int = 2
     timeouts: int = 0
-    dead_link_timeouts: int = 6
-    """Consecutive non-serial read timeouts before recycling the link (0 disables).
-
-    A gateway can stop serving one TCP session while still accepting new ones: every
-    request on the old socket then times out until the kernel gives up (``tcp_retries2``,
-    ~16 min). A single late reply needs no flush on TCP (the transaction ID discards it).
-    Not applied without a ModbusConnection (Solarman).
-    """
-    # ponytail: counted per Sunsynk instance (per MODBUS_ID). Inverters on one port share
-    # the connection, so an unresponsive unit can recycle a healthy one's link; upgrade
-    # path: keep the count on the shared connection.
-    _consecutive_timeouts: int = field(default=0, init=False, repr=False)
 
     @property
     def retrying_unit(self) -> HoldingUnit:
@@ -201,10 +189,9 @@ class Sunsynk:
         errs: list[Exception] = []
         for attempt in range(self.read_attempts):
             try:
-                regs = await self.unit.read_holding_registers(start, length)
+                return await self.unit.read_holding_registers(start, length)
             except ModbusTimeoutError as err:
                 self.timeouts += 1
-                self._consecutive_timeouts += 1
                 errs.append(err)
                 _LOG.error(
                     "Read register %s x%s: %s [attempt %s/%s]",
@@ -218,18 +205,6 @@ class Sunsynk:
                     self.connection._params, ModbusSerialParams
                 ):
                     await self._flush_modbus_connection(reason=type(err).__name__)
-                elif (
-                    self.connection is not None
-                    and self.dead_link_timeouts
-                    and self._consecutive_timeouts >= self.dead_link_timeouts
-                ):
-                    _LOG.warning(
-                        "%s consecutive timeouts: recycling the Modbus connection (%s)",
-                        self._consecutive_timeouts,
-                        self.port,
-                    )
-                    self._consecutive_timeouts = 0
-                    await self._flush_modbus_connection(reason="dead link")
             except ModbusProtocolError as err:
                 errs.append(err)
                 _LOG.error(
@@ -250,9 +225,20 @@ class Sunsynk:
                     self.read_attempts,
                 )
                 await self._flush_modbus_connection(reason=type(err).__name__)
-            else:
-                self._consecutive_timeouts = 0
-                return regs
+
+        # TCP/UDP: recycle when every attempt timed out. One late reply needs no
+        # flush (the transaction ID discards it). Serial already flushed above.
+        if (
+            self.connection is not None
+            and not isinstance(self.connection._params, ModbusSerialParams)
+            and errs
+            and all(isinstance(e, ModbusTimeoutError) for e in errs)
+        ):
+            _LOG.warning(
+                "All read attempts timed out: recycling the Modbus connection (%s)",
+                self.port,
+            )
+            await self._flush_modbus_connection(reason="dead link")
 
         raise ExceptionGroup(f"Failed to read {length} registers at {start}", errs)
 

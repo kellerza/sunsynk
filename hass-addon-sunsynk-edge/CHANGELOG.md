@@ -4,8 +4,9 @@
 
 ## Unreleased
 
-- TCP/UDP: recycle the Modbus connection after 6 consecutive read timeouts, so a gateway session
-  that stopped answering no longer stalls polling until the kernel drops the socket (~16 min).
+- TCP/UDP: recycle the Modbus connection when every attempt of a read times out, so a gateway
+  session that stopped answering no longer stalls polling until the kernel drops the socket (~16
+  min).
 
 ## Release 1.3.0
 
