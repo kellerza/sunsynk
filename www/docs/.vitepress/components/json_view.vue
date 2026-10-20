@@ -1,6 +1,6 @@
 <template>
   <json-viewer
-    :value="props.value"
+    :value="value"
     copyable
     boxed
     expanded
@@ -12,5 +12,5 @@
 export interface PropDef {
   value: any;
 }
-const props = defineProps<PropDef>();
+defineProps<PropDef>();
 </script>

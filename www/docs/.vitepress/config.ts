@@ -1,9 +1,9 @@
-import { defineConfig } from "vitepress"
-import imsize from "markdown-it-imsize"
-import type { Plugin } from "vite"
-import Components from "unplugin-vue-components/vite"
-import Icons from "unplugin-icons/vite"
-import IconsResolver from "unplugin-icons/resolver"
+import imsize from "markdown-it-imsize";
+import IconsResolver from "unplugin-icons/resolver";
+import Icons from "unplugin-icons/vite";
+import Components from "unplugin-vue-components/vite";
+import type { Plugin } from "vite";
+import { defineConfig } from "vitepress";
 
 export default defineConfig({
   lang: "en-US",
@@ -90,7 +90,10 @@ export default defineConfig({
                 link: "/guide/wiring",
               },
               { text: "Fault Finding", link: "/guide/fault-finding" },
-              { text: "Standalone Deployment", link: "/guide/standalone-deployment" },
+              {
+                text: "Standalone Deployment",
+                link: "/guide/standalone-deployment",
+              },
             ],
           },
           { text: "Energy Management", link: "/guide/energy-management" },
@@ -100,9 +103,11 @@ export default defineConfig({
         text: "Reference",
         items: [
           { text: "Addon options", link: "/reference/multi-options" },
-          { text: "Sensors", link: "/reference/definitions", items: [
-            { text: "Custom sensors", link: "/reference/mysensors" },
-          ]},
+          {
+            text: "Sensors",
+            link: "/reference/definitions",
+            items: [{ text: "Custom sensors", link: "/reference/mysensors" }],
+          },
           { text: "Schedules", link: "/reference/schedules" },
         ],
       },
@@ -110,9 +115,7 @@ export default defineConfig({
         text: "Examples",
         items: [
           { text: "Overview", link: "/examples/overview" },
-          { text: "Visualize Power",
-            link: "/examples/lovelace",
-          },
+          { text: "Visualize Power", link: "/examples/lovelace" },
           { text: "Settings", link: "/examples/lovelace-settings" },
           { text: "Automations", link: "/examples/a-mode" },
           { text: "Templates", link: "/examples/templates" },
@@ -139,8 +142,8 @@ export default defineConfig({
     },
   },
   markdown: {
-    config: md => {
-      md.use(imsize as any)
+    config: (md) => {
+      md.use(imsize as any);
     },
   },
   vite: {
@@ -157,6 +160,6 @@ export default defineConfig({
     ],
   },
   sitemap: {
-    hostname: 'https://kellerza.github.io/sunsynk/'
+    hostname: "https://kellerza.github.io/sunsynk/",
   },
 });

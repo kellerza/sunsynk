@@ -24,7 +24,43 @@
         "*.mdc": "markdown",
         "*.py": "python"
       },
-      "biome.configurationPath": "s2-js/biome.json",
+      "biome.configurationPath": "www/biome.json",
+      "[javascript]": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports.biome": "explicit",
+          "source.fixAll.biome": "explicit"
+        }
+      },
+      "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports.biome": "explicit",
+          "source.fixAll.biome": "explicit"
+        }
+      },
+      "[vue]": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports.biome": "explicit",
+          "source.fixAll.biome": "explicit"
+        }
+      },
+      "[json]": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true
+      },
+      "[jsonc]": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true
+      },
+      "[css]": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true
+      },
       "python.testing.pytestArgs": [
         "packages"
       ],

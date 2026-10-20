@@ -7,7 +7,7 @@ import type { EnhanceAppContext } from "vitepress";
 
 export default {
   ...DefaultTheme,
-  enhanceApp(ctx:EnhanceAppContext) {
+  enhanceApp(ctx: EnhanceAppContext) {
     ctx.app.use(JsonViewer);
     // app.component("json-viewer", VueClickAwayExample);
   },

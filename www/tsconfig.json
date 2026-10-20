@@ -13,30 +13,16 @@
     "baseUrl": ".",
     "isolatedModules": true,
     "typeRoots": [
-      "./node_modules/@types", "./node_modules/vitepress/node_modules"
+      "./node_modules/@types",
+      "./node_modules/vitepress/node_modules"
     ],
-    "types": [
-      "./vite/client",
-    ],
+    "types": ["./vite/client"],
     "paths": {
-      "../*": [
-        "src/*"
-      ]
+      "../*": ["src/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
 
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "docs/.vitepress/**/*.ts",
-    "docs/.vitepress/**/*.vue",
-    "docs/.vitepress/build_sitemap.ts"
-  ],
+  "exclude": ["node_modules"],
+  "include": ["docs/.vitepress/**/*.ts", "docs/.vitepress/**/*.vue"]
 }

@@ -13,6 +13,7 @@ lerna-debug.log*
 *.kra~
 
 node_modules
+package-lock.json
 dist
 dist-ssr
 *.local

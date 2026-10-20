@@ -108,6 +108,7 @@ warn_unreachable = false
 warn_unused_ignores = true  # Not yet supported in 0.6.0
 
 [tool.rumdl]
+# **/*.md includes the VitePress pages under www/docs.
 include = [ "**/*.md", "**/*.mdc" ]
 exclude = [ "graphify-out/*.md", "graphify-out/**/*.md" ]
 respect-gitignore = true

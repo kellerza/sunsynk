@@ -4,8 +4,7 @@
 
 ## Unreleased
 
-=======
-All items below are changes since add-on **1.3.0**.
+======= All items below are changes since add-on **1.3.0**.
 
 - TCP/UDP: recycle the Modbus connection when every attempt of a read times out, so a gateway
   session that stopped answering no longer stalls polling until the kernel drops the socket (~16
