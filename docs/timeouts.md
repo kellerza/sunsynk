@@ -52,8 +52,12 @@ Library callers that omit `message_spacing` still get `DEFAULT_MESSAGE_SPACING` 
 **timeout**, `Sunsynk.read_holding_registers()` logs, increments **`timeouts`**, and retries up to
 **`read_attempts`** (add-on **`READ_ATTEMPTS`**, default **3**) before raising **`ExceptionGroup`**.
 **Serial** links also call `ModbusConnection.disconnect()` (not `close()`) so the next FC03
-reconnects with an empty receive buffer. TCP, UDP, and Solarman do not flush on timeout. Other read
-errors still flush. tmodbus already disconnects on desync (bad function code / header mismatch).
+reconnects with an empty receive buffer. TCP and UDP do not flush on a single timeout (the MBAP
+transaction ID already discards a late reply). When **every** attempt of a read times out, the
+connection is recycled: some RS485 gateways stop serving one TCP session while still accepting new
+ones, and without this the socket stays dead until the kernel gives up (`tcp_retries2`, ~16 min).
+Solarman does not flush on timeout. Other read errors still flush. tmodbus already disconnects on
+desync (bad function code / header mismatch).
 
 ---
 

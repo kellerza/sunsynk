@@ -4,8 +4,12 @@
 
 ## Unreleased
 
+=======
 All items below are changes since add-on **1.3.0**.
 
+- TCP/UDP: recycle the Modbus connection when every attempt of a read times out, so a gateway
+  session that stopped answering no longer stalls polling until the kernel drops the socket (~16
+  min).
 - Single-phase PV4: power 189, voltage 115, current 116. `pv_power` alone includes it. Select group
   `pv4`.
 - Debounce `homeassistant/status` **online** by 3s before publishing discovery (fixes MQTT

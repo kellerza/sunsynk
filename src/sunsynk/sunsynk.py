@@ -227,6 +227,20 @@ class Sunsynk:
                 )
                 await self._flush_modbus_connection(reason=type(err).__name__)
 
+        # TCP/UDP: recycle when every attempt timed out. One late reply needs no
+        # flush (the transaction ID discards it). Serial already flushed above.
+        if (
+            self.connection is not None
+            and not isinstance(self.connection._params, ModbusSerialParams)
+            and errs
+            and all(isinstance(e, ModbusTimeoutError) for e in errs)
+        ):
+            _LOG.warning(
+                "All read attempts timed out: recycling the Modbus connection (%s)",
+                self.port,
+            )
+            await self._flush_modbus_connection(reason="dead link")
+
         raise ExceptionGroup(f"Failed to read {length} registers at {start}", errs)
 
     async def read_sensors(self, sensors: Iterable[Sensor]) -> None:
