@@ -6,6 +6,9 @@
 
 All items below are changes since add-on **1.3.0**.
 
+- Debounce `homeassistant/status` **online** by 3s before publishing discovery (fixes MQTT
+  integration reload without a preceding **offline**; #48). Each **online** restarts the timer so
+  subscribe races still publish once. [mqtt-entity]
 - Failed Modbus writes no longer update the local register cache. #692
 - Fix AsyncCallback checks. #693
 - Bump whenever to 0.11
