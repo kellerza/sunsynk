@@ -12,6 +12,7 @@ repos:
         name: lock
         entry: uv sync --upgrade --extra solarman
         language: system
+        files: ^pyproject\.toml$
         pass_filenames: false
         priority: 10
 
