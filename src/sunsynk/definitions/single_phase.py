@@ -116,6 +116,15 @@ SENSORS += (
     Sensor(114, "PV3 current", AMPS, 0.1),
 )
 
+#####################
+# MPPT 4 Solar Power
+#####################
+SENSORS += (
+    Sensor(189, "PV4 power", WATT, -1),
+    Sensor(115, "PV4 voltage", VOLT, 0.1),
+    Sensor(116, "PV4 current", AMPS, 0.1),
+)
+
 ###################
 # Power on Outputs
 ###################

@@ -21,9 +21,11 @@ def test_pv_power_resolves_hidden_deps() -> None:
 
     assert "pv_power" in {s.id for s in SOPT if SOPT[s].visible}
     hidden = {s.id for s in SOPT if not SOPT[s].visible}
-    assert {"pv1_power", "pv2_power", "pv3_power"} <= hidden
+    assert {"pv1_power", "pv2_power", "pv3_power", "pv4_power"} <= hidden
     pv_total = DEFS.all["pv_power"]
-    assert pv_total.address == (186, 187, 188)
+    assert pv_total.address == (186, 187, 188, 189)
+    assert DEFS.all["pv4_voltage"].address == (115,)
+    assert DEFS.all["pv4_current"].address == (116,)
 
 
 def test_pv_power_subset_registers() -> None:

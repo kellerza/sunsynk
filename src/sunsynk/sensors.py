@@ -318,7 +318,7 @@ class PVDynamicTotalSensor(Sensor):
     """PV total: sum registers from configured pvN_power sources.
 
     ``source_ids`` lists every MPPT this library knows about. Profiles that
-    omit some (1PH has no pv4-8, LV has no pv5-8) simply skip those ids.
+    omit some (1PH has no pv5-8, LV has no pv5-8) simply skip those ids.
     """
 
     source_ids: tuple[str, ...] = tuple(f"pv{i}_power" for i in range(1, 9))

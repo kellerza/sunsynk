@@ -54,8 +54,6 @@ Read-only sensors that align well with the existing map and could be backfilled.
 | 83  | GenDailyTime     | Generator daily run time (h) |                                                                     |
 | 195 | AlternatorStatus | Generator/alternator status  |                                                                     |
 | 196 | FreqGen          | Generator frequency (Hz)     |                                                                     |
-| 115 | Vpv4             | PV4 voltage (V)              | SG05LP1 reports `0`; likely only relevant on 3-MPPT / 16kW variants |
-| 116 | Ipv4             | PV4 current (A)              | as above                                                            |
 
 ### Deye BMS block (large, separate effort)
 
