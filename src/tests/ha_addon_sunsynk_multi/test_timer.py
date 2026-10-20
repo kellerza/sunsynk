@@ -57,16 +57,16 @@ async def test_timer() -> None:
     ):
         now_ms = 2000
 
-        def get_now() -> MagicMock:
+        def get_now(*_a: object, **_k: object) -> MagicMock:
             nonlocal now_ms
             if now_ms > 19990:
                 raise IndexError
             res = MagicMock()
-            res.timestamp_millis.return_value = now_ms
+            res.timestamp.return_value = now_ms
             now_ms += TICK_MS
             return res
 
-        mock_zdt.now_in_system_tz.side_effect = get_now
+        mock_zdt.now.side_effect = get_now
 
         try:
             await run_callbacks(cbs)
@@ -115,17 +115,17 @@ async def test_timer_stagger_offset() -> None:
         ),
     ):
 
-        def get_now() -> MagicMock:
+        def get_now(*_a: object, **_k: object) -> MagicMock:
             nonlocal now_ms
             if now_ms > 2990:
                 raise IndexError
             last_now_ms[0] = now_ms
             res = MagicMock()
-            res.timestamp_millis.return_value = now_ms
+            res.timestamp.return_value = now_ms
             now_ms += TICK_MS
             return res
 
-        mock_zdt.now_in_system_tz.side_effect = get_now
+        mock_zdt.now.side_effect = get_now
 
         try:
             await run_callbacks(cbs)

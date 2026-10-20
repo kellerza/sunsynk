@@ -93,7 +93,7 @@ COMMON += PVDynamicTotalSensor(0, "PV power", WATT)
 ```
 
 Every profile copies `COMMON`, so 1PH / 16kW / 3PH LV / HV all get the same slug. `resolve()` keeps
-only ids that exist in that profile’s `DEFS.all` — 1PH never sees pv4–8, LV never sees pv5–8.
+only ids that exist in that profile’s `DEFS.all` — 1PH never sees pv5–8, LV never sees pv5–8.
 
 Individual `Sensor(186, "PV1 power", …)` blocks stay unchanged.
 
@@ -105,13 +105,13 @@ id the profile never defined.
 
 | Profile             | File                                                                        | Individual sensors                                          | Notes                                                                     |
 | ------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `single-phase`      | [`single_phase.py`](../src/sunsynk/definitions/single_phase.py)             | `pv1`–`pv3` power + V/I                                     | Unchanged blocks (~L94–116)                                               |
+| `single-phase`      | [`single_phase.py`](../src/sunsynk/definitions/single_phase.py)             | `pv1`–`pv4` power + V/I                                     | PV4 is 189 / 115 / 116                                                    |
 | `single-phase-16kw` | [`single_phase_16kw.py`](../src/sunsynk/definitions/single_phase_16kw.py)   | Same as 1PH (copy)                                          | Inherits PV sensors from `single_phase`                                   |
 | `three-phase`       | [`three_phase_common.py`](../src/sunsynk/definitions/three_phase_common.py) | `pv1`–`pv4` power + V/I                                     | No local `pv_power`                                                       |
 | `three-phase-hv`    | [`three_phase_hv.py`](../src/sunsynk/definitions/three_phase_hv.py)         | Overrides `pv1`–`pv4` power (`×10`); adds `pv5`–`pv8` power | Same shared `pv_power`; extra MPPTs appear in defs so they join the total |
 
 **What stays per file:** per-MPPT `Sensor(...)` entries — register addresses and factors differ by
-profile (1PH 186–188 vs 3PH 672–675, LV signed vs HV `×10`).
+profile (1PH 186–189 vs 3PH 672–675, LV signed vs HV `×10`).
 
 **Not in scope for this plan:** generating `pvN_power` from a shared table or Component — that is
 [`pv_component.md`](pv_component.md) (`pv_sensors()` from `PVThreePhase`).

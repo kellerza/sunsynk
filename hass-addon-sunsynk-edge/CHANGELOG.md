@@ -4,13 +4,24 @@
 
 ## Unreleased
 
+=======
+All items below are changes since add-on **1.3.0**.
+
 - TCP/UDP: recycle the Modbus connection when every attempt of a read times out, so a gateway
   session that stopped answering no longer stalls polling until the kernel drops the socket (~16
   min).
+- Single-phase PV4: power 189, voltage 115, current 116. `pv_power` alone includes it. Select group
+  `pv4`.
+- Debounce `homeassistant/status` **online** by 3s before publishing discovery (fixes MQTT
+  integration reload without a preceding **offline**; #48). Each **online** restarts the timer so
+  subscribe races still publish once. [mqtt-entity]
+- Failed Modbus writes no longer update the local register cache. #692
+- Fix AsyncCallback checks. #693
+- Bump whenever to 0.11
+- `serial-tcp://` uses `ModbusSerialParams(socket://…)` (modbus-connection 4.12+); timeouts
+  disconnect like other serial links.
 
 ## Release 1.3.0
-
-All items below are changes since add-on **1.2.0**.
 
 - Single-phase **Grid Trickle Feed power** number (register 206, −500…500 W).
 - mqtt-entity ≥ 1.2.5.
@@ -19,8 +30,6 @@ All items below are changes since add-on **1.2.0**.
 - Components use a retrying holding-register unit (add-on retries + serial flush).
 
 ## Release 1.2.0
-
-All items below are changes since add-on **1.1.1** (stable release on GitHub `main`).
 
 - tmodbus 0.6.0 - improved re-synchronization logic for RTU-streams that got out of sync.
 - Prefix **`PORT`** with **`pymodbus-`** to use the pymodbus Modbus backend (e.g.
@@ -40,13 +49,9 @@ All items below are changes since add-on **1.1.1** (stable release on GitHub `ma
 
 ## Release 1.1.1
 
-All items below are changes since add-on **1.1.0**.
-
 - Removed leftover `DRIVER` option from the add-on schema.
 
 ## Release 1.1.0
-
-All items below are changes since add-on **1.0.0**.
 
 - **Breaking:** three-phase **Parallel Mode** select options are **Client** (was Master) and
   **Server** (was Slave). The inverter LCD may still say Master/Slave. Update automations that match
@@ -79,8 +84,6 @@ All items below are changes since add-on **1.0.0**.
   `TimeoutError` used to log as `Error reading: (retry N)`).
 
 ## Release 1.0.0
-
-All items below are changes since add-on **0.10.1**.
 
 ### Major changes
 

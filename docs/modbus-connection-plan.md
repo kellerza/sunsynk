@@ -127,7 +127,7 @@ ss = Sunsynk(unit=SolarmanUnit(host, port, dongle_serial_number, server_id=1))
 `from_url` parses the existing schemes:
 
 - `tcp://host:502` → `ModbusTcpParams` (native Modbus TCP)
-- `serial-tcp://host:port` → `ModbusTcpParams(..., framer="rtu")`
+- `serial-tcp://host:port` → `ModbusSerialParams(device="socket://host:port", framer="rtu")`
 - `udp://host:port` → `ModbusUdpParams`
 - `/dev/ttyUSB0` (or any path with no scheme) → `ModbusSerialParams`
 

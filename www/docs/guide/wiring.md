@@ -152,8 +152,8 @@ accidentally short together.
    ![modbus polling](../images/usr-w630-02.png)
    4. The add-on connects to `tcp://<server>:<port>`
       - The server address of the USR-W630 was obtained through DHCP. You can allocate a fixed IP on
-        your router's DHCP settings.
-   ![tcp server](../images/usr-w630-03.png =400x400) ![tcp server](../images/usr-w630-03.png)
+        your router's DHCP settings. ![tcp server](../images/usr-w630-03.png =400x400)
+        ![tcp server](../images/usr-w630-03.png)
       - This port is used in the addon configuration when adding the inverter connection.
       - The server address of the USR-W630 is determined when the network connection was
         established, the greyed out value here is irrelevant.
