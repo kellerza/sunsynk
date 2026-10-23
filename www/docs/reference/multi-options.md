@@ -34,8 +34,8 @@ and are not in **sunsynk-multi** yet.
 
 Sensor ids, groups, and custom sensors are listed under [definitions](./definitions).
 
-- `SENSOR_DEFINITIONS` – Inverter family: `single-phase`, `single-phase-16kw`, `three-phase`, or
-  `three-phase-hv`.
+- `SENSOR_DEFINITIONS` – Inverter family: `single-phase`, `single-phase-16kw`, `three-phase`,
+  `three-phase-hv`, or `micro-hybrid-ess` (Deye SUN-BK balcony storage, device type 0x0104).
 
 - `SENSORS` – Groups or sensor ids to poll on **every** inverter (`energy_management`,
   `battery_soc`, `pv1`, …).

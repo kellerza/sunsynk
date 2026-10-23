@@ -1,34 +1,34 @@
 SENSORS:
- - aux_power
+ - aux_power # 1PH, 1PH-16kw, 3PH, 3PH-hv
  - battery_1_soc # 3PH-hv
  - battery_1_voltage # 3PH-hv
- - battery_current # 1PH, 1PH-16kw, 3PH
- - battery_power # 1PH, 1PH-16kw, 3PH
- - battery_soc # 1PH, 1PH-16kw, 3PH
- - battery_voltage # 1PH, 1PH-16kw, 3PH
+ - battery_current # 1PH, 1PH-16kw, 3PH, micro-hybrid-ess
+ - battery_power # 1PH, 1PH-16kw, 3PH, micro-hybrid-ess
+ - battery_soc # 1PH, 1PH-16kw, 3PH, micro-hybrid-ess
+ - battery_voltage # 1PH, 1PH-16kw, 3PH, micro-hybrid-ess
  - day_battery_charge
  - day_battery_discharge
  - day_grid_export
  - day_grid_import
  - day_load_energy
- - day_pv_energy
+ - day_pv_energy # 1PH, 1PH-16kw, 3PH, 3PH-hv
  - essential_power # 1PH, 1PH-16kw
  - grid_connected
- - grid_ct_power
+ - grid_ct_power # 1PH, 1PH-16kw, 3PH, 3PH-hv
  - grid_current
  - grid_frequency
  - grid_l1_power # 3PH, 3PH-hv
- - grid_l2_power
+ - grid_l2_power # 1PH, 1PH-16kw, 3PH, 3PH-hv
  - grid_l3_power # 3PH, 3PH-hv
  - grid_power
- - grid_voltage # 1PH, 1PH-16kw
- - inverter_current # 1PH, 1PH-16kw
+ - grid_voltage # 1PH, 1PH-16kw, micro-hybrid-ess
+ - inverter_current # 1PH, 1PH-16kw, micro-hybrid-ess
  - inverter_power
  - inverter_voltage # 1PH, 1PH-16kw
  - load_frequency
- - load_l1_power
+ - load_l1_power # 1PH, 1PH-16kw, 3PH, 3PH-hv
  - load_l1_voltage # 3PH, 3PH-hv
- - load_l2_power
+ - load_l2_power # 1PH, 1PH-16kw, 3PH, 3PH-hv
  - load_l2_voltage # 3PH, 3PH-hv
  - load_l3_power # 3PH, 3PH-hv
  - load_l3_voltage # 3PH, 3PH-hv

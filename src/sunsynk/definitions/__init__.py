@@ -40,7 +40,13 @@ def import_defs(name: str) -> SensorDefinitions:
 
 
 # get this from config.yaml
-ALL_DEFS = "single-phase|single-phase-16kw|three-phase|three-phase-hv".split("|")
+ALL_DEFS = [
+    "single-phase",
+    "single-phase-16kw",
+    "three-phase",
+    "three-phase-hv",
+    "micro-hybrid-ess",
+]
 
 
 def import_all_defs() -> dict[str, SensorDefinitions]:

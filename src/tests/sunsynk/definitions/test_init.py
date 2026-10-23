@@ -9,6 +9,7 @@ def test_import_defs() -> None:
         "single_phase",
         "three_phase_hv",
         "three_phase_lv",
+        "micro_hybrid_ess",
     )
     for lib in libs:
         defs = import_defs(lib)
@@ -19,4 +20,4 @@ def test_import_defs() -> None:
 def test_all_defs() -> None:
     """Test all sensor definitions."""
     all_defs = import_all_defs()
-    assert len(all_defs) == 4
+    assert len(all_defs) == 5

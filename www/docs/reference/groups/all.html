@@ -6,12 +6,14 @@
             <th>1PH-16kw</th>
             <th>3PH</th>
             <th>3PH-hv</th>
+            <th>micro-hybrid-ess</th>
             <th>Group</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>PV power</td>
+            <td>sum(pvN_power)</td>
             <td>sum(pvN_power)</td>
             <td>sum(pvN_power)</td>
             <td>sum(pvN_power)</td>
@@ -24,6 +26,7 @@
             <td>[182] * 0.1</td>
             <td>[586] * 0.1</td>
             <td></td>
+            <td>[1070] * 0.1</td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -32,6 +35,7 @@
             <td>[183] * 0.01</td>
             <td>[587] * 0.01</td>
             <td></td>
+            <td>[1067] * 0.01</td>
             <td>diagnostics<br>power_flow_card</td>
         </tr>
         <tr>
@@ -40,6 +44,7 @@
             <td>[184]</td>
             <td>[588]</td>
             <td></td>
+            <td>[1069]</td>
             <td>diagnostics<br>power_flow_card</td>
         </tr>
         <tr>
@@ -48,6 +53,7 @@
             <td>[190] S</td>
             <td>[590] S</td>
             <td></td>
+            <td>[1071] S</td>
             <td>diagnostics<br>power_flow_card</td>
         </tr>
         <tr>
@@ -56,6 +62,7 @@
             <td>[191] * 0.01</td>
             <td>[591] * 0.01</td>
             <td></td>
+            <td>[1068] * 0.01</td>
             <td>diagnostics<br>power_flow_card</td>
         </tr>
         <tr>
@@ -64,6 +71,7 @@
             <td>[314] S</td>
             <td></td>
             <td></td>
+            <td>[374]</td>
             <td></td>
         </tr>
         <tr>
@@ -72,6 +80,7 @@
             <td>[315] S</td>
             <td></td>
             <td></td>
+            <td>[375]</td>
             <td></td>
         </tr>
         <tr>
@@ -80,12 +89,14 @@
             <td>[175] S</td>
             <td>[636,694] S</td>
             <td>[636,694] S</td>
+            <td>[1028,1029] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
             <td>Inverter voltage</td>
             <td>[154] * 0.1</td>
             <td>[154] * 0.1</td>
+            <td></td>
             <td></td>
             <td></td>
             <td>power_flow_card</td>
@@ -96,6 +107,7 @@
             <td>[164] * 0.01</td>
             <td></td>
             <td></td>
+            <td>[1081] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -105,6 +117,7 @@
             <td>[638] * 0.01</td>
             <td>[638] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid frequency</td>
@@ -112,6 +125,7 @@
             <td>[79] * 0.01</td>
             <td>[609] * 0.01</td>
             <td>[609] * 0.01</td>
+            <td>[1035] * 0.01</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -120,12 +134,14 @@
             <td>[169] * 10</td>
             <td>[625,690] S</td>
             <td>[625,690] S</td>
+            <td>[1083] S</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
             <td>Grid LD power</td>
             <td>[167] S</td>
             <td>[167] S</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -136,6 +152,7 @@
             <td>[168] S</td>
             <td>[623,688] S</td>
             <td>[623,688] S</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -144,6 +161,7 @@
             <td>[150] * 0.1</td>
             <td></td>
             <td></td>
+            <td>[1034] * 0.1</td>
             <td>diagnostics<br>power_flow_card</td>
         </tr>
         <tr>
@@ -152,6 +170,7 @@
             <td>[160,161]</td>
             <td>[610,611,612]</td>
             <td>[610,611,612]</td>
+            <td>[1078] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -160,12 +179,14 @@
             <td>[172] * 10</td>
             <td>[619,708] S</td>
             <td>[619,708] S</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
             <td>Grid Trickle Feed power (R/W)</td>
             <td>[206] S</td>
             <td>[206] S</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -176,6 +197,7 @@
             <td>[178] S</td>
             <td>[653,659] S</td>
             <td>[653,659] S</td>
+            <td>[1087]</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -184,6 +206,7 @@
             <td>[176] S</td>
             <td>[650,656] S</td>
             <td>[650,656] S</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -192,6 +215,7 @@
             <td>[177] S</td>
             <td>[651,657] S</td>
             <td>[651,657] S</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -200,6 +224,7 @@
             <td>[192] * 0.01</td>
             <td>[655] * 0.01</td>
             <td>[655] * 0.01</td>
+            <td>[1037] * 0.01</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -209,6 +234,7 @@
             <td>[133]</td>
             <td>[133]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Gen power<br>AUX power</td>
@@ -217,6 +243,7 @@
             <td>[667,671] S</td>
             <td>[667,671] S</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>PV1 power</td>
@@ -224,6 +251,7 @@
             <td>[186] S</td>
             <td>[672] S</td>
             <td>[672] * 10</td>
+            <td></td>
             <td>pv1</td>
         </tr>
         <tr>
@@ -232,6 +260,7 @@
             <td>[109] * 0.1</td>
             <td>[676] * 0.1</td>
             <td>[676] * 0.1</td>
+            <td></td>
             <td>pv1</td>
         </tr>
         <tr>
@@ -240,6 +269,7 @@
             <td>[110] * 0.1</td>
             <td>[677] * 0.1</td>
             <td>[677] * 0.1</td>
+            <td></td>
             <td>pv1</td>
         </tr>
         <tr>
@@ -248,6 +278,7 @@
             <td>[187] S</td>
             <td>[673] S</td>
             <td>[673] * 10</td>
+            <td></td>
             <td>pv2</td>
         </tr>
         <tr>
@@ -256,6 +287,7 @@
             <td>[111] * 0.1</td>
             <td>[678] * 0.1</td>
             <td>[678] * 0.1</td>
+            <td></td>
             <td>pv2</td>
         </tr>
         <tr>
@@ -264,6 +296,7 @@
             <td>[112] * 0.1</td>
             <td>[679] * 0.1</td>
             <td>[679] * 0.1</td>
+            <td></td>
             <td>pv2</td>
         </tr>
         <tr>
@@ -272,6 +305,7 @@
             <td>[188] S</td>
             <td>[674] S</td>
             <td>[674] * 10</td>
+            <td></td>
             <td>pv3</td>
         </tr>
         <tr>
@@ -280,6 +314,7 @@
             <td>[113] * 0.1</td>
             <td>[680] * 0.1</td>
             <td>[680] * 0.1</td>
+            <td></td>
             <td>pv3</td>
         </tr>
         <tr>
@@ -288,6 +323,7 @@
             <td>[114] * 0.1</td>
             <td>[681] * 0.1</td>
             <td>[681] * 0.1</td>
+            <td></td>
             <td>pv3</td>
         </tr>
         <tr>
@@ -296,6 +332,7 @@
             <td>[189] S</td>
             <td>[675] S</td>
             <td>[675] * 10</td>
+            <td></td>
             <td>pv4</td>
         </tr>
         <tr>
@@ -304,6 +341,7 @@
             <td>[115] * 0.1</td>
             <td>[682] * 0.1</td>
             <td>[682] * 0.1</td>
+            <td></td>
             <td>pv4</td>
         </tr>
         <tr>
@@ -312,12 +350,14 @@
             <td>[116] * 0.1</td>
             <td>[683] * 0.1</td>
             <td>[683] * 0.1</td>
+            <td></td>
             <td>pv4</td>
         </tr>
         <tr>
             <td>Essential power</td>
             <td>[175,169,166]</td>
             <td>[175,169,166]</td>
+            <td></td>
             <td></td>
             <td></td>
             <td>power_flow_card</td>
@@ -329,6 +369,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Essential 2 power</td>
@@ -337,11 +378,13 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Non-essential power</td>
             <td>[172,167]</td>
             <td>[172,167]</td>
+            <td></td>
             <td></td>
             <td></td>
             <td>power_flow_card</td>
@@ -353,6 +396,7 @@
             <td>[502] * 0.1</td>
             <td>[502] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Day battery charge</td>
@@ -360,6 +404,7 @@
             <td>[70] * 0.1</td>
             <td>[514] * 0.1</td>
             <td>[514] * 0.1</td>
+            <td>[1073] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -368,6 +413,7 @@
             <td>[71] * 0.1</td>
             <td>[515] * 0.1</td>
             <td>[515] * 0.1</td>
+            <td>[1072] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -376,6 +422,7 @@
             <td>[76] * 0.1</td>
             <td>[520] * 0.1</td>
             <td>[520] * 0.1</td>
+            <td>[1089] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -384,6 +431,7 @@
             <td>[77] * 0.1</td>
             <td>[521] * 0.1</td>
             <td>[521] * 0.1</td>
+            <td>[1090] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -392,6 +440,7 @@
             <td>[84] * 0.1</td>
             <td>[526] * 0.1</td>
             <td>[526] * 0.1</td>
+            <td>[1098] * 0.1</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -400,12 +449,14 @@
             <td>[108] * 0.1</td>
             <td>[529] * 0.1</td>
             <td>[529] * 0.1</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
             <td>Day reactive energy</td>
             <td>[61] * 0.1</td>
             <td>[61] * 0.1</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -417,11 +468,13 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Month load energy</td>
             <td>[66] * 0.1</td>
             <td>[66] * 0.1</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -433,6 +486,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Total active energy</td>
@@ -441,6 +495,7 @@
             <td>[506,507] * 0.1</td>
             <td>[506,507] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Total battery charge</td>
@@ -448,6 +503,7 @@
             <td>[72,73] * 0.1</td>
             <td>[516,517] * 0.1</td>
             <td>[516,517] * 0.1</td>
+            <td>[1076,1077] * 0.1</td>
             <td>energy_management</td>
         </tr>
         <tr>
@@ -456,6 +512,7 @@
             <td>[74,75] * 0.1</td>
             <td>[518,519] * 0.1</td>
             <td>[518,519] * 0.1</td>
+            <td>[1074,1075] * 0.1</td>
             <td>energy_management</td>
         </tr>
         <tr>
@@ -464,6 +521,7 @@
             <td>[81,82] * 0.1</td>
             <td>[524,525] * 0.1</td>
             <td>[524,525] * 0.1</td>
+            <td>[1093,1094] * 0.1</td>
             <td>energy_management</td>
         </tr>
         <tr>
@@ -472,6 +530,7 @@
             <td>[78,80] * 0.1</td>
             <td>[522,523] * 0.1</td>
             <td>[522,523] * 0.1</td>
+            <td>[1091,1092] * 0.1</td>
             <td>energy_management</td>
         </tr>
         <tr>
@@ -480,6 +539,7 @@
             <td>[85,86] * 0.1</td>
             <td>[527,528] * 0.1</td>
             <td>[527,528] * 0.1</td>
+            <td>[1099,1100] * 0.1</td>
             <td></td>
         </tr>
         <tr>
@@ -488,12 +548,14 @@
             <td>[96,97] * 0.1</td>
             <td>[534,535] * 0.1</td>
             <td>[534,535] * 0.1</td>
+            <td></td>
             <td>energy_management</td>
         </tr>
         <tr>
             <td>Year grid export</td>
             <td>[98,99] * 0.1</td>
             <td>[98,99] * 0.1</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -505,11 +567,13 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Year PV energy</td>
             <td>[68,69] * 0.1</td>
             <td>[68,69] * 0.1</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -520,6 +584,7 @@
             <td>[16,17] * 0.1</td>
             <td>[20,21] * 0.1</td>
             <td>[20,21] * 0.1</td>
+            <td>[17] * 0.1</td>
             <td></td>
         </tr>
         <tr>
@@ -528,6 +593,7 @@
             <td>[103,104,105,106]</td>
             <td>[555,556,557,558]</td>
             <td>[555,556,557,558]</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -536,12 +602,14 @@
             <td>[59]</td>
             <td>[500]</td>
             <td>[500]</td>
+            <td>[1001]</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
             <td>SD status</td>
             <td>[92]</td>
             <td>[92]</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -552,12 +620,14 @@
             <td>[90] * 0.1</td>
             <td>[540] * 0.1</td>
             <td>[540] * 0.1</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
             <td>Environment temperature</td>
             <td>[95] * 0.1</td>
             <td>[95] * 0.1</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -568,6 +638,7 @@
             <td>[91] * 0.1</td>
             <td>[541] * 0.1</td>
             <td>[541] * 0.1</td>
+            <td>[1032] * 0.01</td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -576,6 +647,7 @@
             <td>[194]</td>
             <td>[552] & 0x04</td>
             <td>[552] & 0x04</td>
+            <td>[1080]</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -584,6 +656,7 @@
             <td>[22,23,24]</td>
             <td>[62,63,64]</td>
             <td>[62,63,64]</td>
+            <td>[22,23,24]</td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -592,12 +665,14 @@
             <td>[43]</td>
             <td>[80]</td>
             <td>[80]</td>
+            <td>[34]</td>
             <td></td>
         </tr>
         <tr>
             <td>Control mode</td>
             <td>[200]</td>
             <td>[200]</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -608,12 +683,14 @@
             <td>[232] & 0x01</td>
             <td>[130]</td>
             <td>[130]</td>
+            <td>[328]</td>
             <td>settings</td>
         </tr>
         <tr>
             <td>Battery charging voltage</td>
             <td>[312] * 0.01</td>
             <td>[312] * 0.01</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -625,11 +702,13 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Bat1 Cycle</td>
             <td>[611]</td>
             <td>[611]</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -640,6 +719,7 @@
             <td>[201] * 0.01</td>
             <td>[99] * 0.01</td>
             <td>[99] * 0.01</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -648,6 +728,7 @@
             <td>[202] * 0.01</td>
             <td>[100] * 0.01</td>
             <td>[100] * 0.01</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -656,6 +737,7 @@
             <td>[203] * 0.01</td>
             <td>[101] * 0.01</td>
             <td>[101] * 0.01</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -664,6 +746,7 @@
             <td>[217]</td>
             <td>[115]</td>
             <td>[115]</td>
+            <td>[319]</td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -672,6 +755,7 @@
             <td>[218]</td>
             <td>[116]</td>
             <td>[116]</td>
+            <td>[320]</td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -680,6 +764,7 @@
             <td>[219]</td>
             <td>[117]</td>
             <td>[117]</td>
+            <td>[321]</td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -688,6 +773,7 @@
             <td>[220] * 0.01</td>
             <td>[118] * 0.01</td>
             <td>[118] * 0.01</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -696,6 +782,7 @@
             <td>[221] * 0.01</td>
             <td>[119] * 0.01</td>
             <td>[119] * 0.01</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -704,6 +791,7 @@
             <td>[222] * 0.01</td>
             <td>[120] * 0.01</td>
             <td>[120] * 0.01</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -712,6 +800,7 @@
             <td>[243] & 0x01</td>
             <td>[141]</td>
             <td>[141]</td>
+            <td>[329]</td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -720,6 +809,7 @@
             <td>[244]</td>
             <td>[142]</td>
             <td>[142]</td>
+            <td>[330]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -729,6 +819,7 @@
             <td>[340]</td>
             <td>[340] * 10</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Max Sell power (R/W)</td>
@@ -736,6 +827,7 @@
             <td>[245]</td>
             <td></td>
             <td></td>
+            <td>[331]</td>
             <td></td>
         </tr>
         <tr>
@@ -744,6 +836,7 @@
             <td>[247] & 0x01</td>
             <td>[145]</td>
             <td>[145]</td>
+            <td>[333]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -752,12 +845,14 @@
             <td>[248] & 0x01</td>
             <td></td>
             <td></td>
+            <td>[335]</td>
             <td>power_flow_card<br>settings</td>
         </tr>
         <tr>
             <td>Peak shaving (R/W)</td>
             <td>[280] & 0x0F</td>
             <td>[280] & 0x0F</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -769,6 +864,7 @@
             <td>[178] & 0x0C</td>
             <td>[178] & 0x0C</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid peak shaving (R/W)</td>
@@ -777,11 +873,13 @@
             <td>[178] & 0x30</td>
             <td>[178] & 0x30</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid always on (R/W)</td>
             <td>[280] & 0xF000</td>
             <td>[280] & 0xF000</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -793,6 +891,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid peak shaving power (R/W)</td>
@@ -801,6 +900,7 @@
             <td>[191]</td>
             <td>[191] * 10</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog1 Time (R/W)</td>
@@ -808,6 +908,7 @@
             <td>[250]</td>
             <td>[148]</td>
             <td>[148]</td>
+            <td>[336]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -816,6 +917,7 @@
             <td>[251]</td>
             <td>[149]</td>
             <td>[149]</td>
+            <td>[337]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -824,6 +926,7 @@
             <td>[252]</td>
             <td>[150]</td>
             <td>[150]</td>
+            <td>[338]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -832,6 +935,7 @@
             <td>[253]</td>
             <td>[151]</td>
             <td>[151]</td>
+            <td>[339]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -840,6 +944,7 @@
             <td>[254]</td>
             <td>[152]</td>
             <td>[152]</td>
+            <td>[340]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -848,6 +953,7 @@
             <td>[255]</td>
             <td>[153]</td>
             <td>[153]</td>
+            <td>[341]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -856,6 +962,7 @@
             <td>[256]</td>
             <td>[154]</td>
             <td>[154] * 10</td>
+            <td>[342]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -864,6 +971,7 @@
             <td>[257]</td>
             <td>[155]</td>
             <td>[155] * 10</td>
+            <td>[343]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -872,6 +980,7 @@
             <td>[258]</td>
             <td>[156]</td>
             <td>[156] * 10</td>
+            <td>[344]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -880,6 +989,7 @@
             <td>[259]</td>
             <td>[157]</td>
             <td>[157] * 10</td>
+            <td>[345]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -888,6 +998,7 @@
             <td>[260]</td>
             <td>[158]</td>
             <td>[158] * 10</td>
+            <td>[346]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -896,6 +1007,7 @@
             <td>[261]</td>
             <td>[159]</td>
             <td>[159] * 10</td>
+            <td>[347]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -904,6 +1016,7 @@
             <td>[268]</td>
             <td>[166]</td>
             <td>[166]</td>
+            <td>[354]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -912,6 +1025,7 @@
             <td>[269]</td>
             <td>[167]</td>
             <td>[167]</td>
+            <td>[355]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -920,6 +1034,7 @@
             <td>[270]</td>
             <td>[168]</td>
             <td>[168]</td>
+            <td>[356]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -928,6 +1043,7 @@
             <td>[271]</td>
             <td>[169]</td>
             <td>[169]</td>
+            <td>[357]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -936,6 +1052,7 @@
             <td>[272]</td>
             <td>[170]</td>
             <td>[170]</td>
+            <td>[358]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -944,6 +1061,7 @@
             <td>[273]</td>
             <td>[171]</td>
             <td>[171]</td>
+            <td>[359]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -952,6 +1070,7 @@
             <td>[274] & 0x03</td>
             <td>[172] & 0x03</td>
             <td>[172] & 0x03</td>
+            <td>[360]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -960,6 +1079,7 @@
             <td>[275] & 0x03</td>
             <td>[173] & 0x03</td>
             <td>[173] & 0x03</td>
+            <td>[361]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -968,6 +1088,7 @@
             <td>[276] & 0x03</td>
             <td>[174] & 0x03</td>
             <td>[174] & 0x03</td>
+            <td>[362]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -976,6 +1097,7 @@
             <td>[277] & 0x03</td>
             <td>[175] & 0x03</td>
             <td>[175] & 0x03</td>
+            <td>[363]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -984,6 +1106,7 @@
             <td>[278] & 0x03</td>
             <td>[176] & 0x03</td>
             <td>[176] & 0x03</td>
+            <td>[364]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -992,6 +1115,7 @@
             <td>[279] & 0x03</td>
             <td>[177] & 0x03</td>
             <td>[177] & 0x03</td>
+            <td>[365]</td>
             <td>settings</td>
         </tr>
         <tr>
@@ -1001,6 +1125,7 @@
             <td>[172] & 0x1C</td>
             <td>[172] & 0x1C</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog2 mode (R/W)</td>
@@ -1008,6 +1133,7 @@
             <td>[275] & 0x1C</td>
             <td>[173] & 0x1C</td>
             <td>[173] & 0x1C</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1017,6 +1143,7 @@
             <td>[174] & 0x1C</td>
             <td>[174] & 0x1C</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog4 mode (R/W)</td>
@@ -1024,6 +1151,7 @@
             <td>[277] & 0x1C</td>
             <td>[175] & 0x1C</td>
             <td>[175] & 0x1C</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1033,6 +1161,7 @@
             <td>[176] & 0x1C</td>
             <td>[176] & 0x1C</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog6 mode (R/W)</td>
@@ -1040,6 +1169,7 @@
             <td>[279] & 0x1C</td>
             <td>[177] & 0x1C</td>
             <td>[177] & 0x1C</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1049,6 +1179,7 @@
             <td>[172] & 0x20</td>
             <td>[172] & 0x20</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog2 sell (R/W)</td>
@@ -1056,6 +1187,7 @@
             <td>[275] & 0x40</td>
             <td>[173] & 0x20</td>
             <td>[173] & 0x20</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1065,6 +1197,7 @@
             <td>[174] & 0x20</td>
             <td>[174] & 0x20</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog4 sell (R/W)</td>
@@ -1072,6 +1205,7 @@
             <td>[277] & 0x40</td>
             <td>[175] & 0x20</td>
             <td>[175] & 0x20</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1081,6 +1215,7 @@
             <td>[176] & 0x20</td>
             <td>[176] & 0x20</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog6 sell (R/W)</td>
@@ -1088,6 +1223,7 @@
             <td>[279] & 0x40</td>
             <td>[177] & 0x20</td>
             <td>[177] & 0x20</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1097,6 +1233,7 @@
             <td>[160] * 0.01</td>
             <td>[160] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog2 voltage (R/W)</td>
@@ -1104,6 +1241,7 @@
             <td>[263] * 0.01</td>
             <td>[161] * 0.01</td>
             <td>[161] * 0.01</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1113,6 +1251,7 @@
             <td>[162] * 0.01</td>
             <td>[162] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog4 voltage (R/W)</td>
@@ -1120,6 +1259,7 @@
             <td>[265] * 0.01</td>
             <td>[163] * 0.01</td>
             <td>[163] * 0.01</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1129,6 +1269,7 @@
             <td>[164] * 0.01</td>
             <td>[164] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog6 voltage (R/W)</td>
@@ -1137,6 +1278,7 @@
             <td>[165] * 0.01</td>
             <td>[165] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid Charge Battery current (R/W)</td>
@@ -1144,6 +1286,7 @@
             <td>[230]</td>
             <td>[128]</td>
             <td>[128]</td>
+            <td></td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -1152,6 +1295,7 @@
             <td>[210]</td>
             <td>[108]</td>
             <td>[108]</td>
+            <td>[312] * 0.01</td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -1160,12 +1304,14 @@
             <td>[211]</td>
             <td>[109]</td>
             <td>[109]</td>
+            <td>[313] * 0.01</td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
             <td>BMS Protocol (R/W)</td>
             <td>[325]</td>
             <td>[325]</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -1176,6 +1322,7 @@
             <td></td>
             <td>[633,691] S</td>
             <td>[633,691] S</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -1184,6 +1331,7 @@
             <td></td>
             <td>[634,692] S</td>
             <td>[634,692] S</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -1192,6 +1340,7 @@
             <td></td>
             <td>[635,693] S</td>
             <td>[635,693] S</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -1201,6 +1350,7 @@
             <td>[627] * 0.1</td>
             <td>[627] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Inverter L2 voltage</td>
@@ -1208,6 +1358,7 @@
             <td></td>
             <td>[628] * 0.1</td>
             <td>[628] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1217,6 +1368,7 @@
             <td>[629] * 0.1</td>
             <td>[629] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Inverter L1 current</td>
@@ -1224,6 +1376,7 @@
             <td></td>
             <td>[630] * 0.01</td>
             <td>[630] * 0.01</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1233,6 +1386,7 @@
             <td>[631] * 0.01</td>
             <td>[631] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Inverter L3 current</td>
@@ -1241,6 +1395,7 @@
             <td>[632] * 0.01</td>
             <td>[632] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid L1 power</td>
@@ -1248,6 +1403,7 @@
             <td></td>
             <td>[622,687] S</td>
             <td>[622,687] S</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -1256,6 +1412,7 @@
             <td></td>
             <td>[624,689] S</td>
             <td>[624,689] S</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -1264,6 +1421,7 @@
             <td></td>
             <td>[598] * 0.1</td>
             <td>[598] * 0.1</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -1272,6 +1430,7 @@
             <td></td>
             <td>[599] * 0.1</td>
             <td>[599] * 0.1</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -1280,6 +1439,7 @@
             <td></td>
             <td>[600] * 0.1</td>
             <td>[600] * 0.1</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -1289,6 +1449,7 @@
             <td>[604,700] S</td>
             <td>[604,700] S</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid L2 inner side power</td>
@@ -1296,6 +1457,7 @@
             <td></td>
             <td>[605,701] S</td>
             <td>[605,701] S</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1305,6 +1467,7 @@
             <td>[606,702] S</td>
             <td>[606,702] S</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Total Active Power from Side to Side of the Grid</td>
@@ -1312,6 +1475,7 @@
             <td></td>
             <td>[607,703] S</td>
             <td>[607,703] S</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1321,6 +1485,7 @@
             <td>[608,704] S</td>
             <td>[608,704] S</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid CT L1 power</td>
@@ -1328,6 +1493,7 @@
             <td></td>
             <td>[616,705] S</td>
             <td>[616,705] S</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1337,6 +1503,7 @@
             <td>[617,706] S</td>
             <td>[617,706] S</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid CT L3 power</td>
@@ -1344,6 +1511,7 @@
             <td></td>
             <td>[618,707] S</td>
             <td>[618,707] S</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1353,6 +1521,7 @@
             <td>[613,614,615]</td>
             <td>[613,614,615]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Load L3 power</td>
@@ -1360,6 +1529,7 @@
             <td></td>
             <td>[652,658] S</td>
             <td>[652,658] S</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -1368,6 +1538,7 @@
             <td></td>
             <td>[644] * 0.1</td>
             <td>[644] * 0.1</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -1376,6 +1547,7 @@
             <td></td>
             <td>[645] * 0.1</td>
             <td>[645] * 0.1</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -1384,6 +1556,7 @@
             <td></td>
             <td>[646] * 0.1</td>
             <td>[646] * 0.1</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -1393,6 +1566,7 @@
             <td>[664,668] S</td>
             <td>[664,668] S</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Gen L2 power<br>AUX L2 power</td>
@@ -1400,6 +1574,7 @@
             <td></td>
             <td>[665,669] S</td>
             <td>[665,669] S</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1409,6 +1584,7 @@
             <td>[666,670] S</td>
             <td>[666,670] S</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Gen L1 voltage<br>AUX L1 voltage</td>
@@ -1416,6 +1592,7 @@
             <td></td>
             <td>[661] * 0.1</td>
             <td>[661] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1425,6 +1602,7 @@
             <td>[662] * 0.1</td>
             <td>[662] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Gen L3 voltage<br>AUX L3 voltage</td>
@@ -1433,6 +1611,7 @@
             <td>[663] * 0.1</td>
             <td>[663] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>UPS Load L1 power</td>
@@ -1440,6 +1619,7 @@
             <td></td>
             <td>[640,696]</td>
             <td>[640,696]</td>
+            <td></td>
             <td>ups</td>
         </tr>
         <tr>
@@ -1448,6 +1628,7 @@
             <td></td>
             <td>[641,697]</td>
             <td>[641,697]</td>
+            <td></td>
             <td>ups</td>
         </tr>
         <tr>
@@ -1456,6 +1637,7 @@
             <td></td>
             <td>[642,698]</td>
             <td>[642,698]</td>
+            <td></td>
             <td>ups</td>
         </tr>
         <tr>
@@ -1464,6 +1646,7 @@
             <td></td>
             <td>[643,699]</td>
             <td>[643,699]</td>
+            <td></td>
             <td>ups</td>
         </tr>
         <tr>
@@ -1473,6 +1656,7 @@
             <td>[536] * 0.1</td>
             <td>[536] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>INV Relay Status</td>
@@ -1480,6 +1664,7 @@
             <td></td>
             <td>[552] & 0x01</td>
             <td>[552] & 0x01</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1489,6 +1674,7 @@
             <td>[552] & 0x02</td>
             <td>[552] & 0x02</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Generator Relay Status</td>
@@ -1496,6 +1682,7 @@
             <td></td>
             <td>[552] & 0x08</td>
             <td>[552] & 0x08</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1505,6 +1692,7 @@
             <td>[552] & 0x10</td>
             <td>[552] & 0x10</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Dry Contact1 Status</td>
@@ -1512,6 +1700,7 @@
             <td></td>
             <td>[552] & 0x20</td>
             <td>[552] & 0x20</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1521,6 +1710,7 @@
             <td>[552] & 0x40</td>
             <td>[552] & 0x40</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Off Grid mode (R/W)</td>
@@ -1529,6 +1719,7 @@
             <td>[179] & 0x01</td>
             <td>[179] & 0x01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Grid Charge Start Battery Voltage (R/W)</td>
@@ -1536,6 +1727,7 @@
             <td></td>
             <td>[126] * 0.01</td>
             <td>[126] * 0.01</td>
+            <td></td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -1544,6 +1736,7 @@
             <td></td>
             <td>[127]</td>
             <td>[127]</td>
+            <td></td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -1552,6 +1745,7 @@
             <td></td>
             <td>[143]</td>
             <td>[143] * 10</td>
+            <td></td>
             <td>settings</td>
         </tr>
         <tr>
@@ -1560,6 +1754,7 @@
             <td></td>
             <td>[102]</td>
             <td>[102]</td>
+            <td></td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -1569,6 +1764,7 @@
             <td>[104] S</td>
             <td>[104] * 10</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery Equalization Days (R/W)</td>
@@ -1576,6 +1772,7 @@
             <td></td>
             <td>[105] S</td>
             <td>[105] S</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -1584,6 +1781,7 @@
             <td></td>
             <td>[106] S</td>
             <td>[106] S</td>
+            <td></td>
             <td>battery</td>
         </tr>
         <tr>
@@ -1592,6 +1790,7 @@
             <td></td>
             <td>[125]</td>
             <td>[125]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1600,6 +1799,7 @@
             <td></td>
             <td>[123] * 0.01</td>
             <td>[123] * 0.01</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1608,6 +1808,7 @@
             <td></td>
             <td>[124]</td>
             <td>[124]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1616,6 +1817,7 @@
             <td></td>
             <td>[129]</td>
             <td>[129]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1624,6 +1826,7 @@
             <td></td>
             <td>[111]</td>
             <td>[111]</td>
+            <td></td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -1632,6 +1835,7 @@
             <td></td>
             <td>[112] & 0x01</td>
             <td>[112] & 0x01</td>
+            <td></td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -1640,6 +1844,7 @@
             <td></td>
             <td>[113]</td>
             <td>[113]</td>
+            <td></td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -1648,6 +1853,7 @@
             <td></td>
             <td>[114] * 0.1</td>
             <td>[114] * 0.1</td>
+            <td></td>
             <td>advanced<br>battery</td>
         </tr>
         <tr>
@@ -1657,6 +1863,7 @@
             <td>const</td>
             <td>const</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery max voltage</td>
@@ -1664,6 +1871,7 @@
             <td></td>
             <td>const</td>
             <td>const</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1673,6 +1881,7 @@
             <td>[210] * 0.01</td>
             <td>[210] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS discharging voltage</td>
@@ -1680,6 +1889,7 @@
             <td></td>
             <td>[211] * 0.01</td>
             <td>[211] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1689,6 +1899,7 @@
             <td>[212]</td>
             <td>[212]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS discharging current limit</td>
@@ -1696,6 +1907,7 @@
             <td></td>
             <td>[213]</td>
             <td>[213]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1705,6 +1917,7 @@
             <td>[214]</td>
             <td>[214]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS voltage</td>
@@ -1712,6 +1925,7 @@
             <td></td>
             <td>[215] * 0.01</td>
             <td>[215] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1721,6 +1935,7 @@
             <td>[216] * 0.01</td>
             <td>[216] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS temperature</td>
@@ -1728,6 +1943,7 @@
             <td></td>
             <td>[217] * 0.1</td>
             <td>[217] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1737,6 +1953,7 @@
             <td>[218]</td>
             <td>[218]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS max discharge current limit</td>
@@ -1744,6 +1961,7 @@
             <td></td>
             <td>[219]</td>
             <td>[219]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1753,6 +1971,7 @@
             <td>[220]</td>
             <td>[220]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog Time Of Use Enabled (R/W)<br>Use Timer</td>
@@ -1760,6 +1979,7 @@
             <td></td>
             <td>[146] & 0x01</td>
             <td>[146] & 0x01</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1769,6 +1989,7 @@
             <td>[146] & 0x02</td>
             <td>[146] & 0x02</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog Tuesday Enabled (R/W)</td>
@@ -1776,6 +1997,7 @@
             <td></td>
             <td>[146] & 0x04</td>
             <td>[146] & 0x04</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1785,6 +2007,7 @@
             <td>[146] & 0x08</td>
             <td>[146] & 0x08</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog Thursday Enabled (R/W)</td>
@@ -1792,6 +2015,7 @@
             <td></td>
             <td>[146] & 0x10</td>
             <td>[146] & 0x10</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1801,6 +2025,7 @@
             <td>[146] & 0x20</td>
             <td>[146] & 0x20</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Prog Saturday Enabled (R/W)</td>
@@ -1808,6 +2033,7 @@
             <td></td>
             <td>[146] & 0x40</td>
             <td>[146] & 0x40</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1817,6 +2043,7 @@
             <td>[146] & 0x80</td>
             <td>[146] & 0x80</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Microinverter export to grid cutoff (R/W)</td>
@@ -1824,6 +2051,7 @@
             <td></td>
             <td>[178] & 0x03</td>
             <td>[178] & 0x03</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1833,6 +2061,7 @@
             <td>[178] & 0xC0</td>
             <td>[178] & 0xC0</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>External relay (R/W)</td>
@@ -1840,6 +2069,7 @@
             <td></td>
             <td>[178] & 0x300</td>
             <td>[178] & 0x300</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1849,6 +2079,7 @@
             <td>[178] & 0xC00</td>
             <td>[178] & 0xC00</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>DRM (R/W)</td>
@@ -1856,6 +2087,7 @@
             <td></td>
             <td>[178] & 0x3000</td>
             <td>[178] & 0x3000</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -1865,6 +2097,7 @@
             <td>[178] & 0xC000</td>
             <td>[178] & 0xC000</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Generator AC Couple Frz High (R/W)</td>
@@ -1873,6 +2106,7 @@
             <td>[131] * 0.01</td>
             <td>[131] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Generator Off SOC (R/W)</td>
@@ -1880,6 +2114,7 @@
             <td></td>
             <td>[135]</td>
             <td>[135]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1888,6 +2123,7 @@
             <td></td>
             <td>[137]</td>
             <td>[137]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1896,6 +2132,7 @@
             <td></td>
             <td>[121] * 0.1</td>
             <td>[121] * 0.1</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1904,6 +2141,7 @@
             <td></td>
             <td>[122] * 0.1</td>
             <td>[122] * 0.1</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1912,6 +2150,7 @@
             <td></td>
             <td>[139]</td>
             <td>[139]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1921,6 +2160,7 @@
             <td>[140] & 0x01</td>
             <td>[140] & 0x01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Gen Signal On (R/W)</td>
@@ -1928,6 +2168,7 @@
             <td></td>
             <td>[140] & 0x02</td>
             <td>[140] & 0x02</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1936,6 +2177,7 @@
             <td></td>
             <td>[132]</td>
             <td>[132]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1944,6 +2186,7 @@
             <td></td>
             <td>[189]</td>
             <td>[189]</td>
+            <td></td>
             <td>generator</td>
         </tr>
         <tr>
@@ -1952,6 +2195,7 @@
             <td></td>
             <td>[336] & 0x01</td>
             <td>[336] & 0x01</td>
+            <td></td>
             <td>parallel</td>
         </tr>
         <tr>
@@ -1960,6 +2204,7 @@
             <td></td>
             <td>[336] & 0x02</td>
             <td>[336] & 0x02</td>
+            <td></td>
             <td>parallel</td>
         </tr>
         <tr>
@@ -1968,6 +2213,7 @@
             <td></td>
             <td>[336] & 0x300</td>
             <td>[336] & 0x300</td>
+            <td></td>
             <td>parallel</td>
         </tr>
         <tr>
@@ -1976,6 +2222,7 @@
             <td></td>
             <td>[336] & 0xFC00</td>
             <td>[336] & 0xFC00</td>
+            <td></td>
             <td>parallel</td>
         </tr>
         <tr>
@@ -1984,6 +2231,7 @@
             <td></td>
             <td>[182]</td>
             <td>[182]</td>
+            <td></td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -1992,6 +2240,7 @@
             <td></td>
             <td>[183]</td>
             <td>[183]</td>
+            <td></td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -2000,6 +2249,7 @@
             <td></td>
             <td>[184]</td>
             <td>[184]</td>
+            <td></td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -2009,6 +2259,7 @@
             <td>[228] & 0x03</td>
             <td>[228] & 0x03</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Beep (R/W)</td>
@@ -2016,6 +2267,7 @@
             <td></td>
             <td>[228] & 0x0C</td>
             <td>[228] & 0x0C</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2025,6 +2277,7 @@
             <td>[228] & 0x30</td>
             <td>[228] & 0x30</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Auto dim (R/W)</td>
@@ -2032,6 +2285,7 @@
             <td></td>
             <td>[228] & 0xC0</td>
             <td>[228] & 0xC0</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2041,6 +2295,7 @@
             <td>[228] & 0xC000</td>
             <td>[228] & 0xC000</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Track Grid Phase (R/W)</td>
@@ -2048,6 +2303,7 @@
             <td></td>
             <td>[235]</td>
             <td>[235]</td>
+            <td></td>
             <td>advanced</td>
         </tr>
         <tr>
@@ -2056,6 +2312,7 @@
             <td></td>
             <td>[209]</td>
             <td>[209]</td>
+            <td></td>
             <td>advanced<br>ups</td>
         </tr>
         <tr>
@@ -2065,6 +2322,7 @@
             <td>[544] & 0x01</td>
             <td>[544] & 0x01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>DRM1 Code</td>
@@ -2072,6 +2330,7 @@
             <td></td>
             <td>[544] & 0x02</td>
             <td>[544] & 0x02</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2081,6 +2340,7 @@
             <td>[544] & 0x04</td>
             <td>[544] & 0x04</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>DRM3 Code</td>
@@ -2088,6 +2348,7 @@
             <td></td>
             <td>[544] & 0x08</td>
             <td>[544] & 0x08</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2097,6 +2358,7 @@
             <td>[544] & 0x10</td>
             <td>[544] & 0x10</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>DRM5 Code</td>
@@ -2104,6 +2366,7 @@
             <td></td>
             <td>[544] & 0x20</td>
             <td>[544] & 0x20</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2113,6 +2376,7 @@
             <td>[544] & 0x40</td>
             <td>[544] & 0x40</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>DRM7 Code</td>
@@ -2120,6 +2384,7 @@
             <td></td>
             <td>[544] & 0x80</td>
             <td>[544] & 0x80</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2129,6 +2394,7 @@
             <td>[544] & 0x100</td>
             <td>[544] & 0x100</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 SOC</td>
@@ -2136,6 +2402,7 @@
             <td></td>
             <td>[589]</td>
             <td>[589]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2145,6 +2412,7 @@
             <td>[593] * 0.01</td>
             <td>[593] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 current</td>
@@ -2152,6 +2420,7 @@
             <td></td>
             <td>[594] * 0.01</td>
             <td>[594] * 0.01</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2161,6 +2430,7 @@
             <td>[595] S</td>
             <td>[595] * 10</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 temperature</td>
@@ -2168,6 +2438,7 @@
             <td></td>
             <td>[596] * 0.1</td>
             <td>[596] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2177,6 +2448,7 @@
             <td>[229]</td>
             <td>[229]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 temperature</td>
@@ -2185,6 +2457,7 @@
             <td></td>
             <td>[586] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 voltage</td>
@@ -2192,6 +2465,7 @@
             <td></td>
             <td></td>
             <td>[587] * 0.1</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -2200,6 +2474,7 @@
             <td></td>
             <td></td>
             <td>[588]</td>
+            <td></td>
             <td>power_flow_card</td>
         </tr>
         <tr>
@@ -2209,6 +2484,7 @@
             <td></td>
             <td>[590] * 10</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 current</td>
@@ -2217,6 +2493,7 @@
             <td></td>
             <td>[591] * 0.01</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>PV5 power</td>
@@ -2224,6 +2501,7 @@
             <td></td>
             <td></td>
             <td>[727] * 10</td>
+            <td></td>
             <td>pv5</td>
         </tr>
         <tr>
@@ -2232,6 +2510,7 @@
             <td></td>
             <td></td>
             <td>[728] * 10</td>
+            <td></td>
             <td>pv6</td>
         </tr>
         <tr>
@@ -2240,6 +2519,7 @@
             <td></td>
             <td></td>
             <td>[729] * 10</td>
+            <td></td>
             <td>pv7</td>
         </tr>
         <tr>
@@ -2248,6 +2528,7 @@
             <td></td>
             <td></td>
             <td>[730] * 10</td>
+            <td></td>
             <td>pv8</td>
         </tr>
         <tr>
@@ -2256,6 +2537,7 @@
             <td></td>
             <td></td>
             <td>[553] & 0x02</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -2264,6 +2546,7 @@
             <td></td>
             <td></td>
             <td>[553] & 0x04</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -2272,6 +2555,7 @@
             <td></td>
             <td></td>
             <td>[554] & 0x4000</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -2280,6 +2564,7 @@
             <td></td>
             <td></td>
             <td>[554] & 0x8000</td>
+            <td></td>
             <td>diagnostics</td>
         </tr>
         <tr>
@@ -2289,6 +2574,7 @@
             <td></td>
             <td>[110]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 Wake Up (R/W)</td>
@@ -2296,6 +2582,7 @@
             <td></td>
             <td></td>
             <td>[112] & 0x100</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2305,6 +2592,7 @@
             <td></td>
             <td>[223]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS fault flag</td>
@@ -2312,6 +2600,7 @@
             <td></td>
             <td></td>
             <td>[221]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2321,6 +2610,7 @@
             <td></td>
             <td>[222] & 0x02</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS other flag - Battery 2 Force charge (R/W)</td>
@@ -2328,6 +2618,7 @@
             <td></td>
             <td></td>
             <td>[222] & 0x04</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2337,6 +2628,7 @@
             <td></td>
             <td>[222] & 0x08</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS SOH</td>
@@ -2344,6 +2636,7 @@
             <td></td>
             <td></td>
             <td>[224]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2353,6 +2646,7 @@
             <td></td>
             <td>[225]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 1 BMS rated AH</td>
@@ -2360,6 +2654,7 @@
             <td></td>
             <td></td>
             <td>[226]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2369,6 +2664,7 @@
             <td></td>
             <td>[227]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 Manufacturer</td>
@@ -2376,6 +2672,7 @@
             <td></td>
             <td></td>
             <td>[230]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2385,6 +2682,7 @@
             <td></td>
             <td>[241] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS discharging voltage</td>
@@ -2392,6 +2690,7 @@
             <td></td>
             <td></td>
             <td>[242] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2401,6 +2700,7 @@
             <td></td>
             <td>[243]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS discharging current limit</td>
@@ -2408,6 +2708,7 @@
             <td></td>
             <td></td>
             <td>[244]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2417,6 +2718,7 @@
             <td></td>
             <td>[245]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS voltage</td>
@@ -2424,6 +2726,7 @@
             <td></td>
             <td></td>
             <td>[246] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2433,6 +2736,7 @@
             <td></td>
             <td>[247] * 0.1</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS temperature</td>
@@ -2440,6 +2744,7 @@
             <td></td>
             <td></td>
             <td>[248] * 0.1</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2449,6 +2754,7 @@
             <td></td>
             <td>[249]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS max discharge current limit</td>
@@ -2456,6 +2762,7 @@
             <td></td>
             <td></td>
             <td>[250]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2465,6 +2772,7 @@
             <td></td>
             <td>[251]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS fault flag</td>
@@ -2472,6 +2780,7 @@
             <td></td>
             <td></td>
             <td>[252]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2481,6 +2790,7 @@
             <td></td>
             <td>[253] & 0x02</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS other flag - Battery 2 Force charge (R/W)</td>
@@ -2488,6 +2798,7 @@
             <td></td>
             <td></td>
             <td>[253] & 0x04</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2497,6 +2808,7 @@
             <td></td>
             <td>[253] & 0x08</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS type</td>
@@ -2504,6 +2816,7 @@
             <td></td>
             <td></td>
             <td>[254]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2513,6 +2826,7 @@
             <td></td>
             <td>[255]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS software version</td>
@@ -2520,6 +2834,7 @@
             <td></td>
             <td></td>
             <td>[256]</td>
+            <td></td>
             <td></td>
         </tr>
         <tr>
@@ -2529,6 +2844,7 @@
             <td></td>
             <td>[257]</td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td>Battery 2 BMS hardware version</td>
@@ -2536,6 +2852,178 @@
             <td></td>
             <td></td>
             <td>[258]</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Battery cell voltage max</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[408] * 0.001</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Battery cell voltage min</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[409] * 0.001</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Battery cell temperature max</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[410] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Battery cell temperature min</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[411] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Battery modules</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[412]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Battery capacity</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[407] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Battery SOH</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[392]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>BMS charge voltage</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[372] * 0.01</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>BMS SOC</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[376]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>BMS voltage</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[377] * 0.01</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>BMS current</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[378] S</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>BMS temperature</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[379] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Load voltage</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[1033] * 0.1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Inverter temperature</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[1127]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Work mode (R/W)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[334]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Grid reconnect delay</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[32]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Island mode</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[35]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Insulation check</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[36]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Neutral to earth</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>[38]</td>
             <td></td>
         </tr>
     </tbody>
