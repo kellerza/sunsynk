@@ -42,6 +42,7 @@ async def test_identity_decode() -> None:
     )
     assert suggested_sensor_definitions(3) == "single-phase"
     assert suggested_sensor_definitions(0x601) == "three-phase-hv"
+    assert suggested_sensor_definitions(0x104) == "micro-hybrid-ess"
     assert suggested_sensor_definitions(4) == "single-phase"
     assert suggested_sensor_definitions(0x999) == "single-phase"
 

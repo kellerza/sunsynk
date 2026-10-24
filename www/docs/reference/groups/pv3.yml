@@ -1,4 +1,4 @@
 SENSORS:
- - pv3_current
- - pv3_power
- - pv3_voltage
+ - pv3_current # 1PH, 1PH-16kw, 3PH, 3PH-hv
+ - pv3_power # 1PH, 1PH-16kw, 3PH, 3PH-hv
+ - pv3_voltage # 1PH, 1PH-16kw, 3PH, 3PH-hv

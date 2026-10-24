@@ -14,6 +14,7 @@ DEVICE_TYPES: Final[dict[int, tuple[str, str]]] = {
     0x005: ("three-phase", "Low-voltage three-phase hybrid"),
     0x006: ("three-phase-hv", "High-voltage three-phase hybrid"),
     0x103: ("single-phase", "Single-phase hybrid"),
+    0x104: ("micro-hybrid-ess", "Micro hybrid ESS (SUN-BK, AE-FS)"),
     0x200: ("single-phase-16kw", "Single-phase LV hybrid (3x MTTP)"),
     0x500: ("three-phase", "Low-voltage three-phase hybrid 10kW"),
     0x601: ("three-phase-hv", "High-voltage three-phase hybrid 6-15kW"),
