@@ -1,6 +1,7 @@
 """State of a sensor & entity."""
 
 import logging
+import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -164,6 +165,7 @@ class ASensor:
                     _LOG._log(LOG_TRACE, "Queue update %s=%s", (sensor.id, val))
                 oldq = ist.write_queue.get(sensor)
                 ist.write_queue[sensor] = val
+                ist.write_queue_at[sensor] = time.monotonic()
                 if oldq == val:
                     return
                 if oldq is not None:

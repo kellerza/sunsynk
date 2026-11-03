@@ -206,3 +206,9 @@ def test_to_dict() -> None:
         OPT.sensor_overrides = None
         OPT.load_dict({"sensor_overrides": input_data})
         assert OPT.overrides == expected
+
+
+def test_write_debounce() -> None:
+    """Parse the global write debounce option."""
+    OPT.load_dict({"write_debounce": 2.5})
+    assert OPT.write_debounce == 2.5

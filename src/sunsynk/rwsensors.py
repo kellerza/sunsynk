@@ -28,6 +28,9 @@ _LOG = logging.getLogger(__name__)
 class RWSensor(Sensor):
     """Read & write sensor."""
 
+    debounce: float | None = None
+    """Optional write debounce in seconds; ``None`` uses the global setting."""
+
     def reg(self, *regs: int, msg: str = "") -> RegType:
         """Check the registers are within the bitmask."""
         if self.bitmask and regs[0] != (regs[0] & self.bitmask):

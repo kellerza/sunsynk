@@ -406,3 +406,8 @@ def test_override_many() -> None:
     assert s1.factor == 10
     assert s1.min == -50
     assert s1.max == 50
+
+    sen.override({"rw_sensor.debounce": 5})
+    s2 = sen.all["rw_sensor"]
+    assert isinstance(s2, NumberRWSensor)
+    assert s2.debounce == 5

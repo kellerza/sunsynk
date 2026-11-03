@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Self
@@ -12,6 +13,7 @@ from sunsynk.utils import pretty_table, table_data
 from .a_inverter import AInverter
 from .a_sensor import ASensor, SensorOption
 from .near_realtime import NEAR_REALTIME
+from .options import OPT
 from .sensor_options import SOPT
 from .timer_callback import AsyncCallback
 
@@ -83,9 +85,22 @@ def build_callback_schedule(ist: AInverter) -> None:  # noqa: PLR0915
 
         await ist.inv.connect()  # Check that we are connected #395
 
-        # Flush pending writes
-        while ist.write_queue:
-            sensor, value = ist.write_queue.popitem()
+        # Flush writes whose trailing-edge debounce window has elapsed.
+        now_mono = time.monotonic()
+        pending = [
+            (sensor, value)
+            for sensor, value in ist.write_queue.items()
+            if now_mono - ist.write_queue_at.get(sensor, now_mono)
+            >= max(
+                0,
+                sensor.debounce
+                if isinstance(sensor, RWSensor) and sensor.debounce is not None
+                else OPT.write_debounce,
+            )
+        ]
+        for sensor, value in pending:
+            ist.write_queue.pop(sensor, None)
+            ist.write_queue_at.pop(sensor, None)
             if not isinstance(sensor, RWSensor):
                 continue
             await asyncio.sleep(0.1)
