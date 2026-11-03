@@ -1,5 +1,7 @@
 """Test sensor callbacks."""
 
+import asyncio
+import time
 from collections import defaultdict
 from inspect import iscoroutinefunction
 from unittest.mock import AsyncMock, Mock, call, patch
@@ -230,6 +232,34 @@ async def test_write_debounce_global_and_local_settings(
         clock.now = write_after
         await ist.cb.callback(0)
 
+    ist.write_sensor.assert_awaited_once_with(sensor, 1)
+
+
+# A belt-and-braces test to ensure the write debounce mechanism works with real time.
+async def test_write_debounce_uses_real_time() -> None:
+    """Use the real monotonic clock and sleep before writing."""
+    sensor = NumberRWSensor(1, name="test", debounce=0.05)
+    option = SensorOption(sensor=sensor, schedule=Schedule("no_write"))
+    SOPT.clear()
+    SOPT[sensor] = option
+    ist = ist_factory()
+    ist.state.history = {}
+    ist.state.historynn = {}
+    ist.write_sensor = AsyncMock()  # type: ignore[method-assign]
+    ist.ss[sensor.id] = ASensor(opt=option)
+    build_callback_schedule(ist)
+
+    # Record the real enqueue time, then run the normal callback before the
+    # 0.05-second debounce period has expired.
+    ist.write_queue[sensor] = 1
+    ist.write_queue_at[sensor] = time.monotonic()
+    await asyncio.sleep(0.02)
+    await ist.cb.callback(0)
+    ist.write_sensor.assert_not_awaited()
+
+    # After the debounce period expires, the next callback sends the value.
+    await asyncio.sleep(0.05)
+    await ist.cb.callback(0)
     ist.write_sensor.assert_awaited_once_with(sensor, 1)
 
 
