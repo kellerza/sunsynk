@@ -259,6 +259,19 @@ class AInverter:
             else:
                 await state.publish(value)
 
+    async def republish_cached_sensors(self) -> None:
+        """Re-send last MQTT-published non-retained states after HA comes online."""
+        states: dict[ASensor, ValType] = {
+            asen: asen.value
+            for asen in self.ss.values()
+            if asen.entity
+            and not asen.retain
+            and asen.value is not None
+            and asen.opt.schedule.report_every > 10
+        }
+        if states:
+            await self.publish_sensors(states=states)
+
     async def connect(self) -> None:
         """Connect."""
         await self.set_lifecycle("starting")

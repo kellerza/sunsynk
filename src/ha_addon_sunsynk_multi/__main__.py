@@ -97,6 +97,7 @@ async def main_loop() -> int:
         """When MQTT is connected, ensure we update MQTT availability states."""
         for ist in STATE:
             await ist.set_lifecycle(None)
+            await ist.republish_cached_sensors()
 
     MQTT.on_ha_connected = on_ha_connected
 

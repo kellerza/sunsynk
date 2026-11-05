@@ -1005,7 +1005,7 @@ dev = [
 requires-dist = [
     { name = "cattrs", specifier = ">=25,<27" },
     { name = "modbus-connection", extras = ["pymodbus", "tmodbus"], specifier = ">=4.7" },
-    { name = "mqtt-entity", extras = ["options"], specifier = ">=1.2.5" },
+    { name = "mqtt-entity", extras = ["options"], specifier = ">=1.2.11" },
     { name = "prettytable", specifier = ">=3.17,<4" },
     { name = "pysolarmanv5", marker = "extra == 'solarman'", specifier = "==3.0.6" },
     { name = "whenever", specifier = ">=0.11,<0.12" },

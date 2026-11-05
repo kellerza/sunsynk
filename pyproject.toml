@@ -32,7 +32,7 @@ classifiers = [
 dependencies = [
   "cattrs>=25,<27",
   "modbus-connection[pymodbus,tmodbus]>=4.7",
-  "mqtt-entity[options]>=1.2.5",
+  "mqtt-entity[options]>=1.2.11",
   "prettytable>=3.17,<4",
   "whenever>=0.11,<0.12",
 ]
