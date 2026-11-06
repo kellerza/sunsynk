@@ -17,5 +17,7 @@ if you are successful.
 | Deye 25Kw 3PH HV       | Dyness HV4            | edge/dev    | @proggaras             | BMS485                |
 | Sunsynk 7kW            | Sunsynk W5.32         | multi       | @hamid-elaosta         | RS485/CAN (top right) |
 | Dye 3P Sun-15K-SG05LP3 | Deye SE-F5 Plus       | multi       | @GeneralMasterCylinder | RS485                 |
+| Deye 12kW Hybrid       | 2 x LWTOPSUN 200AH    | multi       | @rbuder                | RS485 via Elfin EW11  | 
+| Sunsynk Elite 7kW      | Sunsynk Elite 5.1kWh  | multi       | @Easen                 | RS485/CAN             |
 
 For details on how to wire these inverters, see [RS485 Wiring](./wiring).
