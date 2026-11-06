@@ -174,7 +174,7 @@ class Sunsynk:
 
         if sensor.address and all(
             addr in self.state.registers and self.state.registers[addr] == value
-            for addr, value in zip(sensor.address, regs)
+            for addr, value in zip(sensor.address, regs, strict=True)
         ):
             _LOG.debug(
                 "Skipping unchanged write for %s: %s",

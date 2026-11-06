@@ -17,7 +17,7 @@ configuration:
   SENSOR_OVERRIDES:
     name: Sensor overrides
     description: |
-      Override sensor attributes (min, max, factor, trace, debounce). Each entry is `key=value`.
+      Override sensor attributes (min, max, factor, trace). Each entry is `key=value`.
       See the documentation for examples.
   SENSORS:
     name: Sensors
@@ -50,12 +50,6 @@ configuration:
       How many times to try each holding-register read or write.
 
       Default **3**. Worst-case wait per group is TIMEOUT × READ_ATTEMPTS.
-  WRITE_DEBOUNCE:
-    name: Write debounce (seconds)
-    description: |
-      Seconds to wait after the last command before writing a register. Fractional seconds are
-      supported (for example, **0.5** seconds). Default **0** (disabled), maximum **60** seconds.
-      Individual writable sensors can override this with `SENSOR_OVERRIDES` and `.debounce`.
   STALE_INVERTER_AFTER_SECONDS:
     name: Stale inverter after (seconds)
     description: |
