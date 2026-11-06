@@ -258,7 +258,8 @@ class AInverter:
                 await state.publish(self.state[state.opt.sensor])
             else:
                 await state.publish(value)
-                async def connect(self) -> None:
+
+    async def connect(self) -> None:
         """Connect."""
         await self.set_lifecycle("starting")
         _LOG.info("Connecting to %s", self.inv.port)
