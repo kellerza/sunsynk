@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 from modbus_connection import ModbusSerialParams, ModbusTcpParams, ModbusUdpParams
 from modbus_connection.pymodbus import ModbusConnection as PymodbusConnection
 from modbus_connection.tmodbus import ModbusConnection as TmodbusConnection
 
-type ConnectionParams = ModbusTcpParams | ModbusUdpParams | ModbusSerialParams
-type ModbusConnection = TmodbusConnection | PymodbusConnection
+from sunsynk.fdbg import FdbgModbusConnection, FdbgParams
+
+type ConnectionParams = ModbusTcpParams | ModbusUdpParams | ModbusSerialParams | FdbgParams
+type ModbusConnection = TmodbusConnection | PymodbusConnection | FdbgModbusConnection
 
 PYMODBUS_PREFIX = "pymodbus-"
 
@@ -25,6 +27,23 @@ def url_to_params(
 ) -> ConnectionParams:
     """Map a port URL (or serial device path) to connection params."""
     url = urlparse(port)
+    if url.scheme == "http":
+        if not url.hostname:
+            raise ValueError(f"HTTP Modbus URL must include a host: {port!r}")
+        min_source_port = 0
+        max_source_port = 0
+        if url.query:
+            query_params = parse_qs(url.query)
+            min_source_port = int(query_params.get("min_source_port", [0])[0])
+            max_source_port = int(query_params.get("max_source_port", [0])[0])
+        return FdbgParams(
+            host=url.hostname,
+            port=url.port or 80,
+            path=url.path or "/fdbg.cgi",
+            scheme=url.scheme,
+            min_source_port=min_source_port,
+            max_source_port=max_source_port,
+        )
     if url.hostname:
         host, tcp_port = url.hostname, url.port or 502
         match url.scheme:
@@ -46,7 +65,7 @@ def url_to_params(
             case _:
                 raise NotImplementedError(
                     f"Unknown scheme {url.scheme!r}: expected tcp, serial-tcp, "
-                    "udp, serial-udp, or a serial device path"
+                    "udp, serial-udp, http, or a serial device path"
                 )
     return ModbusSerialParams(device=port, baudrate=baudrate)
 
@@ -72,6 +91,14 @@ def open_connection(
         port = port.removeprefix(PYMODBUS_PREFIX)
     if message_spacing is None:
         message_spacing = DEFAULT_MESSAGE_SPACING
+    if port.startswith("http://"):
+        params = url_to_params(port)
+        return FdbgModbusConnection(
+            params,
+            timeout=timeout,
+            message_spacing=message_spacing,
+            connect_delay=connect_delay,
+        )
     params = url_to_params(port, baudrate, allow_serial_udp=use_pymodbus)
     if isinstance(params, ModbusSerialParams):
         connect_delay = 0.05

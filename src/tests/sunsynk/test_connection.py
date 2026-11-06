@@ -14,7 +14,12 @@ from modbus_connection import (
 )
 from modbus_connection.mock import MockModbusConnection
 
-from sunsynk.connection import DEFAULT_MESSAGE_SPACING, open_connection, url_to_params
+from sunsynk.connection import (
+    DEFAULT_MESSAGE_SPACING,
+    FdbgParams,
+    open_connection,
+    url_to_params,
+)
 from sunsynk.state import InverterState
 from sunsynk.sunsynk import Sunsynk
 
@@ -31,6 +36,9 @@ def test_url_to_params() -> None:
         device="socket://[::1]:8899", framer="rtu"
     )
     assert url_to_params("udp://host:502") == ModbusUdpParams(host="host", port=502)
+    assert url_to_params("http://host/fdbg.cgi") == FdbgParams(
+        host="host", path="/fdbg.cgi", port=80
+    )
     assert url_to_params("/dev/ttyUSB0", baudrate=19200) == ModbusSerialParams(
         device="/dev/ttyUSB0", baudrate=19200
     )
@@ -75,6 +83,105 @@ def test_open_connection_serial_spacing() -> None:
     assert no_gap._pacer._message_spacing == 0.0
     custom = open_connection("tcp://127.0.0.1:502", timeout=5, message_spacing=0.1)
     assert custom._pacer._message_spacing == 0.1
+
+
+def test_open_connection_builds_fdbg_http() -> None:
+    """http://.../fdbg.cgi selects the custom FDBG HTTP backend."""
+    from sunsynk.connection import FdbgModbusConnection
+
+    conn = open_connection("http://127.0.0.1/fdbg.cgi", timeout=5)
+    assert isinstance(conn, FdbgModbusConnection)
+    assert conn._params == FdbgParams(host="127.0.0.1", path="/fdbg.cgi", port=80)
+
+
+async def test_fdbg_http_rate_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    """FDBG requests are throttled to at most once per second."""
+
+    import json
+    import math
+
+    interval = [0.0]
+    sleeps: list[float] = []
+
+    async def _fake_sleep(delay: float) -> None:
+        sleeps.append(delay)
+
+    def _fake_monotonic() -> float:
+        return interval[0]
+
+    class _Response:
+        def __init__(self, payload: bytes) -> None:
+            self.payload = payload
+
+        def __enter__(self) -> "_Response":
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return self.payload
+
+    def _fake_urlopen(request, timeout=None):
+        return _Response(
+            json.dumps({"data": __import__("sunsynk.fdbg", fromlist=["_hex_bytes"])._hex_bytes(b"\x01\x03\x00\x01\x00\x02\x00\x03\x00\x04\x00\x00")}, separators=(",", ":")).encode("ascii")
+        )
+
+    monkeypatch.setattr("asyncio.sleep", _fake_sleep)
+    monkeypatch.setattr("time.monotonic", _fake_monotonic)
+    monkeypatch.setattr("sunsynk.fdbg.urlopen", _fake_urlopen)
+
+    conn = open_connection("http://127.0.0.1/fdbg.cgi", timeout=5)
+    await conn._post(b"\x01\x03\x00\x00\x00\x01")
+    interval[0] = 0.9
+    await conn._post(b"\x01\x03\x00\x00\x00\x01")
+
+    assert sleeps[0] == 1.0
+    assert math.isclose(sleeps[-1], 0.1, rel_tol=0.0, abs_tol=1e-9)
+
+
+async def test_fdbg_http_read_write_roundtrip(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The HTTP bridge posts Modbus frames wrapped in JSON and decodes the reply."""
+
+    class _Response:
+        def __init__(self, payload: bytes) -> None:
+            self.payload = payload
+
+        def __enter__(self) -> "_Response":
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return self.payload
+
+    def _fake_urlopen(request, timeout=None):
+        body = request.data.decode("ascii")
+        payload = body.split('"data":"', 1)[1].rsplit('"', 1)[0]
+        hex_bytes = bytes.fromhex(payload.replace(" ", ""))
+        if hex_bytes[:2] == b"\x01\x03":
+            data = b"\x00\x03\x00\x01\x00\x02\x00\x03\x00\x04"
+            reply = b"\x01\x03\x0A" + data + __import__("sunsynk.fdbg", fromlist=["_crc16_modbus"])._crc16_modbus(
+                b"\x01\x03\x0A" + data
+            )
+        else:
+            reply = bytes.fromhex("0110010F00013036")
+        return _Response(
+            json.dumps(
+                {"data": __import__("sunsynk.fdbg", fromlist=["_hex_bytes"])._hex_bytes(reply)},
+                separators=(",", ":"),
+            ).encode("ascii")
+        )
+    import json
+
+    monkeypatch.setattr("sunsynk.fdbg.urlopen", _fake_urlopen)
+    conn = open_connection("http://127.0.0.1/fdbg.cgi", timeout=5)
+    unit = conn.for_unit(1)
+
+    values = await unit.read_holding_registers(0x0000, 5)
+    assert values == [0x0003, 0x0001, 0x0002, 0x0003, 0x0004]
+    await unit.write_registers(0x010F, [100])
 
 
 def test_open_connection_pymodbus_prefix() -> None:
