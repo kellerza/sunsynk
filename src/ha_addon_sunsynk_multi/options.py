@@ -71,10 +71,6 @@ DRIVER_ERROR_MSG = (
 class Options(MQTTOptions):
     """HASS Addon Options."""
 
-    mqtt_republish: int = 10
-    """Seconds after discovery to send it again and re-run on_ha_connected. Discovery and
-    states are not retained, so states sent right behind discovery can miss HA's
-    subscriptions after a restart."""
     number_entity_mode: str = "auto"
     prog_time_interval: int = 15
     inverters: list[InverterOptions] = field(default_factory=list)
