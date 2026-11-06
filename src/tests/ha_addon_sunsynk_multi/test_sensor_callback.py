@@ -1,15 +1,20 @@
 """Test sensor callbacks."""
 
+import asyncio
+import time
 from collections import defaultdict
 from inspect import iscoroutinefunction
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, Mock, call, patch
 
 import pytest
 
 from ha_addon_sunsynk_multi.a_inverter import AInverter
+from ha_addon_sunsynk_multi.a_sensor import ASensor
+from ha_addon_sunsynk_multi.options import OPT
 from ha_addon_sunsynk_multi.sensor_callback import SensorRun, build_callback_schedule
 from ha_addon_sunsynk_multi.sensor_options import SOPT, Sensor, SensorOption
 from ha_addon_sunsynk_multi.timer_schedule import Schedule
+from sunsynk.rwsensors import NumberRWSensor
 
 from .conftest import ist_factory
 
@@ -99,6 +104,163 @@ async def test_build_callback_schedule() -> None:
         assert call_count() == (7, 7, 4)  # single publish for 2 commands
         assert next_run() == (101, 110, 120)
         assert publish_sensors() == ["test", "test2"]
+
+
+async def test_write_debounce_queues_latest_value() -> None:
+    """Only write the latest command after the sensor debounce window."""
+    # This sensor waits 0.5 seconds after the most recent command before writing.
+    sensor = NumberRWSensor(1, name="test", debounce=0.5)
+    option = SensorOption(sensor=sensor, schedule=Schedule("no_write"))
+    SOPT.clear()
+    SOPT[sensor] = option
+    ist = ist_factory()
+    ist.state.history = {}
+    ist.state.historynn = {}
+    ist.write_sensor = AsyncMock()  # type: ignore[method-assign]
+    ist.ss[sensor.id] = ASensor(opt=option)
+    first_value = 0
+    second_value = 1
+
+    build_callback_schedule(ist)
+
+    class FakeClock:
+        """Clock whose current time the test can move forward."""
+
+        now = 0.0
+
+        def monotonic(self) -> float:
+            """Return the simulated current time."""
+            return self.now
+
+    clock = FakeClock()
+
+    # The client changes its mind at 0.8 seconds, before the first command is
+    # written. The queue keeps only this latest value and restarts the timer.
+    with (
+        patch(
+            "ha_addon_sunsynk_multi.sensor_callback.time.monotonic",
+            side_effect=clock.monotonic,
+        ),
+        patch("ha_addon_sunsynk_multi.sensor_callback.asyncio.sleep", new=AsyncMock()),
+    ):
+        # The first command arrives at 0.3 seconds. At 0.7 seconds, only 0.4
+        # seconds have passed, so the callback must leave it queued.
+        clock.now = 0.3
+        ist.write_queue[sensor] = first_value
+        ist.write_queue_at[sensor] = clock.monotonic()
+
+        # Write any pending commands if their debounce window has elapsed.
+        # This should not trigger a write yet because the debounce window has not elapsed.
+        clock.now = 0.7
+        await ist.cb.callback(0)
+
+        # The second command arrives at the current time, 0.8 seconds. Its
+        # debounce timer starts from this timestamp, not from a fixed value.
+        clock.now = 0.8
+        ist.write_queue[sensor] = second_value
+        ist.write_queue_at[sensor] = clock.monotonic()
+
+        # At 1.0 seconds, only 0.2 seconds have elapsed since the latest
+        # command, so it must still be queued.
+        clock.now = 1.0
+        await ist.cb.callback(0)
+
+        # At 1.3 seconds, the 0.5-second window has elapsed. The old value
+        # must never be written; only the latest value should be sent.
+        clock.now = 1.3
+        await ist.cb.callback(0)
+
+    # The complete call list must contain exactly one write, and it must use
+    # the second value. This also proves the first value was never written.
+    assert ist.write_sensor.await_args_list == [call(sensor, second_value)]
+
+
+@pytest.mark.parametrize(
+    ("local_debounce", "global_debounce", "write_after"),
+    [
+        (None, 0.5, 0.5),  # No local setting: use the global setting.
+        (0.1, 0.5, 0.1),  # Local setting: use it instead of the global setting.
+        (0, 0.5, 0),  # Local zero: disable the global setting.
+    ],
+)
+async def test_write_debounce_global_and_local_settings(
+    local_debounce: float | None,
+    global_debounce: float,
+    write_after: float,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Use the global setting unless an RWSensor has a local override."""
+    monkeypatch.setattr(OPT, "write_debounce", global_debounce)
+    sensor = NumberRWSensor(1, name="test", debounce=local_debounce)
+    option = SensorOption(sensor=sensor, schedule=Schedule("no_write"))
+    SOPT.clear()
+    SOPT[sensor] = option
+    ist = ist_factory()
+    ist.state.history = {}
+    ist.state.historynn = {}
+    ist.write_sensor = AsyncMock()  # type: ignore[method-assign]
+    ist.ss[sensor.id] = ASensor(opt=option)
+    build_callback_schedule(ist)
+
+    class FakeClock:
+        """Clock whose current time the test can move forward."""
+
+        now = 0.0
+
+        def monotonic(self) -> float:
+            """Return the simulated current time."""
+            return self.now
+
+    clock = FakeClock()
+    with (
+        patch(
+            "ha_addon_sunsynk_multi.sensor_callback.time.monotonic",
+            side_effect=clock.monotonic,
+        ),
+        patch("ha_addon_sunsynk_multi.sensor_callback.asyncio.sleep", new=AsyncMock()),
+    ):
+        # Queue one value at time zero, then run just before the selected
+        # debounce period expires. A non-zero period must not write yet.
+        ist.write_queue[sensor] = 1
+        ist.write_queue_at[sensor] = clock.monotonic()
+        if write_after:
+            clock.now = write_after - 0.01
+            await ist.cb.callback(0)
+            ist.write_sensor.assert_not_awaited()
+
+        # At the selected expiry time, exactly one write should occur.
+        clock.now = write_after
+        await ist.cb.callback(0)
+
+    ist.write_sensor.assert_awaited_once_with(sensor, 1)
+
+
+# A belt-and-braces test to ensure the write debounce mechanism works with real time.
+async def test_write_debounce_uses_real_time() -> None:
+    """Use the real monotonic clock and sleep before writing."""
+    sensor = NumberRWSensor(1, name="test", debounce=0.05)
+    option = SensorOption(sensor=sensor, schedule=Schedule("no_write"))
+    SOPT.clear()
+    SOPT[sensor] = option
+    ist = ist_factory()
+    ist.state.history = {}
+    ist.state.historynn = {}
+    ist.write_sensor = AsyncMock()  # type: ignore[method-assign]
+    ist.ss[sensor.id] = ASensor(opt=option)
+    build_callback_schedule(ist)
+
+    # Record the real enqueue time, then run the normal callback before the
+    # 0.05-second debounce period has expired.
+    ist.write_queue[sensor] = 1
+    ist.write_queue_at[sensor] = time.monotonic()
+    await asyncio.sleep(0.02)
+    await ist.cb.callback(0)
+    ist.write_sensor.assert_not_awaited()
+
+    # After the debounce period expires, the next callback sends the value.
+    await asyncio.sleep(0.05)
+    await ist.cb.callback(0)
+    ist.write_sensor.assert_awaited_once_with(sensor, 1)
 
 
 TEST1 = (

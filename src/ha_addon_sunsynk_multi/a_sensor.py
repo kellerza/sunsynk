@@ -1,6 +1,7 @@
 """State of a sensor & entity."""
 
 import logging
+import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -111,7 +112,7 @@ class ASensor:
             return False
         return True
 
-    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:  # noqa: PLR0911
+    def create_entity(self, ist: "AInverter", /) -> MQTTEntity:  # noqa: PLR0911 PLR0915
         """Create HASS entity."""
         dev_id = ist.opt.serial_nr
         if not self.visible_on(ist):
@@ -164,16 +165,16 @@ class ASensor:
                     _LOG._log(LOG_TRACE, "Queue update %s=%s", (sensor.id, val))
                 oldq = ist.write_queue.get(sensor)
                 ist.write_queue[sensor] = val
-                if oldq == val:
-                    return
-                if oldq is not None:
-                    _LOG.warning(
-                        "Write queued for %s. Skipped %s, queueing %s",
-                        sensor.id,
-                        oldq,
-                        val,
-                    )
-                await self.publish(val)
+                ist.write_queue_at[sensor] = time.monotonic()
+                if oldq != val:
+                    if oldq is not None:
+                        _LOG.warning(
+                            "Write queued for %s. Skipped %s, queueing %s",
+                            sensor.id,
+                            oldq,
+                            val,
+                        )
+                    await self.publish(val)
 
             return on_change
 

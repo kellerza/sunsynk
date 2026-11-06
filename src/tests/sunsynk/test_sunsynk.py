@@ -61,6 +61,9 @@ async def test_ss_write_sensor(
     wreg.assert_called_once()
     assert wreg.call_args == call(address=1, value=44)
 
+    await ss.write_sensor(sen, 44)
+    wreg.assert_called_once()
+
     # test a sensor with a bitmask
     sen = NumberRWSensor((1,), "s2", min=1, max=10, bitmask=0x3)
     state.track(sen)

@@ -67,6 +67,8 @@ class AInverter:
 
     write_queue: dict[Sensor, str | int | float | bool] = field(default_factory=dict)
     """Write queue for RWSensors."""
+    write_queue_at: dict[Sensor, float] = field(default_factory=dict)
+    """Monotonic time at which each queued write was last updated."""
 
     # Reporting stats
     entity_timeout: MQTTSensorEntity = field(init=False)

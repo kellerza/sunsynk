@@ -52,6 +52,7 @@ Sensor ids, groups, and custom sensors are listed under [definitions](./definiti
     - prog4_power.max=4990
     - battery_max_charge_current.max=350
     - battery_max_discharge_current.max=350
+    - prog4_power.debounce=5
   ```
 
   ::: details The log will show if an override was applied.
@@ -81,6 +82,13 @@ Sensor ids, groups, and custom sensors are listed under [definitions](./definiti
   ```
 
   :::
+
+- <i-mdi-dev-to class="vp-edge-option-icon" /> `WRITE_DEBOUNCE` – Global trailing-edge debounce for
+  writable sensor commands, in seconds. Fractional seconds are supported, for example `0.5` seconds.
+  The default and minimum are `0` seconds (`0` disables debouncing); the maximum is `60` seconds.
+  Repeated commands for the same sensor during the window are coalesced and only the latest value is
+  written. Set a sensor override such as `prog4_power.debounce=0` to bypass the global setting for
+  that sensor.
 
 ## Inverters
 

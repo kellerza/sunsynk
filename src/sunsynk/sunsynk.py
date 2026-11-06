@@ -172,6 +172,17 @@ class Sunsynk:
             regs = (regs0, *regs[1:])
             msg = f"[Register {val0}-->{val1}]"
 
+        if sensor.address and all(
+            addr in self.state.registers and self.state.registers[addr] == value
+            for addr, value in zip(sensor.address, regs, strict=True)
+        ):
+            _LOG.debug(
+                "Skipping unchanged write for %s: %s",
+                sensor.id,
+                hex_str(regs, address=sensor.address),
+            )
+            return
+
         if sensor.trace:
             _LOG._log(
                 LOG_TRACE,
