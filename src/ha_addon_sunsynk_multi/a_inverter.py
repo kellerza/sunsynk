@@ -373,7 +373,8 @@ class AInverter:
         for sopt in soptions.values():
             sen = sopt.sensor
             self.state.track(sen)
-            self.ss[sen.id] = ASensor(opt=sopt, retain=isinstance(sen, RWSensor))
+            # Retained: HA gets the state as soon as it subscribes after discovery.
+            self.ss[sen.id] = ASensor(opt=sopt, retain=True)
 
     def create_stats_entities(self) -> None:
         """Create entities."""

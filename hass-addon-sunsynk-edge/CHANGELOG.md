@@ -19,6 +19,9 @@
 - Bump whenever to 0.11
 - `serial-tcp://` uses `ModbusSerialParams(socket://…)` (modbus-connection 4.12+); timeouts
   disconnect like other serial links.
+- Retain all sensor states, so Home Assistant gets them as soon as it subscribes after discovery.
+  Schedule-reported sensors (energy, temperatures) are no longer unknown for up to 5 min after an HA
+  restart.
 
 ## Release 1.3.0
 
