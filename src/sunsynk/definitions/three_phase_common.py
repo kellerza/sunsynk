@@ -535,6 +535,21 @@ SENSORS += (
             10: "VDE4105",  # Germany
             11: "OVE_Directive_R25",  # Austria
             12: "EN50549_CZ_PPDS_L16A",  # Czech <16A
+            13: "NRS097",  # South Africa
+            14: "G98",
+            15: "G99",
+            16: "EN50549_1_Norway_133V",
+            17: "EN50549_1_Norway_230V",
+            18: "JAPAN_200VAC",
+            19: "CEI_0_21_External",  # Italy >11.9kW
+            20: "CEI_0_21_Areti",  # Italy, Rome
+            # 21 & 22 are Japan 400/415V in the V105.1 protocol doc, Brazil RD 140 in later ones
+            23: "EN50549_1_Switzerland",
+            24: "EN50549_1_GR",  # Greece
+            25: "EN50549_1_Poland",
+            26: "CEI_0_16_IT",
+            27: "EN50549_1",
+            28: "ESB_Network_Ireland",
         },
     ),
     SelectRWSensor(183, "Configured Grid Frequency", options={0: "50Hz", 1: "60Hz"}),

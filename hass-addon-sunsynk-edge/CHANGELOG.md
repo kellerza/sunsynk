@@ -22,6 +22,7 @@
 - Retain all sensor states, so Home Assistant gets them as soon as it subscribes after discovery.
   Schedule-reported sensors (energy, temperatures) are no longer unknown for up to 5 min after an HA
   restart.
+- Three-phase `grid_standard`: add options 13-20 and 23-28 (EN50549_1, G98/G99, NRS097, …). #711
 
 ## Release 1.3.0
 

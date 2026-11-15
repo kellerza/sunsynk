@@ -17,6 +17,13 @@ def test_import_defs() -> None:
         assert defs.rated_power
 
 
+def test_three_phase_grid_standard() -> None:
+    """Grid standard 27 as reported in #711."""
+    for lib in ("three_phase_lv", "three_phase_hv"):
+        sen = import_defs(lib).all["grid_standard"]
+        assert sen.reg_to_value((27,)) == "EN50549_1"
+
+
 def test_all_defs() -> None:
     """Test all sensor definitions."""
     all_defs = import_all_defs()
